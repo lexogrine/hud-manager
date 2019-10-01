@@ -22,9 +22,9 @@
     "start": "react-scripts start",
     "build": "tsc index.ts && react-scripts build && mv build dist",
     "test": "react-scripts test",
-    "watch": "tsc index.ts --watch --outDir dist",
+    "compile": "tsc index.ts --outDir dist",
     "electron": "electron ./",
-    "dev": "concurrently \"cross-env BROWSER=none npm start\" \"wait-on http://localhost:3000 && electron .\"",
+    "dev": "npm run compile && concurrently \"cross-env BROWSER=none npm start\" \"wait-on http://localhost:3000 && electron .\"",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
