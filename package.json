@@ -1,21 +1,30 @@
 {
   "name": "hud-manager",
   "version": "0.1.0",
+  "homepage": "./",
   "private": true,
   "dependencies": {
     "@types/jest": "24.0.18",
     "@types/node": "12.7.8",
     "@types/react": "16.9.4",
     "@types/react-dom": "16.9.1",
+    "bootstrap": "^4.3.1",
+    "cross-env": "^6.0.0",
     "react": "^16.10.1",
     "react-dom": "^16.10.1",
     "react-scripts": "3.1.2",
+    "react-select-country-list": "^2.0.1",
+    "reactstrap": "^8.0.1",
     "typescript": "3.6.3"
   },
+  "main": "dist/index.js",
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "tsc index.ts && react-scripts build && mv build dist",
     "test": "react-scripts test",
+    "watch": "tsc index.ts --watch --outDir dist",
+    "electron": "electron ./",
+    "dev": "concurrently \"cross-env BROWSER=none npm start\" \"wait-on http://localhost:3000 && electron .\"",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -32,5 +41,11 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "@types/reactstrap": "^8.0.4",
+    "concurrently": "^4.1.2",
+    "electron": "^6.0.10",
+    "wait-on": "^3.3.0"
   }
 }
