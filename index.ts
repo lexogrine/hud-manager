@@ -1,18 +1,21 @@
 import { app, BrowserWindow } from "electron";
 
+import * as directories from './init/directories';
+import init from './server'
 let win: BrowserWindow | null;
 
 async function createMainWindow() {
+    const server = init();
+    directories.checkDirectories();
 
     win = new BrowserWindow({
         height: 720,
         minHeight: 600,
         minWidth: 400,
         show: false,
-        title: "Loaf Messenger",
+        title: "HUD Manager",
         webPreferences: {
             backgroundThrottling: false,
-            preload: __dirname + "/preload.js",
         },
         width: 1280,
     });
@@ -28,6 +31,7 @@ async function createMainWindow() {
 
     win.loadURL("http://localhost:3000/");
     win.on("close", () => {
+        server.close();
         win = null;
         app.quit();
     });
