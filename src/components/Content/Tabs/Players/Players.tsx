@@ -3,10 +3,12 @@ import { Button, Form, FormGroup, Label, Input, Row, Col, CustomInput } from 're
 import countryList from 'react-select-country-list';
 import api from './../../../../api/api';
 import * as I from './../../../../api/interfaces';
+import { ContextData, IContextData } from './../../../../components/Context';
 
-export default class Players extends React.Component<{}, {options: any[], value: string, players: I.Player[], form: I.Player}> {
+
+export default class Players extends React.Component<{cxt: IContextData}, {options: any[], value: string, form: I.Player}> {
     emptyPlayer: I.Player;
-    constructor(props: {}) {
+    constructor(props: {cxt: IContextData}) {
         super(props);
         this.emptyPlayer = {
             _id: "empty",
@@ -21,7 +23,6 @@ export default class Players extends React.Component<{}, {options: any[], value:
             options: countryList().getData(),
             value: "",
             form: {...this.emptyPlayer},
-            players: []
         };
     }
 
@@ -30,15 +31,14 @@ export default class Players extends React.Component<{}, {options: any[], value:
     }
 
     loadPlayers = async (id?: string) => {
-        const players = await api.players.get();
-        this.setState({players});
+        await this.props.cxt.reload();
         if(id){
             this.loadPlayer(id);
         }
     }
 
     loadPlayer = (id: string) => {
-        const player = this.state.players.filter(player => player._id === id)[0];
+        const player = this.props.cxt.players.filter(player => player._id === id)[0];
         if(player) this.setState({form:{...player}});
     }
 
@@ -86,7 +86,7 @@ export default class Players extends React.Component<{}, {options: any[], value:
                     <Label for="players">Players already exists</Label>
                     <Input type="select" name="players" id="players" onChange={this.setPlayer}>
                         <option value={"empty"}>Empty team</option>
-                        {this.state.players.map(player => <option key={player._id} value={player._id}>{player.firstName} {player.username} {player.lastName}</option>)}
+                        {this.props.cxt.players.map(player => <option key={player._id} value={player._id}>{player.firstName} {player.username} {player.lastName}</option>)}
                     </Input>
                 </FormGroup>
                 <Row>

@@ -3,10 +3,11 @@ import { Button, Form, FormGroup, Label, Input, Row, Col, CustomInput } from 're
 import countryList from 'react-select-country-list';
 import api from './../../../../api/api';
 import * as I from './../../../../api/interfaces';
+import { IContextData } from './../../../../components/Context';
 
-export default class Teams extends React.Component<{}, {options: any[], value: string, teams: I.Team[], form: I.Team}> {
+export default class Teams extends React.Component<{cxt: IContextData}, {options: any[], value: string, form: I.Team}> {
     emptyTeam: I.Team;
-    constructor(props: {}) {
+    constructor(props: {cxt: IContextData}) {
         super(props);
         this.emptyTeam = {
             _id: "empty",
@@ -19,25 +20,23 @@ export default class Teams extends React.Component<{}, {options: any[], value: s
         this.state = {
             options: countryList().getData(),
             value: "",
-            teams: [],
             form: {...this.emptyTeam}
         };
     }
 
-    componentDidMount(){
+    componentDidMount = async () => {
         this.loadTeams();
     }
 
     loadTeams = async (id?: string) => {
-        const teams = await api.teams.get();
-        this.setState({teams});
+        await this.props.cxt.reload();
         if(id){
             this.loadTeam(id);
         }
     }
 
-    loadTeam = (id: string) => {
-        const team = this.state.teams.filter(team => team._id === id)[0];
+    loadTeam = async (id: string) => {
+        const team = this.props.cxt.teams.filter(team => team._id === id)[0];
         if(team) this.setState({form:{...team}});
     }
 
@@ -85,7 +84,7 @@ export default class Teams extends React.Component<{}, {options: any[], value: s
                     <Label for="teams">Teams</Label>
                     <Input type="select" name="teams" id="teams" onChange={this.setTeam} value={this.state.form._id}>
                         <option value={"empty"}>Empty team</option>
-                        {this.state.teams.map(team  => <option key={team._id} value={team._id}>{team.name}</option>)}
+                        {this.props.cxt.teams.map(team  => <option key={team._id} value={team._id}>{team.name}</option>)}
                     </Input>
                 </FormGroup>
                 <Row>

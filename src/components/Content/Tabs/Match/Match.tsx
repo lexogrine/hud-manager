@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import api from './../../../../api/api';
 import * as I from './../../../../api/interfaces';
 import { Form, FormGroup, Col, Row, Label, CustomInput, Card, CardImg, CardText, CardBody, CardTitle, CardSubtitle, Button } from 'reactstrap';
+import { IContextData } from '../../../Context';
 interface IMatch {
     teamLeft: {
         id: string,
@@ -13,16 +14,14 @@ interface IMatch {
     },
     vetos: { teamId: string, mapName: string, side: 'CT' | 'T' }[]
 }
-export default class Match extends Component<any, { teams: I.Team[] }> {
-    constructor(props: any) {
+export default class Match extends Component<{cxt: IContextData}, { }> {
+    constructor(props: {cxt: IContextData}) {
         super(props);
         this.state = {
-            teams: []
         }
     }
     async componentDidMount() {
-        const teams = await api.teams.get();
-        this.setState({ teams })
+        await this.props.cxt.reload();
     }
     render() {
         return (
@@ -43,29 +42,6 @@ export default class Match extends Component<any, { teams: I.Team[] }> {
                             </CustomInput>
                         </FormGroup>
                     </Col>
-                </Row>
-                <Row>
-                    <h4 className="text-center">Left team</h4>
-                    <FormGroup>
-                        <Label for="">Score</Label>
-                        <CustomInput
-                            type="select"
-                            id="left_score"
-                            name="left_score"
-                        >
-                            <option value="0">0</option>
-                            {this.state.teams.map(team => <option key={team._id} value={team._id}>{team.name}</option>)}
-                        </CustomInput>
-                    </FormGroup>
-                    <FormGroup>
-                        <Label for="left_team">Set team</Label>
-                        <CustomInput
-                            type="select"
-                            id="left_team"
-                            name="left_team"
-                        >
-                        </CustomInput>
-                    </FormGroup>
                 </Row>
                 <Row>
                     <Col md="5">
