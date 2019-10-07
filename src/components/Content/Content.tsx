@@ -1,6 +1,7 @@
 import React from 'react';
 import Navbar from './Navbar/Navbar';
 import Tabs from './Tabs/Tabs';
+import api from './../../api/api';
 
 export default class Content extends React.Component<{}, { activeTab: string }> {
     constructor(props: {}) {
@@ -10,6 +11,11 @@ export default class Content extends React.Component<{}, { activeTab: string }> 
         this.state = {
             activeTab: 'create_match'
         };
+    }
+
+    async componentDidMount(){
+        /*const teams = await api.teams.get();
+        console.log(teams);*/
     }
 
     toggle(tab: string) {

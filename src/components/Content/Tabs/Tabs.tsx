@@ -4,6 +4,7 @@ import Teams from "./Teams/Teams";
 import Players from "./Players/Players";
 import Match from "./Match/Match";
 import Huds from "./Huds/Huds";
+import Config from "./Config/Config";
 
 export default class Tabs extends React.Component<{ activeTab: string}> {
     render() {
@@ -20,6 +21,9 @@ export default class Tabs extends React.Component<{ activeTab: string}> {
                 </TabPane>
                 <TabPane tabId="huds" style={{ padding: '20px' }}>
                     <Huds></Huds>
+                </TabPane>
+                <TabPane tabId="config" style={{ padding: '20px' }}>
+                    <Config></Config>
                 </TabPane>
             </TabContent>
         );

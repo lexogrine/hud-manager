@@ -1,19 +1,20 @@
+
 export interface Player {
-    _id?: string,
+    _id: string,
     firstName: string,
     lastName: string,
     username: string,
     avatar: string,
     country: string,
     steamid: string
-}
+};
 
 export interface Team {
-    _id?: string,
+    _id: string,
     name: string,
-    shortName: string,
     country: string,
-    logo: string
+    shortName: string,
+    logo: string,
 };
 
 export interface Config {

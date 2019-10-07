@@ -5,7 +5,7 @@ import init from './server'
 let win: BrowserWindow | null;
 
 async function createMainWindow() {
-    const server = init();
+    const server = await init();
     directories.checkDirectories();
 
     win = new BrowserWindow({

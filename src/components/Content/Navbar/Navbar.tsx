@@ -33,6 +33,13 @@ export default class Navbar extends React.Component<{activeTab: string, toggle: 
                     >HUDS
                     </NavLink>
                 </NavItem>
+                <NavItem>
+                    <NavLink
+                        active={ this.props.activeTab === 'config' }
+                        onClick={() => { this.props.toggle('config'); }}
+                    >Config
+                    </NavLink>
+                </NavItem>
             </Nav>
         );
     }

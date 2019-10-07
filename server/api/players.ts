@@ -45,33 +45,38 @@ export const updatePlayer: express.RequestHandler = async (req, res) => {
         return res.sendStatus(404);
     }
 
-    const updated = {
+    const updated: Player = {
         firstName: req.body.firstName,
         lastName: req.body.lastName,
         username: req.body.username,
         avatar: req.body.avatar,
+        country: req.body.country,
+        steamid: req.body.steamid
     }
 
-    players.update({_id:req.params.id}, { $set:updated }, {}, err => {
+    players.update({_id:req.params.id}, { $set:updated }, {}, async err => {
         if(err){
             return res.sendStatus(500);
         }
-        return res.sendStatus(200);
+        const player = await getPlayerById(req.params.id);
+        return res.json(player);
 
     });
 }
 export const addPlayer: express.RequestHandler = (req, res) => {
-    const newPlayer = {
+    const newPlayer: Player = {
         firstName: req.body.firstName,
         lastName: req.body.lastName,
         username: req.body.username,
         avatar: req.body.avatar,
+        country: req.body.country,
+        steamid: req.body.steamid
     };
-    players.insert(newPlayer, err => {
+    players.insert(newPlayer, (err, player) => {
         if(err){
             return res.sendStatus(500);
         }
-        return res.sendStatus(200);
+        return res.json(player);
     });
 }
 export const deletePlayer: express.RequestHandler = async (req, res) => {

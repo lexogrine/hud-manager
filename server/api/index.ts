@@ -1,6 +1,7 @@
 import express from 'express';
 import * as players from './players';
 import * as teams from './teams';
+import * as config from './config';
 
 export default function (router: express.Router){
     router.route('/api/players')
@@ -13,12 +14,16 @@ export default function (router: express.Router){
         .delete(players.deletePlayer);
 
     router.route('/api/teams')
-        .get(teams.getTeam)
+        .get(teams.getTeams)
         .post(teams.addTeam);
     
-    router.route('/api/players/:id')
+    router.route('/api/teams/:id')
         .get(teams.getTeam)
         .patch(teams.updateTeam)
         .delete(teams.deleteTeam);
+
+    router.route('/api/config')
+        .get(config.getConfig)
+        .patch(config.updateConfig);
         
 }
