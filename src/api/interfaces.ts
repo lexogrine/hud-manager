@@ -36,3 +36,15 @@ export interface Config {
     "RightSecondary": "@KomodoAU on Twitter and Twitch",
     "GSIToken": "120987"*/
 }
+export interface Match {
+    left: {
+        id: string | null,
+        wins: number
+    },
+    right: {
+        id: string | null,
+        wins: number
+    },
+    matchType: 'bo1' | 'bo2' | 'bo3' | 'bo5',
+    vetos: { teamId: string, mapName: string, side: 'CT' | 'T' }[]
+}

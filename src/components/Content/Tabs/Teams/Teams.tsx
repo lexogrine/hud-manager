@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Form, FormGroup, Label, Input, Row, Col, CustomInput } from 'reactstrap';
+import { Button, Form, FormGroup, Label, Input, Row, Col, CustomInput, FormText } from 'reactstrap';
 import countryList from 'react-select-country-list';
 import api from './../../../../api/api';
 import * as I from './../../../../api/interfaces';
@@ -49,10 +49,22 @@ export default class Teams extends React.Component<{cxt: IContextData}, {options
 
     changeHandler = (event: any) => {
         const name: 'name' | 'shortName' | 'logo' | 'country' = event.target.name;
-        const { form } = this.state;
+        const { form }: any = this.state;
+        if(!event.target.files){
+            form[name] = event.target.value;
+            return this.setState({form});
+        }
+        let reader: any = new FileReader();
+        let file = event.target.files[0];
+        if(!file.type.startsWith("image")){
+            return;
+        }
+        reader.readAsDataURL(file);
+        reader.onload = () => {
+            form.logo = reader.result.replace(/^data:([a-z]+)\/([a-z0-9]+);base64,/, '');
+            this.setState({form})
+        }
    
-        form[name] = event.target.value;
-        this.setState({form});
        // this.setState({ value })
     }
 
@@ -119,7 +131,11 @@ export default class Teams extends React.Component<{cxt: IContextData}, {options
                     <Col md="6">
                         <FormGroup>
                             <Label for="team_logo">Logo</Label>
-                            <Input type="file" name="team_logo" id="team_logo" />
+                            <Input type="file" name="logo" id="team_logo" onChange={this.changeHandler} />
+                            <FormText color="muted">
+                                This is some placeholder block-level help text for the above input.
+                                It's a bit lighter and easily wraps to a new line.
+                            </FormText>
                         </FormGroup>
                     </Col>
                 </Row>

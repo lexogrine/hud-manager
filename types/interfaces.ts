@@ -16,6 +16,19 @@ export interface Team {
     logo: string
 };
 
+export interface Match {
+    left: {
+        id: string | null,
+        wins: number
+    },
+    right: {
+        id: string | null,
+        wins: number
+    },
+    matchType: 'bo1' | 'bo2' | 'bo3' | 'bo5',
+    vetos: { teamId: string, mapName: string, side: 'CT' | 'T' }[]
+}
+
 export interface Config {
     port: number,
     steamApiKey: string,

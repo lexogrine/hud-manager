@@ -94,3 +94,19 @@ export const deletePlayer: express.RequestHandler = async (req, res) => {
         return res.sendStatus(n ? 200 : 404);
     });
 }
+
+export const getAvatarFile: express.RequestHandler = async (req, res) => {
+    if(!req.params.id){
+        return res.sendStatus(422);
+    }
+    const team = await getPlayerById(req.params.id);
+    if(!team || !team.avatar.length){
+        return res.sendStatus(404);
+    }
+    const imgBuffer = Buffer.from(team.avatar, 'base64');
+    res.writeHead(200, {
+        'Content-Type': 'image/png',
+        'Content-Length': imgBuffer.length
+    });
+    res.end(imgBuffer);
+}

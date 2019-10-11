@@ -91,3 +91,19 @@ export const deleteTeam: express.RequestHandler = async (req, res) => {
         return res.sendStatus(n ? 200 : 404);
     });
 }
+
+export const getLogoFile: express.RequestHandler = async (req, res) => {
+    if(!req.params.id){
+        return res.sendStatus(422);
+    }
+    const team = await getTeamById(req.params.id);
+    if(!team || !team.logo.length){
+        return res.sendStatus(404);
+    }
+    const imgBuffer = Buffer.from(team.logo, 'base64');
+    res.writeHead(200, {
+        'Content-Type': 'image/png',
+        'Content-Length': imgBuffer.length
+    });
+    res.end(imgBuffer);
+}

@@ -18,6 +18,5 @@ export default async function init(port?: number){
     app.use(cors({origin:"*", credentials: true}));
 
     router(app);
-
     return server.listen(config.port || 1337);
 }

@@ -26,7 +26,7 @@ export default class Tabs extends React.Component<{ activeTab: string}> {
                                 <TabPane tabId="huds" style={{ padding: '20px' }}>
                                     <Huds cxt={data}></Huds>
                                 </TabPane>
-                                <TabPane tabId="config" style={{ padding: '20px' }}>q
+                                <TabPane tabId="config" style={{ padding: '20px' }}>
                                     <Config cxt={data}></Config>
                                 </TabPane>
                             </TabContent>
