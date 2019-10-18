@@ -51,6 +51,11 @@ export default {
         get: async (): Promise<I.Config> => await apiV2('config'),
         update: async (config: I.Config) => await apiV2('config', 'PATCH', config)
     },
+    huds: {
+        get: async (): Promise<I.HUD[]> => await apiV2('huds'),
+        start: async (hudDir: string) => await apiV2(`huds/${hudDir}/start`, 'POST'),
+        close: async (hudDir: string) => await apiV2(`huds/${hudDir}/close`, 'POST'),
+    },
     match: {
         get: async (): Promise<I.Match> => await apiV2('match'),
         set: async (match: I.Match): Promise<I.Match> => apiV2('match', 'PATCH', match)

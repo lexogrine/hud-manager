@@ -3,6 +3,8 @@ import * as players from './players';
 import * as teams from './teams';
 import * as match from './match';
 import * as config from './config';
+import * as huds from './huds';
+import * as path from 'path';
 
 export default function (router: express.Router){
     router.route('/api/players')
@@ -36,5 +38,35 @@ export default function (router: express.Router){
     router.route('/api/match')
         .get(match.getMatch)
         .patch(match.setMatch);
+
+    router.route('/api/huds')
+        .get(huds.getHUDs);
+
+    router.route('/api/huds/close')
+        .post(huds.closeHUD);
+
+    router.route('/api/huds/:hudDir/start')
+        .post(huds.showHUD);
+
+    router.route('/huds/:dir')
+        .get(huds.render);
+
+
+
+
+    /**
+     * LEGACY ROUTING
+     */
+    router.route('/legacy/:hudName/index.js')
+        .get(huds.legacyJS);
+
+    router.route('/legacy/:hudName/style.css')
+        .get(huds.legacyCSS);
+
+    router.use('/', express.static(path.join(__dirname, '../static/legacy')))
+
+    /**
+     * END OF LEGACY ROUTING
+     */
         
 }

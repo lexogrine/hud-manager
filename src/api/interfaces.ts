@@ -17,6 +17,14 @@ export interface Team {
     logo: string,
 };
 
+export interface HUD {
+    name: string,
+    version: string,
+    author: string,
+    legacy: boolean,
+    dir: string
+}
+
 export interface Config {
     port: number,
     steamApiKey: string,

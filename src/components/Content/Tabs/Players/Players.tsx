@@ -83,7 +83,7 @@ export default class Players extends React.Component<{cxt: IContextData}, {optio
         return (
             <Form>
                 <FormGroup>
-                    <Label for="players">Players already exists</Label>
+                    <Label for="players">Players</Label>
                     <Input type="select" name="players" id="players" onChange={this.setPlayer}>
                         <option value={"empty"}>Empty team</option>
                         {this.props.cxt.players.map(player => <option key={player._id} value={player._id}>{player.firstName} {player.username} {player.lastName}</option>)}

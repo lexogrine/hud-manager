@@ -7,3 +7,16 @@
 img.smallLogo {
     max-height:64px;
 }
+.hudRow{
+    background-color: #ffffff5c;
+    margin-top: 10px;
+    padding: 15px;
+    border-radius: 18px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+}
+.hudVersion {
+    font-size:12px;
+}
+.centered i:hover{
+    cursor: pointer;
+}

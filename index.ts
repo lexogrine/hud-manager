@@ -28,12 +28,14 @@ async function createMainWindow() {
 
     // win.setMenu(null);
     win.setMenuBarVisibility(false);
-
     win.loadURL("http://localhost:3000/");
     win.on("close", () => {
         server.close();
+        //const windows = win.getChildWindows();
+        //windows.map(window => window.close());
         win = null;
         app.quit();
+
     });
 }
 if (app) {
