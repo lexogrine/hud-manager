@@ -35,7 +35,7 @@ export const getHUDData = (dirName: string) => {
     }
 }
 
-export const render: express.RequestHandler = (req, res) => {
+export const renderHUD: express.RequestHandler = (req, res) => {
     if(!req.params.dir){
         return res.sendStatus(404);
     }
@@ -46,8 +46,33 @@ export const render: express.RequestHandler = (req, res) => {
     if(data.legacy){
         return renderLegacy(req, res, null);
     }
-    return res.sendStatus(422);
+    return render(req, res, null);
 }
+
+export const render: express.RequestHandler = (req, res) => {
+    const dir = path.join(app.getPath('home'), 'HUDs', req.params.dir);
+    return res.sendFile(path.join(dir, 'index.html'))
+}
+
+export const renderAssets: express.RequestHandler = (req, res, next) => {
+    if(!req.params.dir){
+        return res.sendStatus(404);
+    }
+    const data = getHUDData(req.params.dir);
+    if(!data){
+        return res.sendStatus(404);
+    }
+    return express.static(path.join(app.getPath('home'), 'HUDs', req.params.dir))(req, res,next);
+}
+
+
+
+
+
+
+
+
+
 
 export const renderLegacy: express.RequestHandler = (req, res) => {
     const dir = path.join(app.getPath('home'), 'HUDs', req.params.dir);

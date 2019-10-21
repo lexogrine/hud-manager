@@ -1,4 +1,5 @@
 import express from 'express';
+import { app } from 'electron';
 import * as players from './players';
 import * as teams from './teams';
 import * as match from './match';
@@ -48,8 +49,10 @@ export default function (router: express.Router){
     router.route('/api/huds/:hudDir/start')
         .post(huds.showHUD);
 
-    router.route('/huds/:dir')
-        .get(huds.render);
+    router.route('/huds/:dir/')
+        .get(huds.renderHUD);
+    
+    router.use('/huds/:dir/', huds.renderAssets);
 
 
 
