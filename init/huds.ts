@@ -44,7 +44,7 @@ class HUD {
         this.current = hudWindow;
 
         hudWindow.once('ready-to-show', hudWindow.show);
-        hudWindow.loadURL(`http://localhost:1337/huds/${hud.dir}`);
+        hudWindow.loadURL(`http://localhost:1337/huds/${hud.dir}/`);
 
         hudWindow.on('close', () => {
             this.current = null;
