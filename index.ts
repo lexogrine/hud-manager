@@ -1,5 +1,5 @@
 import { app, BrowserWindow } from "electron";
-
+import path from 'path';
 import * as directories from './init/directories';
 import init from './server'
 let win: BrowserWindow | null;
@@ -14,6 +14,7 @@ async function createMainWindow() {
         minWidth: 400,
         show: false,
         title: "HUD Manager",
+        icon: path.join(__dirname, 'assets/icon.png'),
         webPreferences: {
             backgroundThrottling: false,
         },

@@ -133,8 +133,7 @@ export default class Teams extends React.Component<{cxt: IContextData}, {options
                             <Label for="team_logo">Logo</Label>
                             <Input type="file" name="logo" id="team_logo" onChange={this.changeHandler} />
                             <FormText color="muted">
-                                This is some placeholder block-level help text for the above input.
-                                It's a bit lighter and easily wraps to a new line.
+                                Logo to be used for team, if possible in the given hud
                             </FormText>
                         </FormGroup>
                     </Col>

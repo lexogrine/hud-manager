@@ -17,6 +17,6 @@ img.smallLogo {
 .hudVersion {
     font-size:12px;
 }
-.centered i:hover{
+.centered i:hover, .hover-pointer:hover{
     cursor: pointer;
 }
