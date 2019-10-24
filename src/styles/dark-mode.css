@@ -1,0 +1,21 @@
+body{
+    background-color: #57038d;
+    color: #f4f4f4;
+}
+button.btn-primary:hover, button.btn-primary.disabled {
+    background-color: #a63b03;
+    border-color: #a63b03;
+}
+button.btn-primary {
+    background-color: #c44d10;
+    border-color: #c44d10;
+}
+.card {
+    background-color:#6b00af;
+}
+.veto-container.empty .veto-title {
+    color: #f4f4f4;
+}
+.hudRow {
+    background-color: #0000005c;
+}

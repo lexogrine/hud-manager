@@ -1,3 +1,5 @@
+import { FinalScore } from 'csgogsi';
+
 export interface Player {
     _id?: string,
     firstName: string,
@@ -26,7 +28,7 @@ export interface Match {
         wins: number
     },
     matchType: 'bo1' | 'bo2' | 'bo3' | 'bo5',
-    vetos: { teamId: string, mapName: string, side: 'CT' | 'T' }[]
+    vetos: { teamId: string, mapName: string, side: 'CT' | 'T', type: 'ban' | 'pick', score?: FinalScore }[]
 }
 
 export interface Config {

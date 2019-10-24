@@ -4,18 +4,19 @@ import config from './../../../../api/config';
 import * as I from './../../../../api/interfaces';
 import { Form, FormGroup, Col, Row, Label, CustomInput, Card, CardImg, CardText, CardBody, CardTitle, CardSubtitle, Button } from 'reactstrap';
 import TeamModal from './SetTeamModal';
+import SingleVeto from './SingleVeto';
 
 import { IContextData } from '../../../Context';
 
 
-interface Props extends I.Match {
+interface State extends I.Match {
     logos: {
         left: string | null,
         right: string | null
     }
     
 }
-export default class Match extends Component<{cxt: IContextData}, Props> {
+export default class Match extends Component<{cxt: IContextData}, State> {
     constructor(props: {cxt: IContextData}) {
         super(props);
         this.state = {
@@ -28,16 +29,29 @@ export default class Match extends Component<{cxt: IContextData}, Props> {
                 wins: 0
             },
             matchType: 'bo1',
-            vetos: [],
+            vetos: [{teamId: '', mapName: '', side: 'NO', type: 'pick'}],
             logos: {
                 left: null,
                 right: null
             }
         }
     }
-
+    vetoHandler = (name: string, map: number) => (event: any) => {
+        const { vetos }: any = this.state;
+        const veto = { teamId:'', mapName:'', side: 'NO', ...vetos[map]};
+        veto[name] = event.target.value;
+        if(veto.teamId === ""){
+            veto.mapName = "";
+        }
+        vetos[map] = veto;
+        this.setState({vetos});
+    }
     changeMatchType = (event: any) => {
-        this.setState({matchType: event.target.value});
+        const vetos: I.Veto[] = [];
+        for(let i = 0; i < 7; i++){
+            vetos.push({teamId: '', mapName: '', side: 'NO', type:'pick'});
+        }
+        this.setState({matchType: event.target.value, vetos});
     }
     getData = (side: 'right'|'left', id: string, wins: number) => {
         const { state } = this;
@@ -80,13 +94,19 @@ export default class Match extends Component<{cxt: IContextData}, Props> {
         await this.props.cxt.reload();
         const match = await api.match.get();
         const {state} = this;
+        
+        for(let i = 0; i < 7; i++){
+            if(!match.vetos[i]) match.vetos.push({teamId: '', mapName: '', side: 'NO', type:'pick'});
+        }
         this.setState({...state, ...match});
         
     }
+
     render() {
         this.checkLogos();
         let leftTeam = "No team";
         let rightTeam = "No team";
+
         if(this.state.left.id) {
             const filtered = this.props.cxt.teams.filter(team => team._id === this.state.left.id)[0];
             if(filtered){
@@ -103,6 +123,8 @@ export default class Match extends Component<{cxt: IContextData}, Props> {
                 this.setState({...this.state, ...{right:{id: null, wins: 0}}});
             }
         }
+
+        const teams = this.props.cxt.teams.filter(team => [this.state.left.id, this.state.right.id].includes(team._id));
         return (
             <Form>
                 <Row>
@@ -128,7 +150,7 @@ export default class Match extends Component<{cxt: IContextData}, Props> {
                     <Col md="5">
                         <Card>
                             <CardBody>
-                                <CardTitle>
+                                <CardTitle className="team-data">
                                     {this.state.logos.left ? <img src={`data:image/jpeg;base64,${this.state.logos.left}`} className='smallLogo' /> : ''}
                                     {leftTeam}
                                 </CardTitle>
@@ -150,7 +172,7 @@ export default class Match extends Component<{cxt: IContextData}, Props> {
                     <Col md="5">
                         <Card>
                             <CardBody>
-                                <CardTitle>
+                                <CardTitle className="team-data">
                                     {this.state.logos.right ? <img src={`data:image/jpeg;base64,${this.state.logos.right}`} className='smallLogo' /> : ''}
                                     {rightTeam}
                                 </CardTitle>
@@ -166,6 +188,9 @@ export default class Match extends Component<{cxt: IContextData}, Props> {
                             </CardBody>
                         </Card>
                     </Col>
+                </Row>
+                <Row>
+                    {this.state.vetos.map((veto, i) => <SingleVeto map={i} onSave={this.vetoHandler} veto={veto} teams={teams}/>)}
                 </Row>
                 <Row>
                     <Col>

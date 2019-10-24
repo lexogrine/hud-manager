@@ -20,6 +20,9 @@ export default function (router: express.Router){
     router.route('/api/players/avatar/:id')
         .get(players.getAvatarFile);
 
+    router.route('/api/players/avatar/steamid/:steamid')
+        .get(players.getAvatarURLBySteamID);
+
     router.route('/api/teams')
         .get(teams.getTeams)
         .post(teams.addTeam);

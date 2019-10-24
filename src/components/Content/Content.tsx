@@ -2,6 +2,7 @@ import React from 'react';
 import Navbar from './Navbar/Navbar';
 import Tabs from './Tabs/Tabs';
 import api from './../../api/api';
+import { Col } from 'reactstrap';
 
 export default class Content extends React.Component<{}, { activeTab: string }> {
     constructor(props: {}) {
@@ -30,7 +31,9 @@ export default class Content extends React.Component<{}, { activeTab: string }> 
         return (
             <div>
                 <Navbar activeTab={this.state.activeTab} toggle={this.toggle}/>
-                <Tabs activeTab={this.state.activeTab} />
+                <Col lg={{size:10, offset:1}}>
+                    <Tabs activeTab={this.state.activeTab} />
+                </Col>
             </div>
         );
     }

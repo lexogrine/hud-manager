@@ -5,7 +5,7 @@ import { Team } from '../../types/interfaces';
 const teams = db.teams;
 //const players = db.players;
 
-async function getTeamById(id: string): Promise<Team | null>{
+export async function getTeamById(id: string): Promise<Team | null>{
     return new Promise((res, rej) => {
         teams.findOne({_id:id}, (err, team) => {
             if(err){

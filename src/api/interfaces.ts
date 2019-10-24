@@ -1,3 +1,5 @@
+import {FinalScore} from 'csgogsi';
+
 
 export interface Player {
     _id: string,
@@ -44,6 +46,15 @@ export interface Config {
     "RightSecondary": "@KomodoAU on Twitter and Twitch",
     "GSIToken": "120987"*/
 }
+
+export interface Veto {
+    teamId: string,
+    mapName: string,
+    side: 'CT' | 'T' | 'NO',
+    type: 'ban' | 'pick',
+    score?: FinalScore
+}
+
 export interface Match {
     left: {
         id: string | null,
@@ -54,5 +65,5 @@ export interface Match {
         wins: number
     },
     matchType: 'bo1' | 'bo2' | 'bo3' | 'bo5',
-    vetos: { teamId: string, mapName: string, side: 'CT' | 'T' }[]
+    vetos: Veto[]
 }
