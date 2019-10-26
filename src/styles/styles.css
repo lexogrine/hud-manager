@@ -91,6 +91,8 @@ img.smallLogo {
     width:40%;
     margin-left:auto;
     margin-right:auto;
+    text-align: center;
+    color:white;
 }
 .veto-container.ban {
     background-color: #f42069;

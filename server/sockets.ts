@@ -2,7 +2,9 @@ import socketio from 'socket.io';
 import http from 'http';
 import express from 'express';
 import CSGOGSI from 'csgogsi';
-import { getMatchV2, updateMatch } from './api/match'
+import { getMatchV2, updateMatch } from './api/match';
+
+const mirv = require("./server").default;
 
 export const GSI = new CSGOGSI();
 
@@ -25,6 +27,10 @@ export default function (server: http.Server, app: express.Router) {
         });
 
     });
+
+    mirv(data => {
+        io.emit("update_mirv", data);
+    })
 
 
     GSI.on("matchEnd", score => {
