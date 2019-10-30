@@ -6,6 +6,8 @@ import * as match from './match';
 import * as config from './config';
 import * as huds from './huds';
 import * as path from 'path';
+import * as gsi from './gamestate';
+import * as csgo from './csgo';
 
 export default function (router: express.Router){
     router.route('/api/players')
@@ -52,10 +54,21 @@ export default function (router: express.Router){
     router.route('/api/huds/:hudDir/start')
         .post(huds.showHUD);
 
+    router.route('/api/gsi')
+        .get(gsi.checkGSIFile)
+        .put(gsi.createGSIFile);
+
+    router.route('/api/cfg')
+        .get(csgo.checkCFGs)
+        .put(csgo.createCFGs);
+
     router.route('/huds/:dir/')
         .get(huds.renderHUD);
     
     router.use('/huds/:dir/', huds.renderAssets);
+
+    router.route('/huds/:dir/thumbnail')
+        .get(huds.renderThumbnail);
 
 
 
@@ -70,6 +83,8 @@ export default function (router: express.Router){
         .get(huds.legacyCSS);
 
     router.use('/', express.static(path.join(__dirname, '../static/legacy')))
+
+
 
     /**
      * END OF LEGACY ROUTING

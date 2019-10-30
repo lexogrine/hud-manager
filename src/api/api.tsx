@@ -20,7 +20,7 @@ export async function apiV2(url: string, method = 'GET', body?: any) {
         options.body = JSON.stringify(body)
     }
     let data: any = null;
-    return fetch(`${apiUrl}api/${url}`, options)
+    return fetch(`${config.isDev ? apiUrl : '/'}api/${url}`, options)
         .then(res => {
             data = res;
             return res.json().catch(_e => data && data.status < 300)
@@ -50,6 +50,14 @@ export default {
     config: {
         get: async (): Promise<I.Config> => await apiV2('config'),
         update: async (config: I.Config) => await apiV2('config', 'PATCH', config)
+    },
+    cfgs: {
+        check: async (): Promise<I.CFGGSIResponse> => await apiV2('cfg'),
+        create: async (): Promise<I.CFGGSIResponse> => await apiV2('cfg', 'PUT')
+    },
+    gamestate: {
+        check: async (): Promise<I.CFGGSIResponse> => await apiV2('gsi'),
+        create: async (): Promise<I.CFGGSIResponse> => await apiV2('gsi', 'PUT')
     },
     huds: {
         get: async (): Promise<I.HUD[]> => await apiV2('huds'),

@@ -166,3 +166,34 @@ img.smallLogo {
 .main-header h2 {
     padding-left: 20px;
 }
+
+.config-container {
+    margin: 10px 10px;
+    padding: 20px 40px;
+    background-color:rgba(0,0,0,0.05);
+    border-radius:5px;
+    display: flex;
+    align-items: center;
+}
+.config-container .btn {
+    margin-left: auto;
+}
+.config-container.no-margin{
+    margin-left:0;
+    margin-right:0;
+}
+.fixed-toast {
+    position: fixed;
+    left:20px;
+    top:20px;
+}
+.fixed-toast .toast-body {
+    color:black;
+}
+.credits_name {
+    margin-left:30px;
+    font-weight: 600;
+}
+.credits_segment {
+    margin-bottom: 30px;
+}

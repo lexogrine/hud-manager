@@ -190,7 +190,7 @@ export default class Match extends Component<{cxt: IContextData}, State> {
                     </Col>
                 </Row>
                 <Row>
-                    {this.state.vetos.map((veto, i) => <SingleVeto map={i} onSave={this.vetoHandler} veto={veto} teams={teams}/>)}
+                    {this.state.vetos.map((veto, i) => <SingleVeto key={i} map={i} onSave={this.vetoHandler} veto={veto} teams={teams}/>)}
                 </Row>
                 <Row>
                     <Col>

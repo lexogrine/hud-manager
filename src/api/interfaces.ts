@@ -67,3 +67,9 @@ export interface Match {
     matchType: 'bo1' | 'bo2' | 'bo3' | 'bo5',
     vetos: Veto[]
 }
+
+
+export interface CFGGSIResponse {
+    success: boolean,
+    message?: string
+}

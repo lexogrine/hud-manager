@@ -1,6 +1,8 @@
 import { BrowserWindow, Tray, Menu, MenuItem } from "electron";
 import { getHUDData } from './../server/api/huds';
 import * as path from 'path';
+import ip from 'ip';
+import { loadConfig } from './../server/api/config';
 
 class HUD {
     current: BrowserWindow | null;
@@ -10,7 +12,7 @@ class HUD {
         this.tray = null;
     }
 
-    open(dirName: string){
+    async open(dirName: string){
         if(this.current !== null) return null;
         const hud = getHUDData(dirName);
         if(hud === null) return null;
@@ -42,9 +44,9 @@ class HUD {
         this.tray = tray;
 
         this.current = hudWindow;
-
+        const config = await loadConfig();
         hudWindow.once('ready-to-show', hudWindow.show);
-        hudWindow.loadURL(`http://localhost:1337/huds/${hud.dir}/`);
+        hudWindow.loadURL(`http://${ip.address()}:${config.port}/huds/${hud.dir}/?port=${config.port}&isProd=true`);
 
         hudWindow.on('close', () => {
             this.current = null;

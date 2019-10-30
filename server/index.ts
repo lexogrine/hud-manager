@@ -3,6 +3,7 @@ import sockets from './sockets';
 import http from 'http';
 import cors from 'cors';
 import router from './api';
+import path from 'path';
 import { loadConfig } from './api/config';
 
 export default async function init(port?: number){
@@ -31,5 +32,10 @@ export default async function init(port?: number){
     const io = sockets(server, app);
 
     router(app);
+
+    app.use('/',  express.static(path.join(__dirname, '../build')));
+    app.get('*', (_req: any, res: any)=>{
+        res.sendFile(path.join(__dirname, '../build/index.html'));
+    });
     return server.listen(config.port || 1337);
 }

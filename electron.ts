@@ -2,6 +2,11 @@ import { app, BrowserWindow } from "electron";
 import path from 'path';
 import * as directories from './init/directories';
 import init from './server'
+import { loadConfig } from './server/api/config';
+import url from 'url';
+
+const isDev = process.env.DEV === "true";
+
 let win: BrowserWindow | null;
 
 async function createMainWindow() {
@@ -28,8 +33,11 @@ async function createMainWindow() {
     });
 
     // win.setMenu(null);
+    const config = await loadConfig();
+
     win.setMenuBarVisibility(false);
-    win.loadURL("http://localhost:3000/");
+    const startUrl =`http://localhost:${config.port}/`;
+    win.loadURL(`${isDev ? `http://localhost:3000/?port=${config.port || 1337}` : startUrl}`);
     win.on("close", () => {
         server.close();
         //const windows = win.getChildWindows();

@@ -5,6 +5,7 @@ import Content from "../components/Content/Content";
 import { ContextData, IContextData } from './../components/Context';
 import * as I from './../api/interfaces';
 import api from './../api/api';
+import config from './../api/config';
 import io from 'socket.io-client';
 import logoWhite from './../styles/logo-white.png';
 
@@ -47,7 +48,7 @@ export default class Layout extends React.Component<any, {data: IContextData, lo
         }
     }
     componentDidMount(){
-        const socket = io.connect('http://localhost:1337');
+        const socket = io.connect(`${config.isDev ? config.apiAddress : '/'}`);
         socket.on('match', (d: any) => {
             this.loadMatch();
         });

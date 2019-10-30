@@ -5,6 +5,7 @@ import Players from "./Players/Players";
 import Match from "./Match/Match";
 import Huds from "./Huds/Huds";
 import Config from "./Config/Config";
+import Credits from "./Credits/Credits";
 import { ContextData } from './../../Context';
 
 export default class Tabs extends React.Component<{ activeTab: string}> {
@@ -28,6 +29,9 @@ export default class Tabs extends React.Component<{ activeTab: string}> {
                                 </TabPane>
                                 <TabPane tabId="config" style={{ padding: '20px' }}>
                                     <Config cxt={data}></Config>
+                                </TabPane>
+                                <TabPane tabId="credits" style={{ padding: '20px' }}>
+                                    <Credits></Credits>
                                 </TabPane>
                             </TabContent>
                 }

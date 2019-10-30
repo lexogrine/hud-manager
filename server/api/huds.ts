@@ -54,6 +54,15 @@ export const render: express.RequestHandler = (req, res) => {
     return res.sendFile(path.join(dir, 'index.html'))
 }
 
+export const renderThumbnail: express.RequestHandler = (req, res) => {
+    const thumbPath = path.join(app.getPath('home'), 'HUDs', req.params.dir, "thumb.png");
+    if(fs.existsSync(thumbPath)){
+        return res.sendFile(thumbPath);
+    }
+    return res.sendFile(path.join(__dirname, '../../assets/icon.png'));
+    
+}
+
 export const renderAssets: express.RequestHandler = (req, res, next) => {
     if(!req.params.dir){
         return res.sendStatus(404);
@@ -117,8 +126,8 @@ export const legacyCSS: express.RequestHandler = (req, res) => {
 
 }
 
-export const showHUD: express.RequestHandler = (req, res) => {
-    const response = HUDWindow.open(req.params.hudDir);
+export const showHUD: express.RequestHandler = async (req, res) => {
+    const response = await HUDWindow.open(req.params.hudDir);
     if(response){
         return res.sendStatus(200);
     }

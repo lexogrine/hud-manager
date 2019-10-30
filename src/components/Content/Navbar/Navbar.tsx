@@ -40,6 +40,13 @@ export default class Navbar extends React.Component<{activeTab: string, toggle: 
                     >Config
                     </NavLink>
                 </NavItem>
+                <NavItem className="hover-pointer">
+                    <NavLink
+                        active={ this.props.activeTab === 'credits' }
+                        onClick={() => { this.props.toggle('credits'); }}
+                    >Credits
+                    </NavLink>
+                </NavItem>
             </Nav>
         );
     }
