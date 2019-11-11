@@ -95,15 +95,18 @@ img.smallLogo {
     color:white;
 }
 .veto-container.ban {
-    background-color: #f42069;
+    border: 2px solid #f42069;
     color: white;
+    background-color:rgba(0,0,0,0.1);
 }
 .veto-container.pick {
-    background-color: #b4da55;
+    border: 2px solid #b4da55;
+    color: white;
+    background-color:rgba(0,0,0,0.1);
 }
 .veto-container .veto-desc span img {
     max-height:20px;
-    filter: drop-shadow(-1px 2.5px 2px rgba(0,0,0,0.5)) drop-shadow(1.5px -1.5px 2px rgba(0,0,0,0.5));
+    filter: drop-shadow(-1px 2.5px 2px rgba(0,0,0,0.3)) drop-shadow(1.5px -1.5px 2px rgba(0,0,0,0.3));
     margin-right:5px;
     margin-left:5px;
 }
@@ -196,4 +199,80 @@ img.smallLogo {
 }
 .credits_segment {
     margin-bottom: 30px;
+}
+.scoreboard_container {
+    display: flex;
+    flex-direction: column;
+}
+.scoreboard_container .scoreboard_player {
+    flex:1;
+    background-color: rgba(0,0,0,0.5);
+    height:40px;
+    padding:10px;
+    border-bottom:1px solid rgba(255,255,255,0.3);
+}
+.scoreboard_container .scoreboard_player .name, .scoreboard_container .scoreboard_player .steamid  {
+    display: flex;
+    align-items: center;
+}
+.scoreboard_container .scoreboard_player .name i{
+    font-size:11pt;
+    font-weight: 900;
+    margin-bottom:2px;
+}
+.scoreboard_container.left .scoreboard_player .name i {
+    margin-left: auto;}
+.scoreboard_container.right .scoreboard_player .name i {
+    
+    margin-right: auto;
+}
+.scoreboard_container .scoreboard_player .name i.saved{
+    color: green;
+}
+.scoreboard_container.right .scoreboard_player .name, .scoreboard_container.right .scoreboard_player .steamid {
+    display: flex;
+    flex-direction:row-reverse;
+}
+.scoreboard_container .scoreboard_player .steamid {
+    font-size:10pt;
+    color:grey;
+}
+
+
+/* MATCHES */
+.match_row {
+    display: flex;
+    flex-direction: column;
+    width:100%;
+    background-color: rgba(0,0,0,0.5);
+    padding:20px;
+    border-radius:10px;
+}
+.match_row .main_data {
+    display: flex;
+    flex-direction: row;
+    font-size:20pt;
+}
+.match_row .main_data .team {
+    display: flex;
+    flex:1;
+    flex-direction: row-reverse;
+}
+.match_row .main_data .team .score {
+    display: flex;
+    width:70px;
+    align-items: center;
+    justify-content: center;
+}
+.match_row .main_data .versus {
+    width: 50px;
+    text-align: center;
+}
+.match_row .main_data .right.team{
+    flex-direction: row;
+}
+.match_row .options {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }

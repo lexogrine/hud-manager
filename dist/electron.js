@@ -63,7 +63,7 @@ function createMainWindow() {
                     server = _a.sent();
                     directories.checkDirectories();
                     win = new electron_1.BrowserWindow({
-                        height: 720,
+                        height: 836,
                         minHeight: 600,
                         minWidth: 400,
                         show: false,

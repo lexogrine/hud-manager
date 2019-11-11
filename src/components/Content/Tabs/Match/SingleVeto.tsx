@@ -2,10 +2,12 @@ import React from 'react';
 import { Row, Col, Button } from 'reactstrap';
 import * as I from './../../../../api/interfaces';
 import VetoModal from './VetoModal'
+
 interface Props {
     map: number,
     veto: I.Veto,
     teams: I.Team[],
+    match: I.Match,
     onSave: (name: string, map: number) => void;
 }
 
@@ -34,8 +36,12 @@ class SingleVeto extends React.Component<Props> {
 	}
 	toggle = () => {
 		this.setState({ isOpen: !this.state.isOpen });
-	}
+    }
+    componentDidMount(){
+
+    }
     render() {
+        const match = this.props.match;
         const team = this.props.teams.filter(team => team._id === this.props.veto.teamId)[0];
         const secTeam = this.props.teams.filter(team => team._id !== this.props.veto.teamId)[0];
         const score = this.props.veto.score;
@@ -63,13 +69,13 @@ class SingleVeto extends React.Component<Props> {
                                         : '' }
                                     </div>
                                     { score ? <div className="score-container">
-                                        <div className={`left-team ${score.winner.orientation === "left" ? "winner" : "loser"}`}>
+                                        <div className={`left-team`}>
                                         <span className="team-name"><TeamLogoName team={team}/></span>
-                                            <span className="score">{score.winner.orientation === "left" ? score.winner.score+1 : score.loser.score}</span>
+                                            <span className="score">{match.left.id && score[match.left.id] || 0}</span>
                                         </div>
                                         <div style={{width:'20px', flex:'unset', display: 'flex', alignItems:'center', justifyContent:'center'}}>:</div>
-                                        <div className={`right-team ${score.winner.orientation === "right" ? "winner" : "loser"}`}>
-                                            <span className="score">{score.winner.orientation === "right" ? score.winner.score+1 : score.loser.score}</span>
+                                        <div className={`right-team`}>
+                                            <span className="score">{match.right.id && score[match.right.id] || 0}</span>
                                             <span className="team-name"><TeamLogoName team={secTeam} reversed/></span>
                                         </div>
                                     </div> : ''}

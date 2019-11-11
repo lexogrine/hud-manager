@@ -7,9 +7,9 @@ import { ContextData, IContextData } from './../../../../components/Context';
 import Tip from './../../../Tooltip';
 
 
-export default class Players extends React.Component<{cxt: IContextData}, {options: any[], value: string, form: I.Player}> {
+export default class Players extends React.Component<{cxt: IContextData, data: any}, {options: any[], value: string, form: I.Player, forceLoad: boolean}> {
     emptyPlayer: I.Player;
-    constructor(props: {cxt: IContextData}) {
+    constructor(props: {cxt: IContextData, data: any}) {
         super(props);
         this.emptyPlayer = {
             _id: "empty",
@@ -24,11 +24,27 @@ export default class Players extends React.Component<{cxt: IContextData}, {optio
             options: countryList().getData(),
             value: "",
             form: {...this.emptyPlayer},
+            forceLoad: false
         };
     }
 
     componentDidMount(){
         this.loadPlayers();
+    }
+
+
+    componentDidUpdate(pProps:any) {
+        if(this.props.data && this.props.data.steamid && !this.state.forceLoad){
+            this.setState({form: {...this.emptyPlayer, steamid:this.props.data.steamid}, forceLoad: true}, () => {
+                const player = this.props.cxt.players.filter(player => player.steamid === this.props.data.steamid)[0];
+                if(player) this.loadPlayer(player._id)
+            });
+        } else if(!this.props.data && pProps.data && pProps.data.steamid === this.state.form.steamid){
+            this.setState({form: {...this.emptyPlayer, steamid: ''}})
+        }
+        if(!this.props.data && this.state.forceLoad){
+            this.setState({forceLoad: false})
+        }
     }
 
     loadPlayers = async (id?: string) => {
@@ -85,7 +101,7 @@ export default class Players extends React.Component<{cxt: IContextData}, {optio
             <Form>
                 <FormGroup>
                     <Label for="players">Players</Label>
-                    <Input type="select" name="players" id="players" onChange={this.setPlayer}>
+                    <Input type="select" name="players" id="players" onChange={this.setPlayer} value={this.state.form._id}>
                         <option value={"empty"}>Empty player</option>
                         {this.props.cxt.players.map(player => <option key={player._id} value={player._id}>{player.firstName} {player.username} {player.lastName}</option>)}
                     </Input>

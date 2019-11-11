@@ -19,7 +19,7 @@ var huds = __importStar(require("./huds"));
 var path = __importStar(require("path"));
 var gsi = __importStar(require("./gamestate"));
 var csgo = __importStar(require("./csgo"));
-function default_1(router) {
+function default_1(router, io) {
     router.route('/api/players')
         .get(players.getPlayers)
         .post(players.addPlayer);
@@ -42,8 +42,8 @@ function default_1(router) {
         .get(config.getConfig)
         .patch(config.updateConfig);
     router.route('/api/match')
-        .get(match.getMatch)
-        .patch(match.setMatch);
+        .get(match.getMatches)
+        .patch(match.setMatch(io));
     router.route('/api/huds')
         .get(huds.getHUDs);
     router.route('/api/huds/close')

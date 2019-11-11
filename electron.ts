@@ -14,7 +14,7 @@ async function createMainWindow() {
     directories.checkDirectories();
 
     win = new BrowserWindow({
-        height: 720,
+        height: 836,
         minHeight: 600,
         minWidth: 400,
         show: false,

@@ -31,7 +31,7 @@ export default async function init(port?: number){
 
     const io = sockets(server, app);
 
-    router(app);
+    router(app, io);
 
     app.use('/',  express.static(path.join(__dirname, '../build')));
     app.get('*', (_req: any, res: any)=>{

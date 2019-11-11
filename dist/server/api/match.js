@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -38,72 +49,106 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 exports.__esModule = true;
 var sockets_1 = require("./../sockets");
 var teams_1 = require("./teams");
-exports.match = {
-    left: {
-        id: null,
-        wins: 0
-    },
-    right: {
-        id: null,
-        wins: 0
-    },
-    matchType: 'bo1',
-    vetos: []
+var testmatches = [{
+        id: 'a',
+        left: {
+            id: 'H427BFDoR9chqgwe',
+            wins: 0
+        },
+        right: {
+            id: 'XXH5JceBg3miQgBt',
+            wins: 0
+        },
+        current: true,
+        matchType: 'bo3',
+        vetos: [
+            { teamId: "H427BFDoR9chqgwe", mapName: "de_overpass", side: "CT", type: "pick", "mapEnd": false },
+            { teamId: '', mapName: '', side: 'NO', type: 'pick', mapEnd: false },
+            { teamId: '', mapName: '', side: 'NO', type: 'pick', mapEnd: false },
+            { teamId: '', mapName: '', side: 'NO', type: 'pick', mapEnd: false },
+            { teamId: '', mapName: '', side: 'NO', type: 'pick', mapEnd: false },
+            { teamId: '', mapName: '', side: 'NO', type: 'pick', mapEnd: false },
+            { teamId: '', mapName: '', side: 'NO', type: 'pick', mapEnd: false }
+        ]
+    }];
+var MatchManager = /** @class */ (function () {
+    function MatchManager() {
+        var _this = this;
+        var load = function () { return __awaiter(_this, void 0, void 0, function () {
+            var current, left, right;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        current = this.matches.filter(function (match) { return match.current; })[0];
+                        if (!current)
+                            return [2 /*return*/];
+                        return [4 /*yield*/, teams_1.getTeamById(current.left.id)];
+                    case 1:
+                        left = _a.sent();
+                        return [4 /*yield*/, teams_1.getTeamById(current.right.id)];
+                    case 2:
+                        right = _a.sent();
+                        if (left && left._id) {
+                            sockets_1.GSI.setTeamOne({ id: left._id, name: left.name, country: left.country, logo: left.logo, map_score: current.left.wins });
+                        }
+                        if (right && right._id) {
+                            sockets_1.GSI.setTeamTwo({ id: right._id, name: right.name, country: right.country, logo: right.logo, map_score: current.right.wins });
+                        }
+                        return [2 /*return*/];
+                }
+            });
+        }); };
+        this.matches = testmatches;
+        load();
+    }
+    MatchManager.prototype.set = function (matches) {
+        console.log(matches[0].vetos.filter(function (veto) { return veto.mapName.length; }));
+        this.matches = matches;
+    };
+    return MatchManager;
+}());
+var matchManager = new MatchManager();
+exports.getMatches = function (req, res) {
+    return res.json(matchManager.matches);
 };
-exports.getMatch = function (req, res) {
-    return res.json(exports.match);
+exports.getMatchesV2 = function () {
+    return matchManager.matches;
 };
-exports.getMatchV2 = function () {
-    return exports.match;
-};
-exports.updateMatch = function (updateMatch) { return __awaiter(void 0, void 0, void 0, function () {
-    var left, right;
+exports.updateMatch = function (updateMatches) { return __awaiter(void 0, void 0, void 0, function () {
+    var currents, left, right;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
-                if (!updateMatch.left.id) return [3 /*break*/, 2];
-                return [4 /*yield*/, teams_1.getTeamById(updateMatch.left.id)];
+                currents = updateMatches.filter(function (match) { return match.current; });
+                if (currents.length > 1) {
+                    matchManager.set(updateMatches.map(function (match) { return (__assign(__assign({}, match), { current: false })); }));
+                    return [2 /*return*/];
+                }
+                return [4 /*yield*/, teams_1.getTeamById(currents[0].left.id)];
             case 1:
                 left = _a.sent();
-                if (left && left._id) {
-                    sockets_1.GSI.setTeamOne({ id: left._id, name: left.name, country: left.country, logo: left.logo, map_score: updateMatch.left.wins });
-                }
-                _a.label = 2;
+                return [4 /*yield*/, teams_1.getTeamById(currents[0].right.id)];
             case 2:
-                if (!updateMatch.right.id) return [3 /*break*/, 4];
-                return [4 /*yield*/, teams_1.getTeamById(updateMatch.right.id)];
-            case 3:
                 right = _a.sent();
-                if (right && right._id) {
-                    sockets_1.GSI.setTeamTwo({ id: right._id, name: right.name, country: right.country, logo: right.logo, map_score: updateMatch.right.wins });
+                if (left && left._id) {
+                    sockets_1.GSI.setTeamOne({ id: left._id, name: left.name, country: left.country, logo: left.logo, map_score: currents[0].left.wins });
                 }
-                _a.label = 4;
-            case 4:
-                exports.match.left = {
-                    id: updateMatch.left.id,
-                    wins: updateMatch.left.wins
-                };
-                exports.match.right = {
-                    id: updateMatch.right.id,
-                    wins: updateMatch.right.wins
-                };
-                exports.match.matchType = updateMatch.matchType;
-                exports.match.vetos = updateMatch.vetos;
+                if (right && right._id) {
+                    sockets_1.GSI.setTeamTwo({ id: right._id, name: right.name, country: right.country, logo: right.logo, map_score: currents[0].right.wins });
+                }
+                matchManager.set(updateMatches);
                 return [2 /*return*/];
         }
     });
 }); };
-exports.setMatch = function (req, res) {
-    /*match.left = {
-        id: req.body.left.id,
-        wins: req.body.left.wins
-    };
-    match.right = {
-        id: req.body.right.id,
-        wins: req.body.right.wins
-    };
-    match.matchType = req.body.matchType;
-    match.vetos = req.body.vetos;*/
-    exports.updateMatch(req.body);
-    return res.json(exports.match);
-};
+exports.setMatch = function (io) { return function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, exports.updateMatch(req.body)];
+            case 1:
+                _a.sent();
+                io.emit('match');
+                return [2 /*return*/, res.json(matchManager.matches)];
+        }
+    });
+}); }; };

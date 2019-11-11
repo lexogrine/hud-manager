@@ -5,10 +5,10 @@ import * as I from './../api/interfaces';
 export interface IContextData {
     teams: I.Team[],
     players: I.Player[],
-    match: I.Match | null,
+    matches: I.Match[],
     reload: Function
 }
 
-const defaultContext: IContextData = {teams:[], players:[], reload: ()=>{}, match: null}
+const defaultContext: IContextData = {teams:[], players:[], reload: ()=>{}, matches: []}
 
 export const ContextData = React.createContext(defaultContext);

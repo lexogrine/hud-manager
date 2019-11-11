@@ -7,6 +7,7 @@ import TeamModal from './SetTeamModal';
 import SingleVeto from './SingleVeto';
 
 import { IContextData } from '../../../Context';
+import { socket } from './../Live/Live';
 
 
 interface State extends I.Match {
@@ -16,26 +17,35 @@ interface State extends I.Match {
     }
     
 }
-export default class Match extends Component<{cxt: IContextData}, State> {
-    constructor(props: {cxt: IContextData}) {
+export default class MatchEdit extends Component<{cxt: IContextData, match?: I.Match, edit: Function}, I.Match> {
+    constructor(props: {cxt: IContextData, match?: I.Match, edit: Function}) {
         super(props);
-        this.state = {
-            left: {
-                id: 'empty',
-                wins: 0
-            },
-            right: {
-                id: 'empty',
-                wins: 0
-            },
-            matchType: 'bo1',
-            vetos: [{teamId: '', mapName: '', side: 'NO', type: 'pick'}],
-            logos: {
-                left: null,
-                right: null
+        this.state =  this.props.match || {
+                id: '',
+                current: false,
+                left: {
+                    id: null,
+                    wins: 0
+                }, 
+                right: {
+                    id: null,
+                    wins: 0
+                },
+                matchType: 'bo3',
+                vetos:[
+                    {teamId: '', mapName: '', side: 'NO', type:'pick', mapEnd: false,},
+                    {teamId: '', mapName: '', side: 'NO', type:'pick', mapEnd: false,},
+                    {teamId: '', mapName: '', side: 'NO', type:'pick', mapEnd: false,},
+                    {teamId: '', mapName: '', side: 'NO', type:'pick', mapEnd: false,},
+                    {teamId: '', mapName: '', side: 'NO', type:'pick', mapEnd: false,},
+                    {teamId: '', mapName: '', side: 'NO', type:'pick', mapEnd: false,},
+                    {teamId: '', mapName: '', side: 'NO', type:'pick', mapEnd: false,}
+                ]
             }
-        }
+
+        
     }
+    
     vetoHandler = (name: string, map: number) => (event: any) => {
         const { vetos }: any = this.state;
         const veto = { teamId:'', mapName:'', side: 'NO', ...vetos[map]};
@@ -49,7 +59,7 @@ export default class Match extends Component<{cxt: IContextData}, State> {
     changeMatchType = (event: any) => {
         const vetos: I.Veto[] = [];
         for(let i = 0; i < 7; i++){
-            vetos.push({teamId: '', mapName: '', side: 'NO', type:'pick'});
+            vetos.push({teamId: '', mapName: '', side: 'NO', type:'pick', mapEnd: false});
         }
         this.setState({matchType: event.target.value, vetos});
     }
@@ -58,73 +68,39 @@ export default class Match extends Component<{cxt: IContextData}, State> {
         state[side].id = id;
         state[side].wins = wins;
         this.setState(state);
-        api.files.imgToBase64(`${config.apiAddress}api/teams/logo/${id}`).then(graphic => {
+        /*api.files.imgToBase64(`${config.apiAddress}api/teams/logo/${id}`).then(graphic => {
             if(!graphic){
                 return;
             }
             const { logos } = this.state;
             logos[side] = graphic;
             this.setState({logos});
-        });
+        });*/
     }
 
     save = async () => {
         const form = {...this.state};
-        const response = await api.match.set(form);
-    }
-    checkLogos = () => {
-        const sides: ['left','right'] = ['left', 'right']
-        sides.forEach(side => {
-            if(!this.state[side].id){
-                return;
-            }
-            api.files.imgToBase64(`${config.apiAddress}api/teams/logo/${this.state[side].id}`).then(graphic => {
-                if(!graphic){
-                    return;
-                }
-                if(this.state.logos[side] !== graphic){
-                    const { logos } = this.state;
-                    logos[side] = graphic;
-                    this.setState({logos});
-                }
-            });
-        })
+        if(form.id.length){
+            this.props.edit(form.id, form);
+        }
+        //const response = await api.match.set(form);
     }
     async componentDidMount() {
-        await this.props.cxt.reload();
-        const match = await api.match.get();
-        const {state} = this;
-        
-        for(let i = 0; i < 7; i++){
-            if(!match.vetos[i]) match.vetos.push({teamId: '', mapName: '', side: 'NO', type:'pick'});
-        }
-        this.setState({...state, ...match});
-        
+        if(!this.state.id.length) return;
+        socket.on('match', async ()  => {
+            const matches = await api.match.get();
+            const current = matches.filter(match => match.id === this.state.id)[0];
+            if(!current) return;
+            this.setState({vetos: current.vetos});
+        })
     }
 
     render() {
-        this.checkLogos();
-        let leftTeam = "No team";
-        let rightTeam = "No team";
-
-        if(this.state.left.id) {
-            const filtered = this.props.cxt.teams.filter(team => team._id === this.state.left.id)[0];
-            if(filtered){
-                leftTeam = filtered.name;
-            } else {
-                this.setState({...this.state, ...{left:{id: null, wins: 0}}});
-            }
-        }
-        if(this.state.right.id) {
-            const filtered = this.props.cxt.teams.filter(team => team._id === this.state.right.id)[0];
-            if(filtered){
-                rightTeam = filtered.name;
-            } else {
-                this.setState({...this.state, ...{right:{id: null, wins: 0}}});
-            }
-        }
-
-        const teams = this.props.cxt.teams.filter(team => [this.state.left.id, this.state.right.id].includes(team._id));
+        const { match, cxt } = this.props;
+        const teams = cxt.teams.filter(team => [this.state.left.id, this.state.right.id].includes(team._id));
+        const leftTeam = match && teams.filter(team => team._id === match.left.id)[0];
+        const rightTeam = match && teams.filter(team => team._id === match.right.id)[0];
+        
         return (
             <Form>
                 <Row>
@@ -151,15 +127,15 @@ export default class Match extends Component<{cxt: IContextData}, State> {
                         <Card>
                             <CardBody>
                                 <CardTitle className="team-data">
-                                    {this.state.logos.left ? <img src={`data:image/jpeg;base64,${this.state.logos.left}`} className='smallLogo' /> : ''}
-                                    {leftTeam}
+                                    {leftTeam && leftTeam.logo ? <img src={`data:image/jpeg;base64,${leftTeam.logo}`} className='smallLogo' /> : ''}
+                                    {leftTeam && leftTeam.name || "Team One"}
                                 </CardTitle>
                                 <CardSubtitle>Won {this.state.left.wins} maps</CardSubtitle>
                                 <TeamModal
                                     button={<Button>SET</Button>}
                                     side='left'
                                     team={this.state.left}
-                                    teams={this.props.cxt.teams}
+                                    teams={cxt.teams}
                                     matchType={this.state.matchType}
                                     onSave={this.getData}
                                 />
@@ -173,15 +149,15 @@ export default class Match extends Component<{cxt: IContextData}, State> {
                         <Card>
                             <CardBody>
                                 <CardTitle className="team-data">
-                                    {this.state.logos.right ? <img src={`data:image/jpeg;base64,${this.state.logos.right}`} className='smallLogo' /> : ''}
-                                    {rightTeam}
+                                    {rightTeam && rightTeam.logo ? <img src={`data:image/jpeg;base64,${rightTeam.logo}`} className='smallLogo' /> : ''}
+                                    {rightTeam && rightTeam.name || "Team Two"}
                                 </CardTitle>
                                 <CardSubtitle>Won {this.state.right.wins} maps</CardSubtitle>
                                 <TeamModal
                                     button={<Button>SET</Button>}
                                     side='right'
                                     team={this.state.right}
-                                    teams={this.props.cxt.teams}
+                                    teams={cxt.teams}
                                     matchType={this.state.matchType}
                                     onSave={this.getData}
                                 />
@@ -190,7 +166,7 @@ export default class Match extends Component<{cxt: IContextData}, State> {
                     </Col>
                 </Row>
                 <Row>
-                    {this.state.vetos.map((veto, i) => <SingleVeto key={i} map={i} onSave={this.vetoHandler} veto={veto} teams={teams}/>)}
+                    {this.state.vetos.map((veto, i) => <SingleVeto key={i} map={i} onSave={this.vetoHandler} veto={veto} teams={teams} match={this.state}/>)}
                 </Row>
                 <Row>
                     <Col>

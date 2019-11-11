@@ -65,8 +65,8 @@ export default {
         close: async (hudDir: string) => await apiV2(`huds/${hudDir}/close`, 'POST'),
     },
     match: {
-        get: async (): Promise<I.Match> => await apiV2('match'),
-        set: async (match: I.Match): Promise<I.Match> => apiV2('match', 'PATCH', match)
+        get: async (): Promise<I.Match[]> => await apiV2('match'),
+        set: async (match: I.Match[]): Promise<I.Match[]> => apiV2('match', 'PATCH', match)
     },
     files: {
         imgToBase64: async (url: string) => {

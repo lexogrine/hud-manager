@@ -9,6 +9,7 @@ import config from './../api/config';
 import io from 'socket.io-client';
 import logoWhite from './../styles/logo-white.png';
 
+import { socket } from './../components/Content/Tabs/Live/Live';
 class LoadingScreen extends React.Component {
     render(){
         return <div className="loading-screen">
@@ -26,18 +27,7 @@ export default class Layout extends React.Component<any, {data: IContextData, lo
             data:{
                 teams: [],
                 players: [],
-                match: {
-                    left: {
-                        id: 'empty',
-                        wins: 0
-                    },
-                    right: {
-                        id: 'empty',
-                        wins: 0
-                    },
-                    matchType: 'bo1',
-                    vetos: []
-                },
+                matches: [],
                 reload: async () => new Promise(async (res, rej) => {
                      await this.loadPlayers();
                      await this.loadTeams();
@@ -48,9 +38,9 @@ export default class Layout extends React.Component<any, {data: IContextData, lo
         }
     }
     componentDidMount(){
-        const socket = io.connect(`${config.isDev ? config.apiAddress : '/'}`);
-        socket.on('match', (d: any) => {
-            this.loadMatch();
+        //const socket = io.connect(`${config.isDev ? config.apiAddress : '/'}`);
+        socket.on('match', (fromVeto?: boolean) => {
+            if(fromVeto) this.loadMatch();
         });
     }
     loadTeams = async () => {
@@ -70,10 +60,10 @@ export default class Layout extends React.Component<any, {data: IContextData, lo
         }
     }
     loadMatch = async () => {
-        const match = await api.match.get();
+        const matches = await api.match.get();
         const { data } = this.state;
-        data.match = match;
-        if(match){
+        data.matches = matches;
+        if(matches){
             this.setState({data}, () => {
                 if(!this.state.loaded){
                     this.setState({loaded: true});

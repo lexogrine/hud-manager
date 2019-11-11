@@ -1,6 +1,3 @@
-import {FinalScore} from 'csgogsi';
-
-
 export interface Player {
     _id: string,
     firstName: string,
@@ -52,10 +49,17 @@ export interface Veto {
     mapName: string,
     side: 'CT' | 'T' | 'NO',
     type: 'ban' | 'pick',
-    score?: FinalScore
+    reversed?:boolean,
+    score?: {
+        [key: string]: number
+    },
+    winner?: string,
+    mapEnd: boolean
 }
 
 export interface Match {
+    id: string,
+    current: boolean,
     left: {
         id: string | null,
         wins: number

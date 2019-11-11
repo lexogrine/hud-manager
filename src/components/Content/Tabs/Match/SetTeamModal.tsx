@@ -14,7 +14,7 @@ interface Props {
 
 interface State {
   form: {
-    team: string,
+    id: string,
     wins: 0
   }
 }
@@ -27,19 +27,15 @@ class SetTeamModal extends React.Component<Props, State> {
     }
   }
   save = () => {
-    if(this.state.form.team === "empty"){
+    if(this.state.form.id === "empty"){
       this.props.onSave(this.props.side, null, this.state.form.wins);
       this.props.toggle();
       return;
     }
-    this.props.onSave(this.props.side, this.state.form.team, this.state.form.wins);
+    this.props.onSave(this.props.side, this.state.form.id, this.state.form.wins);
     this.props.toggle();
 
   }
-
-  /*componentDidUpdate(){
-    if(JSON.stringify(this.s))
-  }*/
 
   changeHandler = (name: string) => (event: any) => {
       const { form }: any = this.state;
@@ -47,14 +43,13 @@ class SetTeamModal extends React.Component<Props, State> {
       this.setState({form});
   }
   render() {
-
     return (
       <Modal isOpen={this.props.isOpen} toggle={this.props.toggle} className={'this.props.className'}>
         <ModalHeader toggle={this.props.toggle}>TEAM #{this.props.side === "left" ? 1 : 2}</ModalHeader>
         <ModalBody>
           <FormGroup>
             <Label for="players">Team</Label>
-            <Input type="select" name="teams" id="teams" value={this.state.form.team} onChange={this.changeHandler('team')}>
+            <Input type="select" name="teams" id="teams" value={this.state.form.id} onChange={this.changeHandler('id')}>
               <option value={"empty"}>Empty team</option>
               {this.props.teams.map(teams => <option key={teams._id} value={teams._id}>{teams.name}</option>)}
             </Input>

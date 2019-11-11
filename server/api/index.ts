@@ -1,5 +1,6 @@
 import express from 'express';
 import { app } from 'electron';
+import socketio from 'socket.io';
 import * as players from './players';
 import * as teams from './teams';
 import * as match from './match';
@@ -9,7 +10,7 @@ import * as path from 'path';
 import * as gsi from './gamestate';
 import * as csgo from './csgo';
 
-export default function (router: express.Router){
+export default function (router: express.Router, io: socketio.Server){
     router.route('/api/players')
         .get(players.getPlayers)
         .post(players.addPlayer);
@@ -42,8 +43,8 @@ export default function (router: express.Router){
         .patch(config.updateConfig);
 
     router.route('/api/match')
-        .get(match.getMatch)
-        .patch(match.setMatch);
+        .get(match.getMatches)
+        .patch(match.setMatch(io));
 
     router.route('/api/huds')
         .get(huds.getHUDs);

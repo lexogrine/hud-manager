@@ -4,13 +4,14 @@ import Tabs from './Tabs/Tabs';
 import api from './../../api/api';
 import { Col } from 'reactstrap';
 
-export default class Content extends React.Component<{}, { activeTab: string }> {
+export default class Content extends React.Component<{}, { activeTab: string, data: any }> {
     constructor(props: {}) {
         super(props);
 
         this.toggle = this.toggle.bind(this);
         this.state = {
-            activeTab: 'create_match'
+            activeTab: 'create_match',
+            data: null
         };
     }
 
@@ -19,10 +20,11 @@ export default class Content extends React.Component<{}, { activeTab: string }> 
         console.log(teams);*/
     }
 
-    toggle(tab: string) {
+    toggle(tab: string, data?: any) {
         if (this.state.activeTab !== tab) {
             this.setState({
-                activeTab: tab
+                activeTab: tab,
+                data: data || null
             });
         }
     }
@@ -32,7 +34,7 @@ export default class Content extends React.Component<{}, { activeTab: string }> 
             <div>
                 <Navbar activeTab={this.state.activeTab} toggle={this.toggle}/>
                 <Col lg={{size:10, offset:1}}>
-                    <Tabs activeTab={this.state.activeTab} />
+                    <Tabs activeTab={this.state.activeTab} data={this.state.data} toggle={this.toggle}/>
                 </Col>
             </div>
         );

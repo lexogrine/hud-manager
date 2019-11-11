@@ -2,7 +2,7 @@ import socketio from 'socket.io';
 import http from 'http';
 import express from 'express';
 import CSGOGSI from 'csgogsi';
-import { getMatchV2, updateMatch } from './api/match';
+import { getMatchesV2, updateMatch } from './api/match';
 
 const mirv = require("./server").default;
 
@@ -30,22 +30,56 @@ export default function (server: http.Server, app: express.Router) {
 
     mirv(data => {
         io.emit("update_mirv", data);
-    })
+    });
 
-
-    GSI.on("matchEnd", score => {
-        const match = getMatchV2();
-        const {vetos} = match;
-        vetos.map(veto => {
-            if (veto.mapName !== score.map.name) {
+    GSI.on("roundEnd", score => {
+        const matches = getMatchesV2();
+        const match = matches.filter(match => match.current)[0];
+        if(match){
+            const {vetos} = match;
+            vetos.map(veto => {
+                if (veto.mapName !== score.map.name || !score.map.team_ct.id || !score.map.team_t.id) {
+                    return veto;
+                }
+                if(!veto.score){
+                    veto.score = {};
+                }
+                veto.score[score.map.team_ct.id] = score.map.team_ct.score;
+                veto.score[score.map.team_t.id] = score.map.team_t.score;
                 return veto;
+            });
+            match.vetos = vetos;
+            //console.log(JSON.stringify(matches));
+            updateMatch(matches);
+            
+            //console.log(JSON.stringify(matches));
+            io.emit('match', true);
+        }
+    });
+
+    
+    GSI.on("matchEnd", async score => {
+        const matches = getMatchesV2();
+        const match = matches.filter(match => match.current)[0];
+        if(match){
+            const {vetos} = match;
+            vetos.map(veto => {
+                if (veto.mapName !== score.map.name || !score.map.team_ct.id || !score.map.team_t.id) {
+                    return veto;
+                }
+                veto.winner = score.map.team_ct.score > score.map.team_t.score ? score.map.team_ct.id :score.map.team_t.id;
+                veto.mapEnd = true;
+                return veto;
+            });
+            if(match.left.id === score.winner.id){
+                match.left.wins++;
+            } else if(match.right.id === score.winner.id){
+                match.right.wins++;
             }
-            veto.score = score;
-            return veto;
-        });
-        match.vetos = vetos;
-        updateMatch(match)
-        io.emit('match', true);
+            match.vetos = vetos;
+            await updateMatch(matches);
+            io.emit('match', true);
+        }
     });
 
     return io;

@@ -73,7 +73,7 @@ function init(port) {
                     });
                     app.use(cors_1["default"]({ origin: "*", credentials: true }));
                     io = sockets_1["default"](server, app);
-                    api_1["default"](app);
+                    api_1["default"](app, io);
                     app.use('/', express_1["default"].static(path_1["default"].join(__dirname, '../build')));
                     app.get('*', function (_req, res) {
                         res.sendFile(path_1["default"].join(__dirname, '../build/index.html'));

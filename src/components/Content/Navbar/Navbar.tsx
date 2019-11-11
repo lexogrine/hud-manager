@@ -35,6 +35,13 @@ export default class Navbar extends React.Component<{activeTab: string, toggle: 
                 </NavItem>
                 <NavItem className="hover-pointer">
                     <NavLink
+                        active={ this.props.activeTab === 'live' }
+                        onClick={() => { this.props.toggle('live'); }}
+                    >Live
+                    </NavLink>
+                </NavItem>
+                <NavItem className="hover-pointer">
+                    <NavLink
                         active={ this.props.activeTab === 'config' }
                         onClick={() => { this.props.toggle('config'); }}
                     >Config
