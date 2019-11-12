@@ -7,9 +7,11 @@ import { loadConfig } from './../server/api/config';
 class HUD {
     current: BrowserWindow | null;
     tray: Tray | null;
+    show: boolean;
     constructor(){
         this.current = null;
         this.tray = null;
+        this.show = true;
     }
 
     async open(dirName: string){
@@ -23,7 +25,6 @@ class HUD {
             resizable: false,
             alwaysOnTop: true,
             frame: false,
-            focusable:false,
             transparent: true,
             webPreferences: {
                 backgroundThrottling: false,
@@ -35,11 +36,14 @@ class HUD {
 
         tray.setToolTip('HUD Manager');
         tray.on('right-click', () => {
-            const rcMenu = new Menu();
-            const closeHUD = new MenuItem({label: 'Close HUD', click: () => this.close()});
-            rcMenu.append(closeHUD);
-            tray.popUpContextMenu(rcMenu);
-        })
+            const contextMenu = Menu.buildFromTemplate([
+                { label: hud.name, enabled: false },
+                { type: "separator" },
+                { label: 'Show', type: "checkbox", click: () => this.toggleVisibility(), checked:this.show },
+                { label: 'Close HUD', click: () => this.close() }
+            ]);
+            tray.popUpContextMenu(contextMenu);
+        });
 
         this.tray = tray;
 
@@ -50,16 +54,26 @@ class HUD {
 
         hudWindow.on('close', () => {
             this.current = null;
+            if(this.tray !== null){
+                this.tray.destroy();
+            }
         });
 
         return true;
     }
 
+    toggleVisibility(){
+        this.show = !this.show;
+        if(this.current){
+            this.current.setOpacity(this.show ? 1 : 0);
+        }
+    }
+
     close(){
-        if(this.current === null) return null;
         if(this.tray !== null){
             this.tray.destroy();
         }
+        if(this.current === null) return null;
 
         this.current.close();
         this.current = null;

@@ -55,6 +55,7 @@ var HUD = /** @class */ (function () {
     function HUD() {
         this.current = null;
         this.tray = null;
+        this.show = true;
     }
     HUD.prototype.open = function (dirName) {
         return __awaiter(this, void 0, void 0, function () {
@@ -75,7 +76,6 @@ var HUD = /** @class */ (function () {
                             resizable: false,
                             alwaysOnTop: true,
                             frame: false,
-                            focusable: false,
                             transparent: true,
                             webPreferences: {
                                 backgroundThrottling: false
@@ -85,10 +85,13 @@ var HUD = /** @class */ (function () {
                         tray = new electron_1.Tray(path.join(__dirname, 'favicon.ico'));
                         tray.setToolTip('HUD Manager');
                         tray.on('right-click', function () {
-                            var rcMenu = new electron_1.Menu();
-                            var closeHUD = new electron_1.MenuItem({ label: 'Close HUD', click: function () { return _this.close(); } });
-                            rcMenu.append(closeHUD);
-                            tray.popUpContextMenu(rcMenu);
+                            var contextMenu = electron_1.Menu.buildFromTemplate([
+                                { label: hud.name, enabled: false },
+                                { type: "separator" },
+                                { label: 'Show', type: "checkbox", click: function () { return _this.toggleVisibility(); }, checked: _this.show },
+                                { label: 'Close HUD', click: function () { return _this.close(); } }
+                            ]);
+                            tray.popUpContextMenu(contextMenu);
                         });
                         this.tray = tray;
                         this.current = hudWindow;
@@ -99,18 +102,27 @@ var HUD = /** @class */ (function () {
                         hudWindow.loadURL("http://" + ip_1["default"].address() + ":" + config.port + "/huds/" + hud.dir + "/?port=" + config.port + "&isProd=true");
                         hudWindow.on('close', function () {
                             _this.current = null;
+                            if (_this.tray !== null) {
+                                _this.tray.destroy();
+                            }
                         });
                         return [2 /*return*/, true];
                 }
             });
         });
     };
+    HUD.prototype.toggleVisibility = function () {
+        this.show = !this.show;
+        if (this.current) {
+            this.current.setOpacity(this.show ? 1 : 0);
+        }
+    };
     HUD.prototype.close = function () {
-        if (this.current === null)
-            return null;
         if (this.tray !== null) {
             this.tray.destroy();
         }
+        if (this.current === null)
+            return null;
         this.current.close();
         this.current = null;
         return true;
