@@ -23,7 +23,7 @@ export default class Navbar extends React.Component<{activeTab: string, toggle: 
                     <NavLink
                         active={ this.props.activeTab === 'create_match' }
                         onClick={() => { this.props.toggle('create_match'); }}
-                    >Create match
+                    >Create Match
                     </NavLink>
                 </NavItem>
                 <NavItem className="hover-pointer">

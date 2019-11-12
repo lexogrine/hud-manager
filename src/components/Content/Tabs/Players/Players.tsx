@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Form, FormGroup, Label, Input, Row, Col, CustomInput } from 'reactstrap';
+import { Button, Form, FormGroup, Label, Input, Row, Col, CustomInput, FormText } from 'reactstrap';
 import countryList from 'react-select-country-list';
 import api from './../../../../api/api';
 import * as I from './../../../../api/interfaces';
@@ -70,8 +70,21 @@ export default class Players extends React.Component<{cxt: IContextData, data: a
     changeHandler = (event: any) => {
         const name: 'steamid' | 'firstName' | 'lastName' | 'username' | 'avatar' | 'country' = event.target.name;
         const { form } = this.state;
-        form[name] = event.target.value;
-        this.setState({form});
+
+        if(!event.target.files){
+            form[name] = event.target.value;
+            return this.setState({form});
+        }
+        let reader: any = new FileReader();
+        let file = event.target.files[0];
+        if(!file.type.startsWith("image")){
+            return;
+        }
+        reader.readAsDataURL(file);
+        reader.onload = () => {
+            form.avatar = reader.result.replace(/^data:([a-z]+)\/([a-z0-9]+);base64,/, '');
+            this.setState({form})
+        }
        // this.setState({ value })
     }
 
@@ -109,7 +122,7 @@ export default class Players extends React.Component<{cxt: IContextData, data: a
                 <Row>
                     <Col md="4">
                         <FormGroup>
-                            <Label for="first_name">First name</Label>
+                            <Label for="first_name">First Name</Label>
                             <Input type="text" name="firstName" id="first_name" onChange={this.changeHandler} value={this.state.form.firstName}/>
                         </FormGroup>
                     </Col>
@@ -121,7 +134,7 @@ export default class Players extends React.Component<{cxt: IContextData, data: a
                     </Col>
                     <Col md="4">
                         <FormGroup>
-                            <Label for="last_name">Last name</Label>
+                            <Label for="last_name">Last Name</Label>
                             <Input type="text" name="lastName" id="last_name" onChange={this.changeHandler} value={this.state.form.lastName}/>
                         </FormGroup>
                     </Col>
@@ -145,6 +158,18 @@ export default class Players extends React.Component<{cxt: IContextData, data: a
                         <FormGroup>
                             <Label for="steamid">SteamID 64</Label>
                             <Input id="steamid" type="text" name="steamid" value={this.state.form.steamid} onChange={this.changeHandler} />
+                        </FormGroup>
+                    </Col>
+                </Row>
+                <Row>
+                    
+                    <Col md="6">
+                        <FormGroup>
+                            <Label for="avatar">Avatar</Label>
+                            <Input type="file" name="avatar" id="avatar" onChange={this.changeHandler} />
+                            <FormText color="muted">
+                                Avatar to be used for player images, instead of Steam's default
+                            </FormText>
                         </FormGroup>
                     </Col>
                 </Row>

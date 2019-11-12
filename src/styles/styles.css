@@ -276,3 +276,14 @@ img.smallLogo {
     justify-content: center;
     align-items: center;
 }
+
+a.nav-link.active:not([href]):not([tabindex]):focus, a.nav-link.active:not([href]):not([tabindex]):hover {
+    color: #57038d;
+}
+form .card > .card-body {
+    display: flex;
+    flex-direction: column;
+}
+form .card > .card-body > button.btn {
+    align-self: center;
+}

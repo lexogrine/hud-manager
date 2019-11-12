@@ -102,7 +102,6 @@ var MatchManager = /** @class */ (function () {
         load();
     }
     MatchManager.prototype.set = function (matches) {
-        console.log(matches[0].vetos.filter(function (veto) { return veto.mapName.length; }));
         this.matches = matches;
     };
     return MatchManager;

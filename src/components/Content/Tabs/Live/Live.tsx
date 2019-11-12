@@ -3,37 +3,37 @@ import api from './../../../../api/api';
 import * as I from './../../../../api/interfaces';
 import config from './../../../../api/config';
 import { Form, FormGroup, Col, Row, Label, CustomInput, Card, CardImg, CardText, CardBody, CardTitle, CardSubtitle, Button } from 'reactstrap';
-import CSGOGSI, {CSGO, Player, Team} from 'csgogsi-socket';
+import CSGOGSI, { CSGO, Player, Team } from 'csgogsi-socket';
 
 export const { GSI, socket } = CSGOGSI(`${config.isDev ? config.apiAddress : '/'}`, 'update')
 
-class Teamboard extends Component<{players: Player[], steamids: string[], team: Team, toggle: Function}> {
-    render(){
+class Teamboard extends Component<{ players: Player[], steamids: string[], team: Team, toggle: Function }> {
+    render() {
         const { steamids, toggle } = this.props;
         return (
-        <Col s={12} md={6}>
-            <div className={`scoreboard_container ${this.props.team.orientation}`}>
-                {this.props.players.map(player =>
-                    <div className="scoreboard_player" key={player.steamid} onClick={() => toggle('players', {steamid:player.steamid})}>
-                        <div className="name">{player.name} <i className="material-icons">{steamids.includes(player.steamid) ? 'check_circle_outline' : 'edit'}</i></div>
-                        <div className="steamid">{player.steamid}</div>
-                    </div>)}
-            </div>
-        </Col>)
+            <Col s={12} md={6}>
+                <div className={`scoreboard_container ${this.props.team.orientation}`}>
+                    {this.props.players.map(player =>
+                        <div className="scoreboard_player" key={player.steamid} onClick={() => toggle('players', { steamid: player.steamid })}>
+                            <div className="name">{player.name} <i className="material-icons">{steamids.includes(player.steamid) ? 'check_circle_outline' : 'edit'}</i></div>
+                            <div className="steamid">{player.steamid}</div>
+                        </div>)}
+                </div>
+            </Col>)
     }
 }
 
-export default class Match extends Component<any, {game: CSGO | null, steamids: string[]}> {
-    constructor(props: any){
+export default class Match extends Component<any, { game: CSGO | null, steamids: string[] }> {
+    constructor(props: any) {
         super(props);
         this.state = {
             game: null,
             steamids: []
         }
     }
-    async componentDidMount(){
+    async componentDidMount() {
         GSI.on('data', game => {
-            this.setState({game});
+            this.setState({ game });
         });
         const players = await api.players.get();
 
@@ -48,21 +48,28 @@ export default class Match extends Component<any, {game: CSGO | null, steamids: 
             }
         )));
 
-        this.setState({steamids: players.map(player => player.steamid)});
+        this.setState({ steamids: players.map(player => player.steamid) });
     }
     render() {
         const { game } = this.state;
-        if(!game) return '';
+        if (!game) return '';
         const teams = [game.map.team_ct, game.map.team_t]
         const left = teams.filter(team => team.orientation === "left")[0];
         const right = teams.filter(team => team.orientation === "right")[0];
         return (
-            <Row>
-                <Teamboard players={game.players.filter(player => player.team.orientation === "left")} team={left} steamids={this.state.steamids} toggle={this.props.toggle} />
-                <Teamboard players={game.players.filter(player => player.team.orientation === "right")} team={right} steamids={this.state.steamids} toggle={this.props.toggle} />
+            <React.Fragment>
+                <Row>
+                    <Col md="12" className="config-container no-margin" style={{ flexDirection: 'column' }}>
+                        <div>Players Currently In Match, Click to Add Player to Players List</div>
+                    </Col>
+                </Row>
+                <Row>
+                    <Teamboard players={game.players.filter(player => player.team.orientation === "left")} team={left} steamids={this.state.steamids} toggle={this.props.toggle} />
+                    <Teamboard players={game.players.filter(player => player.team.orientation === "right")} team={right} steamids={this.state.steamids} toggle={this.props.toggle} />
 
-            </Row>
+                </Row>
+            </React.Fragment>
         )
-        
+
     }
 }

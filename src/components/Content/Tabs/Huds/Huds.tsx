@@ -58,7 +58,7 @@ export default class Huds extends React.Component<{ cxt: IContextData }, { huds:
                             <FormGroup check>
                                 <Label check>
                                     <Input type="checkbox" onChange={this.changeForm('radar')} checked={this.state.form.radar} />{' '}
-                                    Boltgolt's radar
+                                    Use Boltgolt's radar
                                 </Label>
                             </FormGroup>
                         </Col>
@@ -66,12 +66,13 @@ export default class Huds extends React.Component<{ cxt: IContextData }, { huds:
                             <FormGroup check>
                                 <Label check>
                                     <Input type="checkbox" onChange={this.changeForm('killfeed')} checked={this.state.form.killfeed} />{' '}
-                                    Custom killfeed
+                                    Use custom killfeed
                                 </Label>
                             </FormGroup>
                         </Col>
                     </Col>
-                    <Col md="12" className="config-container no-margin">
+                    <Col md="12" className="config-container no-margin" style={{flexDirection:'column'}}>
+                        <div>Type in CS:GO console:</div>
                         <code>exec {createCFG(radar, killfeed).file}</code>
                     </Col>
                 </Row>

@@ -102,13 +102,13 @@ export default class Teams extends React.Component<{cxt: IContextData}, {options
                 <Row>
                     <Col md="6">
                         <FormGroup>
-                            <Label for="team_name">Team name</Label>
+                            <Label for="team_name">Team Name</Label>
                             <Input type="text" name="name" id="team_name" value={this.state.form.name} onChange={this.changeHandler} />
                         </FormGroup>
                     </Col>
                     <Col md="6">
                         <FormGroup>
-                            <Label for="short_name">Short name</Label>
+                            <Label for="short_name">Short Name</Label>
                             <Input type="text" name="shortName" id="short_name" value={this.state.form.shortName || ''} onChange={this.changeHandler} />
                         </FormGroup>
                     </Col>

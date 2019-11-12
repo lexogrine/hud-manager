@@ -24,7 +24,7 @@ export default class Credits extends React.Component {
                 <Col>
                     <CreditsEntry title="Application and HUD API" people={["osztenkurden"]}/>
                     <CreditsEntry title="HUD Design" people={["Komodo"]}/>
-                    <CreditsEntry title="Radar development" people={["boltgolt"]}/>
+                    <CreditsEntry title="Radar Development" people={["boltgolt"]}/>
                     <CreditsEntry title="Manager Design" people={["Drożdżu"]}/>
                     <CreditsEntry title="Ideas" people={["boltgolt", "Komodo", "TeDy"]}/>
                 </Col>
