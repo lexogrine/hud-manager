@@ -67,14 +67,16 @@ export const updateMatch = async (updateMatches: Match[]) => {
         matchManager.set(updateMatches.map(match => ({...match, current: false})));
         return;
     }
-    const left = await getTeamById(currents[0].left.id);
-    const right = await getTeamById(currents[0].right.id);
-
-    if(left && left._id){
-        GSI.setTeamOne({id:left._id, name:left.name, country:left.country, logo:left.logo, map_score:currents[0].left.wins});
-    }
-    if(right && right._id){
-        GSI.setTeamTwo({id:right._id, name:right.name, country:right.country, logo:right.logo, map_score:currents[0].right.wins});
+    if(currents.length){
+        const left = await getTeamById(currents[0].left.id);
+        const right = await getTeamById(currents[0].right.id);
+    
+        if(left && left._id){
+            GSI.setTeamOne({id:left._id, name:left.name, country:left.country, logo:left.logo, map_score:currents[0].left.wins});
+        }
+        if(right && right._id){
+            GSI.setTeamTwo({id:right._id, name:right.name, country:right.country, logo:right.logo, map_score:currents[0].right.wins});
+        }
     }
     matchManager.set(updateMatches);
     //console.log(updateMatches);

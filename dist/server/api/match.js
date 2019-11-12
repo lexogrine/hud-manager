@@ -123,6 +123,7 @@ exports.updateMatch = function (updateMatches) { return __awaiter(void 0, void 0
                     matchManager.set(updateMatches.map(function (match) { return (__assign(__assign({}, match), { current: false })); }));
                     return [2 /*return*/];
                 }
+                if (!currents.length) return [3 /*break*/, 3];
                 return [4 /*yield*/, teams_1.getTeamById(currents[0].left.id)];
             case 1:
                 left = _a.sent();
@@ -135,6 +136,8 @@ exports.updateMatch = function (updateMatches) { return __awaiter(void 0, void 0
                 if (right && right._id) {
                     sockets_1.GSI.setTeamTwo({ id: right._id, name: right.name, country: right.country, logo: right.logo, map_score: currents[0].right.wins });
                 }
+                _a.label = 3;
+            case 3:
                 matchManager.set(updateMatches);
                 return [2 /*return*/];
         }

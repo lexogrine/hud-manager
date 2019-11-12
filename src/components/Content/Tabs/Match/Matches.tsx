@@ -7,6 +7,11 @@ import Match from './Match';
 import { IContextData } from '../../../Context';
 
 class MatchRow extends Component<{ match: I.Match, teams: I.Team[], cxt: IContextData, edit: Function }> {
+    delete = async () => {
+        const matches = this.props.cxt.matches.filter(match => match.id !== this.props.match.id);
+        await api.match.set(matches);
+        this.props.cxt.reload();
+    }
     render() {
         const { match, teams } = this.props;
         const left = teams.filter(team => team._id === match.left.id)[0];
@@ -27,7 +32,7 @@ class MatchRow extends Component<{ match: I.Match, teams: I.Team[], cxt: IContex
                 <div className="vetos"></div>
                 <div className="options">
                     <Button color="primary" id={`match_id_${this.props.match.id}`}>Edit</Button>
-                    <Button color="secondary">Delete</Button>
+                    <Button color="secondary" onClick={this.delete}>Delete</Button>
                 </div>
                 <div className="match_data">
                     <UncontrolledCollapse toggler={`#match_id_${this.props.match.id}`}>
@@ -58,14 +63,15 @@ export default class Matches extends Component<{ cxt: IContextData }, { matches:
             if(oldMatch.id !== id) return oldMatch;
             return match;
         })
-        const response = await api.match.set(newMatches);
-        this.setState({matches:response});
+        await api.match.set(newMatches);
+        this.props.cxt.reload();
+        //this.setState({matches:response});
     }
 
     async componentDidMount() {
         await this.props.cxt.reload();
-        const matches = await api.match.get();
-        this.setState({ matches });
+        //const matches = await api.match.get();
+        //this.setState({ matches });
 
     }
 
@@ -73,7 +79,7 @@ export default class Matches extends Component<{ cxt: IContextData }, { matches:
         return (
             <Form>
                 <Row>
-                    {this.state.matches.map(match => <MatchRow key={match.id} edit={this.edit} match={match} teams={this.props.cxt.teams} cxt={this.props.cxt} />)}
+                    {this.props.cxt.matches.map(match => <MatchRow key={match.id} edit={this.edit} match={match} teams={this.props.cxt.teams} cxt={this.props.cxt} />)}
                 </Row>
             </Form>
         )
