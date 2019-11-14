@@ -33,6 +33,7 @@
     "socket.io-client": "^2.3.0",
     "steam-game-path": "0.0.5",
     "typescript": "^3.7.2",
+    "uuid": "^3.3.3",
     "ws": "^7.2.0"
   },
   "build": {

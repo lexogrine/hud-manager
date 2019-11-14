@@ -44,7 +44,7 @@ export default class VetoModal extends React.Component<Props, { isOpen:boolean }
 						<Label for="type">Map</Label>
 						<Input type="select" name="type" id="type" value={this.props.veto.mapName} onChange={this.props.onChange('mapName', this.props.map)}>
 							<option value="" disabled defaultChecked>No map</option>
-							{maps.map(map => <option value={map}>{map.replace("de_", "")[0].toUpperCase()}{map.replace("de_", "").substr(1)}</option>)}
+							{maps.map(map => <option value={map} key={map}>{map.replace("de_", "")[0].toUpperCase()}{map.replace("de_", "").substr(1)}</option>)}
 						</Input>
 					</FormGroup>
 					<FormGroup>

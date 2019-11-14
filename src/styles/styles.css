@@ -244,9 +244,8 @@ img.smallLogo {
     display: flex;
     flex-direction: column;
     width:100%;
-    background-color: rgba(0,0,0,0.5);
-    padding:20px;
-    border-radius:10px;
+    padding:35px 20px;
+    border-top:1px solid rgba(255,255,255,0.5);
 }
 .match_row .main_data {
     display: flex;
@@ -277,6 +276,12 @@ img.smallLogo {
     align-items: center;
 }
 
+.match_row .options .btn {
+    margin-left:10px;
+    margin-right:10px;
+    font-size: 14px;
+    padding: .275rem .75rem;
+}
 a.nav-link.active:not([href]):not([tabindex]):focus, a.nav-link.active:not([href]):not([tabindex]):hover {
     color: #57038d;
 }
@@ -286,4 +291,10 @@ form .card > .card-body {
 }
 form .card > .card-body > button.btn {
     align-self: center;
+}
+.matches_container{
+    background-color: rgba(0,0,0,0.5);
+}
+#add_match_button {
+    margin: 10px auto;
 }

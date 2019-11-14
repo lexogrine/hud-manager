@@ -6,7 +6,7 @@ import Match from './Match';
 
 import { IContextData } from '../../../Context';
 
-class MatchRow extends Component<{ match: I.Match, teams: I.Team[], cxt: IContextData, edit: Function }> {
+class MatchRow extends Component<{ match: I.Match, teams: I.Team[], cxt: IContextData, edit: Function, setCurrent: Function }> {
     delete = async () => {
         const matches = this.props.cxt.matches.filter(match => match.id !== this.props.match.id);
         await api.match.set(matches);
@@ -18,6 +18,7 @@ class MatchRow extends Component<{ match: I.Match, teams: I.Team[], cxt: IContex
         const right = teams.filter(team => team._id === match.right.id)[0];
         return (
             <div className="match_row">
+                <p>{match.current ? 'THIS IS LIVE' : ''}</p>
                 <div className="main_data">
                     <div className="left team">
                         <div className="score">{match.left.wins}</div>
@@ -26,12 +27,13 @@ class MatchRow extends Component<{ match: I.Match, teams: I.Team[], cxt: IContex
                     <div className="versus">VS</div>
                     <div className="right team">
                         <div className="score">{match.right.wins}</div>
-                        <div className="name">{right && right.name || "Team One"}</div>
+                        <div className="name">{right && right.name || "Team Two"}</div>
                     </div>
                 </div>
                 <div className="vetos"></div>
                 <div className="options">
                     <Button color="primary" id={`match_id_${this.props.match.id}`}>Edit</Button>
+                    <Button color="primary" onClick={ () => this.props.setCurrent()}>Set as current</Button>
                     <Button color="secondary" onClick={this.delete}>Delete</Button>
                 </div>
                 <div className="match_data">
@@ -48,40 +50,58 @@ class MatchRow extends Component<{ match: I.Match, teams: I.Team[], cxt: IContex
     }
 }
 
-export default class Matches extends Component<{ cxt: IContextData }, { matches: I.Match[] }> {
+export default class Matches extends Component<{ cxt: IContextData }> {
     constructor(props: { cxt: IContextData }) {
         super(props);
-        this.state = {
-            matches: [],
-
+    }
+    
+    add = async () => {
+        const { matches } = this.props.cxt;
+        const newMatch: I.Match = {
+            id: '',
+            current: false,
+            left: { id: null, wins: 0 },
+            right: { id: null, wins: 0 },
+            matchType: 'bo1',
+            vetos: []
         }
+        matches.push(newMatch);
+        await api.match.set(matches);
+        this.props.cxt.reload();
     }
 
     edit = async (id: string, match: I.Match) => {
-        const { matches } = this.state;
+        const { matches } = this.props.cxt;
         const newMatches = matches.map(oldMatch => {
             if(oldMatch.id !== id) return oldMatch;
             return match;
         })
         await api.match.set(newMatches);
         this.props.cxt.reload();
-        //this.setState({matches:response});
+    }
+
+    setCurrent = (id: string) => async () => {
+        const { matches } = this.props.cxt;
+        const newMatches = matches.map(match => {
+            match.current = match.id === id;
+            return match;
+        });
+        await api.match.set(newMatches);
+        this.props.cxt.reload();
+
     }
 
     async componentDidMount() {
         await this.props.cxt.reload();
-        //const matches = await api.match.get();
-        //this.setState({ matches });
 
     }
 
     render() {
         return (
-            <Form>
-                <Row>
-                    {this.props.cxt.matches.map(match => <MatchRow key={match.id} edit={this.edit} match={match} teams={this.props.cxt.teams} cxt={this.props.cxt} />)}
-                </Row>
-            </Form>
+            <Row className="matches_container">
+                <Button onClick={this.add} color="primary" id="add_match_button" >Add match</Button>
+                {this.props.cxt.matches.map(match => <MatchRow key={match.id} edit={this.edit} setCurrent={this.setCurrent(match.id)} match={match} teams={this.props.cxt.teams} cxt={this.props.cxt} />)}
+            </Row>
         )
     }
 }

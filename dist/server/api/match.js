@@ -46,9 +46,13 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 exports.__esModule = true;
 var sockets_1 = require("./../sockets");
 var teams_1 = require("./teams");
+var v4_1 = __importDefault(require("uuid/v4"));
 var testmatches = [{
         id: 'a',
         left: {
@@ -114,7 +118,7 @@ exports.getMatchesV2 = function () {
     return matchManager.matches;
 };
 exports.updateMatch = function (updateMatches) { return __awaiter(void 0, void 0, void 0, function () {
-    var currents, left, right;
+    var currents, left, right, matchesFixed;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -138,7 +142,14 @@ exports.updateMatch = function (updateMatches) { return __awaiter(void 0, void 0
                 }
                 _a.label = 3;
             case 3:
-                matchManager.set(updateMatches);
+                matchesFixed = updateMatches.map(function (match) {
+                    if (match.id.length)
+                        return match;
+                    match.id = v4_1["default"]();
+                    console.log(match);
+                    return match;
+                });
+                matchManager.set(matchesFixed);
                 return [2 /*return*/];
         }
     });

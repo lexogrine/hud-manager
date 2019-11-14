@@ -3,6 +3,7 @@ import { Match } from '../../types/interfaces';
 import { GSI } from './../sockets';
 import socketio from 'socket.io';
 import { getTeamById } from './teams';
+import uuidv4 from 'uuid/v4';
 
 const testmatches: Match[] = [{
     id:'a',
@@ -78,7 +79,15 @@ export const updateMatch = async (updateMatches: Match[]) => {
             GSI.setTeamTwo({id:right._id, name:right.name, country:right.country, logo:right.logo, map_score:currents[0].right.wins});
         }
     }
-    matchManager.set(updateMatches);
+
+    const matchesFixed = updateMatches.map(match => {
+        if(match.id.length) return match;
+        match.id = uuidv4();
+        console.log(match);
+        return match;
+    })
+
+    matchManager.set(matchesFixed);
     //console.log(updateMatches);
     //matches.length = 0;
     //console.log(JSON.stringify(updateMatches));

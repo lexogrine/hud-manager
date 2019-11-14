@@ -10,7 +10,7 @@ class CreditsEntry extends React.Component<{title:string, people: string[]}> {
         return <div className="credits_segment">
             <h3>&#10023;{this.props.title}: </h3>
             <div>
-                {this.props.people.map(man => <p className="credits_name">{man}</p>)}
+                {this.props.people.map(man => <p className="credits_name" key={man}>{man}</p>)}
             </div>
         </div>
     }
