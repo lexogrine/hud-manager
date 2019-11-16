@@ -6,6 +6,20 @@ import { getMatchesV2, updateMatch } from './api/match';
 
 const mirv = require("./server").default;
 
+
+class HUDStateManager {
+    data: Map<string, any>
+    constructor() { }
+    set(hud: string, data){
+        this.data.set(hud, data);
+    }
+    get(hud: string){
+        return this.data.get(hud);
+    }
+}
+
+export const HUDState = new HUDStateManager();
+
 export const GSI = new CSGOGSI();
 
 export default function (server: http.Server, app: express.Router) {
@@ -25,7 +39,13 @@ export default function (server: http.Server, app: express.Router) {
                 socket.emit("update", last);
             }
         });
-
+        socket.on('custom_action', (data: { hud: string, action: any }) => {
+            HUDState.set(data.hud, data.action);
+            io.emit(`action_${data.hud}`, data.action);
+        });
+        socket.on('get_actions', (hud: string) => {
+            socket.emit("actions_data", HUDState.get(hud));
+        });
     });
 
     mirv(data => {
@@ -49,10 +69,8 @@ export default function (server: http.Server, app: express.Router) {
                 return veto;
             });
             match.vetos = vetos;
-            //console.log(JSON.stringify(matches));
             updateMatch(matches);
             
-            //console.log(JSON.stringify(matches));
             io.emit('match', true);
         }
     });

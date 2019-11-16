@@ -28,6 +28,10 @@ export const getHUDData = (dirName: string) => {
         const configFile = fs.readFileSync(configFileDir, {encoding:'utf8'});
         const config = JSON.parse(configFile);
         config.dir = dirName;
+        const panel = getHUDPanel(dirName);
+        if(panel){
+            config.panel = panel;
+        }
         return config;
 
     } catch(e){
@@ -35,6 +39,22 @@ export const getHUDData = (dirName: string) => {
     }
 }
 
+export const getHUDPanelSetting = (dirName: string) => { 
+    const dir = path.join(app.getPath('home'), 'HUDs', dirName);
+    const panelFileDir = path.join(dir, 'panel.json');
+    if(!fs.existsSync(panelFileDir)){
+        return null;
+    }
+    try {
+        const panelFile = fs.readFileSync(panelFileDir, {encoding:'utf8'});
+        const panel = JSON.parse(panelFile);
+        panel.dir = dirName;
+        return panel;
+
+    } catch(e){
+        return null;
+    }
+}
 export const renderHUD: express.RequestHandler = (req, res) => {
     if(!req.params.dir){
         return res.sendStatus(404);
