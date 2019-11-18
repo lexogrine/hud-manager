@@ -28,7 +28,7 @@ export const getHUDData = (dirName: string) => {
         const configFile = fs.readFileSync(configFileDir, {encoding:'utf8'});
         const config = JSON.parse(configFile);
         config.dir = dirName;
-        const panel = getHUDPanel(dirName);
+        const panel = getHUDPanelSetting(dirName);
         if(panel){
             config.panel = panel;
         }

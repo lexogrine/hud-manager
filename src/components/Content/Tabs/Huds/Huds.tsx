@@ -4,6 +4,7 @@ import api from './../../../../api/api';
 import config from './../../../../api/config';
 import * as I from './../../../../api/interfaces';
 import { Row, Col, FormGroup, Label, Input } from 'reactstrap';
+import Panel from './Panel';
 
 interface CFG {
     cfg: string,
@@ -24,7 +25,7 @@ function createCFG(customRadar: boolean, customKillfeed: boolean): CFG {
     }
     return { cfg, file };
 }
-export default class Huds extends React.Component<{ cxt: IContextData }, { huds: I.HUD[], form: {killfeed: boolean, radar: boolean} }> {
+export default class Huds extends React.Component<{ cxt: IContextData }, { huds: I.HUD[], form: {killfeed: boolean, radar: boolean}, active: I.HUD | null }> {
     constructor(props: { cxt: IContextData }) {
         super(props);
         this.state = {
@@ -32,7 +33,8 @@ export default class Huds extends React.Component<{ cxt: IContextData }, { huds:
             form: {
                 killfeed: false,
                 radar: false
-            }
+            },
+            active: null
         }
     }
     changeForm = (name: 'killfeed' | 'radar') => (e: any) => {
@@ -47,11 +49,17 @@ export default class Huds extends React.Component<{ cxt: IContextData }, { huds:
     startHUD(dir: string) {
         api.huds.start(dir);
     }
+    setActive = (hudDir: string) => {
+        const hud = this.state.huds.filter(hud => hud.panel && hud.dir === hudDir)[0];
+        if(!hud) return;
+        this.setState({active:hud});
+    }
     render() {
         const { killfeed, radar } = this.state.form;
+        const { active } = this.state
         return (
             <React.Fragment>
-
+                { active ? <Panel hud={active} cxt={this.props.cxt}/>: ''}
                 <Row>
                     <Col md="12" className="config-container no-margin">
                         <Col md="6">
@@ -91,6 +99,7 @@ export default class Huds extends React.Component<{ cxt: IContextData }, { huds:
                                 </Row>
                             </Col>
                             <Col style={{flex:1}} className="centered">
+                                {hud.panel ? <div onClick={() => this.setActive(hud.dir)}>EDIT</div> : ''}
                                 <i className="material-icons" onClick={() => this.startHUD(hud.dir)}>desktop_windows</i>
                             </Col>
                         </Row>)}

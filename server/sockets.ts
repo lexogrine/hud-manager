@@ -39,10 +39,14 @@ export default function (server: http.Server, app: express.Router) {
                 socket.emit("update", last);
             }
         });
-        socket.on('custom_action', (data: { hud: string, action: any }) => {
-            HUDState.set(data.hud, data.action);
-            io.emit(`action_${data.hud}`, data.action);
+        socket.on('hud_config', (data: { hud: string, config: any }) => {
+            HUDState.set(data.hud, data.config);
+            io.emit(`hud_config_${data.hud}`, data.config);
         });
+        socket.on('hud_action', (data: { hud: string, action: any }) => {
+            console.log(data);
+            io.emit(`hud_action_${data.hud}`, data.action);
+        })
         socket.on('get_actions', (hud: string) => {
             socket.emit("actions_data", HUDState.get(hud));
         });

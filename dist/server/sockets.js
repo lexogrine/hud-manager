@@ -43,6 +43,18 @@ var socket_io_1 = __importDefault(require("socket.io"));
 var csgogsi_1 = __importDefault(require("csgogsi"));
 var match_1 = require("./api/match");
 var mirv = require("./server")["default"];
+var HUDStateManager = /** @class */ (function () {
+    function HUDStateManager() {
+    }
+    HUDStateManager.prototype.set = function (hud, data) {
+        this.data.set(hud, data);
+    };
+    HUDStateManager.prototype.get = function (hud) {
+        return this.data.get(hud);
+    };
+    return HUDStateManager;
+}());
+exports.HUDState = new HUDStateManager();
 exports.GSI = new csgogsi_1["default"]();
 function default_1(server, app) {
     var _this = this;
@@ -59,6 +71,17 @@ function default_1(server, app) {
             if (last) {
                 socket.emit("update", last);
             }
+        });
+        socket.on('hud_config', function (data) {
+            exports.HUDState.set(data.hud, data.config);
+            io.emit("hud_config_" + data.hud, data.config);
+        });
+        socket.on('hud_action', function (data) {
+            console.log(data);
+            io.emit("hud_config_" + data.hud, data.action);
+        });
+        socket.on('get_actions', function (hud) {
+            socket.emit("actions_data", exports.HUDState.get(hud));
         });
     });
     mirv(function (data) {
@@ -81,9 +104,7 @@ function default_1(server, app) {
                 return veto;
             });
             match.vetos = vetos;
-            //console.log(JSON.stringify(matches));
             match_1.updateMatch(matches);
-            //console.log(JSON.stringify(matches));
             io.emit('match', true);
         }
     });

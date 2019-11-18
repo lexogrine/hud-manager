@@ -72,7 +72,27 @@ exports.getHUDData = function (dirName) {
         var configFile = fs.readFileSync(configFileDir, { encoding: 'utf8' });
         var config = JSON.parse(configFile);
         config.dir = dirName;
+        var panel = exports.getHUDPanelSetting(dirName);
+        if (panel) {
+            config.panel = panel;
+        }
         return config;
+    }
+    catch (e) {
+        return null;
+    }
+};
+exports.getHUDPanelSetting = function (dirName) {
+    var dir = path.join(electron_1.app.getPath('home'), 'HUDs', dirName);
+    var panelFileDir = path.join(dir, 'panel.json');
+    if (!fs.existsSync(panelFileDir)) {
+        return null;
+    }
+    try {
+        var panelFile = fs.readFileSync(panelFileDir, { encoding: 'utf8' });
+        var panel = JSON.parse(panelFile);
+        panel.dir = dirName;
+        return panel;
     }
     catch (e) {
         return null;

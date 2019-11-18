@@ -16,12 +16,24 @@ export interface Team {
     logo: string,
 };
 
-export type PanelTemplate = {
+export type PanelInputs = {
+    type: 'text' | 'number' | 'select'
+    name: string,
     label: string,
-    inputs: {
-        type: 'text' | 'number' | 'select'
+} | {
+    type: 'action'
+    name: string,
+    label: string,
+    values: {
+        label: string,
         name: string
     }[]
+}
+
+export type PanelTemplate = {
+    label: string,
+    name: string,
+    inputs: PanelInputs[]
 }[]
 
 export interface HUD {
