@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -45,9 +56,13 @@ var match_1 = require("./api/match");
 var mirv = require("./server")["default"];
 var HUDStateManager = /** @class */ (function () {
     function HUDStateManager() {
+        this.data = new Map();
     }
-    HUDStateManager.prototype.set = function (hud, data) {
-        this.data.set(hud, data);
+    HUDStateManager.prototype.set = function (hud, section, data) {
+        var _a;
+        var form = this.get(hud);
+        var newForm = __assign(__assign({}, form), (_a = {}, _a[section] = data, _a));
+        this.data.set(hud, newForm);
     };
     HUDStateManager.prototype.get = function (hud) {
         return this.data.get(hud);
@@ -73,15 +88,15 @@ function default_1(server, app) {
             }
         });
         socket.on('hud_config', function (data) {
-            exports.HUDState.set(data.hud, data.config);
-            io.emit("hud_config_" + data.hud, data.config);
+            exports.HUDState.set(data.hud, data.section, data.config);
+            io.emit("hud_config_" + data.hud, exports.HUDState.get(data.hud));
         });
         socket.on('hud_action', function (data) {
             console.log(data);
-            io.emit("hud_config_" + data.hud, data.action);
+            io.emit("hud_action_" + data.hud, data.action);
         });
-        socket.on('get_actions', function (hud) {
-            socket.emit("actions_data", exports.HUDState.get(hud));
+        socket.on('get_config', function (hud) {
+            socket.emit("hud_config", exports.HUDState.get(hud));
         });
     });
     mirv(function (data) {

@@ -9,9 +9,13 @@ const mirv = require("./server").default;
 
 class HUDStateManager {
     data: Map<string, any>
-    constructor() { }
-    set(hud: string, data){
-        this.data.set(hud, data);
+    constructor() {
+        this.data = new Map();
+    }
+    set(hud: string, section: string, data){
+        const form = this.get(hud);
+        const newForm = {...form, [section]: data};
+        this.data.set(hud, newForm);
     }
     get(hud: string){
         return this.data.get(hud);
@@ -39,16 +43,16 @@ export default function (server: http.Server, app: express.Router) {
                 socket.emit("update", last);
             }
         });
-        socket.on('hud_config', (data: { hud: string, config: any }) => {
-            HUDState.set(data.hud, data.config);
-            io.emit(`hud_config_${data.hud}`, data.config);
+        socket.on('hud_config', (data: { hud: string, section: string, config: any }) => {
+            HUDState.set(data.hud, data.section, data.config);
+            io.emit(`hud_config_${data.hud}`, HUDState.get(data.hud));
         });
         socket.on('hud_action', (data: { hud: string, action: any }) => {
             console.log(data);
             io.emit(`hud_action_${data.hud}`, data.action);
         })
-        socket.on('get_actions', (hud: string) => {
-            socket.emit("actions_data", HUDState.get(hud));
+        socket.on('get_config', (hud: string) => {
+            socket.emit("hud_config", HUDState.get(hud));
         });
     });
 

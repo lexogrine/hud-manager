@@ -34,11 +34,18 @@ export default class ActionPanel extends React.Component<{ cxt: IContextData, hu
             }
         }
         this.setState({ form });
+        socket.on('hud_config', (data: any) => {
+            if(!data) return;
+            const form = data;
+            this.setState({ form });
+        });
+
+        socket.emit('get_config', hud.dir);
     }
 
     sendSection(name: string) {
         const section = this.state.form[name];
-        socket.emit('hud_config', { hud: this.props.hud.dir, config: section })
+        socket.emit('hud_config', { hud: this.props.hud.dir, section: name, config: section })
     }
 
     sendAction = (action: any) => {
