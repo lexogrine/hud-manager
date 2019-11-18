@@ -4,13 +4,18 @@ import http from 'http';
 import cors from 'cors';
 import router from './api';
 import path from 'path';
+import request from 'request';
 import { loadConfig } from './api/config';
+
+const child_process = require("child_process");
 
 export default async function init(port?: number){
     
     const config = await loadConfig();
     const app = express();
     const server = http.createServer(app);
+
+    const boltobserv = child_process.fork('./boltobserv/index.js');
 
 
     app.use(express.urlencoded({extended:true}));
@@ -21,6 +26,7 @@ export default async function init(port?: number){
             if(req.body){
                 const text = req.body.toString().replace(/"(player|owner)":([ ]*)([0-9]+)/gm, '"$1": "$3"').replace(/(player|owner):([ ]*)([0-9]+)/gm, '"$1": "$3"');
                 req.body = JSON.parse(text);
+                request.post('http://localhost:36363/', { json: req.body });
             }
             next();
         } catch(e) {

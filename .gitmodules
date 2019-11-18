@@ -1,0 +1,4 @@
+[submodule "boltobserv"]
+	path = boltobserv
+	url = https://github.com/boltgolt/boltobserv
+	branch = dev

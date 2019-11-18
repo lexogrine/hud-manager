@@ -45,10 +45,12 @@ var http_1 = __importDefault(require("http"));
 var cors_1 = __importDefault(require("cors"));
 var api_1 = __importDefault(require("./api"));
 var path_1 = __importDefault(require("path"));
+var request_1 = __importDefault(require("request"));
 var config_1 = require("./api/config");
+var child_process = require("child_process");
 function init(port) {
     return __awaiter(this, void 0, void 0, function () {
-        var config, app, server, io;
+        var config, app, server, boltobserv, io;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, config_1.loadConfig()];
@@ -56,6 +58,7 @@ function init(port) {
                     config = _a.sent();
                     app = express_1["default"]();
                     server = http_1["default"].createServer(app);
+                    boltobserv = child_process.fork('./boltobserv/index.js');
                     app.use(express_1["default"].urlencoded({ extended: true }));
                     //app.use(express.json({limit:'10Mb'}));
                     app.use(express_1["default"].raw({ limit: '10Mb', type: 'application/json' }));
@@ -64,6 +67,7 @@ function init(port) {
                             if (req.body) {
                                 var text = req.body.toString().replace(/"(player|owner)":([ ]*)([0-9]+)/gm, '"$1": "$3"').replace(/(player|owner):([ ]*)([0-9]+)/gm, '"$1": "$3"');
                                 req.body = JSON.parse(text);
+                                request_1["default"].post('http://localhost:36363/', { json: req.body });
                             }
                             next();
                         }
