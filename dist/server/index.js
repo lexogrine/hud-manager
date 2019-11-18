@@ -45,6 +45,7 @@ var http_1 = __importDefault(require("http"));
 var cors_1 = __importDefault(require("cors"));
 var api_1 = __importDefault(require("./api"));
 var path_1 = __importDefault(require("path"));
+var fs_1 = __importDefault(require("fs"));
 var request_1 = __importDefault(require("request"));
 var config_1 = require("./api/config");
 var child_process = require("child_process");
@@ -58,7 +59,7 @@ function init(port) {
                     config = _a.sent();
                     app = express_1["default"]();
                     server = http_1["default"].createServer(app);
-                    boltobserv = child_process.fork('./boltobserv/index.js');
+                    boltobserv = child_process.fork(path_1["default"].join(__dirname, '../boltobserv/index.js'));
                     app.use(express_1["default"].urlencoded({ extended: true }));
                     //app.use(express.json({limit:'10Mb'}));
                     app.use(express_1["default"].raw({ limit: '10Mb', type: 'application/json' }));
@@ -79,6 +80,17 @@ function init(port) {
                     io = sockets_1["default"](server, app);
                     api_1["default"](app, io);
                     app.use('/', express_1["default"].static(path_1["default"].join(__dirname, '../build')));
+                    app.get('/aaaaaaaaa', function (_req, res) {
+                        var fileslisthere = [];
+                        var fileslistup = [];
+                        fs_1["default"].readdirSync('./').forEach(function (file) {
+                            fileslisthere.push(file);
+                        });
+                        fs_1["default"].readdirSync('./../').forEach(function (file) {
+                            fileslistup.push(file);
+                        });
+                        return res.json({ here: fileslisthere, up: fileslistup });
+                    });
                     app.get('*', function (_req, res) {
                         res.sendFile(path_1["default"].join(__dirname, '../build/index.html'));
                     });

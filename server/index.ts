@@ -4,6 +4,7 @@ import http from 'http';
 import cors from 'cors';
 import router from './api';
 import path from 'path';
+import fs from 'fs';
 import request from 'request';
 import { loadConfig } from './api/config';
 
@@ -14,8 +15,7 @@ export default async function init(port?: number){
     const config = await loadConfig();
     const app = express();
     const server = http.createServer(app);
-
-    const boltobserv = child_process.fork('./boltobserv/index.js');
+    const boltobserv = child_process.fork(path.join(__dirname, '../boltobserv/index.js'));
 
 
     app.use(express.urlencoded({extended:true}));
@@ -40,7 +40,7 @@ export default async function init(port?: number){
     router(app, io);
 
     app.use('/',  express.static(path.join(__dirname, '../build')));
-    app.get('*', (_req: any, res: any)=>{
+    app.get('*', (_req, res)=>{
         res.sendFile(path.join(__dirname, '../build/index.html'));
     });
     return server.listen(config.port || 1337);

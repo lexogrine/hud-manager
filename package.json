@@ -47,6 +47,7 @@
       "buildResources": "assets"
     },
     "files": [
+      "boltobserv/**/*",
       "dist/**/*",
       "package.json",
       {
@@ -65,7 +66,7 @@
   "main": "dist/electron.js",
   "scripts": {
     "start": "react-scripts start",
-    "build": "npm run transpile && react-scripts build && mv build dist",
+    "build": "npm run transpile && react-scripts build && rm -rf dist/build && rm -rf dist/boltobserv && mv boltobserv dist && mv build dist",
     "test": "react-scripts test",
     "transpile": "tsc electron.ts --outDir dist --esModuleInterop true",
     "electron": "npm run transpile && cross-env DEV=true electron ./",
