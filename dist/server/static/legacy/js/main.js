@@ -218,7 +218,9 @@ async function init(){
     };
     const playersArray = await getAPI('/api/players');
     const teamsArray = await getAPI('/api/teams');
-    const match = await getAPI('/api/match');
+    const matches = await getAPI('/api/match');
+    const match = matches.filter(match => match.current)[0];    
+    console.log(match)
     const legacyMatch = {
         match: match.matchType,
         team_1: {
