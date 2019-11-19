@@ -2,6 +2,7 @@ import socketio from 'socket.io';
 import http from 'http';
 import express from 'express';
 import CSGOGSI from 'csgogsi';
+import request from 'request';
 import { getMatchesV2, updateMatch } from './api/match';
 
 const mirv = require("./server").default;
@@ -35,6 +36,7 @@ export default function (server: http.Server, app: express.Router) {
         last = req.body;
         io.emit('update', req.body);
         GSI.digest(req.body);
+        request.post('http://localhost:36363/', { json: req.body });
     });
 
     io.on('connection', socket => {

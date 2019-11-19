@@ -31,9 +31,6 @@ class SingleVeto extends React.Component<Props> {
     state = {
         isOpen: false
     }
-	setOnPress = (element: JSX.Element) => {
-		return React.cloneElement(element, { onClick: this.toggle });
-	}
 	toggle = () => {
 		this.setState({ isOpen: !this.state.isOpen });
     }
@@ -80,7 +77,7 @@ class SingleVeto extends React.Component<Props> {
                                         </div>
                                     </div> : ''}
                                 </div>
-                                {this.setOnPress(<Button>Edit</Button>)}
+                                <Button onClick={this.toggle}>Edit</Button>
                                 <VetoModal map={this.props.map} veto={this.props.veto} teams={this.props.teams} isOpen={this.state.isOpen} toggle={this.toggle} onChange={this.props.onSave}/>
                             </>
                         }

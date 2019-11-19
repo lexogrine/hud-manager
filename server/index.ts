@@ -4,8 +4,7 @@ import http from 'http';
 import cors from 'cors';
 import router from './api';
 import path from 'path';
-import fs from 'fs';
-import request from 'request';
+//import fs from 'fs';
 import { loadConfig } from './api/config';
 
 const child_process = require("child_process");
@@ -15,18 +14,16 @@ export default async function init(port?: number){
     const config = await loadConfig();
     const app = express();
     const server = http.createServer(app);
-    const boltobserv = child_process.fork(path.join(__dirname, '../boltobserv/index.js'));
+    const _boltobserv = child_process.fork(path.join(__dirname, '../boltobserv/index.js'));
 
 
     app.use(express.urlencoded({extended:true}));
-    //app.use(express.json({limit:'10Mb'}));
     app.use(express.raw({limit: '10Mb', type: 'application/json'}));
     app.use((req, res, next) => {
         try{
             if(req.body){
                 const text = req.body.toString().replace(/"(player|owner)":([ ]*)([0-9]+)/gm, '"$1": "$3"').replace(/(player|owner):([ ]*)([0-9]+)/gm, '"$1": "$3"');
                 req.body = JSON.parse(text);
-                request.post('http://localhost:36363/', { json: req.body });
             }
             next();
         } catch(e) {

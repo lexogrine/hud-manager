@@ -52,6 +52,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 exports.__esModule = true;
 var socket_io_1 = __importDefault(require("socket.io"));
 var csgogsi_1 = __importDefault(require("csgogsi"));
+var request_1 = __importDefault(require("request"));
 var match_1 = require("./api/match");
 var mirv = require("./server")["default"];
 var HUDStateManager = /** @class */ (function () {
@@ -80,6 +81,7 @@ function default_1(server, app) {
         last = req.body;
         io.emit('update', req.body);
         exports.GSI.digest(req.body);
+        request_1["default"].post('http://localhost:36363/', { json: req.body });
     });
     io.on('connection', function (socket) {
         socket.on('ready', function () {

@@ -45,13 +45,12 @@ var http_1 = __importDefault(require("http"));
 var cors_1 = __importDefault(require("cors"));
 var api_1 = __importDefault(require("./api"));
 var path_1 = __importDefault(require("path"));
-var fs_1 = __importDefault(require("fs"));
-var request_1 = __importDefault(require("request"));
+//import fs from 'fs';
 var config_1 = require("./api/config");
 var child_process = require("child_process");
 function init(port) {
     return __awaiter(this, void 0, void 0, function () {
-        var config, app, server, boltobserv, io;
+        var config, app, server, _boltobserv, io;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, config_1.loadConfig()];
@@ -59,16 +58,14 @@ function init(port) {
                     config = _a.sent();
                     app = express_1["default"]();
                     server = http_1["default"].createServer(app);
-                    boltobserv = child_process.fork(path_1["default"].join(__dirname, '../boltobserv/index.js'));
+                    _boltobserv = child_process.fork(path_1["default"].join(__dirname, '../boltobserv/index.js'));
                     app.use(express_1["default"].urlencoded({ extended: true }));
-                    //app.use(express.json({limit:'10Mb'}));
                     app.use(express_1["default"].raw({ limit: '10Mb', type: 'application/json' }));
                     app.use(function (req, res, next) {
                         try {
                             if (req.body) {
                                 var text = req.body.toString().replace(/"(player|owner)":([ ]*)([0-9]+)/gm, '"$1": "$3"').replace(/(player|owner):([ ]*)([0-9]+)/gm, '"$1": "$3"');
                                 req.body = JSON.parse(text);
-                                request_1["default"].post('http://localhost:36363/', { json: req.body });
                             }
                             next();
                         }
@@ -80,17 +77,6 @@ function init(port) {
                     io = sockets_1["default"](server, app);
                     api_1["default"](app, io);
                     app.use('/', express_1["default"].static(path_1["default"].join(__dirname, '../build')));
-                    app.get('/aaaaaaaaa', function (_req, res) {
-                        var fileslisthere = [];
-                        var fileslistup = [];
-                        fs_1["default"].readdirSync('./').forEach(function (file) {
-                            fileslisthere.push(file);
-                        });
-                        fs_1["default"].readdirSync('./../').forEach(function (file) {
-                            fileslistup.push(file);
-                        });
-                        return res.json({ here: fileslisthere, up: fileslistup });
-                    });
                     app.get('*', function (_req, res) {
                         res.sendFile(path_1["default"].join(__dirname, '../build/index.html'));
                     });
