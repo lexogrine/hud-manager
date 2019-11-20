@@ -4,17 +4,20 @@ import http from 'http';
 import cors from 'cors';
 import router from './api';
 import path from 'path';
+//import fs from 'fs';
 import { loadConfig } from './api/config';
+
+const child_process = require("child_process");
 
 export default async function init(port?: number){
     
     const config = await loadConfig();
     const app = express();
     const server = http.createServer(app);
+    const _boltobserv = child_process.fork(path.join(__dirname, '../boltobserv/index.js'));
 
 
     app.use(express.urlencoded({extended:true}));
-    //app.use(express.json({limit:'10Mb'}));
     app.use(express.raw({limit: '10Mb', type: 'application/json'}));
     app.use((req, res, next) => {
         try{
@@ -34,7 +37,7 @@ export default async function init(port?: number){
     router(app, io);
 
     app.use('/',  express.static(path.join(__dirname, '../build')));
-    app.get('*', (_req: any, res: any)=>{
+    app.get('*', (_req, res)=>{
         res.sendFile(path.join(__dirname, '../build/index.html'));
     });
     return server.listen(config.port || 1337);

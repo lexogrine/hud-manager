@@ -3,6 +3,7 @@ import api from './../../../../api/api';
 import * as I from './../../../../api/interfaces';
 import { Form, Row, UncontrolledCollapse, Button, Card, CardBody } from 'reactstrap';
 import Match from './Match';
+import uuidv4 from 'uuid/v4';
 
 import { IContextData } from '../../../Context';
 
@@ -58,12 +59,16 @@ export default class Matches extends Component<{ cxt: IContextData }> {
     add = async () => {
         const { matches } = this.props.cxt;
         const newMatch: I.Match = {
-            id: '',
+            id: uuidv4(),
             current: false,
             left: { id: null, wins: 0 },
             right: { id: null, wins: 0 },
             matchType: 'bo1',
             vetos: []
+        }
+        
+        for(let i = 0; i < 7; i++){
+            newMatch.vetos.push({teamId: '', mapName: '', side: 'NO', type:'pick', mapEnd: false});
         }
         matches.push(newMatch);
         await api.match.set(matches);
@@ -97,6 +102,7 @@ export default class Matches extends Component<{ cxt: IContextData }> {
     }
 
     render() {
+        console.log(this.props.cxt.matches)
         return (
             <Row className="matches_container">
                 <Button onClick={this.add} color="primary" id="add_match_button" >Add match</Button>

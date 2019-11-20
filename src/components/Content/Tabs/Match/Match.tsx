@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import api from './../../../../api/api';
 import config from './../../../../api/config';
 import * as I from './../../../../api/interfaces';
-import { Form, FormGroup, Col, Row, Label, CustomInput, Card, CardImg, CardText, CardBody, CardTitle, CardSubtitle, Button } from 'reactstrap';
+import { Form, FormGroup, Col, Row, Label, Collapse, CustomInput, Card, CardImg, CardText, CardBody, CardTitle, CardSubtitle, Button } from 'reactstrap';
 import TeamModal from './SetTeamModal';
 import SingleVeto from './SingleVeto';
 
@@ -11,87 +11,58 @@ import { socket } from './../Live/Live';
 
 
 interface State extends I.Match {
-    logos: {
-        left: string | null,
-        right: string | null
-    }
-    
-}
-export default class MatchEdit extends Component<{cxt: IContextData, match?: I.Match, edit: Function}, I.Match> {
-    constructor(props: {cxt: IContextData, match?: I.Match, edit: Function}) {
-        super(props);
-        this.state =  this.props.match || {
-                id: '',
-                current: false,
-                left: {
-                    id: null,
-                    wins: 0
-                }, 
-                right: {
-                    id: null,
-                    wins: 0
-                },
-                matchType: 'bo3',
-                vetos:[
-                    {teamId: '', mapName: '', side: 'NO', type:'pick', mapEnd: false,},
-                    {teamId: '', mapName: '', side: 'NO', type:'pick', mapEnd: false,},
-                    {teamId: '', mapName: '', side: 'NO', type:'pick', mapEnd: false,},
-                    {teamId: '', mapName: '', side: 'NO', type:'pick', mapEnd: false,},
-                    {teamId: '', mapName: '', side: 'NO', type:'pick', mapEnd: false,},
-                    {teamId: '', mapName: '', side: 'NO', type:'pick', mapEnd: false,},
-                    {teamId: '', mapName: '', side: 'NO', type:'pick', mapEnd: false,}
-                ]
-            }
+    isVetoOpen: boolean
 
-        
+}
+export default class MatchEdit extends Component<{ cxt: IContextData, match: I.Match, edit: Function }, State> {
+    constructor(props: { cxt: IContextData, match: I.Match, edit: Function }) {
+        super(props);
+        this.state = { ...this.props.match, isVetoOpen: false }
+
+
     }
-    
+
     vetoHandler = (name: string, map: number) => (event: any) => {
         const { vetos }: any = this.state;
-        const veto = { teamId:'', mapName:'', side: 'NO', ...vetos[map]};
+        const veto = { teamId: '', mapName: '', side: 'NO', ...vetos[map] };
         veto[name] = event.target.value;
-        if(veto.teamId === ""){
+        if (veto.teamId === "") {
             veto.mapName = "";
         }
         vetos[map] = veto;
-        this.setState({vetos});
+        this.setState({ vetos });
     }
     changeMatchType = (event: any) => {
         const vetos: I.Veto[] = [];
-        for(let i = 0; i < 7; i++){
-            vetos.push({teamId: '', mapName: '', side: 'NO', type:'pick', mapEnd: false});
+        for (let i = 0; i < 7; i++) {
+            vetos.push({ teamId: '', mapName: '', side: 'NO', type: 'pick', mapEnd: false });
         }
-        this.setState({matchType: event.target.value, vetos});
+        this.setState({ matchType: event.target.value, vetos });
     }
-    getData = (side: 'right'|'left', id: string, wins: number) => {
+    getData = (side: 'right' | 'left', id: string, wins: number) => {
         const { state } = this;
         state[side].id = id;
         state[side].wins = wins;
         this.setState(state);
-        /*api.files.imgToBase64(`${config.apiAddress}api/teams/logo/${id}`).then(graphic => {
-            if(!graphic){
-                return;
-            }
-            const { logos } = this.state;
-            logos[side] = graphic;
-            this.setState({logos});
-        });*/
     }
 
     save = async () => {
-        const form = {...this.state};
-        if(form.id.length){
+        const form = { ...this.state };
+        if (form.id.length) {
             this.props.edit(form.id, form);
         }
-        //const response = await api.match.set(form);
+    }
+    toggleVeto = () => {
+        console.log(this.state.id, this.state.isVetoOpen)
+        this.setState({ isVetoOpen: !this.state.isVetoOpen });
     }
     async componentDidMount() {
-        if(!this.state.id.length) return;
-        socket.on('match', async ()  => {
+        if (!this.state.id.length) return;
+        socket.on('match', async () => {
             const matches = await api.match.get();
             const current = matches.filter(match => match.id === this.state.id)[0];
-            if(!current) return;
-            this.setState({vetos: current.vetos});
+            if (!current) return;
+            this.setState({ vetos: current.vetos });
         })
     }
 
@@ -100,7 +71,8 @@ export default class MatchEdit extends Component<{cxt: IContextData, match?: I.M
         const teams = cxt.teams.filter(team => [this.state.left.id, this.state.right.id].includes(team._id));
         const leftTeam = match && teams.filter(team => team._id === match.left.id)[0];
         const rightTeam = match && teams.filter(team => team._id === match.right.id)[0];
-        
+        const { isVetoOpen } = this.state;
+        console.log(isVetoOpen)
         return (
             <Form>
                 <Row>
@@ -166,11 +138,17 @@ export default class MatchEdit extends Component<{cxt: IContextData, match?: I.M
                     </Col>
                 </Row>
                 <Row>
-                    {this.state.vetos.map((veto, i) => <SingleVeto key={i} map={i} onSave={this.vetoHandler} veto={veto} teams={teams} match={this.state}/>)}
+                    <Col s={12} className="second-options centered">
+                        <Button color="primary" onClick={this.toggleVeto}>Manage Vetos</Button>
+                        <Button color="primary" onClick={this.save}>Save</Button>
+                    </Col>
                 </Row>
                 <Row>
-                    <Col>
-                        <Button color="primary" onClick={this.save}>Save</Button>
+
+                    <Col s={12}>
+                        <Collapse isOpen={this.state.isVetoOpen}>
+                            {this.state.vetos.map((veto, i) => <SingleVeto key={i} map={i} onSave={this.vetoHandler} veto={veto} teams={teams} match={this.state} />)}
+                        </Collapse>
                     </Col>
                 </Row>
             </Form>

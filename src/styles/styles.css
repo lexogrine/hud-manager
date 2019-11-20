@@ -275,8 +275,7 @@ img.smallLogo {
     justify-content: center;
     align-items: center;
 }
-
-.match_row .options .btn {
+.match_row .options .btn, .match_row .second-options .btn {
     margin-left:10px;
     margin-right:10px;
     font-size: 14px;
