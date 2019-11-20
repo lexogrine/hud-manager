@@ -45,13 +45,16 @@ export default function (server: http.Server, app: express.Router) {
                 socket.emit("update", last);
             }
         });
+        socket.emit('readyToRegister');
+        socket.on('register', (name: string) => {
+            socket.join(name);
+        });
         socket.on('hud_config', (data: { hud: string, section: string, config: any }) => {
             HUDState.set(data.hud, data.section, data.config);
-            io.emit(`hud_config_${data.hud}`, HUDState.get(data.hud));
+            io.to(data.hud).emit('hud_config', HUDState.get(data.hud))
         });
         socket.on('hud_action', (data: { hud: string, action: any }) => {
-            console.log(data);
-            io.emit(`hud_action_${data.hud}`, data.action);
+            io.to(data.hud).emit(`hud_action`, data.action);
         })
         socket.on('get_config', (hud: string) => {
             socket.emit("hud_config", HUDState.get(hud));

@@ -61,3 +61,36 @@ export interface Config {
     "RightSecondary": "@KomodoAU on Twitter and Twitch",
     "GSIToken": "120987"*/
 }
+export type PanelInput = {
+    type: 'text' | 'number' | 'select'
+    name: string,
+    label: string,
+} | {
+    type: 'action'
+    name: string,
+    label: string,
+    values: {
+        label: string,
+        name: string
+    }[]
+}
+export type KeyBind = {
+    bind:string,
+    action: string
+}
+
+export type PanelTemplate = {
+    label: string,
+    name: string,
+    inputs: PanelInput[]
+}
+
+export interface HUD {
+    name: string,
+    version: string,
+    author: string,
+    legacy: boolean,
+    dir: string,
+    panel?: PanelTemplate[],
+    keybinds?: KeyBind[]
+}

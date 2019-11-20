@@ -57,7 +57,7 @@ var HUD = /** @class */ (function () {
         this.tray = null;
         this.show = true;
     }
-    HUD.prototype.open = function (dirName) {
+    HUD.prototype.open = function (dirName, io) {
         return __awaiter(this, void 0, void 0, function () {
             var hud, hudWindow, tray, config;
             var _this = this;
@@ -98,9 +98,24 @@ var HUD = /** @class */ (function () {
                         return [4 /*yield*/, config_1.loadConfig()];
                     case 1:
                         config = _a.sent();
-                        hudWindow.once('ready-to-show', hudWindow.show);
+                        hudWindow.once('ready-to-show', function () {
+                            hudWindow.show();
+                            if (hud.keybinds) {
+                                var _loop_1 = function (bind) {
+                                    electron_1.globalShortcut.register(bind.bind, function () {
+                                        io.to(hud.dir).emit("keybindAction", bind.action);
+                                        console.log(bind);
+                                    });
+                                };
+                                for (var _i = 0, _a = hud.keybinds; _i < _a.length; _i++) {
+                                    var bind = _a[_i];
+                                    _loop_1(bind);
+                                }
+                            }
+                        });
                         hudWindow.loadURL("http://" + ip_1["default"].address() + ":" + config.port + "/huds/" + hud.dir + "/?port=" + config.port + "&isProd=true");
                         hudWindow.on('close', function () {
+                            electron_1.globalShortcut.unregisterAll();
                             _this.current = null;
                             if (_this.tray !== null) {
                                 _this.tray.destroy();

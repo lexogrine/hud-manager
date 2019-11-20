@@ -53,7 +53,7 @@ export default function (router: express.Router, io: socketio.Server){
         .post(huds.closeHUD);
 
     router.route('/api/huds/:hudDir/start')
-        .post(huds.showHUD);
+        .post(huds.showHUD(io));
 
     router.route('/api/gsi')
         .get(gsi.checkGSIFile)

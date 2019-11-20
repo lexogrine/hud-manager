@@ -89,13 +89,16 @@ function default_1(server, app) {
                 socket.emit("update", last);
             }
         });
+        socket.emit('readyToRegister');
+        socket.on('register', function (name) {
+            socket.join(name);
+        });
         socket.on('hud_config', function (data) {
             exports.HUDState.set(data.hud, data.section, data.config);
-            io.emit("hud_config_" + data.hud, exports.HUDState.get(data.hud));
+            io.to(data.hud).emit('hud_config', exports.HUDState.get(data.hud));
         });
         socket.on('hud_action', function (data) {
-            console.log(data);
-            io.emit("hud_action_" + data.hud, data.action);
+            io.to(data.hud).emit("hud_action", data.action);
         });
         socket.on('get_config', function (hud) {
             socket.emit("hud_config", exports.HUDState.get(hud));

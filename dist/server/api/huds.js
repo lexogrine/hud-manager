@@ -73,10 +73,29 @@ exports.getHUDData = function (dirName) {
         var config = JSON.parse(configFile);
         config.dir = dirName;
         var panel = exports.getHUDPanelSetting(dirName);
+        var keybinds = exports.getHUDKeyBinds(dirName);
         if (panel) {
             config.panel = panel;
         }
+        if (keybinds) {
+            config.keybinds = keybinds;
+        }
         return config;
+    }
+    catch (e) {
+        return null;
+    }
+};
+exports.getHUDKeyBinds = function (dirName) {
+    var dir = path.join(electron_1.app.getPath('home'), 'HUDs', dirName);
+    var keybindsFileDir = path.join(dir, 'keybinds.json');
+    if (!fs.existsSync(keybindsFileDir)) {
+        return null;
+    }
+    try {
+        var keybindsFile = fs.readFileSync(keybindsFileDir, { encoding: 'utf8' });
+        var keybinds = JSON.parse(keybindsFile);
+        return keybinds;
     }
     catch (e) {
         return null;
@@ -171,11 +190,11 @@ exports.legacyCSS = function (req, res) {
         return res.sendStatus(404);
     }
 };
-exports.showHUD = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+exports.showHUD = function (io) { return function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var response;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, huds_1["default"].open(req.params.hudDir)];
+            case 0: return [4 /*yield*/, huds_1["default"].open(req.params.hudDir, io)];
             case 1:
                 response = _a.sent();
                 if (response) {
@@ -184,7 +203,7 @@ exports.showHUD = function (req, res) { return __awaiter(void 0, void 0, void 0,
                 return [2 /*return*/, res.sendStatus(404)];
         }
     });
-}); };
+}); }; };
 exports.closeHUD = function (req, res) {
     var response = huds_1["default"].close();
     if (response) {

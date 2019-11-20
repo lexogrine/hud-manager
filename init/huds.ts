@@ -1,7 +1,8 @@
-import { BrowserWindow, Tray, Menu, MenuItem } from "electron";
+import { BrowserWindow, Tray, Menu, globalShortcut } from "electron";
 import { getHUDData } from './../server/api/huds';
 import * as path from 'path';
 import ip from 'ip';
+import socketio from 'socket.io';
 import { loadConfig } from './../server/api/config';
 
 class HUD {
@@ -14,7 +15,7 @@ class HUD {
         this.show = true;
     }
 
-    async open(dirName: string){
+    async open(dirName: string, io: socketio.Server){
         if(this.current !== null) return null;
         const hud = getHUDData(dirName);
         if(hud === null) return null;
@@ -49,10 +50,20 @@ class HUD {
 
         this.current = hudWindow;
         const config = await loadConfig();
-        hudWindow.once('ready-to-show', hudWindow.show);
+        hudWindow.once('ready-to-show', () => {
+            hudWindow.show();
+            if(hud.keybinds){
+                for(let bind of hud.keybinds){
+                    globalShortcut.register(bind.bind, () => {
+                        io.to(hud.dir).emit("keybindAction", bind.action);
+                    });
+                }
+            }
+        });
         hudWindow.loadURL(`http://${ip.address()}:${config.port}/huds/${hud.dir}/?port=${config.port}&isProd=true`);
 
         hudWindow.on('close', () => {
+            globalShortcut.unregisterAll();
             this.current = null;
             if(this.tray !== null){
                 this.tray.destroy();

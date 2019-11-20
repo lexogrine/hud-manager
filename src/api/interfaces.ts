@@ -16,7 +16,7 @@ export interface Team {
     logo: string,
 };
 
-export type PanelInputs = {
+export type PanelInput = {
     type: 'text' | 'number' | 'select'
     name: string,
     label: string,
@@ -30,11 +30,16 @@ export type PanelInputs = {
     }[]
 }
 
+export type KeyBind = {
+    bind:string,
+    action: string
+}
+
 export type PanelTemplate = {
     label: string,
     name: string,
-    inputs: PanelInputs[]
-}[]
+    inputs: PanelInput[]
+}
 
 export interface HUD {
     name: string,
@@ -42,7 +47,8 @@ export interface HUD {
     author: string,
     legacy: boolean,
     dir: string,
-    panel?: PanelTemplate
+    panel?: PanelTemplate[],
+    keybinds?: KeyBind[]
 }
 
 export interface Config {

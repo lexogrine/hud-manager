@@ -2,6 +2,8 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { app } from 'electron';
 import express from 'express';
+import * as I from './../../types/interfaces';
+import socketio from 'socket.io';
 
 import HUDWindow from './../../init/huds';
 
@@ -18,7 +20,7 @@ export const getHUDs: express.RequestHandler = (req, res) => {
     return res.json(listHUDs());
 }
 
-export const getHUDData = (dirName: string) => {
+export const getHUDData = (dirName: string): I.HUD => {
     const dir = path.join(app.getPath('home'), 'HUDs', dirName);
     const configFileDir = path.join(dir, 'hud.json');
     if(!fs.existsSync(configFileDir)){
@@ -28,11 +30,35 @@ export const getHUDData = (dirName: string) => {
         const configFile = fs.readFileSync(configFileDir, {encoding:'utf8'});
         const config = JSON.parse(configFile);
         config.dir = dirName;
+
         const panel = getHUDPanelSetting(dirName);
+        const keybinds = getHUDKeyBinds(dirName);
+
         if(panel){
             config.panel = panel;
         }
+        if(keybinds){
+            config.keybinds = keybinds;
+        }
+
+
         return config;
+
+    } catch(e){
+        return null;
+    }
+}
+
+export const getHUDKeyBinds = (dirName: string) => {
+    const dir = path.join(app.getPath('home'), 'HUDs', dirName);
+    const keybindsFileDir = path.join(dir, 'keybinds.json');
+    if(!fs.existsSync(keybindsFileDir)){
+        return null;
+    }
+    try {
+        const keybindsFile = fs.readFileSync(keybindsFileDir, {encoding:'utf8'});
+        const keybinds = JSON.parse(keybindsFile);
+        return keybinds;
 
     } catch(e){
         return null;
@@ -146,8 +172,8 @@ export const legacyCSS: express.RequestHandler = (req, res) => {
 
 }
 
-export const showHUD: express.RequestHandler = async (req, res) => {
-    const response = await HUDWindow.open(req.params.hudDir);
+export const showHUD = (io: socketio.Server) => async (req, res) => {
+    const response = await HUDWindow.open(req.params.hudDir, io);
     if(response){
         return res.sendStatus(200);
     }

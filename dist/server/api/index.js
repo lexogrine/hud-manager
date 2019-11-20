@@ -49,7 +49,7 @@ function default_1(router, io) {
     router.route('/api/huds/close')
         .post(huds.closeHUD);
     router.route('/api/huds/:hudDir/start')
-        .post(huds.showHUD);
+        .post(huds.showHUD(io));
     router.route('/api/gsi')
         .get(gsi.checkGSIFile)
         .put(gsi.createGSIFile);
