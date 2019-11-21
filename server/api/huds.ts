@@ -4,25 +4,28 @@ import { app } from 'electron';
 import express from 'express';
 import * as I from './../../types/interfaces';
 import socketio from 'socket.io';
+import { loadConfig } from './config';
+import ip from 'ip';
 
 import HUDWindow from './../../init/huds';
 
-export const listHUDs = () => {
+export const listHUDs = async () => {
     const dir = path.join(app.getPath('home'), 'HUDs');
-    const dirs = fs.readdirSync(dir, { withFileTypes: true })
-        .filter(dirent => dirent.isDirectory())
-        .map(dirent => getHUDData(dirent.name))
-        .filter(hud => hud !== null);
-    return dirs;
+    const filtered = fs.readdirSync(dir, { withFileTypes: true })
+        .filter(dirent => dirent.isDirectory());
+
+    const huds = await Promise.all(filtered.map(async dirent => await getHUDData(dirent.name)));
+    return huds.filter(hud => hud !== null);
 }
 
-export const getHUDs: express.RequestHandler = (req, res) => {
-    return res.json(listHUDs());
+export const getHUDs: express.RequestHandler = async (req, res) => {
+    return res.json(await listHUDs());
 }
 
-export const getHUDData = (dirName: string): I.HUD => {
+export const getHUDData = async (dirName: string): Promise<I.HUD> => {
     const dir = path.join(app.getPath('home'), 'HUDs', dirName);
     const configFileDir = path.join(dir, 'hud.json');
+    const globalConfig = await loadConfig();
     if(!fs.existsSync(configFileDir)){
         return null;
     }
@@ -40,6 +43,8 @@ export const getHUDData = (dirName: string): I.HUD => {
         if(keybinds){
             config.keybinds = keybinds;
         }
+
+        config.url = `http://${ip.address()}:${globalConfig.port}/huds/${dirName}/?port=${globalConfig.port}&isProd=true`
 
 
         return config;
@@ -81,11 +86,11 @@ export const getHUDPanelSetting = (dirName: string) => {
         return null;
     }
 }
-export const renderHUD: express.RequestHandler = (req, res) => {
+export const renderHUD: express.RequestHandler = async (req, res) => {
     if(!req.params.dir){
         return res.sendStatus(404);
     }
-    const data = getHUDData(req.params.dir);
+    const data = await getHUDData(req.params.dir);
     if(!data){
         return res.sendStatus(404);
     }
@@ -109,11 +114,11 @@ export const renderThumbnail: express.RequestHandler = (req, res) => {
     
 }
 
-export const renderAssets: express.RequestHandler = (req, res, next) => {
+export const renderAssets: express.RequestHandler = async (req, res, next) => {
     if(!req.params.dir){
         return res.sendStatus(404);
     }
-    const data = getHUDData(req.params.dir);
+    const data = await getHUDData(req.params.dir);
     if(!data){
         return res.sendStatus(404);
     }

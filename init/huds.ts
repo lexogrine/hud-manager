@@ -1,7 +1,7 @@
 import { BrowserWindow, Tray, Menu, globalShortcut } from "electron";
 import { getHUDData } from './../server/api/huds';
 import * as path from 'path';
-import ip from 'ip';
+//import ip from 'ip';
 import socketio from 'socket.io';
 import { loadConfig } from './../server/api/config';
 
@@ -17,7 +17,7 @@ class HUD {
 
     async open(dirName: string, io: socketio.Server){
         if(this.current !== null) return null;
-        const hud = getHUDData(dirName);
+        const hud = await getHUDData(dirName);
         if(hud === null) return null;
         const hudWindow = new BrowserWindow({
             fullscreen:true,
@@ -60,7 +60,7 @@ class HUD {
                 }
             }
         });
-        hudWindow.loadURL(`http://${ip.address()}:${config.port}/huds/${hud.dir}/?port=${config.port}&isProd=true`);
+        hudWindow.loadURL(hud.url);
 
         hudWindow.on('close', () => {
             globalShortcut.unregisterAll();

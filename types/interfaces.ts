@@ -92,5 +92,6 @@ export interface HUD {
     legacy: boolean,
     dir: string,
     panel?: PanelTemplate[],
-    keybinds?: KeyBind[]
+    keybinds?: KeyBind[],
+    url: string
 }

@@ -42,14 +42,10 @@ var __importStar = (this && this.__importStar) || function (mod) {
     result["default"] = mod;
     return result;
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 exports.__esModule = true;
 var electron_1 = require("electron");
 var huds_1 = require("./../server/api/huds");
 var path = __importStar(require("path"));
-var ip_1 = __importDefault(require("ip"));
 var config_1 = require("./../server/api/config");
 var HUD = /** @class */ (function () {
     function HUD() {
@@ -66,7 +62,9 @@ var HUD = /** @class */ (function () {
                     case 0:
                         if (this.current !== null)
                             return [2 /*return*/, null];
-                        hud = huds_1.getHUDData(dirName);
+                        return [4 /*yield*/, huds_1.getHUDData(dirName)];
+                    case 1:
+                        hud = _a.sent();
                         if (hud === null)
                             return [2 /*return*/, null];
                         hudWindow = new electron_1.BrowserWindow({
@@ -96,7 +94,7 @@ var HUD = /** @class */ (function () {
                         this.tray = tray;
                         this.current = hudWindow;
                         return [4 /*yield*/, config_1.loadConfig()];
-                    case 1:
+                    case 2:
                         config = _a.sent();
                         hudWindow.once('ready-to-show', function () {
                             hudWindow.show();
@@ -112,7 +110,7 @@ var HUD = /** @class */ (function () {
                                 }
                             }
                         });
-                        hudWindow.loadURL("http://" + ip_1["default"].address() + ":" + config.port + "/huds/" + hud.dir + "/?port=" + config.port + "&isProd=true");
+                        hudWindow.loadURL(hud.url);
                         hudWindow.on('close', function () {
                             electron_1.globalShortcut.unregisterAll();
                             _this.current = null;

@@ -50,42 +50,75 @@ var fs = __importStar(require("fs"));
 var path = __importStar(require("path"));
 var electron_1 = require("electron");
 var express_1 = __importDefault(require("express"));
+var config_1 = require("./config");
+var ip_1 = __importDefault(require("ip"));
 var huds_1 = __importDefault(require("./../../init/huds"));
-exports.listHUDs = function () {
-    var dir = path.join(electron_1.app.getPath('home'), 'HUDs');
-    var dirs = fs.readdirSync(dir, { withFileTypes: true })
-        .filter(function (dirent) { return dirent.isDirectory(); })
-        .map(function (dirent) { return exports.getHUDData(dirent.name); })
-        .filter(function (hud) { return hud !== null; });
-    return dirs;
-};
-exports.getHUDs = function (req, res) {
-    return res.json(exports.listHUDs());
-};
-exports.getHUDData = function (dirName) {
-    var dir = path.join(electron_1.app.getPath('home'), 'HUDs', dirName);
-    var configFileDir = path.join(dir, 'hud.json');
-    if (!fs.existsSync(configFileDir)) {
-        return null;
-    }
-    try {
-        var configFile = fs.readFileSync(configFileDir, { encoding: 'utf8' });
-        var config = JSON.parse(configFile);
-        config.dir = dirName;
-        var panel = exports.getHUDPanelSetting(dirName);
-        var keybinds = exports.getHUDKeyBinds(dirName);
-        if (panel) {
-            config.panel = panel;
+exports.listHUDs = function () { return __awaiter(void 0, void 0, void 0, function () {
+    var dir, filtered, huds;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                dir = path.join(electron_1.app.getPath('home'), 'HUDs');
+                filtered = fs.readdirSync(dir, { withFileTypes: true })
+                    .filter(function (dirent) { return dirent.isDirectory(); });
+                return [4 /*yield*/, Promise.all(filtered.map(function (dirent) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0: return [4 /*yield*/, exports.getHUDData(dirent.name)];
+                            case 1: return [2 /*return*/, _a.sent()];
+                        }
+                    }); }); }))];
+            case 1:
+                huds = _a.sent();
+                return [2 /*return*/, huds.filter(function (hud) { return hud !== null; })];
         }
-        if (keybinds) {
-            config.keybinds = keybinds;
+    });
+}); };
+exports.getHUDs = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var _a, _b;
+    return __generator(this, function (_c) {
+        switch (_c.label) {
+            case 0:
+                _b = (_a = res).json;
+                return [4 /*yield*/, exports.listHUDs()];
+            case 1: return [2 /*return*/, _b.apply(_a, [_c.sent()])];
         }
-        return config;
-    }
-    catch (e) {
-        return null;
-    }
-};
+    });
+}); };
+exports.getHUDData = function (dirName) { return __awaiter(void 0, void 0, void 0, function () {
+    var dir, configFileDir, globalConfig, configFile, config, panel, keybinds;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                dir = path.join(electron_1.app.getPath('home'), 'HUDs', dirName);
+                configFileDir = path.join(dir, 'hud.json');
+                return [4 /*yield*/, config_1.loadConfig()];
+            case 1:
+                globalConfig = _a.sent();
+                if (!fs.existsSync(configFileDir)) {
+                    return [2 /*return*/, null];
+                }
+                try {
+                    configFile = fs.readFileSync(configFileDir, { encoding: 'utf8' });
+                    config = JSON.parse(configFile);
+                    config.dir = dirName;
+                    panel = exports.getHUDPanelSetting(dirName);
+                    keybinds = exports.getHUDKeyBinds(dirName);
+                    if (panel) {
+                        config.panel = panel;
+                    }
+                    if (keybinds) {
+                        config.keybinds = keybinds;
+                    }
+                    config.url = "http://" + ip_1["default"].address() + ":" + globalConfig.port + "/huds/" + dirName + "/?port=" + globalConfig.port + "&isProd=true";
+                    return [2 /*return*/, config];
+                }
+                catch (e) {
+                    return [2 /*return*/, null];
+                }
+                return [2 /*return*/];
+        }
+    });
+}); };
 exports.getHUDKeyBinds = function (dirName) {
     var dir = path.join(electron_1.app.getPath('home'), 'HUDs', dirName);
     var keybindsFileDir = path.join(dir, 'keybinds.json');
@@ -117,19 +150,27 @@ exports.getHUDPanelSetting = function (dirName) {
         return null;
     }
 };
-exports.renderHUD = function (req, res) {
-    if (!req.params.dir) {
-        return res.sendStatus(404);
-    }
-    var data = exports.getHUDData(req.params.dir);
-    if (!data) {
-        return res.sendStatus(404);
-    }
-    if (data.legacy) {
-        return exports.renderLegacy(req, res, null);
-    }
-    return exports.render(req, res, null);
-};
+exports.renderHUD = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var data;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                if (!req.params.dir) {
+                    return [2 /*return*/, res.sendStatus(404)];
+                }
+                return [4 /*yield*/, exports.getHUDData(req.params.dir)];
+            case 1:
+                data = _a.sent();
+                if (!data) {
+                    return [2 /*return*/, res.sendStatus(404)];
+                }
+                if (data.legacy) {
+                    return [2 /*return*/, exports.renderLegacy(req, res, null)];
+                }
+                return [2 /*return*/, exports.render(req, res, null)];
+        }
+    });
+}); };
 exports.render = function (req, res) {
     var dir = path.join(electron_1.app.getPath('home'), 'HUDs', req.params.dir);
     return res.sendFile(path.join(dir, 'index.html'));
@@ -141,16 +182,24 @@ exports.renderThumbnail = function (req, res) {
     }
     return res.sendFile(path.join(__dirname, '../../assets/icon.png'));
 };
-exports.renderAssets = function (req, res, next) {
-    if (!req.params.dir) {
-        return res.sendStatus(404);
-    }
-    var data = exports.getHUDData(req.params.dir);
-    if (!data) {
-        return res.sendStatus(404);
-    }
-    return express_1["default"].static(path.join(electron_1.app.getPath('home'), 'HUDs', req.params.dir))(req, res, next);
-};
+exports.renderAssets = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var data;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                if (!req.params.dir) {
+                    return [2 /*return*/, res.sendStatus(404)];
+                }
+                return [4 /*yield*/, exports.getHUDData(req.params.dir)];
+            case 1:
+                data = _a.sent();
+                if (!data) {
+                    return [2 /*return*/, res.sendStatus(404)];
+                }
+                return [2 /*return*/, express_1["default"].static(path.join(electron_1.app.getPath('home'), 'HUDs', req.params.dir))(req, res, next)];
+        }
+    });
+}); };
 exports.renderLegacy = function (req, res) {
     var dir = path.join(electron_1.app.getPath('home'), 'HUDs', req.params.dir);
     return res.render(path.join(dir, 'template.pug'), {

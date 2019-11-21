@@ -3,9 +3,10 @@ import { IContextData } from './../../../../components/Context';
 import api from './../../../../api/api';
 import config from './../../../../api/config';
 import * as I from './../../../../api/interfaces';
-import { Row, Col, FormGroup, Label, Input } from 'reactstrap';
+import { Row, Col, FormGroup, Label, Input, UncontrolledCollapse, Card, CardBody } from 'reactstrap';
 import Panel from './Panel';
-
+import Match from '../Live/Live';
+const hashCode = (s:string) => s.split('').reduce((a,b)=>{a=((a<<5)-a)+b.charCodeAt(0);return a&a},0).toString();
 interface CFG {
     cfg: string,
     file: string
@@ -87,20 +88,34 @@ export default class Huds extends React.Component<{ cxt: IContextData }, { huds:
                 <Row>
                     <Col>
                         {this.state.huds.map(hud => <Row key={hud.dir} className="hudRow">
-                            <Col style={{width:'64px', flex:'unset',padding:0   }}>
-                                <img src={`${config.isDev ? config.apiAddress : '/'}huds/${hud.dir}/thumbnail`} />
-                            </Col>
-                            <Col style={{flex:10, display: 'flex', justifyContent: 'center', flexDirection: 'column'}}>
-                                <Row>
-                                    <Col><strong>{hud.name}</strong> <span className='hudVersion'>({hud.version})</span></Col>
-                                </Row>
-                                <Row>
-                                    <Col><i>{hud.author}</i></Col>
-                                </Row>
-                            </Col>
-                            <Col style={{flex:1}} className="centered">
-                                {hud.panel ? <i className="material-icons" onClick={() => this.toggleConfig(hud.dir)}>settings</i> : ''}
-                                <i className="material-icons" onClick={() => this.startHUD(hud.dir)}>desktop_windows</i>
+                            <Col s={12}>
+                            <Row>
+                                <Col style={{width:'64px', flex:'unset',padding:0   }}>
+                                    <img src={`${config.isDev ? config.apiAddress : '/'}huds/${hud.dir}/thumbnail`} />
+                                </Col>
+                                <Col style={{flex:10, display: 'flex', justifyContent: 'center', flexDirection: 'column'}}>
+                                    <Row>
+                                        <Col><strong>{hud.name}</strong> <span className='hudVersion'>({hud.version})</span></Col>
+                                    </Row>
+                                    <Row>
+                                        <Col><i>{hud.author}</i></Col>
+                                    </Row>
+                                </Col>
+                                <Col style={{flex:1}} className="centered">
+                                    <i className="material-icons" id={`hud_link_${hashCode(hud.dir)}`}>link</i>
+                                    {hud.panel ? <i className="material-icons" onClick={() => this.toggleConfig(hud.dir)}>settings</i> : ''}
+                                    <i className="material-icons" onClick={() => this.startHUD(hud.dir)}>desktop_windows</i>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col s={12}>
+                                    <div className="match_data">
+                                        <UncontrolledCollapse toggler={`#hud_link_${hashCode(hud.dir)}`}>
+                                            <code>{hud.url}</code>
+                                        </UncontrolledCollapse>
+                                    </div>
+                                </Col>
+                            </Row>
                             </Col>
                         </Row>)}
                     </Col>
