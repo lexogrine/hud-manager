@@ -139,7 +139,6 @@ export default class MatchEdit extends Component<{ cxt: IContextData, match: I.M
                 <Row>
                     <Col s={12} className="second-options centered">
                         <Button color="primary" onClick={this.toggleVeto}>Manage Vetos</Button>
-                        <Button color="primary" onClick={this.save}>Save</Button>
                     </Col>
                 </Row>
                 <Row>

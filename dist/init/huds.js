@@ -104,7 +104,6 @@ var HUD = /** @class */ (function () {
                                 var _loop_1 = function (bind) {
                                     electron_1.globalShortcut.register(bind.bind, function () {
                                         io.to(hud.dir).emit("keybindAction", bind.action);
-                                        console.log(bind);
                                     });
                                 };
                                 for (var _i = 0, _a = hud.keybinds; _i < _a.length; _i++) {
