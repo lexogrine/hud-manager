@@ -146,7 +146,6 @@ exports.updateMatch = function (updateMatches) { return __awaiter(void 0, void 0
                     if (match.id.length)
                         return match;
                     match.id = v4_1["default"]();
-                    console.log(match);
                     return match;
                 });
                 matchManager.set(matchesFixed);

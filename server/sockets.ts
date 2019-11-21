@@ -40,14 +40,15 @@ export default function (server: http.Server, app: express.Router) {
     });
 
     io.on('connection', socket => {
-        socket.on('ready', () => {
+        socket.on('started', () => {
             if (last) {
                 socket.emit("update", last);
             }
-        });
+        })
         socket.emit('readyToRegister');
         socket.on('register', (name: string) => {
             socket.join(name);
+            io.to(name).emit('hud_config', HUDState.get(name));
         });
         socket.on('hud_config', (data: { hud: string, section: string, config: any }) => {
             HUDState.set(data.hud, data.section, data.config);

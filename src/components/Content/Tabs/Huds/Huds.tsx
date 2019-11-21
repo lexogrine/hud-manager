@@ -49,10 +49,10 @@ export default class Huds extends React.Component<{ cxt: IContextData }, { huds:
     startHUD(dir: string) {
         api.huds.start(dir);
     }
-    setActive = (hudDir: string) => {
+    toggleConfig = (hudDir: string) => {
         const hud = this.state.huds.filter(hud => hud.panel && hud.dir === hudDir)[0];
         if(!hud) return;
-        this.setState({active:hud});
+        this.setState({active:this.state.active && this.state.active.dir === hudDir ? null : hud});
     }
     render() {
         const { killfeed, radar } = this.state.form;
@@ -99,7 +99,7 @@ export default class Huds extends React.Component<{ cxt: IContextData }, { huds:
                                 </Row>
                             </Col>
                             <Col style={{flex:1}} className="centered">
-                                {hud.panel ? <div onClick={() => this.setActive(hud.dir)}>EDIT</div> : ''}
+                                {hud.panel ? <i className="material-icons" onClick={() => this.toggleConfig(hud.dir)}>settings</i> : ''}
                                 <i className="material-icons" onClick={() => this.startHUD(hud.dir)}>desktop_windows</i>
                             </Col>
                         </Row>)}

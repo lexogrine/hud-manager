@@ -84,7 +84,7 @@ function default_1(server, app) {
         request_1["default"].post('http://localhost:36363/', { json: req.body });
     });
     io.on('connection', function (socket) {
-        socket.on('ready', function () {
+        socket.on('started', function () {
             if (last) {
                 socket.emit("update", last);
             }
@@ -92,6 +92,7 @@ function default_1(server, app) {
         socket.emit('readyToRegister');
         socket.on('register', function (name) {
             socket.join(name);
+            io.to(name).emit('hud_config', exports.HUDState.get(name));
         });
         socket.on('hud_config', function (data) {
             exports.HUDState.set(data.hud, data.section, data.config);
