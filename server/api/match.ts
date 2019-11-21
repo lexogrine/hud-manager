@@ -83,7 +83,6 @@ export const updateMatch = async (updateMatches: Match[]) => {
     const matchesFixed = updateMatches.map(match => {
         if(match.id.length) return match;
         match.id = uuidv4();
-        console.log(match);
         return match;
     })
 

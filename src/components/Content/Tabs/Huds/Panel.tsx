@@ -20,7 +20,6 @@ export default class ActionPanel extends React.Component<{ cxt: IContextData, hu
         if (!form[section]) form[section] = {};
         form[section][name] = e.target.value;
         this.setState({ form });
-        console.log(form);
     }
     componentDidMount() {
         const { hud }: { hud: I.HUD } = this.props;

@@ -15,11 +15,6 @@ export default class Content extends React.Component<{}, { activeTab: string, da
         };
     }
 
-    async componentDidMount(){
-        /*const teams = await api.teams.get();
-        console.log(teams);*/
-    }
-
     toggle(tab: string, data?: any) {
         if (this.state.activeTab !== tab) {
             this.setState({
