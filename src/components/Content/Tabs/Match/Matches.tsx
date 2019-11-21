@@ -102,7 +102,6 @@ export default class Matches extends Component<{ cxt: IContextData }> {
     }
 
     render() {
-        console.log(this.props.cxt.matches)
         return (
             <Row className="matches_container">
                 <Button onClick={this.add} color="primary" id="add_match_button" >Add match</Button>

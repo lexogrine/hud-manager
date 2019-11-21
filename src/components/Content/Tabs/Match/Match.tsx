@@ -43,7 +43,9 @@ export default class MatchEdit extends Component<{ cxt: IContextData, match: I.M
         const { state } = this;
         state[side].id = id;
         state[side].wins = wins;
-        this.setState(state);
+        this.setState(state, () => {
+            this.save();
+        });
     }
 
     save = async () => {
@@ -53,7 +55,6 @@ export default class MatchEdit extends Component<{ cxt: IContextData, match: I.M
         }
     }
     toggleVeto = () => {
-        console.log(this.state.id, this.state.isVetoOpen)
         this.setState({ isVetoOpen: !this.state.isVetoOpen });
     }
     async componentDidMount() {
@@ -71,8 +72,6 @@ export default class MatchEdit extends Component<{ cxt: IContextData, match: I.M
         const teams = cxt.teams.filter(team => [this.state.left.id, this.state.right.id].includes(team._id));
         const leftTeam = match && teams.filter(team => team._id === match.left.id)[0];
         const rightTeam = match && teams.filter(team => team._id === match.right.id)[0];
-        const { isVetoOpen } = this.state;
-        console.log(isVetoOpen)
         return (
             <Form>
                 <Row>
