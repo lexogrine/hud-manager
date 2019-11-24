@@ -37,7 +37,11 @@ img.smallLogo {
     background-color:red;
     height: 50px;
 }
-
+#avatar_view {
+    max-height:92px;
+    border:2px solid rgba(0,0,0,0.5);
+    margin:auto;
+}
 .veto-container {
     /*height: 175px;*/
     background-color:rgba(0,0,0,0.05);

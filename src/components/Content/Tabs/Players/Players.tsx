@@ -7,15 +7,15 @@ import { ContextData, IContextData } from './../../../../components/Context';
 import Tip from './../../../Tooltip';
 
 
-export default class Players extends React.Component<{cxt: IContextData, data: any}, {options: any[], value: string, form: I.Player, forceLoad: boolean}> {
+export default class Players extends React.Component<{ cxt: IContextData, data: any }, { options: any[], value: string, form: I.Player, forceLoad: boolean, filePath: string }> {
     emptyPlayer: I.Player;
-    constructor(props: {cxt: IContextData, data: any}) {
+    constructor(props: { cxt: IContextData, data: any }) {
         super(props);
         this.emptyPlayer = {
             _id: "empty",
             firstName: "",
-            lastName:"",
-            username:"",
+            lastName: "",
+            username: "",
             avatar: "",
             country: "",
             steamid: ""
@@ -23,45 +23,53 @@ export default class Players extends React.Component<{cxt: IContextData, data: a
         this.state = {
             options: countryList().getData(),
             value: "",
-            form: {...this.emptyPlayer},
+            form: { ...this.emptyPlayer },
+            filePath: '',
             forceLoad: false
         };
     }
 
-    componentDidMount(){
+    componentDidMount() {
         this.loadPlayers();
     }
 
 
-    componentDidUpdate(pProps:any) {
-        if(this.props.data && this.props.data.steamid && !this.state.forceLoad){
-            this.setState({form: {...this.emptyPlayer, steamid:this.props.data.steamid}, forceLoad: true}, () => {
+    componentDidUpdate(pProps: any) {
+        if (this.props.data && this.props.data.steamid && !this.state.forceLoad) {
+            this.setState({ form: { ...this.emptyPlayer, steamid: this.props.data.steamid }, forceLoad: true }, () => {
                 const player = this.props.cxt.players.filter(player => player.steamid === this.props.data.steamid)[0];
-                if(player) this.loadPlayer(player._id)
+                if (player) this.loadPlayer(player._id)
             });
-        } else if(!this.props.data && pProps.data && pProps.data.steamid === this.state.form.steamid){
-            this.setState({form: {...this.emptyPlayer, steamid: ''}})
+        } else if (!this.props.data && pProps.data && pProps.data.steamid === this.state.form.steamid) {
+            this.setState({ form: { ...this.emptyPlayer, steamid: '' } }, this.clearAvatar)
         }
-        if(!this.props.data && this.state.forceLoad){
-            this.setState({forceLoad: false})
+        if (!this.props.data && this.state.forceLoad) {
+            this.setState({ forceLoad: false })
         }
     }
 
     loadPlayers = async (id?: string) => {
         await this.props.cxt.reload();
-        if(id){
+        if (id) {
             this.loadPlayer(id);
         }
     }
 
     loadPlayer = (id: string) => {
         const player = this.props.cxt.players.filter(player => player._id === id)[0];
-        if(player) this.setState({form:{...player}});
+        if (player) this.setState({ form: { ...player }, filePath: '' }, this.clearAvatar);
     }
 
+    loadEmpty = () => {
+        this.setState({ form: { ...this.emptyPlayer } }, this.clearAvatar)
+    }
+
+    clearAvatar = () => { const avatarInput: any = document.getElementById("avatar"); avatarInput.value = ''; }
+
     setPlayer = (event: any) => {
-        if(event.target.value === "empty") {
-            return this.setState({form:{...this.emptyPlayer}})
+        if (event.target.value === "empty") {
+            //return this.setState({form:{...this.emptyPlayer}, filePath:''})
+            return this.loadEmpty();
         }
         this.loadPlayer(event.target.value);
     }
@@ -71,41 +79,43 @@ export default class Players extends React.Component<{cxt: IContextData, data: a
         const name: 'steamid' | 'firstName' | 'lastName' | 'username' | 'avatar' | 'country' = event.target.name;
         const { form } = this.state;
 
-        if(!event.target.files){
+        if (!event.target.files) {
             form[name] = event.target.value;
-            return this.setState({form});
+            return this.setState({ form });
         }
         let reader: any = new FileReader();
         let file = event.target.files[0];
-        if(!file.type.startsWith("image")){
+        const filePath = event.target.value;
+        if (!file.type.startsWith("image")) {
+            this.setState({ filePath: '' });
             return;
         }
         reader.readAsDataURL(file);
         reader.onload = () => {
             form.avatar = reader.result.replace(/^data:([a-z]+)\/([a-z0-9]+);base64,/, '');
-            this.setState({form})
+            this.setState({ form, filePath })
         }
-       // this.setState({ value })
+        // this.setState({ value })
     }
 
     save = async () => {
         const { form } = this.state;
         let response: any;
-        if(form._id === "empty"){
+        if (form._id === "empty") {
             response = await api.players.add(form);
         } else {
             response = await api.players.update(form._id, form);
         }
-        if(response && response._id){
+        if (response && response._id) {
             this.loadPlayers(response._id);
         }
     }
     delete = async () => {
-        if(this.state.form._id === "empty") return;
+        if (this.state.form._id === "empty") return;
         const response = await api.players.delete(this.state.form._id);
-        if(response){
+        if (response) {
             await this.loadPlayers();
-            this.setState({form:{...this.emptyPlayer}});
+            return this.loadEmpty();
         }
     }
 
@@ -123,7 +133,7 @@ export default class Players extends React.Component<{cxt: IContextData, data: a
                     <Col md="4">
                         <FormGroup>
                             <Label for="first_name">First Name</Label>
-                            <Input type="text" name="firstName" id="first_name" onChange={this.changeHandler} value={this.state.form.firstName}/>
+                            <Input type="text" name="firstName" id="first_name" onChange={this.changeHandler} value={this.state.form.firstName} />
                         </FormGroup>
                     </Col>
                     <Col md="4">
@@ -135,7 +145,7 @@ export default class Players extends React.Component<{cxt: IContextData, data: a
                     <Col md="4">
                         <FormGroup>
                             <Label for="last_name">Last Name</Label>
-                            <Input type="text" name="lastName" id="last_name" onChange={this.changeHandler} value={this.state.form.lastName}/>
+                            <Input type="text" name="lastName" id="last_name" onChange={this.changeHandler} value={this.state.form.lastName} />
                         </FormGroup>
                     </Col>
                 </Row>
@@ -162,7 +172,7 @@ export default class Players extends React.Component<{cxt: IContextData, data: a
                     </Col>
                 </Row>
                 <Row>
-                    
+
                     <Col md="6">
                         <FormGroup>
                             <Label for="avatar">Avatar</Label>
@@ -171,6 +181,9 @@ export default class Players extends React.Component<{cxt: IContextData, data: a
                                 Avatar to be used for player images, instead of Steam's default
                             </FormText>
                         </FormGroup>
+                    </Col>
+                    <Col md="6" className="centered">
+                        {this.state.form.avatar.length ? <img src={'data:image/jpeg;base64,'+this.state.form.avatar} id="avatar_view" /> : ''}
                     </Col>
                 </Row>
                 <Row>
