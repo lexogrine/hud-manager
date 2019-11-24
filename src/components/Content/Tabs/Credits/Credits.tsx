@@ -32,7 +32,7 @@ export default class Credits extends React.Component {
           <CreditsEntry title="Testing and Debugging" people={["osztenkurden", "Komodo"]} />
           <CreditsEntry title="Radar Development" people={["boltgolt"]} />
           <CreditsEntry title="Manager Design" people={["Drożdżu"]} />
-          <CreditsEntry title="Ideas" people={["boltgolt", "Komodo", "TeDy"]} />
+          <CreditsEntry title="Ideas" people={["boltgolt", "Komodo", "TeDY"]} />
         </Col>
       </Row>
     );
