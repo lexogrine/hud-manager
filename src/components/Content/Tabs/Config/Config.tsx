@@ -8,7 +8,7 @@ interface ConfigStatus extends I.CFGGSIResponse {
     loading: boolean
 }
 
-export default class Huds extends React.Component<any, {config: I.Config, cfg: ConfigStatus, gsi: ConfigStatus, restartRequired: boolean}>  {
+export default class Config extends React.Component<any, {config: I.Config, cfg: ConfigStatus, gsi: ConfigStatus, restartRequired: boolean}>  {
     constructor(props: any){
         super(props);
         this.state = {
@@ -106,7 +106,7 @@ export default class Huds extends React.Component<any, {config: I.Config, cfg: C
                 <Row>
                     <Col md="4">
                         <FormGroup>
-                            <Label for="steamApiKey"><Tip label="Steam API Key">It's neccessary to load Steam avatars, you can get yours on https://steamcommunity.com/dev/apikey</Tip></Label>
+                            <Label for="steamApiKey"><Tip label="Steam API Key" link='https://steamcommunity.com/dev/apikey'>It's neccessary to load Steam avatars, you can get yours on https://steamcommunity.com/dev/apikey</Tip></Label>
                             <Input type="text" name="steamApiKey" id="steamApiKey" onChange={this.changeHandler} value={this.state.config.steamApiKey}/>
                         </FormGroup>
                     </Col>

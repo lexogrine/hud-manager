@@ -1,4 +1,4 @@
-import { app, BrowserWindow } from "electron";
+import { app, BrowserWindow, shell } from "electron";
 import path from 'path';
 import * as directories from './init/directories';
 import init from './server'
@@ -37,6 +37,12 @@ async function createMainWindow() {
 
     win.setMenuBarVisibility(false);
     const startUrl =`http://localhost:${config.port}/`;
+
+    win.webContents.on('new-window', (e, url) => {
+        e.preventDefault();
+        shell.openExternal(url);
+    });
+
     win.loadURL(`${isDev ? `http://localhost:3000/?port=${config.port || 1337}` : startUrl}`);
     win.on("close", () => {
         server.close();

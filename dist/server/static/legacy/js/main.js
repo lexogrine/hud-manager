@@ -220,7 +220,6 @@ async function init(){
     const teamsArray = await getAPI('/api/teams');
     const matches = await getAPI('/api/match');
     const match = matches.filter(match => match.current)[0];    
-    console.log(match)
     const legacyMatch = {
         match: match.matchType,
         team_1: {

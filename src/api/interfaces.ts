@@ -47,6 +47,8 @@ export interface HUD {
     author: string,
     legacy: boolean,
     dir: string,
+    radar: boolean,
+    killfeed: boolean
     panel?: PanelTemplate[],
     keybinds?: KeyBind[],
     url: string

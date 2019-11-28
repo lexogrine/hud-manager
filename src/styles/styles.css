@@ -37,9 +37,9 @@ img.smallLogo {
     background-color:red;
     height: 50px;
 }
-#avatar_view {
+#avatar_view,#logo_view {
     max-height:92px;
-    border:2px solid rgba(0,0,0,0.5);
+    /*border:2px solid rgba(0,0,0,0.5);*/
     margin:auto;
 }
 .veto-container {
@@ -300,4 +300,32 @@ form .card > .card-body > button.btn {
 }
 #add_match_button {
     margin: 10px auto;
+}
+.dropArea {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 3px dashed #170027;
+    border-radius: 30px;
+    padding: 15px;
+    opacity: 0.3;
+}
+.dropArea label {
+    flex:1;
+}
+
+.dropArea label:hover{
+    cursor: pointer;
+}
+.dropArea.hightlight,.dropArea:hover {
+    opacity:1;
+}
+.dropArea input[type="file"]{
+    display:none;
+}
+.text-muted {
+    color: white !important;
+}
+.nav-tabs .nav-link {
+    user-select: none;
 }

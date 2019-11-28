@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { app } from 'electron';
+import { app, shell } from 'electron';
 import express from 'express';
 import * as I from './../../types/interfaces';
 import socketio from 'socket.io';
@@ -86,6 +86,13 @@ export const getHUDPanelSetting = (dirName: string) => {
         return null;
     }
 }
+
+export const openHUDsDirectory: express.RequestHandler = async (_req, res) => {
+    const dir = path.join(app.getPath('home'), 'HUDs', 'AA');
+    shell.showItemInFolder(dir);
+    return res.sendStatus(200);
+}
+
 export const renderHUD: express.RequestHandler = async (req, res) => {
     if(!req.params.dir){
         return res.sendStatus(404);

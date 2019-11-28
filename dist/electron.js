@@ -70,7 +70,8 @@ function createMainWindow() {
                         title: "HUD Manager",
                         icon: path_1["default"].join(__dirname, 'assets/icon.png'),
                         webPreferences: {
-                            backgroundThrottling: false
+                            backgroundThrottling: false,
+                            nodeIntegration: true
                         },
                         width: 1280
                     });
@@ -84,6 +85,10 @@ function createMainWindow() {
                     config = _a.sent();
                     win.setMenuBarVisibility(false);
                     startUrl = "http://localhost:" + config.port + "/";
+                    win.webContents.on('new-window', function (e, url) {
+                        e.preventDefault();
+                        electron_1.shell.openExternal(url);
+                    });
                     win.loadURL("" + (isDev ? "http://localhost:3000/?port=" + (config.port || 1337) : startUrl));
                     win.on("close", function () {
                         server.close();

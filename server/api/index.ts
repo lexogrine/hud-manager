@@ -47,7 +47,8 @@ export default function (router: express.Router, io: socketio.Server){
         .patch(match.setMatch(io));
 
     router.route('/api/huds')
-        .get(huds.getHUDs);
+        .get(huds.getHUDs)
+        .post(huds.openHUDsDirectory);
 
     router.route('/api/huds/close')
         .post(huds.closeHUD);

@@ -4,6 +4,7 @@ import countryList from 'react-select-country-list';
 import api from './../../../../api/api';
 import * as I from './../../../../api/interfaces';
 import { IContextData } from './../../../../components/Context';
+import DragFileInput from './../../../DragFileInput';
 
 export default class Teams extends React.Component<{cxt: IContextData}, {options: any[], value: string, form: I.Team}> {
     emptyTeam: I.Team;
@@ -47,6 +48,23 @@ export default class Teams extends React.Component<{cxt: IContextData}, {options
         this.loadTeam(event.target.value);
     }
 
+    fileHandler = (files: FileList) => {
+        
+
+        if(!files || !files[0]) return;
+        const file = files[0];
+        const { form } = this.state;
+        if (!file.type.startsWith("image")) {
+            return;
+        }
+        let reader: any = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => {
+            form.logo = reader.result.replace(/^data:([a-z]+)\/([a-z0-9]+);base64,/, '');
+            this.setState({ form })
+        }
+    }
+
     changeHandler = (event: any) => {
         const name: 'name' | 'shortName' | 'logo' | 'country' = event.target.name;
         const { form }: any = this.state;
@@ -54,16 +72,8 @@ export default class Teams extends React.Component<{cxt: IContextData}, {options
             form[name] = event.target.value;
             return this.setState({form});
         }
-        let reader: any = new FileReader();
-        let file = event.target.files[0];
-        if(!file.type.startsWith("image")){
-            return;
-        }
-        reader.readAsDataURL(file);
-        reader.onload = () => {
-            form.logo = reader.result.replace(/^data:([a-z]+)\/([a-z0-9]+);base64,/, '');
-            this.setState({form})
-        }
+
+        return this.fileHandler(event.target.files);
    
        // this.setState({ value })
     }
@@ -95,7 +105,7 @@ export default class Teams extends React.Component<{cxt: IContextData}, {options
                 <FormGroup>
                     <Label for="teams">Teams</Label>
                     <Input type="select" name="teams" id="teams" onChange={this.setTeam} value={this.state.form._id}>
-                        <option value={"empty"}>Empty team</option>
+                        <option value={"empty"}>New team</option>
                         {this.props.cxt.teams.map(team  => <option key={team._id} value={team._id}>{team.name}</option>)}
                     </Input>
                 </FormGroup>
@@ -114,7 +124,7 @@ export default class Teams extends React.Component<{cxt: IContextData}, {options
                     </Col>
                 </Row>
                 <Row>
-                    <Col md="6">
+                    <Col>
                         <FormGroup>
                             <Label for="country">Country</Label>
                             <CustomInput
@@ -124,18 +134,28 @@ export default class Teams extends React.Component<{cxt: IContextData}, {options
                                 value={this.state.form.country}
                                 onChange={this.changeHandler}
                             >
+                                <option value=''>None</option>
                                 {this.state.options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
                             </CustomInput>
                         </FormGroup>
                     </Col>
+                </Row>
+                <Row>
                     <Col md="6">
                         <FormGroup>
-                            <Label for="team_logo">Logo</Label>
-                            <Input type="file" name="logo" id="team_logo" onChange={this.changeHandler} />
+                            <Label>Logo</Label>
+                            <DragFileInput onChange={this.fileHandler} id="team_logo"/>
                             <FormText color="muted">
                                 Logo to be used for team, if possible in the given hud
                             </FormText>
+                            {/*<Input type="file" name="logo" id="team_logo" onChange={this.changeHandler} />
+                            <FormText color="muted">
+                                Logo to be used for team, if possible in the given hud
+                            </FormText>*/}
                         </FormGroup>
+                    </Col>
+                    <Col md="6" className="centered">
+                        {this.state.form.logo.length ? <img src={'data:image/jpeg;base64,' + this.state.form.logo} id="logo_view" /> : ''}
                     </Col>
                 </Row>
                 <Row>

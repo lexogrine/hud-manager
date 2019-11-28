@@ -150,6 +150,14 @@ exports.getHUDPanelSetting = function (dirName) {
         return null;
     }
 };
+exports.openHUDsDirectory = function (_req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var dir;
+    return __generator(this, function (_a) {
+        dir = path.join(electron_1.app.getPath('home'), 'HUDs', 'AA');
+        electron_1.shell.showItemInFolder(dir);
+        return [2 /*return*/, res.sendStatus(200)];
+    });
+}); };
 exports.renderHUD = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var data;
     return __generator(this, function (_a) {

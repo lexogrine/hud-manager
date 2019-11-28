@@ -5,9 +5,10 @@ import api from './../../../../api/api';
 import * as I from './../../../../api/interfaces';
 import { ContextData, IContextData } from './../../../../components/Context';
 import Tip from './../../../Tooltip';
+import DragFileInput from './../../../DragFileInput';
 
 
-export default class Players extends React.Component<{ cxt: IContextData, data: any }, { options: any[], value: string, form: I.Player, forceLoad: boolean, filePath: string }> {
+export default class Players extends React.Component<{ cxt: IContextData, data: any }, { options: any[], value: string, form: I.Player, forceLoad: boolean }> {
     emptyPlayer: I.Player;
     constructor(props: { cxt: IContextData, data: any }) {
         super(props);
@@ -24,7 +25,6 @@ export default class Players extends React.Component<{ cxt: IContextData, data: 
             options: countryList().getData(),
             value: "",
             form: { ...this.emptyPlayer },
-            filePath: '',
             forceLoad: false
         };
     }
@@ -57,7 +57,7 @@ export default class Players extends React.Component<{ cxt: IContextData, data: 
 
     loadPlayer = (id: string) => {
         const player = this.props.cxt.players.filter(player => player._id === id)[0];
-        if (player) this.setState({ form: { ...player }, filePath: '' }, this.clearAvatar);
+        if (player) this.setState({ form: { ...player }}, this.clearAvatar);
     }
 
     loadEmpty = () => {
@@ -74,6 +74,23 @@ export default class Players extends React.Component<{ cxt: IContextData, data: 
         this.loadPlayer(event.target.value);
     }
 
+    fileHandler = (files: FileList) => {
+        
+
+        if(!files || !files[0]) return;
+        const file = files[0];
+        const { form } = this.state;
+        if (!file.type.startsWith("image")) {
+            return;
+        }
+        let reader: any = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => {
+            form.avatar = reader.result.replace(/^data:([a-z]+)\/([a-z0-9]+);base64,/, '');
+            this.setState({ form })
+        }
+    }
+
 
     changeHandler = (event: any) => {
         const name: 'steamid' | 'firstName' | 'lastName' | 'username' | 'avatar' | 'country' = event.target.name;
@@ -83,19 +100,8 @@ export default class Players extends React.Component<{ cxt: IContextData, data: 
             form[name] = event.target.value;
             return this.setState({ form });
         }
-        let reader: any = new FileReader();
-        let file = event.target.files[0];
-        const filePath = event.target.value;
-        if (!file.type.startsWith("image")) {
-            this.setState({ filePath: '' });
-            return;
-        }
-        reader.readAsDataURL(file);
-        reader.onload = () => {
-            form.avatar = reader.result.replace(/^data:([a-z]+)\/([a-z0-9]+);base64,/, '');
-            this.setState({ form, filePath })
-        }
-        // this.setState({ value })
+
+        return this.fileHandler(event.target.files);
     }
 
     save = async () => {
@@ -125,7 +131,7 @@ export default class Players extends React.Component<{ cxt: IContextData, data: 
                 <FormGroup>
                     <Label for="players">Players</Label>
                     <Input type="select" name="players" id="players" onChange={this.setPlayer} value={this.state.form._id}>
-                        <option value={"empty"}>Empty player</option>
+                        <option value={"empty"}>New player</option>
                         {this.props.cxt.players.map(player => <option key={player._id} value={player._id}>{player.firstName} {player.username} {player.lastName}</option>)}
                     </Input>
                 </FormGroup>
@@ -160,6 +166,7 @@ export default class Players extends React.Component<{ cxt: IContextData, data: 
                                 value={this.state.form.country}
                                 onChange={this.changeHandler}
                             >
+                                <option value=''>None</option>
                                 {this.state.options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
                             </CustomInput>
                         </FormGroup>
@@ -175,15 +182,20 @@ export default class Players extends React.Component<{ cxt: IContextData, data: 
 
                     <Col md="6">
                         <FormGroup>
-                            <Label for="avatar">Avatar</Label>
-                            <Input type="file" name="avatar" id="avatar" onChange={this.changeHandler} />
+                            <Label>Avatar</Label>
+                            <DragFileInput onChange={this.fileHandler} id="avatar" />
                             <FormText color="muted">
                                 Avatar to be used for player images, instead of Steam's default
                             </FormText>
+                            {/*<Label for="avatar">Avatar</Label>
+                            <Input type="file" name="avatar" id="avatar" onChange={this.changeHandler} />
+                            <FormText color="muted">
+                                Avatar to be used for player images, instead of Steam's default
+                            </FormText>*/}
                         </FormGroup>
                     </Col>
                     <Col md="6" className="centered">
-                        {this.state.form.avatar.length ? <img src={'data:image/jpeg;base64,'+this.state.form.avatar} id="avatar_view" /> : ''}
+                        {this.state.form.avatar.length ? <img src={'data:image/jpeg;base64,' + this.state.form.avatar} id="avatar_view" /> : ''}
                     </Col>
                 </Row>
                 <Row>
