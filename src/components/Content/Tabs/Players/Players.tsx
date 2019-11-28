@@ -4,7 +4,6 @@ import countryList from 'react-select-country-list';
 import api from './../../../../api/api';
 import * as I from './../../../../api/interfaces';
 import { ContextData, IContextData } from './../../../../components/Context';
-import Tip from './../../../Tooltip';
 import DragFileInput from './../../../DragFileInput';
 
 

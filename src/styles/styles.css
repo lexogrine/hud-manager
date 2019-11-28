@@ -329,3 +329,15 @@ form .card > .card-body > button.btn {
 .nav-tabs .nav-link {
     user-select: none;
 }
+.radar_support, .killfeed_support {
+    z-index:0;
+    position:relative;
+}
+.radar_support:hover, .killfeed_support:hover {
+    cursor: pointer;
+}
+.radar_support i, .killfeed_support i {
+    z-index: -1;
+    position: relative;
+    top: 5px;
+}

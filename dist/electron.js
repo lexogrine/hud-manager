@@ -70,8 +70,7 @@ function createMainWindow() {
                         title: "HUD Manager",
                         icon: path_1["default"].join(__dirname, 'assets/icon.png'),
                         webPreferences: {
-                            backgroundThrottling: false,
-                            nodeIntegration: true
+                            backgroundThrottling: false
                         },
                         width: 1280
                     });

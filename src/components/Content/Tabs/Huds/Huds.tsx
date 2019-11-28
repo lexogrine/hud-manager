@@ -6,7 +6,7 @@ import * as I from './../../../../api/interfaces';
 import { Row, Col, FormGroup, Label, Input, UncontrolledCollapse, Card, CardBody, Button } from 'reactstrap';
 import Panel from './Panel';
 import Match from '../Live/Live';
-
+import Tip from './../../../Tooltip';
 var userAgent = navigator.userAgent.toLowerCase();
 let isElectron = false;
 let shell = null
@@ -114,8 +114,8 @@ export default class Huds extends React.Component<{ cxt: IContextData }, { huds:
                                     </Row>
                                     {hud.killfeed || hud.radar ? <Row>
                                         <Col>
-                                            {hud.radar ? <i className="material-icons">map</i>:''}
-                                            {hud.killfeed ? <i className="material-icons">group_work</i>:''}
+                                            {hud.radar ? <Tip id={`radar_support_${hud.dir}`} className="radar_support" label={<i className="material-icons">map</i>}>Includes Boltgolt's radar</Tip>:''}
+                                            {hud.killfeed ? <Tip id={`killfeed_support_${hud.dir}`} className="killfeed_support" label={<i className="material-icons">group_work</i>}>Includes custom killfeed</Tip>:''}
                                         </Col>
                                     </Row>: ''}
                                 </Col>
