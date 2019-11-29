@@ -59,7 +59,7 @@ export default class ActionPanel extends React.Component<{ cxt: IContextData, hu
         const { form } = this.state;
         return (
             <div>
-                {hud.panel.map(section => <div key={section.label}>
+                {hud.panel.map(section => <div key={section.label} className="custom_form">
                     <Form>
                         {section.inputs.map(input => <Row key={input.name}>
                             <Col s={12}>

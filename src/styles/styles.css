@@ -341,3 +341,9 @@ form .card > .card-body > button.btn {
     position: relative;
     top: 5px;
 }
+.custom_form {
+    padding: 20px;
+    margin-bottom: 20px;
+    border: 1px dashed rgba(0,0,0,0.5);
+    border-radius: 20px;
+}
