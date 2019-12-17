@@ -68,7 +68,8 @@ export default class Matches extends Component<{ cxt: IContextData }> {
         }
         
         for(let i = 0; i < 7; i++){
-            newMatch.vetos.push({teamId: '', mapName: '', side: 'NO', type:'pick', mapEnd: false});
+            newMatch.vetos.push({teamId: '', mapName: '', side: 'NO', type:'pick', mapEnd: false, reverseSide:false});
+            
         }
         matches.push(newMatch);
         await api.match.set(matches);

@@ -6,48 +6,48 @@ import { getTeamById } from './teams';
 import uuidv4 from 'uuid/v4';
 
 const testmatches: Match[] = [{
-    id:'a',
+    id: "a",
     left: {
-        id:'H427BFDoR9chqgwe',
-        wins:0,
+        id: "H427BFDoR9chqgwe",
+        wins: 0
     },
     right: {
-        id:'XXH5JceBg3miQgBt',
-        wins:0,
+        id: "XXH5JceBg3miQgBt",
+        wins: 0
     },
     current: true,
-    matchType: 'bo3',
+    matchType: "bo3",
     vetos: [
-        {teamId:"H427BFDoR9chqgwe",mapName:"de_overpass", side:"CT",type:"pick","mapEnd":false},
-        {teamId: '', mapName: '', side: 'NO', type:'pick', mapEnd: false,},
-        {teamId: '', mapName: '', side: 'NO', type:'pick', mapEnd: false,},
-        {teamId: '', mapName: '', side: 'NO', type:'pick', mapEnd: false,},
-        {teamId: '', mapName: '', side: 'NO', type:'pick', mapEnd: false,},
-        {teamId: '', mapName: '', side: 'NO', type:'pick', mapEnd: false,},
-        {teamId: '', mapName: '', side: 'NO', type:'pick', mapEnd: false,}
+        { teamId: "H427BFDoR9chqgwe", mapName: "de_overpass", side: "CT", type: "pick", mapEnd: false },
+        { teamId: "XXH5JceBg3miQgBt", mapName: "de_mirage", side: "T", type: "pick", mapEnd: false, reverseSide: true },
+        { teamId: "H427BFDoR9chqgwe", mapName: "de_inferno", side: "CT", type: "pick", mapEnd: false },
+        { teamId: "", mapName: "", side: "NO", type: "pick", mapEnd: false },
+        { teamId: "", mapName: "", side: "NO", type: "pick", mapEnd: false },
+        { teamId: "", mapName: "", side: "NO", type: "pick", mapEnd: false },
+        { teamId: "", mapName: "", side: "NO", type: "pick", mapEnd: false }
     ]
 }];
 
 class MatchManager {
     matches: Match[]
-    constructor(){
+    constructor() {
         const load = async () => {
             const current = this.matches.filter(match => match.current)[0];
-            if(!current) return;
+            if (!current) return;
             const left = await getTeamById(current.left.id);
             const right = await getTeamById(current.right.id);
-        
-            if(left && left._id){
-                GSI.setTeamOne({id:left._id, name:left.name, country:left.country, logo:left.logo, map_score:current.left.wins});
+
+            if (left && left._id) {
+                GSI.setTeamOne({ id: left._id, name: left.name, country: left.country, logo: left.logo, map_score: current.left.wins });
             }
-            if(right && right._id){
-                GSI.setTeamTwo({id:right._id, name:right.name, country:right.country, logo:right.logo, map_score:current.right.wins});
+            if (right && right._id) {
+                GSI.setTeamTwo({ id: right._id, name: right.name, country: right.country, logo: right.logo, map_score: current.right.wins });
             }
         }
         this.matches = testmatches;
         load();
     }
-    set(matches: Match[]){
+    set(matches: Match[]) {
         this.matches = matches;
     }
 }
@@ -58,30 +58,30 @@ export const getMatches: express.RequestHandler = (req, res) => {
     return res.json(matchManager.matches);
 }
 
-export const getMatchesV2 = () =>{
+export const getMatchesV2 = () => {
     return matchManager.matches;
 }
 
 export const updateMatch = async (updateMatches: Match[]) => {
     const currents = updateMatches.filter(match => match.current);
-    if(currents.length > 1){
-        matchManager.set(updateMatches.map(match => ({...match, current: false})));
+    if (currents.length > 1) {
+        matchManager.set(updateMatches.map(match => ({ ...match, current: false })));
         return;
     }
-    if(currents.length){
+    if (currents.length) {
         const left = await getTeamById(currents[0].left.id);
         const right = await getTeamById(currents[0].right.id);
-    
-        if(left && left._id){
-            GSI.setTeamOne({id:left._id, name:left.name, country:left.country, logo:left.logo, map_score:currents[0].left.wins});
+
+        if (left && left._id) {
+            GSI.setTeamOne({ id: left._id, name: left.name, country: left.country, logo: left.logo, map_score: currents[0].left.wins });
         }
-        if(right && right._id){
-            GSI.setTeamTwo({id:right._id, name:right.name, country:right.country, logo:right.logo, map_score:currents[0].right.wins});
+        if (right && right._id) {
+            GSI.setTeamTwo({ id: right._id, name: right.name, country: right.country, logo: right.logo, map_score: currents[0].right.wins });
         }
     }
 
     const matchesFixed = updateMatches.map(match => {
-        if(match.id.length) return match;
+        if (match.id.length) return match;
         match.id = uuidv4();
         return match;
     })

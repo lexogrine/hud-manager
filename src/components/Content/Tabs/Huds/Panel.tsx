@@ -5,6 +5,7 @@ import config from './../../../../api/config';
 import * as I from './../../../../api/interfaces';
 import { socket } from './../Live/Live';
 import { Row, Col, FormGroup, Label, Input, Form, Button } from 'reactstrap';
+import FileInput from './../../../DragFileInput';
 
 const upperFirst = (str: string) => str.charAt(0).toUpperCase() + str.substr(1);
 
@@ -42,6 +43,21 @@ export default class ActionPanel extends React.Component<{ cxt: IContextData, hu
         socket.emit('get_config', hud.dir);
     }
 
+    handleImages = (name: string, sectionName: string) => (files: FileList) => {
+        if(!files || !files[0]) return;
+        const file = files[0];
+        const { form } = this.state;
+        if (!file.type.startsWith("image")) {
+            return;
+        }
+        let reader: any = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => {
+            form[sectionName][name] = reader.result.replace(/^data:([a-z]+)\/([a-z0-9]+);base64,/, '');
+            this.setState({ form }, () => console.log(this.state.form))
+        }
+    }
+
     sendSection(name: string) {
         const section = this.state.form[name];
         socket.emit('hud_config', { hud: this.props.hud.dir, section: name, config: section })
@@ -71,6 +87,13 @@ export default class ActionPanel extends React.Component<{ cxt: IContextData, hu
                                         {input.type === "action" ? <>
                                             {input.values.map(value => <Button onClick={() => this.sendAction({ action: input.name, data: value.name })}>{value.label}</Button>)}
                                         </> : ''}
+                                        {input.type === "image" ? <Row><Col md={6}>
+                                            <FileInput id={`file_${input.name}`} onChange={this.handleImages(input.name, section.name)}/>
+                                        </Col>
+                                        <Col md={6} className="centered">
+                                            {form[section.name] && form[section.name][input.name] ? <img src={'data:image/jpeg;base64,' + form[section.name][input.name]} id={`image_overview_${input.name}_${[section.name]}`} className="image_overview"/> : ''}
+                                        </Col>
+                                        </Row> : ''}
                                     </FormGroup>
                                 </FormGroup>
                             </Col>

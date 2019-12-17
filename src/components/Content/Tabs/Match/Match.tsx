@@ -26,11 +26,12 @@ export default class MatchEdit extends Component<{ cxt: IContextData, match: I.M
         const { vetos }: any = this.state;
         const veto = { teamId: '', mapName: '', side: 'NO', ...vetos[map] };
         veto[name] = event.target.value;
+        if(name === "reverseSide") veto[name] = event.target.checked;
         if (veto.teamId === "") {
             veto.mapName = "";
         }
         vetos[map] = veto;
-        this.setState({ vetos });
+        this.setState({ vetos }, this.save);
     }
     changeMatchType = (event: any) => {
         const vetos: I.Veto[] = [];
@@ -51,6 +52,7 @@ export default class MatchEdit extends Component<{ cxt: IContextData, match: I.M
     save = async () => {
         const form = { ...this.state };
         if (form.id.length) {
+            delete form.isVetoOpen;
             this.props.edit(form.id, form);
         }
     }
@@ -142,7 +144,6 @@ export default class MatchEdit extends Component<{ cxt: IContextData, match: I.M
                     </Col>
                 </Row>
                 <Row>
-
                     <Col s={12}>
                         <Collapse isOpen={this.state.isVetoOpen}>
                             {this.state.vetos.map((veto, i) => <SingleVeto key={i} map={i} onSave={this.vetoHandler} veto={veto} teams={teams} match={this.state} />)}

@@ -17,7 +17,7 @@ export interface Team {
 };
 
 export type PanelInput = {
-    type: 'text' | 'number' | 'select'
+    type: 'text' | 'number' | 'select' | 'image'
     name: string,
     label: string,
 } | {
@@ -84,6 +84,7 @@ export interface Veto {
         [key: string]: number
     },
     winner?: string,
+    reverseSide?: boolean,
     mapEnd: boolean
 }
 

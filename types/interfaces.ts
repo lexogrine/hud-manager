@@ -37,6 +37,7 @@ export interface Match {
         score?: {
             [key: string]: number
         },
+        reverseSide?:boolean,
         winner?: string,
         mapEnd: boolean
     }[]
@@ -62,7 +63,7 @@ export interface Config {
     "GSIToken": "120987"*/
 }
 export type PanelInput = {
-    type: 'text' | 'number' | 'select'
+    type: 'text' | 'number' | 'select' | 'image'
     name: string,
     label: string,
 } | {

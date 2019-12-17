@@ -21,7 +21,7 @@ export default class VetoModal extends React.Component<Props, { isOpen:boolean }
 
 	}
 	render() {
-
+		
 		return (
 			<Modal isOpen={this.props.isOpen} toggle={this.props.toggle} >
 				<ModalHeader toggle={this.props.toggle}>VETO #{this.props.map+1}</ModalHeader>
@@ -54,6 +54,12 @@ export default class VetoModal extends React.Component<Props, { isOpen:boolean }
 							<option value={"CT"}>CT</option>
 							<option value={"T"}>T</option>
 						</Input>
+					</FormGroup>
+					<FormGroup check>
+					<Label check>
+						<Input type="checkbox" onChange={this.props.onChange('reverseSide', this.props.map)} checked={this.props.veto.reverseSide || false}/>{' '}
+							Side's reversed?
+						</Label>
 					</FormGroup>
 				</ModalBody>
 				<ModalFooter>

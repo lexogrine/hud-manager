@@ -54,25 +54,25 @@ var sockets_1 = require("./../sockets");
 var teams_1 = require("./teams");
 var v4_1 = __importDefault(require("uuid/v4"));
 var testmatches = [{
-        id: 'a',
+        id: "a",
         left: {
-            id: 'H427BFDoR9chqgwe',
+            id: "H427BFDoR9chqgwe",
             wins: 0
         },
         right: {
-            id: 'XXH5JceBg3miQgBt',
+            id: "XXH5JceBg3miQgBt",
             wins: 0
         },
         current: true,
-        matchType: 'bo3',
+        matchType: "bo3",
         vetos: [
-            { teamId: "H427BFDoR9chqgwe", mapName: "de_overpass", side: "CT", type: "pick", "mapEnd": false },
-            { teamId: '', mapName: '', side: 'NO', type: 'pick', mapEnd: false },
-            { teamId: '', mapName: '', side: 'NO', type: 'pick', mapEnd: false },
-            { teamId: '', mapName: '', side: 'NO', type: 'pick', mapEnd: false },
-            { teamId: '', mapName: '', side: 'NO', type: 'pick', mapEnd: false },
-            { teamId: '', mapName: '', side: 'NO', type: 'pick', mapEnd: false },
-            { teamId: '', mapName: '', side: 'NO', type: 'pick', mapEnd: false }
+            { teamId: "H427BFDoR9chqgwe", mapName: "de_overpass", side: "CT", type: "pick", mapEnd: false },
+            { teamId: "XXH5JceBg3miQgBt", mapName: "de_mirage", side: "T", type: "pick", mapEnd: false, reverseSide: true },
+            { teamId: "H427BFDoR9chqgwe", mapName: "de_inferno", side: "CT", type: "pick", mapEnd: false },
+            { teamId: "", mapName: "", side: "NO", type: "pick", mapEnd: false },
+            { teamId: "", mapName: "", side: "NO", type: "pick", mapEnd: false },
+            { teamId: "", mapName: "", side: "NO", type: "pick", mapEnd: false },
+            { teamId: "", mapName: "", side: "NO", type: "pick", mapEnd: false }
         ]
     }];
 var MatchManager = /** @class */ (function () {
