@@ -127,82 +127,83 @@ export default class Players extends React.Component<{ cxt: IContextData, data: 
     render() {
         return (
             <Form>
-                <FormGroup>
-                    <Label for="players">Players</Label>
-                    <Input type="select" name="players" id="players" onChange={this.setPlayer} value={this.state.form._id}>
-                        <option value={"empty"}>New player</option>
-                        {this.props.cxt.players.map(player => <option key={player._id} value={player._id}>{player.firstName} {player.username} {player.lastName}</option>)}
-                    </Input>
-                </FormGroup>
-                <Row>
-                    <Col md="4">
-                        <FormGroup>
-                            <Label for="first_name">First Name</Label>
-                            <Input type="text" name="firstName" id="first_name" onChange={this.changeHandler} value={this.state.form.firstName} />
-                        </FormGroup>
-                    </Col>
-                    <Col md="4">
-                        <FormGroup>
-                            <Label for="nick">Nick</Label>
-                            <Input type="text" name="username" id="nick" onChange={this.changeHandler} value={this.state.form.username} />
-                        </FormGroup>
-                    </Col>
-                    <Col md="4">
-                        <FormGroup>
-                            <Label for="last_name">Last Name</Label>
-                            <Input type="text" name="lastName" id="last_name" onChange={this.changeHandler} value={this.state.form.lastName} />
-                        </FormGroup>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col md="6">
-                        <FormGroup>
-                            <Label for="player_flag">Country</Label>
-                            <CustomInput
-                                type="select"
-                                id="country"
-                                name="country"
-                                value={this.state.form.country}
-                                onChange={this.changeHandler}
-                            >
-                                <option value=''>None</option>
-                                {this.state.options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
-                            </CustomInput>
-                        </FormGroup>
-                    </Col>
-                    <Col md="6">
-                        <FormGroup>
-                            <Label for="steamid">SteamID 64</Label>
-                            <Input id="steamid" type="text" name="steamid" value={this.state.form.steamid} onChange={this.changeHandler} />
-                        </FormGroup>
-                    </Col>
-                </Row>
-                <Row>
+                <div className="tab-title-container">Players</div>
+                <div className="tab-content-container">
+                    <FormGroup>
+                        <Label for="players">Players</Label>
+                        <Input type="select" name="players" id="players" onChange={this.setPlayer} value={this.state.form._id}>
+                            <option value={"empty"}>New player</option>
+                            {this.props.cxt.players.map(player => <option key={player._id} value={player._id}>{player.firstName} {player.username} {player.lastName}</option>)}
+                        </Input>
+                    </FormGroup>
+                    <Row>
+                        <Col md="4">
+                            <FormGroup>
+                                <Input type="text" name="firstName" id="first_name" onChange={this.changeHandler} value={this.state.form.firstName} placeholder="First Name"/>
+                            </FormGroup>
+                        </Col>
+                        <Col md="4">
+                            <FormGroup>
+                                <Input type="text" name="username" id="nick" onChange={this.changeHandler} value={this.state.form.username} placeholder="Nickname"/>
+                            </FormGroup>
+                        </Col>
+                        <Col md="4">
+                            <FormGroup>
+                                <Input type="text" name="lastName" id="last_name" onChange={this.changeHandler} value={this.state.form.lastName} placeholder="Last Name"/>
+                            </FormGroup>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col md="6">
+                            <FormGroup>
+                                {/*<CustomInput
+                                    type="select"
+                                    id="country"
+                                    name="country"
+                                    value={this.state.form.country}
+                                    onChange={this.changeHandler}
+                                >
+                                    <option value=''>None</option>
+                                    {this.state.options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+                                </CustomInput>*/}
+                                <Input type="select" id="country" name="country" value={this.state.form.country} onChange={this.changeHandler}>
+                                    <option value=''>Country</option>
+                                    {this.state.options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
+                                </Input>
+                            </FormGroup>
+                        </Col>
+                        <Col md="6">
+                            <FormGroup>
+                                <Input id="steamid" type="text" name="steamid" value={this.state.form.steamid} onChange={this.changeHandler} placeholder="SteamID 64" />
+                            </FormGroup>
+                        </Col>
+                    </Row>
+                    <Row>
 
-                    <Col md="6">
-                        <FormGroup>
-                            <Label>Avatar</Label>
-                            <DragFileInput onChange={this.fileHandler} id="avatar" />
-                            <FormText color="muted">
-                                Avatar to be used for player images, instead of Steam's default
-                            </FormText>
-                            {/*<Label for="avatar">Avatar</Label>
-                            <Input type="file" name="avatar" id="avatar" onChange={this.changeHandler} />
-                            <FormText color="muted">
-                                Avatar to be used for player images, instead of Steam's default
-                            </FormText>*/}
-                        </FormGroup>
-                    </Col>
-                    <Col md="6" className="centered">
-                        {this.state.form.avatar.length ? <img src={'data:image/jpeg;base64,' + this.state.form.avatar} id="avatar_view" /> : ''}
-                    </Col>
-                </Row>
-                <Row>
-                    <Col>
-                        <Button color="primary" onClick={this.save}>Save</Button>
-                        <Button color="primary" onClick={this.delete} disabled={this.state.form._id === "empty"}>Delete</Button>
-                    </Col>
-                </Row>
+                        <Col md="6">
+                            <FormGroup>
+                                <DragFileInput onChange={this.fileHandler} id="avatar" label="UPLOAD PROFILE PICTURE" />
+                                <FormText color="muted">
+                                    Avatar to be used for player images, instead of Steam's default
+                                </FormText>
+                                {/*<Label for="avatar">Avatar</Label>
+                                <Input type="file" name="avatar" id="avatar" onChange={this.changeHandler} />
+                                <FormText color="muted">
+                                    Avatar to be used for player images, instead of Steam's default
+                                </FormText>*/}
+                            </FormGroup>
+                        </Col>
+                        <Col md="6" className="centered">
+                            {this.state.form.avatar.length ? <img src={'data:image/jpeg;base64,' + this.state.form.avatar} id="avatar_view" /> : ''}
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Col className="main-buttons-container">
+                            <Button color="secondary" onClick={this.delete} disabled={this.state.form._id === "empty"}>Delete</Button>
+                            <Button color="primary" onClick={this.save}>Save</Button>
+                        </Col>
+                    </Row>
+                </div>
             </Form>
         )
     }

@@ -52,6 +52,7 @@ var electron_1 = require("electron");
 var express_1 = __importDefault(require("express"));
 var config_1 = require("./config");
 var ip_1 = __importDefault(require("ip"));
+var sockets_1 = require("./../sockets");
 var huds_1 = __importDefault(require("./../../init/huds"));
 exports.listHUDs = function () { return __awaiter(void 0, void 0, void 0, function () {
     var dir, filtered, huds;
@@ -68,8 +69,11 @@ exports.listHUDs = function () { return __awaiter(void 0, void 0, void 0, functi
                         }
                     }); }); }))];
             case 1:
-                huds = _a.sent();
-                return [2 /*return*/, huds.filter(function (hud) { return hud !== null; })];
+                huds = (_a.sent()).filter(function (hud) { return hud !== null; });
+                if (sockets_1.HUDState.devHUD) {
+                    huds.unshift(sockets_1.HUDState.devHUD);
+                }
+                return [2 /*return*/, huds];
         }
     });
 }); };
@@ -95,6 +99,11 @@ exports.getHUDData = function (dirName) { return __awaiter(void 0, void 0, void 
             case 1:
                 globalConfig = _a.sent();
                 if (!fs.existsSync(configFileDir)) {
+                    if (!sockets_1.HUDState.devHUD)
+                        return [2 /*return*/, null];
+                    if (sockets_1.HUDState.devHUD.dir === dirName) {
+                        return [2 /*return*/, sockets_1.HUDState.devHUD];
+                    }
                     return [2 /*return*/, null];
                 }
                 try {
@@ -110,6 +119,7 @@ exports.getHUDData = function (dirName) { return __awaiter(void 0, void 0, void 
                         config.keybinds = keybinds;
                     }
                     config.url = "http://" + ip_1["default"].address() + ":" + globalConfig.port + "/huds/" + dirName + "/?port=" + globalConfig.port + "&isProd=true";
+                    config.isDev = false;
                     return [2 /*return*/, config];
                 }
                 catch (e) {

@@ -1,46 +1,65 @@
 import React from 'react';
 import {Nav, NavItem, NavLink} from "reactstrap";
+import * as Tabs from './TabIcons';
+
 
 export default class Navbar extends React.Component<{activeTab: string, toggle: Function}, any> {
     render() {
         return (
-            <Nav tabs className="d-flex justify-content-center">
+            <Nav tabs className="navbar-container">
                 <NavItem className="hover-pointer">
                     <NavLink
                         active={ this.props.activeTab === 'teams' }
                         onClick={() => { this.props.toggle('teams'); }}
-                    >Teams
+                    >
+                        <img src={Tabs.Teams}/>
+                        <div>Teams</div>
                     </NavLink>
                 </NavItem>
                 <NavItem className="hover-pointer">
                     <NavLink
                         active={ this.props.activeTab === 'players' }
                         onClick={() => { this.props.toggle('players'); }}
-                    >Players
+                    >
+                        <img src={Tabs.Players}/>
+                        <div>Players</div>
                     </NavLink>
                 </NavItem>
                 <NavItem className="hover-pointer">
                     <NavLink
                         active={ this.props.activeTab === 'create_match' }
                         onClick={() => { this.props.toggle('create_match'); }}
-                    >Create Match
+                    >
+                        <img src={Tabs.Matches}/>
+                        <div>Matches</div>
                     </NavLink>
                 </NavItem>
                 <NavItem className="hover-pointer">
                     <NavLink
                         active={ this.props.activeTab === 'huds' }
                         onClick={() => { this.props.toggle('huds'); }}
-                    >HUDS
+                    >
+                        <img src={Tabs.HUDs}/>
+                        <div>HUDS</div>
                     </NavLink>
                 </NavItem>
                 <NavItem className="hover-pointer">
                     <NavLink
                         active={ this.props.activeTab === 'live' }
                         onClick={() => { this.props.toggle('live'); }}
-                    >Live
+                    >
+                        <img src={Tabs.Live}/>
+                        <div>Live</div>
                     </NavLink>
                 </NavItem>
-                <NavItem className="hover-pointer">
+                <NavItem className="hover-pointer" id="settings">
+                    <NavLink
+                        active={ this.props.activeTab === 'config' }
+                        onClick={() => { this.props.toggle('config'); }}
+                    >Settings
+                    </NavLink>
+                </NavItem>
+                {/*<NavItem className="hover-pointer">
                     <NavLink
                         active={ this.props.activeTab === 'config' }
                         onClick={() => { this.props.toggle('config'); }}
@@ -53,7 +72,7 @@ export default class Navbar extends React.Component<{activeTab: string, toggle: 
                         onClick={() => { this.props.toggle('credits'); }}
                     >Credits
                     </NavLink>
-                </NavItem>
+        </NavItem>*/}
             </Nav>
         );
     }

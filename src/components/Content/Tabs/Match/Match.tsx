@@ -66,7 +66,7 @@ export default class MatchEdit extends Component<{ cxt: IContextData, match: I.M
             const current = matches.filter(match => match.id === this.state.id)[0];
             if (!current) return;
             this.setState({ vetos: current.vetos });
-        })
+        });
     }
 
     render() {

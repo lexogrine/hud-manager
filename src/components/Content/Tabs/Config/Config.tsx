@@ -8,14 +8,14 @@ interface ConfigStatus extends I.CFGGSIResponse {
     loading: boolean
 }
 
-export default class Config extends React.Component<any, {config: I.Config, cfg: ConfigStatus, gsi: ConfigStatus, restartRequired: boolean}>  {
-    constructor(props: any){
+export default class Config extends React.Component<any, { config: I.Config, cfg: ConfigStatus, gsi: ConfigStatus, restartRequired: boolean }>  {
+    constructor(props: any) {
         super(props);
         this.state = {
             config: {
-                steamApiKey:'',
-                port:1337,
-                token:''
+                steamApiKey: '',
+                port: 1337,
+                token: ''
             },
             cfg: {
                 success: false,
@@ -32,52 +32,52 @@ export default class Config extends React.Component<any, {config: I.Config, cfg:
     }
     getConfig = async () => {
         const config = await api.config.get();
-        this.setState({config});
+        this.setState({ config });
     }
     createGSI = async () => {
-        const { gsi }= this.state;
+        const { gsi } = this.state;
         gsi.message = 'Loading data about GameState files...';
 
-        this.setState({gsi});
+        this.setState({ gsi });
         await api.gamestate.create();
         this.checkGSI();
     }
     createCFG = async () => {
-        const { cfg }= this.state;
+        const { cfg } = this.state;
         cfg.message = 'Loading data about GameState files...';
 
-        this.setState({cfg});
+        this.setState({ cfg });
         await api.cfgs.create();
         this.checkCFG();
     }
     checkGSI = async () => {
-        const { gsi }= this.state;
+        const { gsi } = this.state;
         gsi.message = 'Loading data about GameState files...';
 
-        this.setState({gsi});
+        this.setState({ gsi });
 
         const response = await api.gamestate.check();
-        
-        if(response.success === false){
-            return this.setState({gsi:{success:false, message: response.message, loading: false}});
+
+        if (response.success === false) {
+            return this.setState({ gsi: { success: false, message: response.message, loading: false } });
         }
-        return this.setState({gsi:{success:true, loading: false}});
+        return this.setState({ gsi: { success: true, loading: false } });
     }
-    checkCFG = async  () => {
-        const { cfg }= this.state;
+    checkCFG = async () => {
+        const { cfg } = this.state;
         cfg.message = 'Loading data about cfg files...';
-        
-        this.setState({cfg});
+
+        this.setState({ cfg });
 
         const response = await api.cfgs.check();
 
-        if(response.success === false){
-            return this.setState({cfg:{success:false, message: response.message, loading: false}});
+        if (response.success === false) {
+            return this.setState({ cfg: { success: false, message: response.message, loading: false } });
         }
-        return this.setState({cfg:{success:true, loading: false}});
+        return this.setState({ cfg: { success: true, loading: false } });
     }
 
-    async componentDidMount(){
+    async componentDidMount() {
         this.getConfig();
         this.checkCFG();
         this.checkGSI();
@@ -87,14 +87,14 @@ export default class Config extends React.Component<any, {config: I.Config, cfg:
         const name: 'steamApiKey' | 'port' | 'token' = event.target.name;
         const { config }: any = this.state;
         config[name] = event.target.value;
-        this.setState({config});
-       // this.setState({ value })
+        this.setState({ config });
+        // this.setState({ value })
     }
     save = async () => {
         const { config } = this.state;
         const oldConfig = await api.config.get();
-        if(oldConfig.port !== config.port){
-            this.setState({restartRequired: true});
+        if (oldConfig.port !== config.port) {
+            this.setState({ restartRequired: true });
         }
         await api.config.update(config);
         this.checkGSI();
@@ -103,56 +103,59 @@ export default class Config extends React.Component<any, {config: I.Config, cfg:
         const { gsi, cfg } = this.state;
         return (
             <Form>
-                <Row>
-                    <Col md="4">
-                        <FormGroup>
-                            <Label for="steamApiKey"><Tip id="steamapikey_tooltip" label="Steam API Key" link='https://steamcommunity.com/dev/apikey'>It's neccessary to load Steam avatars, you can get yours on https://steamcommunity.com/dev/apikey</Tip></Label>
-                            <Input type="text" name="steamApiKey" id="steamApiKey" onChange={this.changeHandler} value={this.state.config.steamApiKey}/>
-                        </FormGroup>
-                    </Col>
-                    <Col md="4">
-                        <FormGroup>
-                            <Label for="port"><Tip id="gsiport_tooltip" label="CSGO GSI Port">Use values between 1000 and 9999 - after saving changes also restart the manager</Tip></Label>
-                            <Input type="number" name="port" id="port" onChange={this.changeHandler} value={this.state.config.port} />
-                        </FormGroup>
-                    </Col>
-                    <Col md="4">
-                        <FormGroup>
-                            <Label for="token"><Tip id="gsitoken_tooltip" label="CSGO GSI Token">Token to identify your game - you can leave it empty</Tip></Label>
-                            <Input type="text" name="token" id="token" onChange={this.changeHandler} value={this.state.config.token}/>
-                        </FormGroup>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col md="12" className="config-container">
-                        GameState Integration:
-                        
-                        <span>
-                        &nbsp;{`${gsi.message || 'Loaded succesfully'}`}
-                        </span>
-                        <Button color="primary" disabled={gsi.loading || gsi.success} onClick={this.createGSI}>Add GSI file</Button>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col md="12" className="config-container">
-                        Configs:
-                        <span>
-                        &nbsp;{`${cfg.message || 'Loaded succesfully'}`}
-                        </span>
-                        <Button color="primary" disabled={cfg.loading || cfg.success} onClick={this.createCFG}>Add config files</Button>
-                        
-                    </Col>
-                </Row>
+                <div className="tab-title-container">Settings</div>
+                <div className="tab-content-container no-padding">
+                    <Row className="padded base-config">
+                        <Col md="4">
+                            <FormGroup>
+                                {/*<Label for="steamApiKey"><Tip id="steamapikey_tooltip" label="Steam API Key" link='https://steamcommunity.com/dev/apikey'>It's neccessary to load Steam avatars, you can get yours on https://steamcommunity.com/dev/apikey</Tip></Label>*/}
+                                <Input type="text" name="steamApiKey" id="steamApiKey" onChange={this.changeHandler} value={this.state.config.steamApiKey} placeholder="Steam API Key" />
+                            </FormGroup>
+                        </Col>
+                        <Col md="4">
+                            <FormGroup>
+                                {/*<Label for="port"><Tip id="gsiport_tooltip" label="CSGO GSI Port">Use values between 1000 and 9999 - after saving changes also restart the manager</Tip></Label>*/}
+                                <Input type="number" name="port" id="port" onChange={this.changeHandler} value={this.state.config.port} placeholder="CSGO GSI Port"/>
+                            </FormGroup>
+                        </Col>
+                        <Col md="4">
+                            <FormGroup>
+                                {/*<Label for="token"><Tip id="gsitoken_tooltip" label="CSGO GSI Token">Token to identify your game - you can leave it empty</Tip></Label>*/}
+                                <Input type="text" name="token" id="token" onChange={this.changeHandler} value={this.state.config.token} placeholder="CSGO GSI Token"/>
+                            </FormGroup>
+                        </Col>
+                    </Row>
+                    <Row className="config-container">
+                        <Col md="12" className="config-entry">
+                            <div className="config-description">
+                                GameState Integration: {gsi.message || 'Loaded succesfully'}
+                            </div>
+                            <Button color="primary" disabled={gsi.loading || gsi.success} onClick={this.createGSI}>Add GSI file</Button>
+                        </Col>
+                        <Col md="12" className="config-entry">
+                            <div className="config-description">
+                                Configs: {cfg.message || 'Loaded succesfully'}
+                            </div>
+                            <Button color="primary" disabled={cfg.loading || cfg.success} onClick={this.createCFG}>Add config files</Button>
+                        </Col>
+                        <Col md="12" className="config-entry">
+                            <div className="config-description">
+                                Credits
+                            </div>
+                            <Button color="primary" className="credits-btn" onClick={()=>{}}>See now</Button>
+                        </Col>
+                    </Row>
 
+                    <Toast isOpen={this.state.restartRequired} className="fixed-toast">
+                        <ToastHeader>Change of port detected</ToastHeader>
+                        <ToastBody>It seems like you've changed GSI port - for all changes to be set in place you should now restart the Manager and update the GSI files</ToastBody>
+                    </Toast>
+                </div>
                 <Row>
-                    <Col>
-                        <Button color="primary" onClick={this.save}>Save</Button>
+                    <Col className="main-buttons-container">
+                        <Button onClick={this.save} color="primary">Save</Button>
                     </Col>
                 </Row>
-                <Toast isOpen={this.state.restartRequired} className="fixed-toast">
-                    <ToastHeader>Change of port detected</ToastHeader>
-                    <ToastBody>It seems like you've changed GSI port - for all changes to be set in place you should now restart the Manager and update the GSI files</ToastBody>
-                </Toast>
             </Form>
         )
     }

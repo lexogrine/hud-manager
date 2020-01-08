@@ -88,7 +88,7 @@ export default class ActionPanel extends React.Component<{ cxt: IContextData, hu
                                             {input.values.map(value => <Button onClick={() => this.sendAction({ action: input.name, data: value.name })}>{value.label}</Button>)}
                                         </> : ''}
                                         {input.type === "image" ? <Row><Col md={6}>
-                                            <FileInput id={`file_${input.name}`} onChange={this.handleImages(input.name, section.name)}/>
+                                            <FileInput id={`file_${input.name}`} onChange={this.handleImages(input.name, section.name)} label="UPLOAD PROFILE PICTURE"/>
                                         </Col>
                                         <Col md={6} className="centered">
                                             {form[section.name] && form[section.name][input.name] ? <img src={'data:image/jpeg;base64,' + form[section.name][input.name]} id={`image_overview_${input.name}_${[section.name]}`} className="image_overview"/> : ''}

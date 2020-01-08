@@ -54,6 +54,8 @@ function default_1(router, io) {
     router.route('/api/gsi')
         .get(gsi.checkGSIFile)
         .put(gsi.createGSIFile);
+    router.route('/api/csgo')
+        .get(csgo.getLatestData);
     router.route('/api/cfg')
         .get(csgo.checkCFGs)
         .put(csgo.createCFGs);

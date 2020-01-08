@@ -4,6 +4,7 @@ import * as VDF from '@node-steam/vdf';
 import { getGamePath } from 'steam-game-path';
 import express from 'express';
 import { loadConfig } from './config';
+import { GSI } from './../sockets';
 
 interface CFG {
     cfg: string,
@@ -99,4 +100,8 @@ export const createCFGs: express.RequestHandler = async (req, res) => {
     } catch {
         return res.json({ success: false, message: 'Unexpected error occured' })
     }
+}
+
+export const getLatestData: express.RequestHandler = async (_req, res) => {
+    return res.json(GSI.last || {});
 }

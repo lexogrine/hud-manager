@@ -63,16 +63,16 @@ function createMainWindow() {
                     server = _a.sent();
                     directories.checkDirectories();
                     win = new electron_1.BrowserWindow({
-                        height: 836,
-                        minHeight: 600,
-                        minWidth: 400,
+                        height: 699,
                         show: false,
+                        //frame:false,
+                        //titleBarStyle:"hidden",
                         title: "HUD Manager",
                         icon: path_1["default"].join(__dirname, 'assets/icon.png'),
                         webPreferences: {
                             backgroundThrottling: false
                         },
-                        width: 1280
+                        width: 1010
                     });
                     win.once("ready-to-show", function () {
                         if (win) {

@@ -14,16 +14,16 @@ async function createMainWindow() {
     directories.checkDirectories();
 
     win = new BrowserWindow({
-        height: 836,
-        minHeight: 600,
-        minWidth: 400,
+        height: 699,
         show: false,
+        //frame:false,
+        //titleBarStyle:"hidden",
         title: "HUD Manager",
         icon: path.join(__dirname, 'assets/icon.png'),
         webPreferences: {
             backgroundThrottling: false,
         },
-        width: 1280,
+        width: 1010,
     });
 
     win.once("ready-to-show", () => {

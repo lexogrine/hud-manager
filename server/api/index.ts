@@ -10,11 +10,11 @@ import * as path from 'path';
 import * as gsi from './gamestate';
 import * as csgo from './csgo';
 
-export default function (router: express.Router, io: socketio.Server){
+export default function (router: express.Router, io: socketio.Server) {
     router.route('/api/players')
         .get(players.getPlayers)
         .post(players.addPlayer);
-    
+
     router.route('/api/players/:id')
         .get(players.getPlayers)
         .patch(players.updatePlayer)
@@ -29,12 +29,12 @@ export default function (router: express.Router, io: socketio.Server){
     router.route('/api/teams')
         .get(teams.getTeams)
         .post(teams.addTeam);
-    
+
     router.route('/api/teams/:id')
         .get(teams.getTeam)
         .patch(teams.updateTeam)
         .delete(teams.deleteTeam);
-    
+
     router.route('/api/teams/logo/:id')
         .get(teams.getLogoFile)
 
@@ -60,13 +60,16 @@ export default function (router: express.Router, io: socketio.Server){
         .get(gsi.checkGSIFile)
         .put(gsi.createGSIFile);
 
+    router.route('/api/csgo')
+        .get(csgo.getLatestData);
+
     router.route('/api/cfg')
         .get(csgo.checkCFGs)
         .put(csgo.createCFGs);
 
     router.route('/huds/:dir/')
         .get(huds.renderHUD);
-    
+
     router.use('/huds/:dir/', huds.renderAssets);
 
     router.route('/huds/:dir/thumbnail')
@@ -91,5 +94,5 @@ export default function (router: express.Router, io: socketio.Server){
     /**
      * END OF LEGACY ROUTING
      */
-        
+
 }

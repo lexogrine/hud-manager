@@ -26,9 +26,9 @@ export default class Content extends React.Component<{}, { activeTab: string, da
 
     render() {
         return (
-            <div>
+            <div className="main-container">
                 <Navbar activeTab={this.state.activeTab} toggle={this.toggle}/>
-                <Col lg={{size:10, offset:1}}>
+                <Col>
                     <Tabs activeTab={this.state.activeTab} data={this.state.data} toggle={this.toggle}/>
                 </Col>
             </div>

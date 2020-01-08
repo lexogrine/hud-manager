@@ -84,6 +84,7 @@ export default class Matches extends Component<{ cxt: IContextData }> {
         })
         await api.match.set(newMatches);
         this.props.cxt.reload();
+        
     }
 
     setCurrent = (id: string) => async () => {
@@ -104,10 +105,16 @@ export default class Matches extends Component<{ cxt: IContextData }> {
 
     render() {
         return (
-            <Row className="matches_container">
-                <Button onClick={this.add} color="primary" id="add_match_button" >Add match</Button>
-                {this.props.cxt.matches.map(match => <MatchRow key={match.id} edit={this.edit} setCurrent={this.setCurrent(match.id)} match={match} teams={this.props.cxt.teams} cxt={this.props.cxt} />)}
-            </Row>
+            <React.Fragment>
+                
+                <div className="tab-title-container">Matches</div>
+                <div className="tab-content-container">
+                    <Row className="matches_container">
+                        <Button onClick={this.add} color="primary" id="add_match_button" >Add match</Button>
+                        {this.props.cxt.matches.map(match => <MatchRow key={match.id} edit={this.edit} setCurrent={this.setCurrent(match.id)} match={match} teams={this.props.cxt.teams} cxt={this.props.cxt} />)}
+                    </Row>
+                </div>
+            </React.Fragment>
         )
     }
 }

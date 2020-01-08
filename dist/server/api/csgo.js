@@ -43,6 +43,7 @@ var fs_1 = __importDefault(require("fs"));
 var path_1 = __importDefault(require("path"));
 var steam_game_path_1 = require("steam-game-path");
 var config_1 = require("./config");
+var sockets_1 = require("./../sockets");
 function createCFG(customRadar, customKillfeed) {
     var cfg = "cl_draw_only_deathnotices 1";
     var file = 'hud';
@@ -134,5 +135,10 @@ exports.createCFGs = function (req, res) { return __awaiter(void 0, void 0, void
             return [2 /*return*/, res.json({ success: false, message: 'Unexpected error occured' })];
         }
         return [2 /*return*/];
+    });
+}); };
+exports.getLatestData = function (_req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        return [2 /*return*/, res.json(sockets_1.GSI.last || {})];
     });
 }); };

@@ -19,11 +19,10 @@ class LoadingScreen extends React.Component {
 }
 
 
-export default class Layout extends React.Component<any, {data: IContextData, loaded: boolean}> {
+export default class Layout extends React.Component<any, {data: IContextData}> {
     constructor(props: any){
         super(props);
         this.state = {
-            loaded: false,
             data:{
                 teams: [],
                 players: [],
@@ -42,6 +41,7 @@ export default class Layout extends React.Component<any, {data: IContextData, lo
         socket.on('match', (fromVeto?: boolean) => {
             if(fromVeto) this.loadMatch();
         });
+        socket.on('devHUD', (status: boolean) => {console.log(status, 'asadasdas')})
     }
     loadTeams = async () => {
         const teams = await api.teams.get();
@@ -64,20 +64,14 @@ export default class Layout extends React.Component<any, {data: IContextData, lo
         const { data } = this.state;
         data.matches = matches;
         if(matches){
-            this.setState({data}, () => {
-                if(!this.state.loaded){
-                    this.setState({loaded: true});
-                }
-            });
+            this.setState({data});
         }
     }
     render() {
         const { Provider } = ContextData;
         return (
             <Provider value={this.state.data}>
-                <div className={`${this.state.loaded ? 'loaded' : 'loading'}`}>
-                    <LoadingScreen />
-                    <Header/>
+                <div className={`loaded`}>
                     <Content/>
                 </div>
             </Provider>

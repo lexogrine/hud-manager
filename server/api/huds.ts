@@ -6,7 +6,7 @@ import * as I from './../../types/interfaces';
 import socketio from 'socket.io';
 import { loadConfig } from './config';
 import ip from 'ip';
-
+import { HUDState } from './../sockets';
 import HUDWindow from './../../init/huds';
 
 export const listHUDs = async () => {
@@ -14,8 +14,11 @@ export const listHUDs = async () => {
     const filtered = fs.readdirSync(dir, { withFileTypes: true })
         .filter(dirent => dirent.isDirectory());
 
-    const huds = await Promise.all(filtered.map(async dirent => await getHUDData(dirent.name)));
-    return huds.filter(hud => hud !== null);
+    const huds = (await Promise.all(filtered.map(async dirent => await getHUDData(dirent.name)))).filter(hud => hud !== null);
+    if(HUDState.devHUD){
+        huds.unshift(HUDState.devHUD);
+    }
+    return huds;
 }
 
 export const getHUDs: express.RequestHandler = async (req, res) => {
@@ -27,6 +30,10 @@ export const getHUDData = async (dirName: string): Promise<I.HUD> => {
     const configFileDir = path.join(dir, 'hud.json');
     const globalConfig = await loadConfig();
     if(!fs.existsSync(configFileDir)){
+        if(!HUDState.devHUD) return null;
+        if(HUDState.devHUD.dir === dirName){
+            return HUDState.devHUD;
+        }
         return null;
     }
     try {
@@ -44,7 +51,8 @@ export const getHUDData = async (dirName: string): Promise<I.HUD> => {
             config.keybinds = keybinds;
         }
 
-        config.url = `http://${ip.address()}:${globalConfig.port}/huds/${dirName}/?port=${globalConfig.port}&isProd=true`
+        config.url = `http://${ip.address()}:${globalConfig.port}/huds/${dirName}/?port=${globalConfig.port}&isProd=true`;
+        config.isDev = false;
 
 
         return config;

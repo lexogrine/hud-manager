@@ -16,25 +16,25 @@ export default class Tabs extends React.Component<{ activeTab: string, data: any
             <Consumer>
                 {
                     data => <TabContent activeTab={this.props.activeTab}>
-                                <TabPane tabId="teams" style={{ padding: '20px' }}>
+                                <TabPane tabId="teams" >
                                     <Teams cxt={data}></Teams>
                                 </TabPane>
-                                <TabPane tabId="players" style={{ padding: '20px' }}>
+                                <TabPane tabId="players" >
                                     <Players cxt={data} data={this.props.data}></Players>
                                 </TabPane>
-                                <TabPane tabId="create_match" style={{ padding: '20px' }}>
+                                <TabPane tabId="create_match" >
                                     <Matches cxt={data}></Matches>
                                 </TabPane>
-                                <TabPane tabId="huds" style={{ padding: '20px' }}>
+                                <TabPane tabId="huds" >
                                     <Huds cxt={data}></Huds>
                                 </TabPane>
-                                <TabPane tabId="live" style={{ padding: '20px' }}>
+                                <TabPane tabId="live" >
                                     <Live toggle={this.props.toggle}></Live>
                                 </TabPane>
-                                <TabPane tabId="config" style={{ padding: '20px' }}>
+                                <TabPane tabId="config" >
                                     <Config cxt={data}></Config>
                                 </TabPane>
-                                <TabPane tabId="credits" style={{ padding: '20px' }}>
+                                <TabPane tabId="credits" >
                                     <Credits></Credits>
                                 </TabPane>
                             </TabContent>

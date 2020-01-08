@@ -58,16 +58,19 @@ export default class Match extends Component<any, { game: CSGO | null, steamids:
         const right = teams.filter(team => team.orientation === "right")[0];
         return (
             <React.Fragment>
-                <Row>
-                    <Col md="12" className="config-container no-margin" style={{ flexDirection: 'column' }}>
-                        <div>Players Currently In Match, Click to Add Player to Players List</div>
-                    </Col>
-                </Row>
-                <Row>
-                    <Teamboard players={game.players.filter(player => player.team.orientation === "left")} team={left} steamids={this.state.steamids} toggle={this.props.toggle} />
-                    <Teamboard players={game.players.filter(player => player.team.orientation === "right")} team={right} steamids={this.state.steamids} toggle={this.props.toggle} />
+                <div className="tab-title-container">Create New Team</div>
+                <div className="tab-content-container">
+                    <Row>
+                        <Col md="12" className="config-container no-margin" style={{ flexDirection: 'column' }}>
+                            <div>Players Currently In Match, Click to Add Player to Players List</div>
+                        </Col>
+                    </Row>
+                    <Row>
+                        <Teamboard players={game.players.filter(player => player.team.orientation === "left")} team={left} steamids={this.state.steamids} toggle={this.props.toggle} />
+                        <Teamboard players={game.players.filter(player => player.team.orientation === "right")} team={right} steamids={this.state.steamids} toggle={this.props.toggle} />
 
-                </Row>
+                    </Row>
+                </div>
             </React.Fragment>
         )
 

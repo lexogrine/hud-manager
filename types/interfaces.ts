@@ -96,5 +96,6 @@ export interface HUD {
     killfeed: boolean,
     panel?: PanelTemplate[],
     keybinds?: KeyBind[],
-    url: string
+    url: string,
+    isDev: boolean
 }
