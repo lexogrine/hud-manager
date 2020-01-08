@@ -4,7 +4,8 @@ import http from 'http';
 import cors from 'cors';
 import router from './api';
 import path from 'path';
-//import fs from 'fs';
+import { app as application } from 'electron';
+import fs from 'fs';
 import { loadConfig } from './api/config';
 
 const child_process = require("child_process");
@@ -35,6 +36,10 @@ export default async function init(port?: number){
     const io = sockets(server, app);
 
     router(app, io);
+
+    fs.watch(path.join(application.getPath('home'), 'HUDs'), () => {
+        io.emit('reloadHUDs');
+    });
 
     app.use('/',  express.static(path.join(__dirname, '../build')));
     app.get('*', (_req, res)=>{

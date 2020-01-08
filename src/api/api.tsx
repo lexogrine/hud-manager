@@ -63,7 +63,8 @@ export default {
         get: async (): Promise<I.HUD[]> => await apiV2('huds'),
         start: async (hudDir: string) => await apiV2(`huds/${hudDir}/start`, 'POST'),
         close: async (hudDir: string) => await apiV2(`huds/${hudDir}/close`, 'POST'),
-        openDirectory: async() => await apiV2(`huds`, 'POST')
+        openDirectory: async() => await apiV2(`huds`, 'POST'),
+        upload: async (hud: string) => await apiV2(`huds/add`, 'POST', { hud })
     },
     match: {
         get: async (): Promise<I.Match[]> => await apiV2('match'),

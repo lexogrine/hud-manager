@@ -182,7 +182,7 @@ export default class Players extends React.Component<{ cxt: IContextData, data: 
 
                         <Col md="6">
                             <FormGroup>
-                                <DragFileInput onChange={this.fileHandler} id="avatar" label="UPLOAD PROFILE PICTURE" />
+                                <DragFileInput image onChange={this.fileHandler} id="avatar" label="UPLOAD PROFILE PICTURE" />
                                 <FormText color="muted">
                                     Avatar to be used for player images, instead of Steam's default
                                 </FormText>

@@ -8,6 +8,7 @@ import Panel from './Panel';
 import { socket } from '../Live/Live';
 import Tip from './../../../Tooltip';
 import Switch  from './../../../../components/Switch/Switch';
+import DragInput from './../../../DragFileInput';
 
 var userAgent = navigator.userAgent.toLowerCase();
 let isElectron = false;
@@ -48,6 +49,18 @@ export default class Huds extends React.Component<{ cxt: IContextData }, { huds:
             active: null
         }
     }
+
+    handleZIPs = (files: FileList) => {
+        const file = files[0];
+        let reader: any = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => {
+            //form[sectionName][name] = reader.result.replace(/^data:([a-z]+)\/([a-z0-9]+);base64,/, '');
+            //this.setState({ form }, () => console.log(this.state.form))
+            //console.log(reader.result)
+            api.huds.upload(reader.result);
+        }
+    }
     changeForm = (name: 'killfeed' | 'radar') => (e: any) => {
         const { form } = this.state;
         form[name] = !form[name];
@@ -58,8 +71,7 @@ export default class Huds extends React.Component<{ cxt: IContextData }, { huds:
         this.setState({ huds });
     }
     async componentDidMount() {
-        console.log("HUD MOUNT")
-        socket.on('devHUD', this.loadHUDs)
+        socket.on('reloadHUDs', this.loadHUDs)
         this.loadHUDs();
     }
     startHUD(dir: string) {
@@ -101,6 +113,9 @@ export default class Huds extends React.Component<{ cxt: IContextData }, { huds:
 
                     <Row className="padded">
                         <Col>
+                            <Col s={12}>
+                                <DragInput id={`hud_zip`} onChange={this.handleZIPs} label="UPLOAD HUD"/>
+                            </Col>
                             {this.state.huds.map(hud => <Row key={hud.dir} className="hudRow">
                                 <Col s={12}>
                                     <Row>

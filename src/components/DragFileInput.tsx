@@ -4,7 +4,8 @@ import DragIcon from './../styles/upload.png';
 interface IProps {
     onChange:(files: FileList)=>void,
     id:string,
-    label: string
+    label: string,
+    image?: boolean
 }
 interface IState {
     highlight: boolean
@@ -50,7 +51,7 @@ export default class DragFileInput extends React.Component<IProps, IState> {
                 onDrop={this.drop}
             >
                 
-                <input type="file" id={this.props.id} accept="image/*" onChange={this.uploadHandler} />
+                <input type="file" id={this.props.id} accept={this.props.image ? "image/*" : undefined} onChange={this.uploadHandler} />
                 <label className="centered" htmlFor={this.props.id} ><img src={DragIcon}/>{this.props.label}</label>
             </div>
         )

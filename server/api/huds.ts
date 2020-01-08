@@ -8,6 +8,7 @@ import { loadConfig } from './config';
 import ip from 'ip';
 import { HUDState } from './../sockets';
 import HUDWindow from './../../init/huds';
+import DecompressZip from 'decompress-zip';
 
 export const listHUDs = async () => {
     const dir = path.join(app.getPath('home'), 'HUDs');
@@ -140,15 +141,6 @@ export const renderAssets: express.RequestHandler = async (req, res, next) => {
     return express.static(path.join(app.getPath('home'), 'HUDs', req.params.dir))(req, res,next);
 }
 
-
-
-
-
-
-
-
-
-
 export const renderLegacy: express.RequestHandler = (req, res) => {
     const dir = path.join(app.getPath('home'), 'HUDs', req.params.dir);
     return res.render(path.join(dir, 'template.pug'), {
@@ -206,4 +198,80 @@ export const closeHUD: express.RequestHandler = (req, res) => {
         return res.sendStatus(200);
     }
     return res.sendStatus(404);
+}
+
+export const uploadHUD: express.RequestHandler = async (req, res) => {
+    if(!req.body.hud) return res.sendStatus(422);
+    const response = await loadHUD(req.body.hud);
+    return res.sendStatus(response ? 200 : 500);
+}
+
+
+async function loadHUD(base64: string){
+    const remove = (pathToRemove: string) => {
+        if (!fs.existsSync(pathToRemove)) {
+            return;
+        }
+        const files = fs.readdirSync(pathToRemove);
+        files.forEach(function (file) {
+            const current = path.join(pathToRemove, file);
+            if (fs.lstatSync(current).isDirectory()) { // recurse
+                remove(current);
+                if(fs.existsSync(current)) fs.rmdirSync(current)
+            } else { // delete file
+                if(fs.existsSync(current)) fs.unlinkSync(current);
+            }
+        });
+        fs.rmdirSync(pathToRemove)
+    }
+    return new Promise((res, rej) => {
+        const tempBasePath = path.join(app.getPath('userData'), 'hud_temp');
+        try {
+            let fileString = base64.split(';base64,').pop();
+            fs.writeFileSync('hud_temp_archive.zip', fileString, {encoding: 'base64'});
+            if(fs.existsSync(tempBasePath)){
+                remove(tempBasePath);
+            }
+            fs.mkdirSync(tempBasePath);
+            const tempUnzipper: any = new DecompressZip('hud_temp_archive.zip');
+            tempUnzipper.on('extract', () => {
+                if(fs.existsSync('hud_temp_archive.zip')){
+                    fs.unlinkSync('hud_temp_archive.zip');
+                }
+                if(fs.existsSync(path.join(tempBasePath, 'hud.json'))){
+                    const hudFile = fs.readFileSync(path.join(tempBasePath, 'hud.json'), {encoding:'utf8'});
+                    const hud = JSON.parse(hudFile);
+                    if(!hud.name){
+                        throw new Error;
+                    }
+                    let dir = path.join(app.getPath('home'), 'HUDs', hud.name.replace(/[^a-zA-Z0-9-_]/g, ''));
+                    if(fs.existsSync(dir)){
+                        dir += `-${(Math.random() * 1000 + 1).toString(36).replace(/[^a-z]+/g, '').substr(0, 15)}`;
+                    }
+                    fs.renameSync(tempBasePath, dir);
+                    res(true);
+
+                } else {
+                    throw new Error;
+                }
+            });
+            tempUnzipper.on('error', () => {
+                if(fs.existsSync(tempBasePath)){
+                    remove(tempBasePath);
+                }
+                res(null);
+            })
+            tempUnzipper.extract({
+                path: tempBasePath
+            });
+            /**/
+            
+        } catch {
+            if(fs.existsSync(tempBasePath)){
+                remove(tempBasePath);
+            }
+            res(null);
+        }
+    })
+
 }

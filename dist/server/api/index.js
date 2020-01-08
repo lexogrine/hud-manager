@@ -47,6 +47,8 @@ function default_1(router, io) {
     router.route('/api/huds')
         .get(huds.getHUDs)
         .post(huds.openHUDsDirectory);
+    router.route('/api/huds/add')
+        .post(huds.uploadHUD);
     router.route('/api/huds/close')
         .post(huds.closeHUD);
     router.route('/api/huds/:hudDir/start')

@@ -54,6 +54,7 @@ var config_1 = require("./config");
 var ip_1 = __importDefault(require("ip"));
 var sockets_1 = require("./../sockets");
 var huds_1 = __importDefault(require("./../../init/huds"));
+var decompress_zip_1 = __importDefault(require("decompress-zip"));
 exports.listHUDs = function () { return __awaiter(void 0, void 0, void 0, function () {
     var dir, filtered, huds;
     return __generator(this, function (_a) {
@@ -278,3 +279,92 @@ exports.closeHUD = function (req, res) {
     }
     return res.sendStatus(404);
 };
+exports.uploadHUD = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var response;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                if (!req.body.hud)
+                    return [2 /*return*/, res.sendStatus(422)];
+                return [4 /*yield*/, loadHUD(req.body.hud)];
+            case 1:
+                response = _a.sent();
+                return [2 /*return*/, res.sendStatus(response ? 200 : 500)];
+        }
+    });
+}); };
+function loadHUD(base64) {
+    return __awaiter(this, void 0, void 0, function () {
+        var remove;
+        return __generator(this, function (_a) {
+            remove = function (pathToRemove) {
+                if (!fs.existsSync(pathToRemove)) {
+                    return;
+                }
+                var files = fs.readdirSync(pathToRemove);
+                files.forEach(function (file) {
+                    var current = path.join(pathToRemove, file);
+                    if (fs.lstatSync(current).isDirectory()) { // recurse
+                        remove(current);
+                        if (fs.existsSync(current))
+                            fs.rmdirSync(current);
+                    }
+                    else { // delete file
+                        if (fs.existsSync(current))
+                            fs.unlinkSync(current);
+                    }
+                });
+                fs.rmdirSync(pathToRemove);
+            };
+            return [2 /*return*/, new Promise(function (res, rej) {
+                    var tempBasePath = path.join(electron_1.app.getPath('userData'), 'hud_temp');
+                    try {
+                        var fileString = base64.split(';base64,').pop();
+                        fs.writeFileSync('hud_temp_archive.zip', fileString, { encoding: 'base64' });
+                        if (fs.existsSync(tempBasePath)) {
+                            remove(tempBasePath);
+                        }
+                        fs.mkdirSync(tempBasePath);
+                        var tempUnzipper = new decompress_zip_1["default"]('hud_temp_archive.zip');
+                        tempUnzipper.on('extract', function () {
+                            if (fs.existsSync('hud_temp_archive.zip')) {
+                                fs.unlinkSync('hud_temp_archive.zip');
+                            }
+                            if (fs.existsSync(path.join(tempBasePath, 'hud.json'))) {
+                                var hudFile = fs.readFileSync(path.join(tempBasePath, 'hud.json'), { encoding: 'utf8' });
+                                var hud = JSON.parse(hudFile);
+                                if (!hud.name) {
+                                    throw new Error;
+                                }
+                                var dir = path.join(electron_1.app.getPath('home'), 'HUDs', hud.name.replace(/[^a-zA-Z0-9-_]/g, ''));
+                                if (fs.existsSync(dir)) {
+                                    dir += "-" + (Math.random() * 1000 + 1).toString(36).replace(/[^a-z]+/g, '').substr(0, 15);
+                                }
+                                fs.renameSync(tempBasePath, dir);
+                                res(true);
+                            }
+                            else {
+                                throw new Error;
+                            }
+                        });
+                        tempUnzipper.on('error', function () {
+                            if (fs.existsSync(tempBasePath)) {
+                                remove(tempBasePath);
+                            }
+                            res(null);
+                        });
+                        tempUnzipper.extract({
+                            path: tempBasePath
+                        });
+                        /**/
+                    }
+                    catch (_a) {
+                        if (fs.existsSync(tempBasePath)) {
+                            remove(tempBasePath);
+                        }
+                        res(null);
+                    }
+                })];
+        });
+    });
+}

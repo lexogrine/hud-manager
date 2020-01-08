@@ -45,7 +45,8 @@ var http_1 = __importDefault(require("http"));
 var cors_1 = __importDefault(require("cors"));
 var api_1 = __importDefault(require("./api"));
 var path_1 = __importDefault(require("path"));
-//import fs from 'fs';
+var electron_1 = require("electron");
+var fs_1 = __importDefault(require("fs"));
 var config_1 = require("./api/config");
 var child_process = require("child_process");
 function init(port) {
@@ -76,6 +77,9 @@ function init(port) {
                     app.use(cors_1["default"]({ origin: "*", credentials: true }));
                     io = sockets_1["default"](server, app);
                     api_1["default"](app, io);
+                    fs_1["default"].watch(path_1["default"].join(electron_1.app.getPath('home'), 'HUDs'), function () {
+                        io.emit('reloadHUDs');
+                    });
                     app.use('/', express_1["default"].static(path_1["default"].join(__dirname, '../build')));
                     app.get('*', function (_req, res) {
                         res.sendFile(path_1["default"].join(__dirname, '../build/index.html'));

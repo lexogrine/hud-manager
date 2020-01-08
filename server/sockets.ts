@@ -92,12 +92,12 @@ export default function (server: http.Server, app: express.Router) {
     const portListener = new DevHUDListener(3500);
 
     portListener.onChange(status => {
-        if(!status){
-            return io.emit('devHUD', false);
+        if (!status) {
+            return io.emit('reloadHUDs');
         }
         if (HUDState.devHUD) return;
         request.get('http://localhost:3500/hud.json', async (err, res) => {
-            if (err) return io.emit('devHUD', false);
+            if (err) return io.emit('reloadHUDs', false);
             try {
                 const hud: I.HUD = JSON.parse(res.body);
                 if (!hud) return;
@@ -108,13 +108,12 @@ export default function (server: http.Server, app: express.Router) {
                 hud.dir = (Math.random() * 1000 + 1).toString(36).replace(/[^a-z]+/g, '').substr(0, 15);
                 hud.url = 'http://localhost:3500/';
                 HUDState.devHUD = hud;
-                console.log("HUD on port 3500 detected", hud.name);
                 if (devSocket) {
                     io.to(hud.dir).emit('hud_config', HUDState.get(hud.dir));
                 }
-                io.emit('devHUD', status);
+                io.emit('reloadHUDs');
             } catch {
-                io.emit('devHUD', false);
+                io.emit('reloadHUDs');
             }
         });
     });
@@ -137,16 +136,17 @@ export default function (server: http.Server, app: express.Router) {
         })
         socket.emit('readyToRegister');
         socket.on('register', (name: string, isDev: boolean) => {
-            if (isDev) {
-                devSocket = socket;
-                if (HUDState.devHUD) {
-                    socket.join(HUDState.devHUD.dir);
-                    io.to(HUDState.devHUD.dir).emit('hud_config', HUDState.get(HUDState.devHUD.dir));
-                }
-            } else {
+            if (!isDev) {
                 socket.join(name);
                 io.to(name).emit('hud_config', HUDState.get(name));
+                return;
             }
+            devSocket = socket;
+            if (HUDState.devHUD) {
+                socket.join(HUDState.devHUD.dir);
+                io.to(HUDState.devHUD.dir).emit('hud_config', HUDState.get(HUDState.devHUD.dir));
+            }
+
         });
         socket.on('hud_config', (data: { hud: string, section: string, config: any }) => {
             HUDState.set(data.hud, data.section, data.config);
