@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import api from './../../../../api/api';
 import * as I from './../../../../api/interfaces';
-import { Form, Row, UncontrolledCollapse, Button, Card, CardBody } from 'reactstrap';
+import { Row, UncontrolledCollapse, Button, Card, CardBody } from 'reactstrap';
 import Match from './Match';
 import uuidv4 from 'uuid/v4';
 
@@ -23,12 +23,12 @@ class MatchRow extends Component<{ match: I.Match, teams: I.Team[], cxt: IContex
                 <div className="main_data">
                     <div className="left team">
                         <div className="score">{match.left.wins}</div>
-                        <div className="name">{left && left.name || "Team One"}</div>
+                        <div className="name">{(left && left.name) || "Team One"}</div>
                     </div>
                     <div className="versus">VS</div>
                     <div className="right team">
                         <div className="score">{match.right.wins}</div>
-                        <div className="name">{right && right.name || "Team Two"}</div>
+                        <div className="name">{(right && right.name) || "Team Two"}</div>
                     </div>
                 </div>
                 <div className="vetos"></div>
@@ -52,10 +52,6 @@ class MatchRow extends Component<{ match: I.Match, teams: I.Team[], cxt: IContex
 }
 
 export default class Matches extends Component<{ cxt: IContextData }> {
-    constructor(props: { cxt: IContextData }) {
-        super(props);
-    }
-    
     add = async () => {
         const { matches } = this.props.cxt;
         const newMatch: I.Match = {

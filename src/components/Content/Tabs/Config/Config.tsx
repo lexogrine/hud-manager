@@ -1,8 +1,7 @@
 import React from 'react';
-import { Form, FormGroup, Label, Input, Row, Col, Toast, ToastBody, ToastHeader, Button } from 'reactstrap';
+import { Form, FormGroup, Input, Row, Col, Toast, ToastBody, ToastHeader, Button } from 'reactstrap';
 import * as I from './../../../../api/interfaces';
 import api from './../../../../api/api';
-import Tip from './../../../Tooltip';
 
 interface ConfigStatus extends I.CFGGSIResponse {
     loading: boolean

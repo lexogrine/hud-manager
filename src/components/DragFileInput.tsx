@@ -1,4 +1,4 @@
-import React, { SyntheticEvent } from 'react';
+import React from 'react';
 import DragIcon from './../styles/upload.png';
 
 interface IProps {
@@ -52,7 +52,7 @@ export default class DragFileInput extends React.Component<IProps, IState> {
             >
                 
                 <input type="file" id={this.props.id} accept={this.props.image ? "image/*" : undefined} onChange={this.uploadHandler} />
-                <label className="centered" htmlFor={this.props.id} ><img src={DragIcon}/>{this.props.label}</label>
+                <label className="centered" htmlFor={this.props.id} ><img src={DragIcon} alt="Drag file here"/>{this.props.label}</label>
             </div>
         )
     }

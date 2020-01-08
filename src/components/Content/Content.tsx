@@ -1,7 +1,6 @@
 import React from 'react';
 import Navbar from './Navbar/Navbar';
 import Tabs from './Tabs/Tabs';
-import api from './../../api/api';
 import { Col } from 'reactstrap';
 
 export default class Content extends React.Component<{}, { activeTab: string, data: any }> {

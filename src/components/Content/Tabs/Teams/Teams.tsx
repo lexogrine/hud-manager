@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Form, FormGroup, Label, Input, Row, Col, CustomInput, FormText } from 'reactstrap';
+import { Button, Form, FormGroup, Label, Input, Row, Col, FormText } from 'reactstrap';
 import countryList from 'react-select-country-list';
 import api from './../../../../api/api';
 import * as I from './../../../../api/interfaces';
@@ -158,7 +158,7 @@ export default class Teams extends React.Component<{ cxt: IContextData }, { opti
                             </FormGroup>
                         </Col>
                         <Col md="6" className="centered">
-                            {this.state.form.logo.length ? <img src={'data:image/jpeg;base64,' + this.state.form.logo} id="logo_view" /> : ''}
+                            {this.state.form.logo.length ? <img src={'data:image/jpeg;base64,' + this.state.form.logo} id="logo_view" alt={`Team's logo`}/> : ''}
                         </Col>
                     </Row>
                     <Row>

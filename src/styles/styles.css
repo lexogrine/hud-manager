@@ -165,6 +165,9 @@ img.smallLogo {
     border-radius: 18px;
     box-shadow: 0 0 15px rgba(0,0,0,0.1);
 }
+.hudRow:last-child {
+    margin-bottom: 90px;
+}
 .hudVersion {
     font-size:12px;
 }

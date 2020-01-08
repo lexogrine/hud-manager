@@ -34,7 +34,7 @@ export default {
         update: async (id: string, player: any) => await apiV2(`players/${id}`, 'PATCH', player),
         delete: async (id: string) => await apiV2(`players/${id}`, 'DELETE'),
         getAvatar: async (id: string) => {
-            const response = fetch(`${apiUrl}api/players/avatar/${id}`)
+            fetch(`${apiUrl}api/players/avatar/${id}`)
         }
     },
     teams: {

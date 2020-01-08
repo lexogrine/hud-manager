@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import api from './../../../../api/api';
-import config from './../../../../api/config';
 import * as I from './../../../../api/interfaces';
-import { Form, FormGroup, Col, Row, Label, Collapse, CustomInput, Card, CardImg, CardText, CardBody, CardTitle, CardSubtitle, Button } from 'reactstrap';
+import { Form, FormGroup, Col, Row, Label, Collapse, CustomInput, Card, CardBody, CardTitle, CardSubtitle, Button } from 'reactstrap';
 import TeamModal from './SetTeamModal';
 import SingleVeto from './SingleVeto';
 
@@ -100,8 +99,8 @@ export default class MatchEdit extends Component<{ cxt: IContextData, match: I.M
                         <Card>
                             <CardBody>
                                 <CardTitle className="team-data">
-                                    {leftTeam && leftTeam.logo ? <img src={`data:image/jpeg;base64,${leftTeam.logo}`} className='smallLogo' /> : ''}
-                                    {leftTeam && leftTeam.name || "Team One"}
+                                    {leftTeam && leftTeam.logo ? <img src={`data:image/jpeg;base64,${leftTeam.logo}`} className='smallLogo' alt={`${leftTeam.name} logo`}/> : ''}
+                                    {(leftTeam && leftTeam.name) || "Team One"}
                                 </CardTitle>
                                 <CardSubtitle>Won {this.state.left.wins} maps</CardSubtitle>
                                 <TeamModal
@@ -122,8 +121,8 @@ export default class MatchEdit extends Component<{ cxt: IContextData, match: I.M
                         <Card>
                             <CardBody>
                                 <CardTitle className="team-data">
-                                    {rightTeam && rightTeam.logo ? <img src={`data:image/jpeg;base64,${rightTeam.logo}`} className='smallLogo' /> : ''}
-                                    {rightTeam && rightTeam.name || "Team Two"}
+                                    {rightTeam && rightTeam.logo ? <img src={`data:image/jpeg;base64,${rightTeam.logo}`} className='smallLogo' alt={`${rightTeam.name} logo`}/> : ''}
+                                    {(rightTeam && rightTeam.name) || "Team Two"}
                                 </CardTitle>
                                 <CardSubtitle>Won {this.state.right.wins} maps</CardSubtitle>
                                 <TeamModal

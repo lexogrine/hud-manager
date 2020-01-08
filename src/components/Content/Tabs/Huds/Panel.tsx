@@ -1,13 +1,10 @@
 import React from 'react';
 import { IContextData } from './../../../../components/Context';
 import api from './../../../../api/api';
-import config from './../../../../api/config';
 import * as I from './../../../../api/interfaces';
 import { socket } from './../Live/Live';
 import { Row, Col, FormGroup, Label, Input, Form, Button } from 'reactstrap';
 import FileInput from './../../../DragFileInput';
-
-const upperFirst = (str: string) => str.charAt(0).toUpperCase() + str.substr(1);
 
 export default class ActionPanel extends React.Component<{ cxt: IContextData, hud: I.HUD }, { form: any }> {
     constructor(props: { cxt: IContextData, hud: I.HUD }) {
@@ -83,7 +80,7 @@ export default class ActionPanel extends React.Component<{ cxt: IContextData, hu
 
                                     <FormGroup>
                                         <Label for={input.name.toLowerCase()}>{input.label}</Label>
-                                        {input.type === "text" ? <Input type="text" name={input.name.toLowerCase()} id={input.name.toLowerCase()} onChange={this.changeForm(section.name, input.name)} value={form[section.name] && form[section.name][input.name] || ''} /> : ''}
+                                        {input.type === "text" ? <Input type="text" name={input.name.toLowerCase()} id={input.name.toLowerCase()} onChange={this.changeForm(section.name, input.name)} value={(form[section.name] && form[section.name][input.name]) || ''} /> : ''}
                                         {input.type === "action" ? <>
                                             {input.values.map(value => <Button onClick={() => this.sendAction({ action: input.name, data: value.name })}>{value.label}</Button>)}
                                         </> : ''}
@@ -91,7 +88,7 @@ export default class ActionPanel extends React.Component<{ cxt: IContextData, hu
                                             <FileInput image id={`file_${input.name}`} onChange={this.handleImages(input.name, section.name)} label="UPLOAD PROFILE PICTURE"/>
                                         </Col>
                                         <Col md={6} className="centered">
-                                            {form[section.name] && form[section.name][input.name] ? <img src={'data:image/jpeg;base64,' + form[section.name][input.name]} id={`image_overview_${input.name}_${[section.name]}`} className="image_overview"/> : ''}
+                                            {form[section.name] && form[section.name][input.name] ? <img src={'data:image/jpeg;base64,' + form[section.name][input.name]} id={`image_overview_${input.name}_${[section.name]}`} className="image_overview" alt={input.label}/> : ''}
                                         </Col>
                                         </Row> : ''}
                                     </FormGroup>

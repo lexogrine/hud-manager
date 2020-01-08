@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import api from './../../../../api/api';
-import * as I from './../../../../api/interfaces';
 import config from './../../../../api/config';
-import { Form, FormGroup, Col, Row, Label, CustomInput, Card, CardImg, CardText, CardBody, CardTitle, CardSubtitle, Button } from 'reactstrap';
+import { Col, Row } from 'reactstrap';
 import CSGOGSI, { CSGO, Player, Team } from 'csgogsi-socket';
 
 export const { GSI, socket } = CSGOGSI(`${config.isDev ? config.apiAddress : '/'}`, 'update')

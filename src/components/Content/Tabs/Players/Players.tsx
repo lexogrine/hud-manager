@@ -1,9 +1,9 @@
 import React from 'react';
-import { Button, Form, FormGroup, Label, Input, Row, Col, CustomInput, FormText } from 'reactstrap';
+import { Button, Form, FormGroup, Label, Input, Row, Col, FormText } from 'reactstrap';
 import countryList from 'react-select-country-list';
 import api from './../../../../api/api';
 import * as I from './../../../../api/interfaces';
-import { ContextData, IContextData } from './../../../../components/Context';
+import { IContextData } from './../../../../components/Context';
 import DragFileInput from './../../../DragFileInput';
 
 
@@ -194,7 +194,7 @@ export default class Players extends React.Component<{ cxt: IContextData, data: 
                             </FormGroup>
                         </Col>
                         <Col md="6" className="centered">
-                            {this.state.form.avatar.length ? <img src={'data:image/jpeg;base64,' + this.state.form.avatar} id="avatar_view" /> : ''}
+                            {this.state.form.avatar.length ? <img src={'data:image/jpeg;base64,' + this.state.form.avatar} id="avatar_view" alt="User's avatar"/> : ''}
                         </Col>
                     </Row>
                     <Row>

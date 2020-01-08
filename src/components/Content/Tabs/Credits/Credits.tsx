@@ -1,9 +1,5 @@
 import React from "react";
-import { IContextData } from "./../../../../components/Context";
-import api from "./../../../../api/api";
-import config from "./../../../../api/config";
-import * as I from "./../../../../api/interfaces";
-import { Row, Col, FormGroup, Label, Input } from "reactstrap";
+import { Row, Col } from "reactstrap";
 
 class CreditsEntry extends React.Component<{ title: string; people: string[] }> {
   render() {

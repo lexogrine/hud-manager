@@ -3,7 +3,7 @@ import { IContextData } from './../../../../components/Context';
 import api from './../../../../api/api';
 import config from './../../../../api/config';
 import * as I from './../../../../api/interfaces';
-import { Row, Col, FormGroup, Label, Input, UncontrolledCollapse, Card, CardBody, Button } from 'reactstrap';
+import { Row, Col, UncontrolledCollapse, Button } from 'reactstrap';
 import Panel from './Panel';
 import { socket } from '../Live/Live';
 import Tip from './../../../Tooltip';
@@ -120,7 +120,7 @@ export default class Huds extends React.Component<{ cxt: IContextData }, { huds:
                                 <Col s={12}>
                                     <Row>
                                         <Col style={{ width: '64px', flex: 'unset', padding: 0 }} className='centered'>
-                                            <img src={`${config.isDev ? config.apiAddress : '/'}huds/${hud.dir}/thumbnail`} />
+                                            <img src={`${config.isDev ? config.apiAddress : '/'}huds/${hud.dir}/thumbnail`} alt={`${hud.name}`} />
                                         </Col>
                                         <Col style={{ flex: 10, display: 'flex', justifyContent: 'center', flexDirection: 'column' }}>
                                             <Row>

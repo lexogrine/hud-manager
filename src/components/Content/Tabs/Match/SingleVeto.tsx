@@ -1,5 +1,5 @@
 import React from 'react';
-import { Row, Col, Button } from 'reactstrap';
+import { Col, Button } from 'reactstrap';
 import * as I from './../../../../api/interfaces';
 import VetoModal from './VetoModal'
 
@@ -16,12 +16,12 @@ class TeamLogoName extends React.Component<{team: I.Team, reversed?: boolean}>{
         if(this.props.reversed){
             return <span>
                 <strong>{this.props.team.name}</strong>
-                {this.props.team.logo ? <img src={`data:image/jpeg;base64,${this.props.team.logo}`} /> : ''}
+                {this.props.team.logo ? <img src={`data:image/jpeg;base64,${this.props.team.logo}`} alt={`${this.props.team.name} logo`} /> : ''}
             </span>
         }
         return <span>
             {this.props.team.logo ?
-                <img src={`data:image/jpeg;base64,${this.props.team.logo}`} /> : ''}
+                <img src={`data:image/jpeg;base64,${this.props.team.logo}`} alt={`${this.props.team.name} logo`}/> : ''}
                 <strong>{this.props.team.name}</strong>
             </span>
     }
@@ -68,11 +68,11 @@ class SingleVeto extends React.Component<Props> {
                                     { score ? <div className="score-container">
                                         <div className={`left-team`}>
                                         <span className="team-name"><TeamLogoName team={team}/></span>
-                                            <span className="score">{match.left.id && score[match.left.id] || 0}</span>
+                                            <span className="score">{(match.left.id && score[match.left.id]) || 0}</span>
                                         </div>
                                         <div style={{width:'20px', flex:'unset', display: 'flex', alignItems:'center', justifyContent:'center'}}>:</div>
                                         <div className={`right-team`}>
-                                            <span className="score">{match.right.id && score[match.right.id] || 0}</span>
+                                            <span className="score">{(match.right.id && score[match.right.id]) || 0}</span>
                                             <span className="team-name"><TeamLogoName team={secTeam} reversed/></span>
                                         </div>
                                     </div> : ''}

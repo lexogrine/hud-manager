@@ -12,7 +12,7 @@ export default class Navbar extends React.Component<{activeTab: string, toggle: 
                         active={ this.props.activeTab === 'teams' }
                         onClick={() => { this.props.toggle('teams'); }}
                     >
-                        <img src={Tabs.Teams}/>
+                        <img src={Tabs.Teams} alt="Teams"/>
                         <div>Teams</div>
                     </NavLink>
                 </NavItem>
@@ -21,7 +21,7 @@ export default class Navbar extends React.Component<{activeTab: string, toggle: 
                         active={ this.props.activeTab === 'players' }
                         onClick={() => { this.props.toggle('players'); }}
                     >
-                        <img src={Tabs.Players}/>
+                        <img src={Tabs.Players} alt="Players"/>
                         <div>Players</div>
                     </NavLink>
                 </NavItem>
@@ -30,7 +30,7 @@ export default class Navbar extends React.Component<{activeTab: string, toggle: 
                         active={ this.props.activeTab === 'create_match' }
                         onClick={() => { this.props.toggle('create_match'); }}
                     >
-                        <img src={Tabs.Matches}/>
+                        <img src={Tabs.Matches} alt="Matches"/>
                         <div>Matches</div>
                     </NavLink>
                 </NavItem>
@@ -39,7 +39,7 @@ export default class Navbar extends React.Component<{activeTab: string, toggle: 
                         active={ this.props.activeTab === 'huds' }
                         onClick={() => { this.props.toggle('huds'); }}
                     >
-                        <img src={Tabs.HUDs}/>
+                        <img src={Tabs.HUDs} alt="HUDs"/>
                         <div>HUDS</div>
                     </NavLink>
                 </NavItem>
@@ -48,7 +48,7 @@ export default class Navbar extends React.Component<{activeTab: string, toggle: 
                         active={ this.props.activeTab === 'live' }
                         onClick={() => { this.props.toggle('live'); }}
                     >
-                        <img src={Tabs.Live}/>
+                        <img src={Tabs.Live} alt="Live"/>
                         <div>Live</div>
                     </NavLink>
                 </NavItem>

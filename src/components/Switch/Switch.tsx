@@ -18,7 +18,7 @@ class Switch extends React.PureComponent<IProps> {
                 type="checkbox"
             />
             <label
-                style={{ background: this.props.isOn && '#6b1cff' || 'black' }}
+                style={{ background: (this.props.isOn && '#6b1cff') || 'black' }}
                 className="react-switch-label"
                 htmlFor={this.props.id}
             >
