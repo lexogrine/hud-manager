@@ -107,5 +107,6 @@ export interface Match {
 
 export interface CFGGSIResponse {
     success: boolean,
+    accessible: boolean,
     message?: string
 }

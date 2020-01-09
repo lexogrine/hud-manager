@@ -56,11 +56,15 @@ function default_1(router, io) {
     router.route('/api/gsi')
         .get(gsi.checkGSIFile)
         .put(gsi.createGSIFile);
+    router.route('/api/gsi/download')
+        .get(gsi.saveFile('gamestate_integration_hudmanager.cfg', gsi.generateGSIFile()));
     router.route('/api/csgo')
         .get(csgo.getLatestData);
     router.route('/api/cfg')
         .get(csgo.checkCFGs)
         .put(csgo.createCFGs);
+    router.route('/api/cfgs/download')
+        .get(gsi.saveFile('configs.zip', gsi.cfgsZIPBase64, true));
     router.route('/huds/:dir/')
         .get(huds.renderHUD);
     router.use('/huds/:dir/', huds.renderAssets);

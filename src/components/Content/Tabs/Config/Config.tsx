@@ -19,15 +19,20 @@ export default class Config extends React.Component<any, { config: I.Config, cfg
             cfg: {
                 success: false,
                 loading: true,
-                message: 'Loading data about cfg files...'
+                message: 'Loading data about cfg files...',
+                accessible: true
             },
             gsi: {
                 success: false,
                 loading: true,
-                message: 'Loading data about GameState files...'
+                message: 'Loading data about GameState files...',
+                accessible: true
             },
             restartRequired: false
         }
+    }
+    download = (target: 'gsi' | 'cfgs') => {
+        api.config.download(target);
     }
     getConfig = async () => {
         const config = await api.config.get();
@@ -58,9 +63,9 @@ export default class Config extends React.Component<any, { config: I.Config, cfg
         const response = await api.gamestate.check();
 
         if (response.success === false) {
-            return this.setState({ gsi: { success: false, message: response.message, loading: false } });
+            return this.setState({ gsi: { success: false, message: response.message, loading: false, accessible: response.accessible } });
         }
-        return this.setState({ gsi: { success: true, loading: false } });
+        return this.setState({ gsi: { success: true, loading: false, accessible: true } });
     }
     checkCFG = async () => {
         const { cfg } = this.state;
@@ -71,9 +76,9 @@ export default class Config extends React.Component<any, { config: I.Config, cfg
         const response = await api.cfgs.check();
 
         if (response.success === false) {
-            return this.setState({ cfg: { success: false, message: response.message, loading: false } });
+            return this.setState({ cfg: { success: false, message: response.message, loading: false, accessible: response.accessible } });
         }
-        return this.setState({ cfg: { success: true, loading: false } });
+        return this.setState({ cfg: { success: true, loading: false, accessible: true } });
     }
 
     async componentDidMount() {
@@ -129,13 +134,13 @@ export default class Config extends React.Component<any, { config: I.Config, cfg
                             <div className="config-description">
                                 GameState Integration: {gsi.message || 'Loaded succesfully'}
                             </div>
-                            <Button className="purple-btn round-btn" disabled={gsi.loading || gsi.success} onClick={this.createGSI}>Add GSI file</Button>
+                            <Button className="purple-btn round-btn" disabled={gsi.loading || gsi.success || !gsi.accessible} onClick={this.createGSI}>Add GSI file</Button>
                         </Col>
                         <Col md="12" className="config-entry">
                             <div className="config-description">
                                 Configs: {cfg.message || 'Loaded succesfully'}
                             </div>
-                            <Button className="purple-btn round-btn" disabled={cfg.loading || cfg.success} onClick={this.createCFG}>Add config files</Button>
+                            <Button className="purple-btn round-btn" disabled={cfg.loading || cfg.success || !cfg.accessible} onClick={this.createCFG}>Add config files</Button>
                         </Col>
                         <Col md="12" className="config-entry">
                             <div className="config-description">
@@ -144,7 +149,8 @@ export default class Config extends React.Component<any, { config: I.Config, cfg
                             <Button className="lightblue-btn round-btn" onClick={()=>{}}>See now</Button>
                         </Col>
                     </Row>
-
+                    <Button onClick={() => this.download('gsi')}>Download GSI config</Button>
+                    <Button onClick={() => this.download('cfgs')}>Download HUD configs</Button>
                     <Toast isOpen={this.state.restartRequired} className="fixed-toast">
                         <ToastHeader>Change of port detected</ToastHeader>
                         <ToastBody>It seems like you've changed GSI port - for all changes to be set in place you should now restart the Manager and update the GSI files</ToastBody>

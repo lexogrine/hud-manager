@@ -93,6 +93,7 @@ export default function (server: http.Server, app: express.Router) {
 
     portListener.onChange(status => {
         if (!status) {
+            HUDState.devHUD = null;
             return io.emit('reloadHUDs');
         }
         if (HUDState.devHUD) return;

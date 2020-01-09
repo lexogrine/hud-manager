@@ -1,5 +1,5 @@
 import express from 'express';
-import { app } from 'electron';
+import { app, dialog } from 'electron';
 import socketio from 'socket.io';
 import * as players from './players';
 import * as teams from './teams';
@@ -63,12 +63,18 @@ export default function (router: express.Router, io: socketio.Server) {
         .get(gsi.checkGSIFile)
         .put(gsi.createGSIFile);
 
+    router.route('/api/gsi/download')
+        .get(gsi.saveFile('gamestate_integration_hudmanager.cfg', gsi.generateGSIFile()));
+
     router.route('/api/csgo')
         .get(csgo.getLatestData);
 
     router.route('/api/cfg')
         .get(csgo.checkCFGs)
         .put(csgo.createCFGs);
+
+    router.route('/api/cfgs/download')
+        .get(gsi.saveFile('configs.zip', gsi.cfgsZIPBase64, true));
 
     router.route('/huds/:dir/')
         .get(huds.renderHUD);

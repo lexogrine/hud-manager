@@ -67,6 +67,7 @@ function createMainWindow() {
                         show: false,
                         //frame:false,
                         //titleBarStyle:"hidden",
+                        resizable: false,
                         title: "HUD Manager",
                         icon: path_1["default"].join(__dirname, 'assets/icon.png'),
                         webPreferences: {

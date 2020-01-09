@@ -140,6 +140,7 @@ function default_1(server, app) {
     var portListener = new DevHUDListener(3500);
     portListener.onChange(function (status) {
         if (!status) {
+            exports.HUDState.devHUD = null;
             return io.emit('reloadHUDs');
         }
         if (exports.HUDState.devHUD)
