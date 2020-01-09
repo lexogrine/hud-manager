@@ -121,6 +121,10 @@ input.form-control, select.form-control {
     border: 1px solid #505257;
     border-radius: 10px;
 }
+select.form-control option {
+    color:black;
+    border-radius:20px;
+}
 input.form-control:focus, select.form-control:focus {
     background-color: transparent;
     box-shadow: none;
@@ -346,20 +350,23 @@ img.smallLogo {
     align-items: center;
     display: flex;
 }
-.config-container .btn {
-    background-color: #6b1cff !important;
+.round-btn {
     box-shadow: none !important;
     border: none;
     height: 29px;
     border-radius: 50px;
     font-size: 8pt;
     text-transform: uppercase;
-    padding-bottom: 2pt;
+    padding-bottom: 3pt;
     padding-left: 15pt;
     padding-right: 15pt;
     font-weight:600;
 }
-.config-container .btn.credits-btn {
+
+.btn.purple-btn {
+    background-color: #6b1cff;
+}
+.btn.lightblue-btn {
     background-color: #7ad9f5 !important;
     color: #24272d;
 }
@@ -425,39 +432,65 @@ img.smallLogo {
 .match_row {
     display: flex;
     flex-direction: column;
-    width:100%;
-    padding:35px 20px;
-    border-top:1px solid rgba(255,255,255,0.5);
+    width: 100%;
+    min-height: 219px;
+    background-color: #ffffff0d;
+    position: relative;
+    justify-content: center;
+}
+.match_row:nth-child(2n) {
+    background-color: transparent;
 }
 .match_row .main_data {
     display: flex;
     flex-direction: row;
     font-size:20pt;
+    align-items: center;
+    justify-content: center;
+    margin-bottom:35px;
 }
 .match_row .main_data .team {
     display: flex;
-    flex:1;
-    flex-direction: row-reverse;
+    width:261px;
+    flex-direction: column;
 }
 .match_row .main_data .team .score {
+    font-size: 50px;
+    font-weight:100;
+}
+.match_row .main_data .team .name {
+
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+.match_row .main_data .team .score,.match_row .main_data .team .name {
     display: flex;
-    width:70px;
     align-items: center;
     justify-content: center;
 }
+
 .match_row .main_data .versus {
-    width: 50px;
+    width: 46px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: url('./slash.png') no-repeat;
     text-align: center;
-}
-.match_row .main_data .right.team{
-    flex-direction: row;
-}
+    font-size: 15px;
+    height: 46px;   
+    font-weight:700;
+}   
 .match_row .options {
     display: flex;
     justify-content: center;
     align-items: center;
 }
-.match_row .options .btn, .match_row .second-options .btn {
+.match_row .options .btn {
+    margin-left: 4px;
+    margin-right: 4px;
+}
+.match_row .second-options .btn {
     margin-left:10px;
     margin-right:10px;
     font-size: 14px;
@@ -474,10 +507,30 @@ form .card > .card-body > button.btn {
     align-self: center;
 }
 .matches_container{
-    background-color: rgba(0,0,0,0.5);
+    margin:0;
+    margin-bottom:71px;
 }
 #add_match_button {
     margin: 10px auto;
+}
+.live-indicator {
+    background-image: url('./live.png');
+    font-size: 8px;
+    font-weight: 600;
+    text-transform: uppercase;
+    background-position: left center;
+    background-repeat: no-repeat;
+    position: absolute;
+    left: 27px;
+    top: 25px;
+    padding-left: 24px;
+    background-size: 17px 13px;
+    height: 13px;
+    display: flex;
+    align-items: center;
+}
+.match_row:not(.live) .live-indicator{
+    display:none;
 }
 .dropArea {
     display: flex;

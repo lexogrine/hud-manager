@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import api from './../../../../api/api';
 import * as I from './../../../../api/interfaces';
-import { Row, UncontrolledCollapse, Button, Card, CardBody } from 'reactstrap';
+import { Row, UncontrolledCollapse, Button, Card, CardBody, Col } from 'reactstrap';
 import Match from './Match';
 import uuidv4 from 'uuid/v4';
 
@@ -18,8 +18,10 @@ class MatchRow extends Component<{ match: I.Match, teams: I.Team[], cxt: IContex
         const left = teams.filter(team => team._id === match.left.id)[0];
         const right = teams.filter(team => team._id === match.right.id)[0];
         return (
-            <div className="match_row">
-                <p>{match.current ? 'THIS IS LIVE' : ''}</p>
+            <div className={`match_row ${match.current ? 'live':''}`}>
+                <div className="live-indicator">
+                    Live
+                </div>
                 <div className="main_data">
                     <div className="left team">
                         <div className="score">{match.left.wins}</div>
@@ -33,9 +35,9 @@ class MatchRow extends Component<{ match: I.Match, teams: I.Team[], cxt: IContex
                 </div>
                 <div className="vetos"></div>
                 <div className="options">
-                    <Button color="primary" id={`match_id_${this.props.match.id}`}>Edit</Button>
-                    <Button color="primary" onClick={ () => this.props.setCurrent()}>Set as current</Button>
-                    <Button color="secondary" onClick={this.delete}>Delete</Button>
+                    <Button className="round-btn " onClick={this.delete}>Delete</Button>
+                    <Button className="round-btn lightblue-btn" id={`match_id_${this.props.match.id}`}>Edit</Button>
+                    <Button className="purple-btn round-btn" onClick={ () => this.props.setCurrent()}>Set as current</Button>
                 </div>
                 <div className="match_data">
                     <UncontrolledCollapse toggler={`#match_id_${this.props.match.id}`}>
@@ -104,10 +106,14 @@ export default class Matches extends Component<{ cxt: IContextData }> {
             <React.Fragment>
                 
                 <div className="tab-title-container">Matches</div>
-                <div className="tab-content-container">
+                <div className="tab-content-container no-padding">
                     <Row className="matches_container">
-                        <Button onClick={this.add} color="primary" id="add_match_button" >Add match</Button>
                         {this.props.cxt.matches.map(match => <MatchRow key={match.id} edit={this.edit} setCurrent={this.setCurrent(match.id)} match={match} teams={this.props.cxt.teams} cxt={this.props.cxt} />)}
+                    </Row>
+                    <Row>
+                        <Col className="main-buttons-container">
+                            <Button onClick={this.add} color="primary">+Create New</Button>
+                        </Col>
                     </Row>
                 </div>
             </React.Fragment>

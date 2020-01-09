@@ -129,19 +129,19 @@ export default class Config extends React.Component<any, { config: I.Config, cfg
                             <div className="config-description">
                                 GameState Integration: {gsi.message || 'Loaded succesfully'}
                             </div>
-                            <Button color="primary" disabled={gsi.loading || gsi.success} onClick={this.createGSI}>Add GSI file</Button>
+                            <Button className="purple-btn round-btn" disabled={gsi.loading || gsi.success} onClick={this.createGSI}>Add GSI file</Button>
                         </Col>
                         <Col md="12" className="config-entry">
                             <div className="config-description">
                                 Configs: {cfg.message || 'Loaded succesfully'}
                             </div>
-                            <Button color="primary" disabled={cfg.loading || cfg.success} onClick={this.createCFG}>Add config files</Button>
+                            <Button className="purple-btn round-btn" disabled={cfg.loading || cfg.success} onClick={this.createCFG}>Add config files</Button>
                         </Col>
                         <Col md="12" className="config-entry">
                             <div className="config-description">
                                 Credits
                             </div>
-                            <Button color="primary" className="credits-btn" onClick={()=>{}}>See now</Button>
+                            <Button className="lightblue-btn round-btn" onClick={()=>{}}>See now</Button>
                         </Col>
                     </Row>
 
