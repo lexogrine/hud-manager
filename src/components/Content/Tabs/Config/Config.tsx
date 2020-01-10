@@ -146,7 +146,7 @@ export default class Config extends React.Component<any, { config: I.Config, cfg
                             <div className="config-description">
                                 Credits
                             </div>
-                            <Button className="lightblue-btn round-btn" onClick={()=>{}}>See now</Button>
+                            <Button className="lightblue-btn round-btn" onClick={() => this.props.toggle('credits')}>See now</Button>
                         </Col>
                     </Row>
                     <Button onClick={() => this.download('gsi')}>Download GSI config</Button>

@@ -383,11 +383,20 @@ img.smallLogo {
     color:black;
 }
 .credits_name {
-    margin-left:30px;
-    font-weight: 600;
+    font-size: 18px;
+    font-weight: 300;
 }
 .credits_segment {
     margin-bottom: 30px;
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.credits_title {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
 }
 .scoreboard_container {
     display: flex;

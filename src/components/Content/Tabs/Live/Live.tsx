@@ -51,7 +51,10 @@ export default class Match extends Component<any, { game: CSGO | null, steamids:
     }
     render() {
         const { game } = this.state;
-        if (!game) return '';
+        if (!game) return  <React.Fragment>
+            <div className="tab-title-container">Live</div>
+            <div className="tab-content-container"></div>
+        </React.Fragment>;
         const teams = [game.map.team_ct, game.map.team_t]
         const left = teams.filter(team => team.orientation === "left")[0];
         const right = teams.filter(team => team.orientation === "right")[0];

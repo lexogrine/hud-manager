@@ -5,14 +5,8 @@ class CreditsEntry extends React.Component<{ title: string; people: string[] }> 
   render() {
     return (
       <div className="credits_segment">
-        <h3>&#10023;{this.props.title}: </h3>
-        <div>
-          {this.props.people.map(man => (
-            <p className="credits_name" key={man}>
-              {man}
-            </p>
-          ))}
-        </div>
+        <div className="credits_title">{this.props.title}</div>
+        <div className="credits_name">{this.props.people.join(', ')}</div>
       </div>
     );
   }
@@ -21,16 +15,21 @@ class CreditsEntry extends React.Component<{ title: string; people: string[] }> 
 export default class Credits extends React.Component {
   render() {
     return (
-      <Row>
-        <Col>
-          <CreditsEntry title="Application and HUD API" people={["osztenkurden"]} />
-          <CreditsEntry title="HUD Design" people={["Komodo"]} />
-          <CreditsEntry title="Testing and Debugging" people={["osztenkurden", "Komodo"]} />
-          <CreditsEntry title="Radar Development" people={["boltgolt"]} />
-          <CreditsEntry title="Manager Design" people={["Drożdżu"]} />
-          <CreditsEntry title="Ideas" people={["boltgolt", "Komodo", "TeDY"]} />
-        </Col>
-      </Row>
+      <React.Fragment>
+        <div className="tab-title-container">Credits</div>
+        <div className="tab-content-container">
+          <Row>
+            <Col>
+              <CreditsEntry title="Application and HUD API" people={["osztenkurden"]} />
+              <CreditsEntry title="Testing and Debugging" people={["osztenkurden", "Komodo"]} />
+              <CreditsEntry title="Custom radar by" people={["boltgolt"]} />
+              <CreditsEntry title="Manager Layout Idea" people={["Drożdżu"]} />
+              <CreditsEntry title="Feedback & Ideas" people={["boltgolt", "Komodo", "TeDY", "Wiethoofd"]} />
+            </Col>
+          </Row>
+        </div>
+      </React.Fragment>
+
     );
   }
 }

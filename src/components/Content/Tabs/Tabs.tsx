@@ -32,7 +32,7 @@ export default class Tabs extends React.Component<{ activeTab: string, data: any
                                     <Live toggle={this.props.toggle}></Live>
                                 </TabPane>
                                 <TabPane tabId="config" >
-                                    <Config cxt={data}></Config>
+                                    <Config cxt={data} toggle={this.props.toggle}></Config>
                                 </TabPane>
                                 <TabPane tabId="credits" >
                                     <Credits></Credits>
