@@ -5,7 +5,9 @@ interface IProps {
     onChange:(files: FileList)=>void,
     id:string,
     label: string,
-    image?: boolean
+    image?: boolean,
+    className?: string,
+    accept?: string
 }
 interface IState {
     highlight: boolean
@@ -42,8 +44,19 @@ export default class DragFileInput extends React.Component<IProps, IState> {
     }
 
     render() {
+        let accept = '';
+        if(this.props.image){
+            accept = "image/*";
+        
+        }
+        if(this.props.accept){
+            if(accept){
+                accept += ",";
+            }
+            accept += this.props.accept;
+        }
         return (
-            <div className={`dropArea ${this.state.highlight ? 'hightlight':''}`}
+            <div className={`dropArea ${this.state.highlight ? 'hightlight':''} ${this.props.className || ''}`}
                 id={`area_${this.props.id}`}
                 onDragOver={this.allow}
                 onDragEnter={this.whileOver}
@@ -51,7 +64,7 @@ export default class DragFileInput extends React.Component<IProps, IState> {
                 onDrop={this.drop}
             >
                 
-                <input type="file" id={this.props.id} accept={this.props.image ? "image/*" : undefined} onChange={this.uploadHandler} />
+                <input type="file" id={this.props.id} accept={accept} onChange={this.uploadHandler} />
                 <label className="centered" htmlFor={this.props.id} ><img src={DragIcon} alt="Drag file here"/>{this.props.label}</label>
             </div>
         )

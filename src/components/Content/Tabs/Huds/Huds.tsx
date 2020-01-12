@@ -1,13 +1,13 @@
 import React from 'react';
 import { IContextData } from './../../../../components/Context';
 import api from './../../../../api/api';
-import config from './../../../../api/config';
+import Config from './../../../../api/config';
 import * as I from './../../../../api/interfaces';
 import { Row, Col, UncontrolledCollapse, Button } from 'reactstrap';
 import Panel from './Panel';
 import { socket } from '../Live/Live';
 import Tip from './../../../Tooltip';
-import Switch  from './../../../../components/Switch/Switch';
+import Switch from './../../../../components/Switch/Switch';
 import DragInput from './../../../DragFileInput';
 
 var userAgent = navigator.userAgent.toLowerCase();
@@ -37,17 +37,28 @@ function createCFG(customRadar: boolean, customKillfeed: boolean): CFG {
     return { cfg, file };
 }
 
-export default class Huds extends React.Component<{ cxt: IContextData }, { huds: I.HUD[], form: { killfeed: boolean, radar: boolean }, active: I.HUD | null }> {
+export default class Huds extends React.Component<{ cxt: IContextData }, { config: I.Config, huds: I.HUD[], form: { killfeed: boolean, radar: boolean }, active: I.HUD | null }> {
     constructor(props: { cxt: IContextData }) {
         super(props);
         this.state = {
             huds: [],
+            config: {
+                steamApiKey: '',
+                hlaePath: '',
+                port: 1337,
+                token: ''
+            },
             form: {
                 killfeed: false,
                 radar: false
             },
             active: null
         }
+    }
+
+    runCSGO = () => {
+        const config = createCFG(this.state.form.radar, this.state.form.killfeed).file;
+        api.csgo.run(config);
     }
 
     handleZIPs = (files: FileList) => {
@@ -66,6 +77,10 @@ export default class Huds extends React.Component<{ cxt: IContextData }, { huds:
         form[name] = !form[name];
         this.setState({ form });
     }
+    getConfig = async () => {
+        const config = await api.config.get();
+        this.setState({ config });
+    }
     loadHUDs = async () => {
         const huds = await api.huds.get();
         this.setState({ huds });
@@ -73,6 +88,7 @@ export default class Huds extends React.Component<{ cxt: IContextData }, { huds:
     async componentDidMount() {
         socket.on('reloadHUDs', this.loadHUDs)
         this.loadHUDs();
+        this.getConfig();
     }
     startHUD(dir: string) {
         api.huds.start(dir);
@@ -84,7 +100,7 @@ export default class Huds extends React.Component<{ cxt: IContextData }, { huds:
     }
     render() {
         const { killfeed, radar } = this.state.form;
-        const { active } = this.state
+        const { active, config } = this.state
         return (
             <React.Fragment>
                 <div className="tab-title-container">HUDS</div>
@@ -95,36 +111,50 @@ export default class Huds extends React.Component<{ cxt: IContextData }, { huds:
                             <div className="config-description">
                                 Use Boltgolt's radar
                             </div>
-                            <Switch isOn={this.state.form.radar} id="radar-toggle" handleToggle={this.changeForm('radar')}/>
+                            <Switch isOn={this.state.form.radar} id="radar-toggle" handleToggle={this.changeForm('radar')} />
                         </Col>
                         <Col md="12" className="config-entry">
                             <div className="config-description">
                                 Use custom killfeed
                             </div>
-                            <Switch isOn={this.state.form.killfeed} id="killfeed-toggle" handleToggle={this.changeForm('killfeed')}/>
+                            <Switch isOn={this.state.form.killfeed} id="killfeed-toggle" handleToggle={this.changeForm('killfeed')} />
                         </Col>
                         <Col md="12" className="config-entry">
-                            <div className="config-description">
-                                Type in CS:GO console:
+                            <div className="running-csgo-container">
+                                <div>
+                                    <div className="config-description">
+                                        Type in CS:GO console:
+                                    </div>
+                                    <code className="exec-code">exec {createCFG(radar, killfeed).file}</code>
+                                    {isElectron ? <React.Fragment>
+                                        <div className="config-description">
+                                            OR
+                                         </div>
+                                        <Button className="purple-btn round-btn" disabled={killfeed && !config.hlaePath} onClick={this.runCSGO}>RUN CSGO</Button>
+                                    </React.Fragment> : ''}
+                                </div>
+                                <div className="warning">
+                                        {killfeed && !config.hlaePath ? 'Specify HLAE path in settings in order to use custom killfeed functionality' : ''}
+                                </div>
                             </div>
-                            <code className="exec-code">exec {createCFG(radar, killfeed).file}</code>
+
                         </Col>
                     </Row>
 
                     <Row className="padded">
                         <Col>
                             <Col s={12}>
-                                <DragInput id={`hud_zip`} onChange={this.handleZIPs} label="UPLOAD HUD"/>
+                                <DragInput id={`hud_zip`} onChange={this.handleZIPs} label="UPLOAD HUD" />
                             </Col>
                             {this.state.huds.map(hud => <Row key={hud.dir} className="hudRow">
                                 <Col s={12}>
                                     <Row>
                                         <Col style={{ width: '64px', flex: 'unset', padding: 0 }} className='centered'>
-                                            <img src={`${config.isDev ? config.apiAddress : '/'}huds/${hud.dir}/thumbnail`} alt={`${hud.name}`} />
+                                            <img src={`${Config.isDev ? Config.apiAddress : '/'}huds/${hud.dir}/thumbnail`} alt={`${hud.name}`} />
                                         </Col>
                                         <Col style={{ flex: 10, display: 'flex', justifyContent: 'center', flexDirection: 'column' }}>
                                             <Row>
-                                                <Col><strong>{hud.isDev ? '[DEV]':''}{hud.name}</strong> <span className='hudVersion'>({hud.version})</span></Col>
+                                                <Col><strong>{hud.isDev ? '[DEV]' : ''}{hud.name}</strong> <span className='hudVersion'>({hud.version})</span></Col>
                                             </Row>
                                             <Row>
                                                 <Col><i>{hud.author}</i></Col>
@@ -155,10 +185,10 @@ export default class Huds extends React.Component<{ cxt: IContextData }, { huds:
                             </Row>)}
                         </Col>
                     </Row>
-                    
+
                     {isElectron ? <Row>
                         <Col className="main-buttons-container">
-                            <Button onClick={api.huds.openDirectory}color="primary">Open HUDs directory</Button>
+                            <Button onClick={api.huds.openDirectory} color="primary">Open HUDs directory</Button>
                         </Col>
                     </Row> : ''}
                 </div>

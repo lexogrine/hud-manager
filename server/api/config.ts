@@ -13,7 +13,7 @@ export const loadConfig = async (): Promise<Config | null> => {
             if(config.length){
                 return res(config[0]);
             }
-            configs.insert({steamApiKey:'',token:'',port:1337}, (err, config) => {
+            configs.insert({steamApiKey:'',token:'',port:1337, hlaePath: ''}, (err, config) => {
                 if(err){
                     return res(null);
                 }
@@ -35,7 +35,8 @@ export const updateConfig: express.RequestHandler = async (req, res) => {
     const updated: Config = {
         steamApiKey: req.body.steamApiKey,
         port: req.body.port,
-        token: req.body.token
+        token: req.body.token,
+        hlaePath: req.body.hlaePath
     }
 
     configs.update({}, { $set:updated }, {}, async err => {

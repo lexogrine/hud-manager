@@ -69,6 +69,9 @@ export default function (router: express.Router, io: socketio.Server) {
     router.route('/api/csgo')
         .get(csgo.getLatestData);
 
+    router.route('/api/csgo/run')
+        .get(csgo.run);
+
     router.route('/api/cfg')
         .get(csgo.checkCFGs)
         .put(csgo.createCFGs);

@@ -340,6 +340,26 @@ img.smallLogo {
     text-transform: uppercase;
     font-weight: 600;
 }
+.config-entry .running-csgo-container {
+    
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+}
+.config-entry .running-csgo-container .warning{
+    position: absolute;
+    align-self: center;
+    bottom:4px;
+    font-size:10pt;
+}
+.config-entry .running-csgo-container > div {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    justify-content: space-between;
+    flex: 1;
+
+}
 .base-config {
     height: 141px;
 }
@@ -550,11 +570,16 @@ form .card > .card-body > button.btn {
     height:94px;
     opacity: 0.6;
 }
+.dropArea.path_selector {
+    height: 37px;
+    width: 200px
+}
 .dropArea label {
     flex:1;
     font-size: 10px;
     font-weight: 600;
     margin-bottom:0;
+    height: 100%;
 }
 .dropArea label img {
     margin-right:22px;

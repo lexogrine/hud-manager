@@ -60,6 +60,8 @@ function default_1(router, io) {
         .get(gsi.saveFile('gamestate_integration_hudmanager.cfg', gsi.generateGSIFile()));
     router.route('/api/csgo')
         .get(csgo.getLatestData);
+    router.route('/api/csgo/run')
+        .get(csgo.run);
     router.route('/api/cfg')
         .get(csgo.checkCFGs)
         .put(csgo.createCFGs);

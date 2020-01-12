@@ -59,6 +59,7 @@ export interface Config {
     port: number,
     steamApiKey: string,
     token: string,
+    hlaePath: string
 
     /*"PrintPlayerData": false,
     "DisplayAvatars": true,

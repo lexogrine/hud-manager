@@ -2,9 +2,14 @@ import React from 'react';
 import { Form, FormGroup, Input, Row, Col, Toast, ToastBody, ToastHeader, Button } from 'reactstrap';
 import * as I from './../../../../api/interfaces';
 import api from './../../../../api/api';
+import DragInput from './../../../DragFileInput';
 
 interface ConfigStatus extends I.CFGGSIResponse {
     loading: boolean
+}
+
+interface ExtendedFile extends File {
+    path?: string;
 }
 
 export default class Config extends React.Component<any, { config: I.Config, cfg: ConfigStatus, gsi: ConfigStatus, restartRequired: boolean }>  {
@@ -14,7 +19,8 @@ export default class Config extends React.Component<any, { config: I.Config, cfg
             config: {
                 steamApiKey: '',
                 port: 1337,
-                token: ''
+                token: '',
+                hlaePath: ''
             },
             cfg: {
                 success: false,
@@ -30,6 +36,15 @@ export default class Config extends React.Component<any, { config: I.Config, cfg
             },
             restartRequired: false
         }
+    }
+    loadHLAE = (files: FileList) => {
+        if(!files || !files[0]) return;
+        const file: ExtendedFile = files[0];
+        if(!file.path) return;
+        const { config } = this.state;
+        config.hlaePath = file.path;
+        this.setState({config});
+
     }
     download = (target: 'gsi' | 'cfgs') => {
         api.config.download(target);
@@ -130,6 +145,12 @@ export default class Config extends React.Component<any, { config: I.Config, cfg
                         </Col>
                     </Row>
                     <Row className="config-container">
+                        <Col md="12" className="config-entry">
+                            <div className="config-description">
+                                HLAE Path: {this.state.config.hlaePath ? 'Loaded' : 'Not loaded'}
+                            </div>
+                            <DragInput id="hlae_input" label="SET HLAE PATH" accept=".exe" onChange={this.loadHLAE} className="path_selector"/>
+                        </Col>
                         <Col md="12" className="config-entry">
                             <div className="config-description">
                                 GameState Integration: {gsi.message || 'Loaded succesfully'}

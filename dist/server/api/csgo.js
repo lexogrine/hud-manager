@@ -44,6 +44,7 @@ var path_1 = __importDefault(require("path"));
 var steam_game_path_1 = require("steam-game-path");
 var config_1 = require("./config");
 var sockets_1 = require("./../sockets");
+var child_process_1 = require("child_process");
 function createCFG(customRadar, customKillfeed) {
     var cfg = "cl_draw_only_deathnotices 1";
     var file = 'hud';
@@ -108,8 +109,8 @@ exports.checkCFGs = function (req, res) { return __awaiter(void 0, void 0, void 
         }
     });
 }); };
-exports.createCFGs = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var CSGOPath, cfgDir, switcher_1, cfgs;
+exports.createCFGs = function (_req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var CSGOPath, cfgDir, switcher_1;
     return __generator(this, function (_a) {
         CSGOPath = steam_game_path_1.getGamePath(730);
         if (!CSGOPath || !CSGOPath.game || !CSGOPath.game.path) {
@@ -118,7 +119,6 @@ exports.createCFGs = function (req, res) { return __awaiter(void 0, void 0, void
         cfgDir = path_1["default"].join(CSGOPath.game.path, 'csgo', 'cfg');
         try {
             switcher_1 = [true, false];
-            cfgs = [];
             switcher_1.forEach(function (radar) {
                 switcher_1.forEach(function (killfeed) {
                     var cfg = createCFG(radar, killfeed);
@@ -140,5 +140,51 @@ exports.createCFGs = function (req, res) { return __awaiter(void 0, void 0, void
 exports.getLatestData = function (_req, res) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         return [2 /*return*/, res.json(sockets_1.GSI.last || {})];
+    });
+}); };
+exports.getSteamPath = function (_req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var CSGOPath;
+    return __generator(this, function (_a) {
+        CSGOPath = steam_game_path_1.getGamePath(730);
+        if (!CSGOPath || !CSGOPath.steam || !CSGOPath.steam.path) {
+            return [2 /*return*/, res.status(404).json({ success: false })];
+        }
+        return [2 /*return*/, res.json({ success: true, steamPath: path_1["default"].join(CSGOPath.steam.path, 'Steam.exe') })];
+    });
+}); };
+exports.run = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var config, CSGOData, HLAEPath, CSGOPath, isHLAE, exePath, args, steam;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, config_1.loadConfig()];
+            case 1:
+                config = _a.sent();
+                if (!config || !req.query.config || typeof req.query.config !== "string") {
+                    return [2 /*return*/, res.sendStatus(422)];
+                }
+                CSGOData = steam_game_path_1.getGamePath(730);
+                if (!CSGOData || !CSGOData.steam || !CSGOData.steam.path || !CSGOData.game || !CSGOData.game.path) {
+                    return [2 /*return*/, res.sendStatus(404)];
+                }
+                HLAEPath = config.hlaePath;
+                CSGOPath = path_1["default"].join(CSGOData.game.path, 'csgo.exe');
+                isHLAE = req.query.config.includes("killfeed");
+                exePath = isHLAE ? HLAEPath : path_1["default"].join(CSGOData.steam.path, "Steam.exe");
+                args = [];
+                if (!isHLAE) {
+                    args.push('-applaunch 730', "+exec " + req.query.config);
+                }
+                else {
+                    args.push('-csgoLauncher', '-noGui', '-autoStart', "-csgoExe \"" + CSGOPath + "\"", "-customLaunchOptions \"+exec " + req.query.config + "\"");
+                }
+                try {
+                    steam = child_process_1.spawn("\"" + exePath + "\"", args, { detached: true, shell: true, stdio: 'ignore' });
+                    steam.unref();
+                }
+                catch (e) {
+                    return [2 /*return*/, res.sendStatus(500)];
+                }
+                return [2 /*return*/, res.sendStatus(200)];
+        }
     });
 }); };
