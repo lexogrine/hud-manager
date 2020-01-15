@@ -40,24 +40,38 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 exports.__esModule = true;
 var database_1 = __importDefault(require("./../../init/database"));
+var fs_1 = __importDefault(require("fs"));
 var configs = database_1["default"].config;
 exports.loadConfig = function () { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         return [2 /*return*/, new Promise(function (res, rej) {
-                configs.find({}, function (err, config) {
-                    if (err) {
-                        return res(null);
-                    }
-                    if (config.length) {
-                        return res(config[0]);
-                    }
-                    configs.insert({ steamApiKey: '', token: '', port: 1337, hlaePath: '' }, function (err, config) {
-                        if (err) {
-                            return res(null);
+                configs.find({}, function (err, config) { return __awaiter(void 0, void 0, void 0, function () {
+                    var _a;
+                    return __generator(this, function (_b) {
+                        switch (_b.label) {
+                            case 0:
+                                if (err) {
+                                    return [2 /*return*/, res(null)];
+                                }
+                                if (!config.length) return [3 /*break*/, 2];
+                                if (!config[0].hlaePath || fs_1["default"].existsSync(config[0].hlaePath)) {
+                                    return [2 /*return*/, res(config[0])];
+                                }
+                                config[0].hlaePath = '';
+                                _a = res;
+                                return [4 /*yield*/, exports.setConfig(config[0])];
+                            case 1: return [2 /*return*/, _a.apply(void 0, [_b.sent()])];
+                            case 2:
+                                configs.insert({ steamApiKey: '', token: '', port: 1337, hlaePath: '' }, function (err, config) {
+                                    if (err) {
+                                        return res(null);
+                                    }
+                                    return res(config);
+                                });
+                                return [2 /*return*/];
                         }
-                        return res(config);
                     });
-                });
+                }); });
             })];
     });
 }); };
@@ -76,32 +90,47 @@ exports.getConfig = function (_req, res) { return __awaiter(void 0, void 0, void
     });
 }); };
 exports.updateConfig = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var updated;
+    var updated, config;
     return __generator(this, function (_a) {
-        updated = {
-            steamApiKey: req.body.steamApiKey,
-            port: req.body.port,
-            token: req.body.token,
-            hlaePath: req.body.hlaePath
-        };
-        configs.update({}, { $set: updated }, {}, function (err) { return __awaiter(void 0, void 0, void 0, function () {
-            var newConfig;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        if (err) {
-                            return [2 /*return*/, res.sendStatus(500)];
-                        }
-                        return [4 /*yield*/, exports.loadConfig()];
-                    case 1:
-                        newConfig = _a.sent();
-                        if (!newConfig) {
-                            return [2 /*return*/, res.sendStatus(500)];
-                        }
-                        return [2 /*return*/, res.json(newConfig)];
+        switch (_a.label) {
+            case 0:
+                updated = {
+                    steamApiKey: req.body.steamApiKey,
+                    port: req.body.port,
+                    token: req.body.token,
+                    hlaePath: req.body.hlaePath
+                };
+                return [4 /*yield*/, exports.setConfig(updated)];
+            case 1:
+                config = _a.sent();
+                if (!config) {
+                    return [2 /*return*/, res.sendStatus(500)];
                 }
-            });
-        }); });
-        return [2 /*return*/];
+                return [2 /*return*/, res.json(config)];
+        }
+    });
+}); };
+exports.setConfig = function (config) { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        return [2 /*return*/, new Promise(function (res, rej) {
+                configs.update({}, { $set: config }, {}, function (err) { return __awaiter(void 0, void 0, void 0, function () {
+                    var newConfig;
+                    return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0:
+                                if (err) {
+                                    return [2 /*return*/, res(null)];
+                                }
+                                return [4 /*yield*/, exports.loadConfig()];
+                            case 1:
+                                newConfig = _a.sent();
+                                if (!newConfig) {
+                                    return [2 /*return*/, res(null)];
+                                }
+                                return [2 /*return*/, res(newConfig)];
+                        }
+                    });
+                }); });
+            })];
     });
 }); };

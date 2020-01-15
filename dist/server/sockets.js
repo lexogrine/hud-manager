@@ -104,6 +104,16 @@ var HUDStateManager = /** @class */ (function () {
     };
     return HUDStateManager;
 }());
+var SocketManager = /** @class */ (function () {
+    function SocketManager(io) {
+        this.io = io || null;
+    }
+    SocketManager.prototype.set = function (io) {
+        this.io = io;
+    };
+    return SocketManager;
+}());
+exports.Sockets = new SocketManager();
 exports.HUDState = new HUDStateManager();
 exports.GSI = new csgogsi_1["default"]();
 function default_1(server, app) {
@@ -137,6 +147,7 @@ function default_1(server, app) {
     var last = null;
     var devSocket = null;
     var io = socket_io_1["default"](server);
+    exports.Sockets.set(io);
     var portListener = new DevHUDListener(3500);
     portListener.onChange(function (status) {
         if (!status) {

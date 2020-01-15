@@ -334,6 +334,7 @@ function loadHUD(base64) {
                                 var hudFile = fs.readFileSync(path.join(tempBasePath, 'hud.json'), { encoding: 'utf8' });
                                 var hud = JSON.parse(hudFile);
                                 if (!hud.name) {
+                                    console.log("jakis error");
                                     throw new Error;
                                 }
                                 var dir = path.join(electron_1.app.getPath('home'), 'HUDs', hud.name.replace(/[^a-zA-Z0-9-_]/g, ''));
@@ -344,10 +345,13 @@ function loadHUD(base64) {
                                 res(true);
                             }
                             else {
+                                console.log('nie ma plika');
                                 throw new Error;
                             }
                         });
-                        tempUnzipper.on('error', function () {
+                        tempUnzipper.on('error', function (e) {
+                            console.log("ERROR");
+                            console.log(e);
                             if (fs.existsSync(tempBasePath)) {
                                 remove(tempBasePath);
                             }
@@ -359,6 +363,7 @@ function loadHUD(base64) {
                         /**/
                     }
                     catch (_a) {
+                        console.log("EŁURA");
                         if (fs.existsSync(tempBasePath)) {
                             remove(tempBasePath);
                         }

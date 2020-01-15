@@ -10,15 +10,15 @@ const isDev = process.env.DEV === "true";
 let win: BrowserWindow | null;
 
 async function createMainWindow() {
-    const server = await init();
     directories.checkDirectories();
+    const server = await init();
 
     win = new BrowserWindow({
         height: 699,
         show: false,
         //frame:false,
         //titleBarStyle:"hidden",
-        resizable: false,
+        resizable: isDev,
         title: "HUD Manager",
         icon: path.join(__dirname, 'assets/icon.png'),
         webPreferences: {

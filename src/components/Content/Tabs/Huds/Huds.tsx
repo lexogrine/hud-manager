@@ -66,6 +66,9 @@ export default class Huds extends React.Component<{ cxt: IContextData }, { confi
         let reader: any = new FileReader();
         reader.readAsDataURL(file);
         reader.onload = () => {
+            if(file.name.substr(-4) === '.rar'){
+                return;
+            }
             //form[sectionName][name] = reader.result.replace(/^data:([a-z]+)\/([a-z0-9]+);base64,/, '');
             //this.setState({ form }, () => console.log(this.state.form))
             //console.log(reader.result)
@@ -144,7 +147,7 @@ export default class Huds extends React.Component<{ cxt: IContextData }, { confi
                     <Row className="padded">
                         <Col>
                             <Col s={12}>
-                                <DragInput id={`hud_zip`} onChange={this.handleZIPs} label="UPLOAD HUD" />
+                                <DragInput id={`hud_zip`} onChange={this.handleZIPs} label="UPLOAD HUD" accept=".zip" />
                             </Col>
                             {this.state.huds.map(hud => <Row key={hud.dir} className="hudRow">
                                 <Col s={12}>

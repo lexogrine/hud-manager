@@ -61,6 +61,18 @@ class HUDStateManager {
     }
 }
 
+class SocketManager {
+    io: SocketIO.Server | null;
+    constructor(io?: SocketIO.Server){
+        this.io = io || null;
+    }
+    set(io: SocketIO.Server){
+        this.io = io;
+    }
+}
+
+export const Sockets = new SocketManager();
+
 export const HUDState = new HUDStateManager();
 
 export const GSI = new CSGOGSI();
@@ -88,6 +100,8 @@ export default function (server: http.Server, app: express.Router) {
     let last = null;
     let devSocket: socketio.Socket | null = null;
     const io = socketio(server);
+
+    Sockets.set(io);
 
     const portListener = new DevHUDListener(3500);
 
