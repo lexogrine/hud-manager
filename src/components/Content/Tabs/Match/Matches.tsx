@@ -24,12 +24,18 @@ class MatchRow extends Component<{ match: I.Match, teams: I.Team[], cxt: IContex
                 </div>
                 <div className="main_data">
                     <div className="left team">
-                        <div className="score">{match.left.wins}</div>
+                        <div className="score">
+                            {match.left.wins}
+                            {left.logo ? <img src={`data:image/jpeg;base64,${left.logo}`} alt={`${left.name}'s logo`} /> : ''}
+                        </div>
                         <div className="name">{(left && left.name) || "Team One"}</div>
                     </div>
                     <div className="versus">VS</div>
                     <div className="right team">
-                        <div className="score">{match.right.wins}</div>
+                        <div className="score">
+                            {match.right.wins}
+                            {right.logo ? <img src={`data:image/jpeg;base64,${right.logo}`} alt={`${right.name}'s logo`} /> : ''}
+                        </div>
                         <div className="name">{(right && right.name) || "Team Two"}</div>
                     </div>
                 </div>

@@ -2,20 +2,28 @@ import express from 'express';
 import sockets from './sockets';
 import http from 'http';
 import cors from 'cors';
+import getPort from 'get-port';
 import router from './api';
 import path from 'path';
 import { app as application } from 'electron';
 import fs from 'fs';
-import { loadConfig } from './api/config';
+import { loadConfig,setConfig } from './api/config';
 
 const child_process = require("child_process");
 
-export default async function init(port?: number){
+export default async function init(){
     
-    const config = await loadConfig();
+    let config = await loadConfig();
     const app = express();
     const server = http.createServer(app);
     const _boltobserv = child_process.fork(path.join(__dirname, '../boltobserv/index.js'));
+
+    const port = await getPort({port:config.port});
+    if(port !== config.port){
+        console.log(`Port ${config.port} is not available, changing to ${port}`);
+        config = await setConfig({...config, port});
+    }
+    console.log(`Server listening on ${port}`);
 
 
     app.use(express.urlencoded({extended:true}));
@@ -45,5 +53,5 @@ export default async function init(port?: number){
     app.get('*', (_req, res)=>{
         res.sendFile(path.join(__dirname, '../build/index.html'));
     });
-    return server.listen(config.port || 1337);
+    return server.listen(config.port);
 }

@@ -1,17 +1,26 @@
 import { app, BrowserWindow, shell } from "electron";
 import path from 'path';
+import { Server } from 'http';
+import url from 'url';
+import args from './init/args';
 import * as directories from './init/directories';
 import init from './server'
 import { loadConfig } from './server/api/config';
-import url from 'url';
 
 const isDev = process.env.DEV === "true";
 
-let win: BrowserWindow | null;
-
-async function createMainWindow() {
-    directories.checkDirectories();
-    const server = await init();
+async function createMainWindow(server: Server) {
+    let win: BrowserWindow | null;
+    if (app) {
+        app.on("window-all-closed", app.quit);
+    
+        app.on("before-quit", () => {
+            if (!win) return;
+            win.removeAllListeners("close");
+            win.close();
+        });
+    
+    }
 
     win = new BrowserWindow({
         height: 699,
@@ -44,25 +53,22 @@ async function createMainWindow() {
         shell.openExternal(url);
     });
 
-    win.loadURL(`${isDev ? `http://localhost:3000/?port=${config.port || 1337}` : startUrl}`);
+    win.loadURL(`${isDev ? `http://localhost:3000/?port=${config.port}` : startUrl}`);
     win.on("close", () => {
         server.close();
-        //const windows = win.getChildWindows();
-        //windows.map(window => window.close());
         win = null;
         app.quit();
 
     });
 }
-if (app) {
 
-    app.on("window-all-closed", app.quit);
-
-    app.on("before-quit", () => {
-        if (!win) return;
-        win.removeAllListeners("close");
-        win.close();
-    });
-
-    app.on("ready", createMainWindow);
+async function startManager() {
+    directories.checkDirectories();
+    const server = await init();
+    const argv = args(process.argv);
+    if(!argv.noGui){
+        createMainWindow(server);
+    }
 }
+app.on("ready", startManager);
+

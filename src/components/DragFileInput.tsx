@@ -62,10 +62,13 @@ export default class DragFileInput extends React.Component<IProps, IState> {
                 onDragEnter={this.whileOver}
                 onDragOverCapture={this.whileOver}
                 onDrop={this.drop}
+                onDragEnd={this.whileOver}
+                onDragLeave={this.whileOver}
             >
                 
                 <input type="file" id={this.props.id} accept={accept} onChange={this.uploadHandler} />
                 <label className="centered" htmlFor={this.props.id} ><img src={DragIcon} alt="Drag file here"/>{this.props.label}</label>
+                <div className="background" />
             </div>
         )
     }

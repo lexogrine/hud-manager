@@ -19,6 +19,7 @@
     "csgogsi-socket": "^1.1.2",
     "decompress-zip": "^0.2.2",
     "express": "^4.17.1",
+    "get-port": "^5.1.1",
     "ip": "^1.1.5",
     "nedb": "^1.8.0",
     "node-fetch": "^2.6.0",
@@ -37,7 +38,8 @@
     "steam-game-path": "0.0.5",
     "typescript": "^3.7.2",
     "uuid": "^3.3.3",
-    "ws": "^7.2.0"
+    "ws": "^7.2.0",
+    "yargs": "^15.1.0"
   },
   "build": {
     "appId": "pl.osztenkurden.hud.manager",
@@ -72,7 +74,8 @@
     "build": "npm run transpile && react-scripts build && rm -rf dist/build &&  mv build dist",
     "test": "react-scripts test",
     "transpile": "rm -rf dist/boltobserv && cp -r boltobserv dist && tsc electron.ts --outDir dist --esModuleInterop true",
-    "electron": "npm run transpile && cross-env DEV=true electron ./",
+    "devElectron": "cross-env DEV=true electron ./",
+    "electron": "npm run transpile && npm run devElectron",
     "dev": "concurrently \"cross-env BROWSER=none npm start\" \"npm run electron\"",
     "eject": "react-scripts eject",
     "pack": "electron-builder --dir",

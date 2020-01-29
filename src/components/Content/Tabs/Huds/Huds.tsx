@@ -1,14 +1,13 @@
 import React from 'react';
 import { IContextData } from './../../../../components/Context';
 import api from './../../../../api/api';
-import Config from './../../../../api/config';
 import * as I from './../../../../api/interfaces';
-import { Row, Col, UncontrolledCollapse, Button } from 'reactstrap';
+import { Row, Col, Button } from 'reactstrap';
 import Panel from './Panel';
 import { socket } from '../Live/Live';
-import Tip from './../../../Tooltip';
 import Switch from './../../../../components/Switch/Switch';
 import DragInput from './../../../DragFileInput';
+import HudEntry from './HudEntry';
 
 var userAgent = navigator.userAgent.toLowerCase();
 let isElectron = false;
@@ -16,7 +15,6 @@ let isElectron = false;
 if (userAgent.indexOf(' electron/') > -1) {
     isElectron = true;
 }
-const hashCode = (s: string) => s.split('').reduce((a, b) => { a = ((a << 5) - a) + b.charCodeAt(0); return a & a }, 0).toString();
 interface CFG {
     cfg: string,
     file: string
@@ -96,7 +94,7 @@ export default class Huds extends React.Component<{ cxt: IContextData }, { confi
     startHUD(dir: string) {
         api.huds.start(dir);
     }
-    toggleConfig = (hudDir: string) => {
+    toggleConfig = (hudDir: string) => () => {
         const hud = this.state.huds.filter(hud => hud.panel && hud.dir === hudDir)[0];
         if (!hud) return;
         this.setState({ active: this.state.active && this.state.active.dir === hudDir ? null : hud });
@@ -149,43 +147,7 @@ export default class Huds extends React.Component<{ cxt: IContextData }, { confi
                             <Col s={12}>
                                 <DragInput id={`hud_zip`} onChange={this.handleZIPs} label="UPLOAD HUD" accept=".zip" />
                             </Col>
-                            {this.state.huds.map(hud => <Row key={hud.dir} className="hudRow">
-                                <Col s={12}>
-                                    <Row>
-                                        <Col style={{ width: '64px', flex: 'unset', padding: 0 }} className='centered'>
-                                            <img src={`${Config.isDev ? Config.apiAddress : '/'}huds/${hud.dir}/thumbnail`} alt={`${hud.name}`} />
-                                        </Col>
-                                        <Col style={{ flex: 10, display: 'flex', justifyContent: 'center', flexDirection: 'column' }}>
-                                            <Row>
-                                                <Col><strong>{hud.isDev ? '[DEV]' : ''}{hud.name}</strong> <span className='hudVersion'>({hud.version})</span></Col>
-                                            </Row>
-                                            <Row>
-                                                <Col><i>{hud.author}</i></Col>
-                                            </Row>
-                                            {hud.killfeed || hud.radar ? <Row>
-                                                <Col>
-                                                    {hud.radar ? <Tip id={`radar_support_${hud.dir}`} className="radar_support" label={<i className="material-icons">map</i>}>Includes Boltgolt's radar</Tip> : ''}
-                                                    {hud.killfeed ? <Tip id={`killfeed_support_${hud.dir}`} className="killfeed_support" label={<i className="material-icons">group_work</i>}>Includes custom killfeed</Tip> : ''}
-                                                </Col>
-                                            </Row> : ''}
-                                        </Col>
-                                        <Col style={{ flex: 1 }} className="centered">
-                                            <i className="material-icons" id={`hud_link_${hashCode(hud.dir)}`}>link</i>
-                                            {hud.panel ? <i className="material-icons" onClick={() => this.toggleConfig(hud.dir)}>settings</i> : ''}
-                                            <i className="material-icons" onClick={() => this.startHUD(hud.dir)}>desktop_windows</i>
-                                        </Col>
-                                    </Row>
-                                    <Row>
-                                        <Col s={12}>
-                                            <div className="match_data">
-                                                <UncontrolledCollapse toggler={`#hud_link_${hashCode(hud.dir)}`}>
-                                                    <code>{hud.url}</code>
-                                                </UncontrolledCollapse>
-                                            </div>
-                                        </Col>
-                                    </Row>
-                                </Col>
-                            </Row>)}
+                            {this.state.huds.map(hud => <HudEntry key={hud.dir} hud={hud} toggleConfig={this.toggleConfig}/>)}
                         </Col>
                     </Row>
 

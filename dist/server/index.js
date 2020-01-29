@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -43,15 +54,16 @@ var express_1 = __importDefault(require("express"));
 var sockets_1 = __importDefault(require("./sockets"));
 var http_1 = __importDefault(require("http"));
 var cors_1 = __importDefault(require("cors"));
+var get_port_1 = __importDefault(require("get-port"));
 var api_1 = __importDefault(require("./api"));
 var path_1 = __importDefault(require("path"));
 var electron_1 = require("electron");
 var fs_1 = __importDefault(require("fs"));
 var config_1 = require("./api/config");
 var child_process = require("child_process");
-function init(port) {
+function init() {
     return __awaiter(this, void 0, void 0, function () {
-        var config, app, server, _boltobserv, io;
+        var config, app, server, _boltobserv, port, io;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, config_1.loadConfig()];
@@ -60,6 +72,17 @@ function init(port) {
                     app = express_1["default"]();
                     server = http_1["default"].createServer(app);
                     _boltobserv = child_process.fork(path_1["default"].join(__dirname, '../boltobserv/index.js'));
+                    return [4 /*yield*/, get_port_1["default"]({ port: config.port })];
+                case 2:
+                    port = _a.sent();
+                    if (!(port !== config.port)) return [3 /*break*/, 4];
+                    console.log("Port " + config.port + " is not available, changing to " + port);
+                    return [4 /*yield*/, config_1.setConfig(__assign(__assign({}, config), { port: port }))];
+                case 3:
+                    config = _a.sent();
+                    _a.label = 4;
+                case 4:
+                    console.log("Server listening on " + port);
                     app.use(express_1["default"].urlencoded({ extended: true }));
                     app.use(express_1["default"].raw({ limit: '10Mb', type: 'application/json' }));
                     app.use(function (req, res, next) {
@@ -84,7 +107,7 @@ function init(port) {
                     app.get('*', function (_req, res) {
                         res.sendFile(path_1["default"].join(__dirname, '../build/index.html'));
                     });
-                    return [2 /*return*/, server.listen(config.port || 1337)];
+                    return [2 /*return*/, server.listen(config.port)];
             }
         });
     });

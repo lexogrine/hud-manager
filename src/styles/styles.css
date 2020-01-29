@@ -78,6 +78,39 @@ body {
     margin-right: 10px;
     margin-left: 10px;
 }
+.event-container {
+    display: flex;
+    flex-direction: row;
+    padding: 15px;
+    background-color: rgba(0,0,0,0.5);
+    margin-bottom: 10px;
+
+}
+.event-container .logo-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.event-container .event-name {
+    font-size: 15pt;
+}
+.event-container .event-date {
+    font-size: 11pt;
+}
+.event-container .event-country {
+    display: flex;
+    align-items: center;
+}
+.event-container .event-country img {
+    margin-right: 10px;
+}
+.event-container .data-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex: 1;
+    padding-left: 15px;
+}
 #settings {
     position: fixed;
     top: 0;
@@ -163,17 +196,38 @@ img.smallLogo {
     align-items: center;
 }
 .hudRow{
-    background-color: #ffffff5c;
-    margin-top: 10px;
-    padding: 15px;
+    background-color: #ffffff08;
+    padding: 25px;
     border-radius: 18px;
-    box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    font-family: Montserrat;
 }
 .hudRow:last-child {
     margin-bottom: 90px;
 }
+.hudRow .thumb {
+    width: 55px;
+    flex: unset;
+    padding: 0;
+}
+.hudRow .thumb img {
+    max-width: 100%;
+}
+.hudRow .hudName {
+    font-size: 16px;
+    font-weight: 500;
+}
 .hudVersion {
-    font-size:12px;
+    font-size: 10px;
+    font-weight: 500;
+}
+.hudRow .hudAuthor {
+    
+    font-size: 12px;
+    font-weight: 500;
+}
+.hudRow img.action {
+    margin-left:10px;
+    margin-right:10px;
 }
 .centered i:hover, .hover-pointer:hover{
     cursor: pointer;
@@ -332,6 +386,7 @@ img.smallLogo {
     justify-content: space-between;
     padding-left:57px;
     padding-right: 65px;
+    font-size:12px;
 }
 .config-entry:nth-child(2n) {
     background-color:#202328;
@@ -497,8 +552,18 @@ img.smallLogo {
     display: flex;
     align-items: center;
     justify-content: center;
+    flex-direction: column;
 }
-
+.match_row .main_data .team .score img {
+    position: absolute;
+    max-height: 40px;
+}
+.match_row .main_data .left.team .score img {
+    align-self: flex-start;
+}
+.match_row .main_data .right.team .score img {
+    align-self: flex-end;
+}
 .match_row .main_data .versus {
     width: 46px;
     display: flex;
@@ -569,6 +634,21 @@ form .card > .card-body > button.btn {
     border: 1px dashed #ffffff;
     height:94px;
     opacity: 0.6;
+    position: relative;
+    margin-top:10px;
+    margin-bottom:10px;
+}
+.dropArea .background {
+    display: none;
+    position: absolute;
+    width: calc(100% - 20px);
+    height: calc(100% - 20px);
+    background-color: #ffffff26;
+    border-radius: 10px;
+    z-index: -1;
+}
+.dropArea.hightlight .background, .dropArea:hover .background {
+    display: block;
 }
 .dropArea.path_selector {
     height: 37px;

@@ -48,20 +48,26 @@ var __importStar = (this && this.__importStar) || function (mod) {
 exports.__esModule = true;
 var electron_1 = require("electron");
 var path_1 = __importDefault(require("path"));
+var args_1 = __importDefault(require("./init/args"));
 var directories = __importStar(require("./init/directories"));
 var server_1 = __importDefault(require("./server"));
 var config_1 = require("./server/api/config");
 var isDev = process.env.DEV === "true";
-var win;
-function createMainWindow() {
+function createMainWindow(server) {
     return __awaiter(this, void 0, void 0, function () {
-        var server, config, startUrl;
+        var win, config, startUrl;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, server_1["default"]()];
-                case 1:
-                    server = _a.sent();
-                    directories.checkDirectories();
+                case 0:
+                    if (electron_1.app) {
+                        electron_1.app.on("window-all-closed", electron_1.app.quit);
+                        electron_1.app.on("before-quit", function () {
+                            if (!win)
+                                return;
+                            win.removeAllListeners("close");
+                            win.close();
+                        });
+                    }
                     win = new electron_1.BrowserWindow({
                         height: 699,
                         show: false,
@@ -81,7 +87,7 @@ function createMainWindow() {
                         }
                     });
                     return [4 /*yield*/, config_1.loadConfig()];
-                case 2:
+                case 1:
                     config = _a.sent();
                     win.setMenuBarVisibility(false);
                     startUrl = "http://localhost:" + config.port + "/";
@@ -89,11 +95,9 @@ function createMainWindow() {
                         e.preventDefault();
                         electron_1.shell.openExternal(url);
                     });
-                    win.loadURL("" + (isDev ? "http://localhost:3000/?port=" + (config.port || 1337) : startUrl));
+                    win.loadURL("" + (isDev ? "http://localhost:3000/?port=" + config.port : startUrl));
                     win.on("close", function () {
                         server.close();
-                        //const windows = win.getChildWindows();
-                        //windows.map(window => window.close());
                         win = null;
                         electron_1.app.quit();
                     });
@@ -102,13 +106,23 @@ function createMainWindow() {
         });
     });
 }
-if (electron_1.app) {
-    electron_1.app.on("window-all-closed", electron_1.app.quit);
-    electron_1.app.on("before-quit", function () {
-        if (!win)
-            return;
-        win.removeAllListeners("close");
-        win.close();
+function startManager() {
+    return __awaiter(this, void 0, void 0, function () {
+        var server, argv;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    directories.checkDirectories();
+                    return [4 /*yield*/, server_1["default"]()];
+                case 1:
+                    server = _a.sent();
+                    argv = args_1["default"](process.argv);
+                    if (!argv.noGui) {
+                        createMainWindow(server);
+                    }
+                    return [2 /*return*/];
+            }
+        });
     });
-    electron_1.app.on("ready", createMainWindow);
 }
+electron_1.app.on("ready", startManager);
