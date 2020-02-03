@@ -63,6 +63,7 @@ async function createMainWindow(server: Server) {
 }
 
 async function startManager() {
+    app.setAppUserModelId("com.lexogrine.hudmanager");
     directories.checkDirectories();
     const server = await init();
     const argv = args(process.argv);

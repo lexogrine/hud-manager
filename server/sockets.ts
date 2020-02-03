@@ -4,7 +4,7 @@ import express from 'express';
 import CSGOGSI from 'csgogsi';
 import * as I from './../types/interfaces';
 import request from 'request';
-import { getMatchesV2, updateMatch } from './api/match';
+import { getMatches, updateMatch } from './api/match';
 import portscanner from 'portscanner';
 
 const mirv = require("./server").default;
@@ -179,8 +179,8 @@ export default function (server: http.Server, app: express.Router) {
         io.emit("update_mirv", data);
     });
 
-    GSI.on("roundEnd", score => {
-        const matches = getMatchesV2();
+    GSI.on("roundEnd", async score => {
+        const matches = await getMatches();
         const match = matches.filter(match => match.current)[0];
         if (match) {
             const { vetos } = match;
@@ -196,7 +196,7 @@ export default function (server: http.Server, app: express.Router) {
                 return veto;
             });
             match.vetos = vetos;
-            updateMatch(matches);
+            await updateMatch(matches);
 
             io.emit('match', true);
         }
@@ -204,7 +204,7 @@ export default function (server: http.Server, app: express.Router) {
 
 
     GSI.on("matchEnd", async score => {
-        const matches = getMatchesV2();
+        const matches = await getMatches();
         const match = matches.filter(match => match.current)[0];
         if (match) {
             const { vetos } = match;

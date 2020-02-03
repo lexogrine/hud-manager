@@ -172,10 +172,10 @@ export default class Config extends React.Component<any, { config: I.Config, cfg
                     </Row>
                     <Button onClick={() => this.download('gsi')}>Download GSI config</Button>
                     <Button onClick={() => this.download('cfgs')}>Download HUD configs</Button>
-                    <Toast isOpen={this.state.restartRequired} className="fixed-toast">
+                    {/*<Toast isOpen={this.state.restartRequired} className="fixed-toast">
                         <ToastHeader>Change of port detected</ToastHeader>
                         <ToastBody>It seems like you've changed GSI port - for all changes to be set in place you should now restart the Manager and update the GSI files</ToastBody>
-                    </Toast>
+                    </Toast>*/}
                 </div>
                 <Row>
                     <Col className="main-buttons-container">

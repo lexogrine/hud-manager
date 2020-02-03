@@ -238,35 +238,46 @@ function default_1(server, app) {
     mirv(function (data) {
         io.emit("update_mirv", data);
     });
-    exports.GSI.on("roundEnd", function (score) {
-        var matches = match_1.getMatchesV2();
-        var match = matches.filter(function (match) { return match.current; })[0];
-        if (match) {
-            var vetos = match.vetos;
-            vetos.map(function (veto) {
-                if (veto.mapName !== score.map.name || !score.map.team_ct.id || !score.map.team_t.id) {
-                    return veto;
-                }
-                if (!veto.score) {
-                    veto.score = {};
-                }
-                veto.score[score.map.team_ct.id] = score.map.team_ct.score;
-                veto.score[score.map.team_t.id] = score.map.team_t.score;
-                return veto;
-            });
-            match.vetos = vetos;
-            match_1.updateMatch(matches);
-            io.emit('match', true);
-        }
-    });
+    exports.GSI.on("roundEnd", function (score) { return __awaiter(_this, void 0, void 0, function () {
+        var matches, match, vetos;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, match_1.getMatches()];
+                case 1:
+                    matches = _a.sent();
+                    match = matches.filter(function (match) { return match.current; })[0];
+                    if (!match) return [3 /*break*/, 3];
+                    vetos = match.vetos;
+                    vetos.map(function (veto) {
+                        if (veto.mapName !== score.map.name || !score.map.team_ct.id || !score.map.team_t.id) {
+                            return veto;
+                        }
+                        if (!veto.score) {
+                            veto.score = {};
+                        }
+                        veto.score[score.map.team_ct.id] = score.map.team_ct.score;
+                        veto.score[score.map.team_t.id] = score.map.team_t.score;
+                        return veto;
+                    });
+                    match.vetos = vetos;
+                    return [4 /*yield*/, match_1.updateMatch(matches)];
+                case 2:
+                    _a.sent();
+                    io.emit('match', true);
+                    _a.label = 3;
+                case 3: return [2 /*return*/];
+            }
+        });
+    }); });
     exports.GSI.on("matchEnd", function (score) { return __awaiter(_this, void 0, void 0, function () {
         var matches, match, vetos;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0:
-                    matches = match_1.getMatchesV2();
+                case 0: return [4 /*yield*/, match_1.getMatches()];
+                case 1:
+                    matches = _a.sent();
                     match = matches.filter(function (match) { return match.current; })[0];
-                    if (!match) return [3 /*break*/, 2];
+                    if (!match) return [3 /*break*/, 3];
                     vetos = match.vetos;
                     vetos.map(function (veto) {
                         if (veto.mapName !== score.map.name || !score.map.team_ct.id || !score.map.team_t.id) {
@@ -284,11 +295,11 @@ function default_1(server, app) {
                     }
                     match.vetos = vetos;
                     return [4 /*yield*/, match_1.updateMatch(matches)];
-                case 1:
+                case 2:
                     _a.sent();
                     io.emit('match', true);
-                    _a.label = 2;
-                case 2: return [2 /*return*/];
+                    _a.label = 3;
+                case 3: return [2 /*return*/];
             }
         });
     }); });

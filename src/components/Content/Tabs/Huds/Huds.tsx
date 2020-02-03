@@ -131,7 +131,7 @@ export default class Huds extends React.Component<{ cxt: IContextData }, { confi
                                         <div className="config-description">
                                             OR
                                          </div>
-                                        <Button className="purple-btn round-btn" disabled={killfeed && !config.hlaePath} onClick={this.runCSGO}>RUN CSGO</Button>
+                                        <Button className="round-btn run-csgo" disabled={killfeed && !config.hlaePath} onClick={this.runCSGO}>RUN CSGO</Button>
                                     </React.Fragment> : ''}
                                 </div>
                                 <div className="warning">

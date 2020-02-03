@@ -1,15 +1,4 @@
 "use strict";
-var __assign = (this && this.__assign) || function () {
-    __assign = Object.assign || function(t) {
-        for (var s, i = 1, n = arguments.length; i < n; i++) {
-            s = arguments[i];
-            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
-                t[p] = s[p];
-        }
-        return t;
-    };
-    return __assign.apply(this, arguments);
-};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -64,7 +53,7 @@ var steam_game_path_1 = require("steam-game-path");
 var config_1 = require("./config");
 var electron_1 = require("electron");
 var GSITemplate = {
-    'HUDMANAGERGSI': {
+    HUDMANAGERGSI: {
         uri: 'http://localhost:1337/',
         timeout: 0.1,
         buffer: 0,
@@ -119,6 +108,12 @@ exports.checkGSIFile = function (req, res) { return __awaiter(void 0, void 0, vo
                         // wrong settings
                         return [2 /*return*/, res.json({ success: false, message: 'Wrong configuration', accessible: true })];
                     }
+                    if (!content.HUDMANAGERGSI.auth && config.token) {
+                        return [2 /*return*/, res.json({ success: false, message: 'Wrong token', accessible: true })];
+                    }
+                    if (content.HUDMANAGERGSI.auth && content.HUDMANAGERGSI.auth.token !== config.token) {
+                        return [2 /*return*/, res.json({ success: false, message: 'Wrong token', accessible: true })];
+                    }
                     return [2 /*return*/, res.json({ success: true })];
                 }
                 catch (_b) {
@@ -139,8 +134,11 @@ exports.generateGSIFile = function () { return __awaiter(void 0, void 0, void 0,
                     return [2 /*return*/, null];
                 }
                 address = "http://localhost:" + config.port + "/";
-                gsiCFG = __assign({}, GSITemplate);
+                gsiCFG = JSON.parse(JSON.stringify(GSITemplate));
                 gsiCFG.HUDMANAGERGSI.uri = address;
+                if (config.token.length) {
+                    gsiCFG.HUDMANAGERGSI.auth = { token: config.token };
+                }
                 text = VDF.stringify(gsiCFG);
                 return [2 /*return*/, text];
         }

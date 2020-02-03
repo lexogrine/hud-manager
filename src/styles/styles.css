@@ -130,6 +130,9 @@ body {
     border-radius: 20px;
     padding-left:15px;
     padding-right:15px;
+    font-size: 12px;
+    margin-left:auto;
+    margin-right: 21px;
 }
 .navbar-container > li#settings > a.active {
     background-color: #7ad9f5 !important;
@@ -228,6 +231,7 @@ img.smallLogo {
 .hudRow img.action {
     margin-left:10px;
     margin-right:10px;
+    cursor:pointer;
 }
 .centered i:hover, .hover-pointer:hover{
     cursor: pointer;
@@ -395,6 +399,11 @@ img.smallLogo {
     text-transform: uppercase;
     font-weight: 600;
 }
+.image-view {
+    height:94px;
+    margin-top:10px;
+    margin-bottom:10px;
+}
 .config-entry .running-csgo-container {
     
     display: flex;
@@ -441,9 +450,19 @@ img.smallLogo {
 .btn.purple-btn {
     background-color: #6b1cff;
 }
+.btn.run-csgo {
+    background-color: #7ad9f5;
+    color: #24272d;
+    font-weight: 700;
+    margin-left:25px;
+}
 .btn.lightblue-btn {
     background-color: #7ad9f5 !important;
     color: #24272d;
+}
+#teams, #team_name, #short_name, #country, #players, #first_name, #nick, #last_name, #steamid {
+    font-size:12px;
+    height:44px;
 }
 .config-container.no-margin{
     margin-left:0;

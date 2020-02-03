@@ -42,7 +42,7 @@ function default_1(router, io) {
         .get(config.getConfig)
         .patch(config.updateConfig);
     router.route('/api/match')
-        .get(match.getMatches)
+        .get(match.getMatchesRoute)
         .patch(match.setMatch(io));
     router.route('/api/huds')
         .get(huds.getHUDs)
@@ -58,6 +58,8 @@ function default_1(router, io) {
         .put(gsi.createGSIFile);
     router.route('/api/gsi/download')
         .get(gsi.saveFile('gamestate_integration_hudmanager.cfg', gsi.generateGSIFile()));
+    //router.route('/api/events')
+    //    .get(csgo.getEvents);
     router.route('/api/csgo')
         .get(csgo.getLatestData);
     router.route('/api/csgo/run')

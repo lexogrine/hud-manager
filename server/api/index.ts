@@ -43,7 +43,7 @@ export default function (router: express.Router, io: socketio.Server) {
         .patch(config.updateConfig);
 
     router.route('/api/match')
-        .get(match.getMatches)
+        .get(match.getMatchesRoute)
         .patch(match.setMatch(io));
 
     router.route('/api/huds')
@@ -65,6 +65,9 @@ export default function (router: express.Router, io: socketio.Server) {
 
     router.route('/api/gsi/download')
         .get(gsi.saveFile('gamestate_integration_hudmanager.cfg', gsi.generateGSIFile()));
+
+    //router.route('/api/events')
+    //    .get(csgo.getEvents);
 
     router.route('/api/csgo')
         .get(csgo.getLatestData);

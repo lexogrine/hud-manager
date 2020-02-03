@@ -193,7 +193,7 @@ export default class Players extends React.Component<{ cxt: IContextData, data: 
                                 </FormText>*/}
                             </FormGroup>
                         </Col>
-                        <Col md="6" className="centered">
+                        <Col md="6" className="centered image-view">
                             {this.state.form.avatar.length ? <img src={'data:image/jpeg;base64,' + this.state.form.avatar} id="avatar_view" alt="User's avatar"/> : ''}
                         </Col>
                     </Row>

@@ -1,11 +1,11 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { app, shell } from 'electron';
+import { app, shell, Notification } from 'electron';
 import express from 'express';
 import * as I from './../../types/interfaces';
 import socketio from 'socket.io';
 import { loadConfig } from './config';
-import ip from 'ip';
+import ip, { not } from 'ip';
 import { HUDState } from './../sockets';
 import HUDWindow from './../../init/huds';
 import DecompressZip from 'decompress-zip';
@@ -122,12 +122,22 @@ export const render: express.RequestHandler = (req, res) => {
 }
 
 export const renderThumbnail: express.RequestHandler = (req, res) => {
+    return res.sendFile(getThumbPath(req.params.dir));
+    /*
     const thumbPath = path.join(app.getPath('home'), 'HUDs', req.params.dir, "thumb.png");
     if(fs.existsSync(thumbPath)){
         return res.sendFile(thumbPath);
     }
-    return res.sendFile(path.join(__dirname, '../../assets/icon.png'));
+    return res.sendFile(path.join(__dirname, '../../assets/icon.png'));*/
     
+}
+
+export const getThumbPath = (dir: string) => {
+    const thumbPath = path.join(app.getPath('home'), 'HUDs', dir, "thumb.png");
+    if(fs.existsSync(thumbPath)){
+        return thumbPath;
+    }
+    return path.join(__dirname, '../../assets/icon.png');
 }
 
 export const renderAssets: express.RequestHandler = async (req, res, next) => {
@@ -203,11 +213,19 @@ export const closeHUD: express.RequestHandler = (req, res) => {
 export const uploadHUD: express.RequestHandler = async (req, res) => {
     if(!req.body.hud) return res.sendStatus(422);
     const response = await loadHUD(req.body.hud);
+    if(response){
+        const notification = new Notification({
+            title: "HUD Upload",
+            body: `${response.name} uploaded successfully`,
+            icon: getThumbPath(response.dir)
+        });
+        notification.show();
+    }
     return res.sendStatus(response ? 200 : 500);
 }
 
 
-async function loadHUD(base64: string){
+async function loadHUD(base64: string): Promise <I.HUD | null> {
     const remove = (pathToRemove: string) => {
         if (!fs.existsSync(pathToRemove)) {
             return;
@@ -234,7 +252,7 @@ async function loadHUD(base64: string){
             }
             fs.mkdirSync(tempBasePath);
             const tempUnzipper: any = new DecompressZip('hud_temp_archive.zip');
-            tempUnzipper.on('extract', () => {
+            tempUnzipper.on('extract', async () => {
                 if(fs.existsSync('hud_temp_archive.zip')){
                     fs.unlinkSync('hud_temp_archive.zip');
                 }
@@ -249,7 +267,8 @@ async function loadHUD(base64: string){
                         dir += `-${(Math.random() * 1000 + 1).toString(36).replace(/[^a-z]+/g, '').substr(0, 15)}`;
                     }
                     fs.renameSync(tempBasePath, dir);
-                    res(true);
+                    const hudData = await getHUDData(path.basename(dir));
+                    res(hudData);
 
                 } else {
                     throw new Error;

@@ -31,7 +31,17 @@ export default async function init(){
     app.use((req, res, next) => {
         try{
             if(req.body){
-                const text = req.body.toString().replace(/"(player|owner)":([ ]*)([0-9]+)/gm, '"$1": "$3"').replace(/(player|owner):([ ]*)([0-9]+)/gm, '"$1": "$3"');
+                const payload = req.body.toString();
+                const obj = JSON.parse(payload);
+                if(obj.provider && obj.provider.appid === 730){
+                    if(config.token && (!obj.auth || !obj.auth.token)){
+                        return res.sendStatus(200);
+                    }
+                    if(config.token && config.token !== obj.auth.token){
+                        return res.sendStatus(200);
+                    }
+                }
+                const text = payload.replace(/"(player|owner)":([ ]*)([0-9]+)/gm, '"$1": "$3"').replace(/(player|owner):([ ]*)([0-9]+)/gm, '"$1": "$3"');
                 req.body = JSON.parse(text);
             }
             next();

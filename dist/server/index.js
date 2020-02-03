@@ -88,7 +88,17 @@ function init() {
                     app.use(function (req, res, next) {
                         try {
                             if (req.body) {
-                                var text = req.body.toString().replace(/"(player|owner)":([ ]*)([0-9]+)/gm, '"$1": "$3"').replace(/(player|owner):([ ]*)([0-9]+)/gm, '"$1": "$3"');
+                                var payload = req.body.toString();
+                                var obj = JSON.parse(payload);
+                                if (obj.provider && obj.provider.appid === 730) {
+                                    if (config.token && (!obj.auth || !obj.auth.token)) {
+                                        return res.sendStatus(200);
+                                    }
+                                    if (config.token && config.token !== obj.auth.token) {
+                                        return res.sendStatus(200);
+                                    }
+                                }
+                                var text = payload.replace(/"(player|owner)":([ ]*)([0-9]+)/gm, '"$1": "$3"').replace(/(player|owner):([ ]*)([0-9]+)/gm, '"$1": "$3"');
                                 req.body = JSON.parse(text);
                             }
                             next();

@@ -1,9 +1,12 @@
 import express from 'express';
 import { Match } from '../../types/interfaces';
 import { GSI } from './../sockets';
+import db from "./../../init/database";
 import socketio from 'socket.io';
 import { getTeamById } from './teams';
 import uuidv4 from 'uuid/v4';
+
+const matchesDb = db.matches;
 
 const testmatches: Match[] = [{
     id: "a",
@@ -28,45 +31,42 @@ const testmatches: Match[] = [{
     ]
 }];
 
-class MatchManager {
-    matches: Match[]
-    constructor() {
-        const load = async () => {
-            const current = this.matches.filter(match => match.current)[0];
-            if (!current) return;
-            const left = await getTeamById(current.left.id);
-            const right = await getTeamById(current.right.id);
-
-            if (left && left._id) {
-                GSI.setTeamOne({ id: left._id, name: left.name, country: left.country, logo: left.logo, map_score: current.left.wins });
-            }
-            if (right && right._id) {
-                GSI.setTeamTwo({ id: right._id, name: right.name, country: right.country, logo: right.logo, map_score: current.right.wins });
-            }
-        }
-        this.matches = testmatches;
-        load();
-    }
-    set(matches: Match[]) {
-        this.matches = matches;
-    }
+export const getMatchesRoute: express.RequestHandler = async (req, res) => {
+    const matches = await getMatches();
+    return res.json(matches);
 }
 
-const matchManager = new MatchManager();
-
-export const getMatches: express.RequestHandler = (req, res) => {
-    return res.json(matchManager.matches);
+export const getMatches = (): Promise<Match[]> => {
+    return new Promise((res, rej) => {
+        matchesDb.find({}, (err, matches) => {
+            if (err) {
+                return res([]);
+            }
+            return res(matches);
+        });
+    });
 }
 
-export const getMatchesV2 = () => {
-    return matchManager.matches;
+export const setMatches = (matches: Match[]): Promise<Match[] | null> => {
+    return new Promise((res,rej) => {
+        matchesDb.remove({}, { multi: true}, (err, n) => {
+            if (err) {
+                return res(null);
+            }
+            matchesDb.insert(matches, (err, added) => {
+                if (err) {
+                    return res(null);
+                }
+                return res(added);
+            })
+        });
+    });
 }
 
 export const updateMatch = async (updateMatches: Match[]) => {
     const currents = updateMatches.filter(match => match.current);
     if (currents.length > 1) {
-        matchManager.set(updateMatches.map(match => ({ ...match, current: false })));
-        return;
+        updateMatches = updateMatches.map(match => ({ ...match, current: false }));
     }
     if (currents.length) {
         const left = await getTeamById(currents[0].left.id);
@@ -85,8 +85,8 @@ export const updateMatch = async (updateMatches: Match[]) => {
         match.id = uuidv4();
         return match;
     })
+    await setMatches(matchesFixed);
 
-    matchManager.set(matchesFixed);
     //console.log(updateMatches);
     //matches.length = 0;
     //console.log(JSON.stringify(updateMatches));
@@ -98,5 +98,6 @@ export const updateMatch = async (updateMatches: Match[]) => {
 export const setMatch = (io: socketio.Server) => async (req, res) => {
     await updateMatch(req.body);
     io.emit('match');
-    return res.json(matchManager.matches);
+    const matches = await getMatches();
+    return res.json(matches);
 }

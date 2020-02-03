@@ -157,7 +157,7 @@ export default class Teams extends React.Component<{ cxt: IContextData }, { opti
                             </FormText>*/}
                             </FormGroup>
                         </Col>
-                        <Col md="6" className="centered">
+                        <Col md="6" className="centered image-view">
                             {this.state.form.logo.length ? <img src={'data:image/jpeg;base64,' + this.state.form.logo} id="logo_view" alt={`Team's logo`}/> : ''}
                         </Col>
                     </Row>

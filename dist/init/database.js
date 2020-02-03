@@ -10,5 +10,6 @@ var directory = path_1["default"].join(electron_1.app.getPath('userData'), 'data
 exports["default"] = {
     players: new nedb_1["default"]({ filename: path_1["default"].join(directory, 'players'), autoload: true }),
     teams: new nedb_1["default"]({ filename: path_1["default"].join(directory, 'teams'), autoload: true }),
-    config: new nedb_1["default"]({ filename: path_1["default"].join(directory, 'config'), autoload: true })
+    config: new nedb_1["default"]({ filename: path_1["default"].join(directory, 'config'), autoload: true }),
+    matches: new nedb_1["default"]({ filename: path_1["default"].join(directory, 'matches'), autoload: true })
 };

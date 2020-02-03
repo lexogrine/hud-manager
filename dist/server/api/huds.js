@@ -195,11 +195,20 @@ exports.render = function (req, res) {
     return res.sendFile(path.join(dir, 'index.html'));
 };
 exports.renderThumbnail = function (req, res) {
-    var thumbPath = path.join(electron_1.app.getPath('home'), 'HUDs', req.params.dir, "thumb.png");
-    if (fs.existsSync(thumbPath)) {
+    return res.sendFile(exports.getThumbPath(req.params.dir));
+    /*
+    const thumbPath = path.join(app.getPath('home'), 'HUDs', req.params.dir, "thumb.png");
+    if(fs.existsSync(thumbPath)){
         return res.sendFile(thumbPath);
     }
-    return res.sendFile(path.join(__dirname, '../../assets/icon.png'));
+    return res.sendFile(path.join(__dirname, '../../assets/icon.png'));*/
+};
+exports.getThumbPath = function (dir) {
+    var thumbPath = path.join(electron_1.app.getPath('home'), 'HUDs', dir, "thumb.png");
+    if (fs.existsSync(thumbPath)) {
+        return thumbPath;
+    }
+    return path.join(__dirname, '../../assets/icon.png');
 };
 exports.renderAssets = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
     var data;
@@ -280,7 +289,7 @@ exports.closeHUD = function (req, res) {
     return res.sendStatus(404);
 };
 exports.uploadHUD = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var response;
+    var response, notification;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -289,6 +298,14 @@ exports.uploadHUD = function (req, res) { return __awaiter(void 0, void 0, void 
                 return [4 /*yield*/, loadHUD(req.body.hud)];
             case 1:
                 response = _a.sent();
+                if (response) {
+                    notification = new electron_1.Notification({
+                        title: "HUD Upload",
+                        body: response.name + " uploaded successfully",
+                        icon: exports.getThumbPath(response.dir)
+                    });
+                    notification.show();
+                }
                 return [2 /*return*/, res.sendStatus(response ? 200 : 500)];
         }
     });
@@ -296,6 +313,7 @@ exports.uploadHUD = function (req, res) { return __awaiter(void 0, void 0, void 
 function loadHUD(base64) {
     return __awaiter(this, void 0, void 0, function () {
         var remove;
+        var _this = this;
         return __generator(this, function (_a) {
             remove = function (pathToRemove) {
                 if (!fs.existsSync(pathToRemove)) {
@@ -326,27 +344,35 @@ function loadHUD(base64) {
                         }
                         fs.mkdirSync(tempBasePath);
                         var tempUnzipper = new decompress_zip_1["default"]('hud_temp_archive.zip');
-                        tempUnzipper.on('extract', function () {
-                            if (fs.existsSync('hud_temp_archive.zip')) {
-                                fs.unlinkSync('hud_temp_archive.zip');
-                            }
-                            if (fs.existsSync(path.join(tempBasePath, 'hud.json'))) {
-                                var hudFile = fs.readFileSync(path.join(tempBasePath, 'hud.json'), { encoding: 'utf8' });
-                                var hud = JSON.parse(hudFile);
-                                if (!hud.name) {
-                                    throw new Error;
+                        tempUnzipper.on('extract', function () { return __awaiter(_this, void 0, void 0, function () {
+                            var hudFile, hud, dir, hudData;
+                            return __generator(this, function (_a) {
+                                switch (_a.label) {
+                                    case 0:
+                                        if (fs.existsSync('hud_temp_archive.zip')) {
+                                            fs.unlinkSync('hud_temp_archive.zip');
+                                        }
+                                        if (!fs.existsSync(path.join(tempBasePath, 'hud.json'))) return [3 /*break*/, 2];
+                                        hudFile = fs.readFileSync(path.join(tempBasePath, 'hud.json'), { encoding: 'utf8' });
+                                        hud = JSON.parse(hudFile);
+                                        if (!hud.name) {
+                                            throw new Error;
+                                        }
+                                        dir = path.join(electron_1.app.getPath('home'), 'HUDs', hud.name.replace(/[^a-zA-Z0-9-_]/g, ''));
+                                        if (fs.existsSync(dir)) {
+                                            dir += "-" + (Math.random() * 1000 + 1).toString(36).replace(/[^a-z]+/g, '').substr(0, 15);
+                                        }
+                                        fs.renameSync(tempBasePath, dir);
+                                        return [4 /*yield*/, exports.getHUDData(path.basename(dir))];
+                                    case 1:
+                                        hudData = _a.sent();
+                                        res(hudData);
+                                        return [3 /*break*/, 3];
+                                    case 2: throw new Error;
+                                    case 3: return [2 /*return*/];
                                 }
-                                var dir = path.join(electron_1.app.getPath('home'), 'HUDs', hud.name.replace(/[^a-zA-Z0-9-_]/g, ''));
-                                if (fs.existsSync(dir)) {
-                                    dir += "-" + (Math.random() * 1000 + 1).toString(36).replace(/[^a-z]+/g, '').substr(0, 15);
-                                }
-                                fs.renameSync(tempBasePath, dir);
-                                res(true);
-                            }
-                            else {
-                                throw new Error;
-                            }
-                        });
+                            });
+                        }); });
                         tempUnzipper.on('error', function () {
                             if (fs.existsSync(tempBasePath)) {
                                 remove(tempBasePath);

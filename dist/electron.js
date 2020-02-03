@@ -112,6 +112,7 @@ function startManager() {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
+                    electron_1.app.setAppUserModelId("com.lexogrine.hudmanager");
                     directories.checkDirectories();
                     return [4 /*yield*/, server_1["default"]()];
                 case 1:

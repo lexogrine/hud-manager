@@ -2,8 +2,8 @@
   "name": "hud-manager",
   "version": "0.1.0",
   "homepage": "./",
-  "description": "HUD Manager",
-  "author": "0sh10",
+  "description": "Lexogrine HUD Manager",
+  "author": "Lexogrine",
   "private": true,
   "dependencies": {
     "@node-steam/vdf": "^2.1.0",
@@ -42,9 +42,10 @@
     "yargs": "^15.1.0"
   },
   "build": {
-    "appId": "pl.osztenkurden.hud.manager",
-    "productName": "HUD MANAGER",
+    "appId": "com.lexogrine.hudmanager",
+    "productName": "Lexogrine HUD Manager",
     "win": {
+      "icon":"./dist/build/favicon.ico",
       "target": "NSIS"
     },
     "directories": {
@@ -78,8 +79,8 @@
     "electron": "npm run transpile && npm run devElectron",
     "dev": "concurrently \"cross-env BROWSER=none npm start\" \"npm run electron\"",
     "eject": "react-scripts eject",
-    "pack": "electron-builder --dir",
-    "compile": "npm run build && npm run pack"
+    "dist": "electron-builder",
+    "compile": "npm run build && npm run dist"
   },
   "eslintConfig": {
     "extends": "react-app"
