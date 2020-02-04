@@ -246,21 +246,22 @@ img.smallLogo {
     margin:auto;
 }
 .veto-container {
+    width: 100%;
+    color:white;
     /*height: 175px;*/
-    background-color:rgba(0,0,0,0.05);
-    border-radius:20px;
+    background-color:#2f3238;
     padding:10px;
-    margin-top:10px;
-    margin-bottom: 10px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    color: black;
 }
-
+.veto-container:nth-child(2n) {
+    background-color:#202328;
+}
 .veto-container .veto-title {
     font-weight:600;
+    text-transform: uppercase;
 }
 .veto-container .veto-desc {
     height: 80px;
@@ -295,12 +296,12 @@ img.smallLogo {
 }
 .veto-container.empty {
     height:80px;
-    width:40%;
     margin-left:auto;
     margin-right:auto;
     text-align: center;
     color:white;
 }
+/*
 .veto-container.ban {
     border: 2px solid #f42069;
     color: white;
@@ -310,7 +311,7 @@ img.smallLogo {
     border: 2px solid #b4da55;
     color: white;
     background-color:rgba(0,0,0,0.1);
-}
+}*/
 .veto-container .veto-desc span img {
     max-height:20px;
     filter: drop-shadow(-1px 2.5px 2px rgba(0,0,0,0.3)) drop-shadow(1.5px -1.5px 2px rgba(0,0,0,0.3));
@@ -410,6 +411,10 @@ img.smallLogo {
     flex: 1;
     flex-direction: column;
 }
+#match_form .row {
+    margin-left: 0;
+    margin-right: 0;
+}
 .config-entry .running-csgo-container .warning{
     position: absolute;
     align-self: center;
@@ -460,7 +465,7 @@ img.smallLogo {
     background-color: #7ad9f5 !important;
     color: #24272d;
 }
-#teams, #team_name, #short_name, #country, #players, #first_name, #nick, #last_name, #steamid {
+#teams, #team_name, #short_name, #country, #players, #first_name, #nick, #last_name, #steamid, #matchType, #type, #side {
     font-size:12px;
     height:44px;
 }
@@ -724,4 +729,9 @@ form .card > .card-body > button.btn {
     margin-bottom: 20px;
     border: 1px dashed rgba(0,0,0,0.5);
     border-radius: 20px;
+}
+
+.veto_modal .modal-content {
+    border-radius: 0;
+    background-color: #202328;
 }

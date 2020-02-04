@@ -1,24 +1,17 @@
 import React, { Component } from 'react';
-import api from './../../../../api/api';
-import * as I from './../../../../api/interfaces';
-import { Form, FormGroup, Col, Row, Label, Collapse, CustomInput, Card, CardBody, CardTitle, CardSubtitle, Button } from 'reactstrap';
+import api from '../../../../api/api';
+import * as I from '../../../../api/interfaces';
+import { Form, FormGroup, Col, Row, Label, Collapse, Input, Card, CardBody, CardTitle, CardSubtitle, Button } from 'reactstrap';
 import TeamModal from './SetTeamModal';
 import SingleVeto from './SingleVeto';
 
 import { IContextData } from '../../../Context';
-import { socket } from './../Live/Live';
+import { socket } from '../Live/Live';
 
-
-interface State extends I.Match {
-    isVetoOpen: boolean
-
-}
-export default class MatchEdit extends Component<{ cxt: IContextData, match: I.Match, edit: Function }, State> {
+export default class MatchForm extends Component<{ cxt: IContextData, match: I.Match, edit: Function }, I.Match> {
     constructor(props: { cxt: IContextData, match: I.Match, edit: Function }) {
         super(props);
-        this.state = { ...this.props.match, isVetoOpen: false }
-
-
+        this.state = this.props.match
     }
 
     vetoHandler = (name: string, map: number) => (event: any) => {
@@ -51,12 +44,8 @@ export default class MatchEdit extends Component<{ cxt: IContextData, match: I.M
     save = async () => {
         const form = { ...this.state };
         if (form.id.length) {
-            delete form.isVetoOpen;
             this.props.edit(form.id, form);
         }
-    }
-    toggleVeto = () => {
-        this.setState({ isVetoOpen: !this.state.isVetoOpen });
     }
     async componentDidMount() {
         if (!this.state.id.length) return;
@@ -74,12 +63,12 @@ export default class MatchEdit extends Component<{ cxt: IContextData, match: I.M
         const leftTeam = match && teams.filter(team => team._id === match.left.id)[0];
         const rightTeam = match && teams.filter(team => team._id === match.right.id)[0];
         return (
-            <Form>
+            <Form id="match_form">
                 <Row>
                     <Col md="12">
                         <FormGroup>
                             <Label for="match_type">Match Type</Label>
-                            <CustomInput
+                            <Input
                                 type="select"
                                 id="matchType"
                                 name="matchType"
@@ -90,11 +79,11 @@ export default class MatchEdit extends Component<{ cxt: IContextData, match: I.M
                                 <option value="bo2">BO2</option>
                                 <option value="bo3">BO3</option>
                                 <option value="bo5">BO5</option>
-                            </CustomInput>
+                            </Input>
                         </FormGroup>
                     </Col>
                 </Row>
-                <Row>
+                {/*<Row>
                     <Col md="5">
                         <Card>
                             <CardBody>
@@ -136,18 +125,9 @@ export default class MatchEdit extends Component<{ cxt: IContextData, match: I.M
                             </CardBody>
                         </Card>
                     </Col>
-                </Row>
+                </Row>*/}
                 <Row>
-                    <Col s={12} className="second-options centered">
-                        <Button color="primary" onClick={this.toggleVeto}>Manage Vetos</Button>
-                    </Col>
-                </Row>
-                <Row>
-                    <Col s={12}>
-                        <Collapse isOpen={this.state.isVetoOpen}>
-                            {this.state.vetos.map((veto, i) => <SingleVeto key={i} map={i} onSave={this.vetoHandler} veto={veto} teams={teams} match={this.state} />)}
-                        </Collapse>
-                    </Col>
+                {this.state.vetos.map((veto, i) => <SingleVeto key={i} map={i} onSave={this.vetoHandler} veto={veto} teams={teams} match={this.state} />)}
                 </Row>
             </Form>
         )
