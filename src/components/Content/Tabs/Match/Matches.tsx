@@ -45,7 +45,7 @@ class MatchRow extends Component<{ match: I.Match, teams: I.Team[], cxt: IContex
                     <Button className="round-btn lightblue-btn" id={`match_id_${this.props.match.id}`}>Edit</Button>
                     <Button className="purple-btn round-btn" onClick={ () => this.props.setCurrent()}>Set as current</Button>
                 </div>
-                <div className="match_data">
+                {/*<div className="match_data">
                     <UncontrolledCollapse toggler={`#match_id_${this.props.match.id}`}>
                         <Card>
                             <CardBody>
@@ -53,7 +53,7 @@ class MatchRow extends Component<{ match: I.Match, teams: I.Team[], cxt: IContex
                             </CardBody>
                         </Card>
                     </UncontrolledCollapse>
-                </div>
+                </div>*/}
             </div>
         )
     }
