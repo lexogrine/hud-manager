@@ -7,7 +7,7 @@ import uuidv4 from 'uuid/v4';
 
 import { IContextData } from '../../../Context';
 
-export default class MatchEdit extends Component<{ match: I.Match, teams: I.Team[], cxt: IContextData, edit: Function, setCurrent: Function }> {
+export default class MatchEdit extends Component<{ match: I.Match, teams: I.Team[], cxt: IContextData, edit: Function }> {
     delete = async () => {
         const matches = this.props.cxt.matches.filter(match => match.id !== this.props.match.id);
         await api.match.set(matches);
