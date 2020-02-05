@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Form, FormGroup, Label, Input, Row, Col, FormText } from 'reactstrap';
+import { Button, Form, FormGroup, Input, Row, Col, FormText } from 'reactstrap';
 import countryList from 'react-select-country-list';
 import api from './../../../../api/api';
 import * as I from './../../../../api/interfaces';
@@ -130,7 +130,6 @@ export default class Players extends React.Component<{ cxt: IContextData, data: 
                 <div className="tab-title-container">Players</div>
                 <div className="tab-content-container">
                     <FormGroup>
-                        <Label for="players">Players</Label>
                         <Input type="select" name="players" id="players" onChange={this.setPlayer} value={this.state.form._id}>
                             <option value={"empty"}>New player</option>
                             {this.props.cxt.players.map(player => <option key={player._id} value={player._id}>{player.firstName} {player.username} {player.lastName}</option>)}
@@ -180,9 +179,9 @@ export default class Players extends React.Component<{ cxt: IContextData, data: 
                     </Row>
                     <Row>
 
-                        <Col md="6">
+                        <Col md="12">
                             <FormGroup>
-                                <DragFileInput image onChange={this.fileHandler} id="avatar" label="UPLOAD PROFILE PICTURE" />
+                                <DragFileInput image onChange={this.fileHandler} id="avatar" label="UPLOAD PROFILE PICTURE" imgSrc={this.state.form.avatar}/>
                                 <FormText color="muted">
                                     Avatar to be used for player images, instead of Steam's default
                                 </FormText>
@@ -192,9 +191,6 @@ export default class Players extends React.Component<{ cxt: IContextData, data: 
                                     Avatar to be used for player images, instead of Steam's default
                                 </FormText>*/}
                             </FormGroup>
-                        </Col>
-                        <Col md="6" className="centered image-view">
-                            {this.state.form.avatar.length ? <img src={'data:image/jpeg;base64,' + this.state.form.avatar} id="avatar_view" alt="User's avatar"/> : ''}
                         </Col>
                     </Row>
                     <Row>

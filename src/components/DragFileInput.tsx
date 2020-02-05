@@ -7,6 +7,7 @@ interface IProps {
     label: string,
     image?: boolean,
     className?: string,
+    imgSrc?: string,
     accept?: string
 }
 interface IState {
@@ -68,6 +69,7 @@ export default class DragFileInput extends React.Component<IProps, IState> {
                 
                 <input type="file" id={this.props.id} accept={accept} onChange={this.uploadHandler} />
                 <label className="centered" htmlFor={this.props.id} ><img src={DragIcon} alt="Drag file here"/>{this.props.label}</label>
+                { this.props.imgSrc ? <img src={`data:image/jpeg;base64,${this.props.imgSrc}`} className="drag-file-img-preview" alt={'Preview'} /> : ''}
                 <div className="background" />
             </div>
         )

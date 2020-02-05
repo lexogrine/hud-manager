@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, FormGroup, Label, Input } from 'reactstrap';
+import { Modal, ModalHeader, ModalBody, FormGroup, Label, Input } from 'reactstrap';
 import * as I from './../../../../api/interfaces';
 
 const maps = ["de_mirage", "de_dust2", "de_inferno", "de_nuke", "de_train", "de_overpass", "de_vertigo"];
@@ -13,29 +13,30 @@ interface Props {
 	toggle: () => void,
 	onChange: (name: string, map: number) => any;
 }
-export default class VetoModal extends React.Component<Props, { isOpen:boolean }> {
+export default class VetoModal extends React.Component<Props, { isOpen: boolean }> {
 	state = {
 		isOpen: false
 	}
 	save = () => {
 
 	}
+	changeTypeHandler = (type: 'ban' | 'pick') => () => {
+		this.props.onChange('type', this.props.map)({target:{value:type}});
+	}
 	render() {
-		
+
 		return (
 			<Modal isOpen={this.props.isOpen} toggle={this.props.toggle} className="veto_modal" >
-				<ModalHeader toggle={this.props.toggle}>Edit Veto {this.props.map+1}</ModalHeader>
+				<ModalHeader toggle={this.props.toggle}>Edit Veto {this.props.map + 1}</ModalHeader>
+				<div className="veto_type">
+					<div className={`type pick ${this.props.veto.type === "pick" ? "active" : ""}`} onClick={this.changeTypeHandler('pick')}>PICK</div>
+					<div className={`type ban ${this.props.veto.type === "ban" ? "active" : ""}`} onClick={this.changeTypeHandler('ban')}>BAN</div>
+				</div>
 				<ModalBody>
 					<FormGroup>
 						<Input type="select" name="teams" id="teams" value={this.props.veto.teamId} onChange={this.props.onChange('teamId', this.props.map)}>
 							<option value="">Team</option>
 							{this.props.teams.map(teams => <option key={teams._id} value={teams._id}>{teams.name}</option>)}
-						</Input>
-					</FormGroup>
-					<FormGroup>
-						<Input type="select" name="type" id="type" value={this.props.veto.type} onChange={this.props.onChange('type', this.props.map)}>
-							<option value={"pick"}>Pick</option>
-							<option value={"ban"}>Ban</option>
 						</Input>
 					</FormGroup>
 					<FormGroup>
@@ -53,15 +54,13 @@ export default class VetoModal extends React.Component<Props, { isOpen:boolean }
 						</Input>
 					</FormGroup>
 					<FormGroup check>
-					<Label check>
-						<Input type="checkbox" onChange={this.props.onChange('reverseSide', this.props.map)} checked={this.props.veto.reverseSide || false}/>{' '}
+						<Label check>
+							<Input type="checkbox" onChange={this.props.onChange('reverseSide', this.props.map)} checked={this.props.veto.reverseSide || false} />{' '}
+							<div className="customCheckbox"></div>
 							Side's reversed?
 						</Label>
 					</FormGroup>
 				</ModalBody>
-				<ModalFooter>
-					<Button color="secondary" onClick={this.props.toggle}>Save</Button>
-				</ModalFooter>
 			</Modal>
 		);
 	}

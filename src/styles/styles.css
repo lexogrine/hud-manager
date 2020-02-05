@@ -186,6 +186,7 @@ input.form-control:focus, select.form-control:focus {
     border:none;
     position: fixed;
     z-index: 2;
+    background-color: #2b2e34;
 }
 img.smallLogo {
     max-height:64px;
@@ -203,6 +204,7 @@ img.smallLogo {
     padding: 25px;
     border-radius: 18px;
     font-family: Montserrat;
+    margin-bottom: 20px;
 }
 .hudRow:last-child {
     margin-bottom: 90px;
@@ -248,23 +250,42 @@ img.smallLogo {
 .veto-container {
     width: 100%;
     color:white;
-    /*height: 175px;*/
-    background-color:#2f3238;
+    height: 82px;
+    background-color:#202328;
     padding:10px;
+    padding-left: 58px;
+    padding-right: 58px;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
 }
 .veto-container:nth-child(2n) {
-    background-color:#202328;
+    background-color:#2f3238;
+}
+.veto-container .veto-main {
+    display: flex;
+    font-size:12px;
+    flex-direction:row;
+    text-transform: uppercase;
+    align-items: center;
+    width:100%;
 }
 .veto-container .veto-title {
-    font-weight:600;
+    font-weight: 700;
+    padding-right:5px;
+}
+.veto-container .edit-veto {
+    margin-left:auto;
+    width: 68px;
+    height: 29px;
+    border-radius: 14px;
+    font-size: 10px;
+    border: none;
+    font-weight: 600;
     text-transform: uppercase;
 }
 .veto-container .veto-desc {
-    height: 80px;
     display: flex;
     width:100%;
     align-items: center;
@@ -295,7 +316,6 @@ img.smallLogo {
     max-height:35px;
 }
 .veto-container.empty {
-    height:80px;
     margin-left:auto;
     margin-right:auto;
     text-align: center;
@@ -415,6 +435,14 @@ img.smallLogo {
     margin-left: 0;
     margin-right: 0;
 }
+#match_form > .row:first-child {
+    padding-left:58px;
+    padding-right:58px;
+}
+#match_form > .row:first-child > div {
+    padding-left: 0;
+    padding-right:0;
+}
 .config-entry .running-csgo-container .warning{
     position: absolute;
     align-self: center;
@@ -465,7 +493,7 @@ img.smallLogo {
     background-color: #7ad9f5 !important;
     color: #24272d;
 }
-#teams, #team_name, #short_name, #country, #players, #first_name, #nick, #last_name, #steamid, #matchType, #type, #side {
+#teams, select, #team_name, #short_name, #country, #players, #first_name, #nick, #last_name, #steamid, #matchType, #type, #side, input[type="text"] {
     font-size:12px;
     height:44px;
 }
@@ -546,6 +574,9 @@ img.smallLogo {
     position: relative;
     justify-content: center;
 }
+.match_row.editing {
+    background-color: #24272d;
+}
 .match_row:nth-child(2n) {
     background-color: transparent;
 }
@@ -572,11 +603,23 @@ img.smallLogo {
     font-weight: 700;
     text-transform: uppercase;
 }
-.match_row .main_data .team .score,.match_row .main_data .team .name {
+.match_row .main_data .team .score {
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
+}
+.match_row .main_data .team .name {
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.match_row .main_data .team .name .edit-team-button {
+    position: relative;
+    right:-5px;
+    padding:5px;
+    cursor: pointer;
 }
 .match_row .main_data .team .score img {
     position: absolute;
@@ -630,6 +673,15 @@ form .card > .card-body > button.btn {
 }
 #add_match_button {
     margin: 10px auto;
+}
+.go-back-button {
+    padding:20px;
+    cursor:pointer;
+}
+.drag-file-img-preview {
+    position: absolute;
+    max-height: 50%;
+    right: 7%;
 }
 .live-indicator {
     background-image: url('./live.png');
@@ -726,12 +778,132 @@ form .card > .card-body > button.btn {
 }
 .custom_form {
     padding: 20px;
+    padding-top: 0px;
     margin-bottom: 20px;
-    border: 1px dashed rgba(0,0,0,0.5);
     border-radius: 20px;
+    position: relative;
 }
-
+.action_containers {
+    display: flex;
+    justify-content: space-evenly;
+}
+.custom_form .section_name {
+    padding-bottom:20px
+}
+.section-save {
+    margin-top: 15px;
+}
+.veto_modal {
+    max-width: 100%;
+    width: 585px;
+    display: flex;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+    margin-top: 0;
+}
+.veto_modal label.form-check-label {
+    color: white;
+    font-size: 12px;
+    font-weight: 300;
+}
 .veto_modal .modal-content {
     border-radius: 0;
     background-color: #202328;
+    box-shadow: 0 0 121px 4px rgba(0, 8, 6, 0.5);
+}
+.veto_modal .modal-header {
+    border-bottom: none;
+    padding-top: 50px;
+}
+.veto_modal .modal-footer {
+    border-top: none;
+}
+.veto_modal .modal-header h5.modal-title {
+    color: white;
+    font-weight:200;
+    font-size: 32px;
+    margin:auto;
+}
+.veto_modal .modal-header button.close {
+    display: none;
+}
+.veto_modal .modal-body {
+    padding: 31px;
+}
+.veto_modal .form-group {
+    margin-bottom:26px;
+}
+.modal-backdrop.show {
+    opacity: 0.82;
+}
+.modal-backdrop {
+    background-color: #6b1cff;
+}
+.veto_modal .veto_type {
+    display:flex;
+}
+.veto_modal .veto_type .type {
+    flex:1;
+    text-align:center;
+    font-size: 12px;
+    font-weight: 700;
+    color: grey;
+    border-bottom: 2px solid #ffffff66;
+    padding-bottom:17px;
+    cursor:pointer;
+}
+.veto_modal .veto_type .type.active {
+    color: white;
+    
+    border-bottom: 2px solid #7ad9f5;
+}
+.veto_modal .form-check {
+    padding: 0;
+}
+.veto_modal .form-check-input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+    margin: 0;
+}
+.veto_modal .form-check-label {
+    display: flex;
+    align-items: center;
+}
+.customCheckbox {
+    width: 26px;
+    height: 26px;
+    border-radius: 5px;
+    border: 1px solid #ffffff;
+    opacity: 0.2;
+    margin-right:10px;
+    cursor: pointer;
+}
+
+input:checked ~ .customCheckbox {
+    background-color: grey;
+    opacity: 0.5;
+}
+.modal-open .modal {
+    
+    overflow-y: hidden;
+}
+
+.veto_modal .modal-footer.no-padding {
+    padding: 0;
+}
+.veto_modal .modal-save {
+    background-color: #7ad9f5;
+    border-radius: 0;
+    border: none;
+    width:100%;
+    height: 71px;
+    color: #202328;
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+.veto_modal .modal-save:hover {
+    background-color: #4a7f8f !important;
 }

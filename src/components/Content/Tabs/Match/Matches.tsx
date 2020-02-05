@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
 import api from './../../../../api/api';
 import * as I from './../../../../api/interfaces';
-import { Row, UncontrolledCollapse, Button, Card, CardBody, Col } from 'reactstrap';
+import { Row, Button, Col } from 'reactstrap';
 //import Match from './Match';
 import MatchEdit from './EditMatch';
 import uuidv4 from 'uuid/v4';
 
 import { IContextData } from '../../../Context';
+
+import goBack from "./../../../../styles/goBack.png";
 
 class MatchRow extends Component<{ match: I.Match, teams: I.Team[], cxt: IContextData, edit: Function, setCurrent: Function }> {
     delete = async () => {
@@ -122,8 +124,12 @@ export default class Matches extends Component<{ cxt: IContextData }, { match: I
         const { match } = this.state;
         return (
             <React.Fragment>
-                
-                <div className="tab-title-container" onClick={() => this.startEdit()}>{match ? "Edit match" : "Matches"}</div>
+                { match ?
+                    <div className="tab-title-container">
+                        <img src={goBack}  onClick={() => this.startEdit()} className="go-back-button" alt="Go back"/>Edit match
+                    </div> :
+                    <div className="tab-title-container">Matches</div>
+                }
                 <div className="tab-content-container no-padding">
                     {match ? <MatchEdit match={match} edit={this.edit} teams={this.props.cxt.teams} cxt={this.props.cxt} /> :
                     <>

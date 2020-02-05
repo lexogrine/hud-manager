@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
 import api from '../../../../api/api';
 import * as I from '../../../../api/interfaces';
-import { Form, FormGroup, Col, Row, Label, Collapse, Input, Card, CardBody, CardTitle, CardSubtitle, Button } from 'reactstrap';
-import TeamModal from './SetTeamModal';
+import { Form, FormGroup, Col, Row, Input } from 'reactstrap';
 import SingleVeto from './SingleVeto';
 
 import { IContextData } from '../../../Context';
@@ -67,7 +66,6 @@ export default class MatchForm extends Component<{ cxt: IContextData, match: I.M
                 <Row>
                     <Col md="12">
                         <FormGroup>
-                            <Label for="match_type">Match Type</Label>
                             <Input
                                 type="select"
                                 id="matchType"

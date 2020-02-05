@@ -27,7 +27,7 @@ export default class Layout extends React.Component<any, {data: IContextData}> {
         socket.on('match', (fromVeto?: boolean) => {
             if(fromVeto) this.loadMatch();
         });
-        socket.on('devHUD', (status: boolean) => {console.log(status, 'asadasdas')})
+        socket.on('devHUD', (status: boolean) => {console.log(status)})
     }
     loadTeams = async () => {
         const teams = await api.teams.get();

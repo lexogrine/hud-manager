@@ -14,7 +14,7 @@ const hashCode = (s: string) => s.split('').reduce((a, b) => { a = ((a << 5) - a
 
 interface IProps {
     hud: I.HUD;
-    toggleConfig: (hudDir: string) => any;
+    toggleConfig: (hud: I.HUD) => any;
 }
 
 export default class HudEntry extends Component<IProps> {
@@ -47,7 +47,7 @@ export default class HudEntry extends Component<IProps> {
                         <Col style={{ flex: 1 }} className="centered">
                             {/*<i className="material-icons" id={`hud_link_${hashCode(hud.dir)}`}>link</i>*/}
                             <img src={HyperLink} id={`hud_link_${hashCode(hud.dir)}`} className='action' alt="Local network's HUD's URL"/>
-                            {hud.panel ? <img src={Settings} onClick={toggleConfig(hud.dir)} className='action' alt="HUD's panel" /> : ''}
+                            {hud.panel ? <img src={Settings} onClick={toggleConfig(hud)} className='action' alt="HUD's panel" /> : ''}
                             <img src={Display} onClick={() => this.startHUD(hud.dir)} className='action' alt="Start HUD" />
                         </Col>
                     </Row>

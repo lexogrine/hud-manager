@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Form, FormGroup, Label, Input, Row, Col, FormText } from 'reactstrap';
+import { Button, Form, FormGroup, Input, Row, Col, FormText } from 'reactstrap';
 import countryList from 'react-select-country-list';
 import api from './../../../../api/api';
 import * as I from './../../../../api/interfaces';
@@ -105,7 +105,6 @@ export default class Teams extends React.Component<{ cxt: IContextData }, { opti
                 <div className="tab-title-container">Teams</div>
                 <div className="tab-content-container">
                     <FormGroup>
-                        <Label for="teams">Teams</Label>
                         <Input type="select" name="teams" id="teams" onChange={this.setTeam} value={this.state.form._id}>
                             <option value={"empty"}>New team</option>
                             {this.props.cxt.teams.map(team => <option key={team._id} value={team._id}>{team.name}</option>)}
@@ -145,9 +144,9 @@ export default class Teams extends React.Component<{ cxt: IContextData }, { opti
                         </Col>
                     </Row>
                     <Row>
-                        <Col md="6">
+                        <Col md="12">
                             <FormGroup>
-                                <DragFileInput image onChange={this.fileHandler} id="team_logo" label="UPLOAD LOGO PICTURE" />
+                                <DragFileInput image onChange={this.fileHandler} id="team_logo" label="UPLOAD LOGO PICTURE" imgSrc={this.state.form.logo} />
                                 <FormText color="muted">
                                     Logo to be used for team, if possible in the given hud
                             </FormText>
@@ -156,9 +155,6 @@ export default class Teams extends React.Component<{ cxt: IContextData }, { opti
                                 Logo to be used for team, if possible in the given hud
                             </FormText>*/}
                             </FormGroup>
-                        </Col>
-                        <Col md="6" className="centered image-view">
-                            {this.state.form.logo.length ? <img src={'data:image/jpeg;base64,' + this.state.form.logo} id="logo_view" alt={`Team's logo`}/> : ''}
                         </Col>
                     </Row>
                     <Row>

@@ -1,13 +1,80 @@
 import React, { Component } from 'react';
 import api from './../../../../api/api';
 import * as I from './../../../../api/interfaces';
-import { Row, UncontrolledCollapse, Button, Card, CardBody, Col } from 'reactstrap';
-import MatchForm from './MatchForm';
-import uuidv4 from 'uuid/v4';
+import editIcon from "./../../../../styles/EditIcon.png";
+import TeamModal from "./SetTeamModal";
+import { socket } from '../Live/Live';
 
 import { IContextData } from '../../../Context';
+import { Form, Row, Col, FormGroup, Input } from 'reactstrap';
+import SingleVeto from './SingleVeto';
 
-export default class MatchEdit extends Component<{ match: I.Match, teams: I.Team[], cxt: IContextData, edit: Function }> {
+/*class EditTeam extends Component {
+    render() {
+        return 
+    }
+}*/
+
+const EditTeam = () => {
+    return <div className="edit-team-button"><img src={editIcon} alt={`Edit Team`} /></div>
+}
+
+interface IProps {
+    cxt: IContextData,
+    match: I.Match,
+    teams: I.Team[],
+    edit: Function
+}
+
+
+export default class MatchEdit extends Component<IProps, I.Match> {
+    constructor(props: IProps) {
+        super(props);
+        this.state = this.props.match
+    }
+
+    vetoHandler = (name: string, map: number) => (event: any) => {
+        const { vetos }: any = this.state;
+        const veto = { teamId: '', mapName: '', side: 'NO', ...vetos[map] };
+        veto[name] = event.target.value;
+        if(name === "reverseSide") veto[name] = event.target.checked;
+        if (veto.teamId === "") {
+            veto.mapName = "";
+        }
+        vetos[map] = veto;
+        this.setState({ vetos }, this.save);
+    }
+    changeMatchType = (event: any) => {
+        const vetos: I.Veto[] = [];
+        for (let i = 0; i < 7; i++) {
+            vetos.push({ teamId: '', mapName: '', side: 'NO', type: 'pick', mapEnd: false });
+        }
+        this.setState({ matchType: event.target.value, vetos });
+    }
+    getData = (side: 'right' | 'left', id: string, wins: number) => {
+        const { state } = this;
+        state[side].id = id;
+        state[side].wins = wins || 0;
+        this.setState(state, () => {
+            this.save();
+        });
+    }
+
+    save = async () => {
+        const form = { ...this.state };
+        if (form.id.length) {
+            this.props.edit(form.id, form);
+        }
+    }
+    async componentDidMount() {
+        if (!this.state.id.length) return;
+        socket.on('match', async () => {
+            const matches = await api.match.get();
+            const current = matches.filter(match => match.id === this.state.id)[0];
+            if (!current) return;
+            this.setState({ vetos: current.vetos });
+        });
+    }
     delete = async () => {
         const matches = this.props.cxt.matches.filter(match => match.id !== this.props.match.id);
         await api.match.set(matches);
@@ -19,7 +86,7 @@ export default class MatchEdit extends Component<{ match: I.Match, teams: I.Team
         const right = teams.filter(team => team._id === match.right.id)[0];
         return (
             <>
-                <div className={`match_row ${match.current ? 'live':''}`}>
+                <div className={`match_row editing ${match.current ? 'live' : ''}`}>
                     <div className="live-indicator">
                         Live
                     </div>
@@ -29,7 +96,15 @@ export default class MatchEdit extends Component<{ match: I.Match, teams: I.Team
                                 {match.left.wins}
                                 {left && left.logo ? <img src={`data:image/jpeg;base64,${left.logo}`} alt={`${left.name}'s logo`} /> : ''}
                             </div>
-                            <div className="name">{(left && left.name) || "Team One"}</div>
+                            <div className="name">{(left && left.name) || "Team One"}
+                                <TeamModal
+                                    side='left'
+                                    button={EditTeam()}
+                                    teams={this.props.cxt.teams}
+                                    team={this.state.left}
+                                    onSave={this.getData}
+                                />
+                            </div>
                         </div>
                         <div className="versus">VS</div>
                         <div className="right team">
@@ -37,21 +112,42 @@ export default class MatchEdit extends Component<{ match: I.Match, teams: I.Team
                                 {match.right.wins}
                                 {right && right.logo ? <img src={`data:image/jpeg;base64,${right.logo}`} alt={`${right.name}'s logo`} /> : ''}
                             </div>
-                            <div className="name">{(right && right.name) || "Team Two"}</div>
+                            <div className="name">{(right && right.name) || "Team Two"}
+                                <TeamModal
+                                    side='right'
+                                    button={EditTeam()}
+                                    teams={this.props.cxt.teams}
+                                    team={this.state.right}
+                                    onSave={this.getData}
+                                />
+                            </div>
                         </div>
                     </div>
                     <div className="vetos"></div>
-                    {/*<div className="match_data">
-                        <UncontrolledCollapse toggler={`#match_id_${this.props.match.id}`}>
-                            <Card>
-                                <CardBody>
-                                    <Match/>
-                                </CardBody>
-                            </Card>
-                        </UncontrolledCollapse>
-                    </div>*/}
                 </div>
-                <MatchForm  match={this.props.match} cxt={this.props.cxt} edit={this.props.edit}/>
+                <Form id="match_form">
+                    <Row>
+                        <Col md="12">
+                            <FormGroup>
+                                <Input
+                                    type="select"
+                                    id="matchType"
+                                    name="matchType"
+                                    onChange={this.changeMatchType}
+                                    value={this.state.matchType}
+                                >
+                                    <option value="bo1">BO1</option>
+                                    <option value="bo2">BO2</option>
+                                    <option value="bo3">BO3</option>
+                                    <option value="bo5">BO5</option>
+                                </Input>
+                            </FormGroup>
+                        </Col>
+                    </Row>
+                    <Row>
+                        {this.state.vetos.map((veto, i) => <SingleVeto key={i} map={i} onSave={this.vetoHandler} veto={veto} teams={teams} match={this.state} />)}
+                    </Row>
+                </Form>
             </>
         )
     }

@@ -8,6 +8,7 @@ import { socket } from '../Live/Live';
 import Switch from './../../../../components/Switch/Switch';
 import DragInput from './../../../DragFileInput';
 import HudEntry from './HudEntry';
+import goBack from "./../../../../styles/goBack.png";
 
 var userAgent = navigator.userAgent.toLowerCase();
 let isElectron = false;
@@ -94,19 +95,27 @@ export default class Huds extends React.Component<{ cxt: IContextData }, { confi
     startHUD(dir: string) {
         api.huds.start(dir);
     }
-    toggleConfig = (hudDir: string) => () => {
-        const hud = this.state.huds.filter(hud => hud.panel && hud.dir === hudDir)[0];
-        if (!hud) return;
-        this.setState({ active: this.state.active && this.state.active.dir === hudDir ? null : hud });
+    toggleConfig = (hud?: I.HUD) => () => {
+        this.setState({ active: hud || null });
     }
     render() {
         const { killfeed, radar } = this.state.form;
         const { active, config } = this.state
+        if (active) {
+            return <React.Fragment>
+                <div className="tab-title-container">
+                    <img src={goBack} onClick={this.toggleConfig()} className="go-back-button" alt="Go back"/>
+                    HUD Settings
+                </div>
+                <div className="tab-content-container">
+                    <Panel hud={active} cxt={this.props.cxt} />
+                </div>
+            </React.Fragment>
+        }
         return (
             <React.Fragment>
                 <div className="tab-title-container">HUDS</div>
                 <div className="tab-content-container no-padding">
-                    {active ? <Panel hud={active} cxt={this.props.cxt} /> : ''}
                     <Row className="config-container">
                         <Col md="12" className="config-entry">
                             <div className="config-description">

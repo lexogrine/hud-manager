@@ -16,8 +16,10 @@ export interface Team {
     logo: string,
 };
 
+export type PanelInputType = 'text' | 'number' | 'select' | 'image';
+
 export type PanelInput = {
-    type: 'text' | 'number' | 'select' | 'image'
+    type: PanelInputType,
     name: string,
     label: string,
 } | {
