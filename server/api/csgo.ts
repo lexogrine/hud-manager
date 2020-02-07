@@ -55,7 +55,7 @@ export const checkCFGs: express.RequestHandler = async (req, res) => {
     const config = await loadConfig();
     const CSGOPath = getGamePath(730);
     if (!config || !CSGOPath || !CSGOPath.game || !CSGOPath.game.path) {
-        return res.json({});
+        return res.json({ success: false, message: "CSGO path couldn't be found", accessible: false});
     }
 
     const switcher = [true, false];
@@ -68,10 +68,10 @@ export const checkCFGs: express.RequestHandler = async (req, res) => {
     const files = cfgs.map(cfg => cfg.file);
 
     if (!files.every(exists)) {
-        return res.json({ success: false, message: 'Files are missing' });
+        return res.json({ success: false, message: 'Files are missing', accessible: true });
     }
     if (!cfgs.every(isCorrect)) {
-        return res.json({ success: false, message: 'CFGs is incorrect' })
+        return res.json({ success: false, message: 'CFGs is incorrect', accessible: true })
     }
     return res.json({ success: true });
 }

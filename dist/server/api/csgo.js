@@ -89,7 +89,7 @@ exports.checkCFGs = function (req, res) { return __awaiter(void 0, void 0, void 
                 config = _a.sent();
                 CSGOPath = steam_game_path_1.getGamePath(730);
                 if (!config || !CSGOPath || !CSGOPath.game || !CSGOPath.game.path) {
-                    return [2 /*return*/, res.json({})];
+                    return [2 /*return*/, res.json({ success: false, message: "Couldn't find the game", accessible: false })];
                 }
                 switcher = [true, false];
                 cfgs = [];
@@ -100,10 +100,10 @@ exports.checkCFGs = function (req, res) { return __awaiter(void 0, void 0, void 
                 });
                 files = cfgs.map(function (cfg) { return cfg.file; });
                 if (!files.every(exists)) {
-                    return [2 /*return*/, res.json({ success: false, message: 'Files are missing' })];
+                    return [2 /*return*/, res.json({ success: false, message: 'Files are missing', accessible: true })];
                 }
                 if (!cfgs.every(isCorrect)) {
-                    return [2 /*return*/, res.json({ success: false, message: 'CFGs is incorrect' })];
+                    return [2 /*return*/, res.json({ success: false, message: 'CFGs is incorrect', accessible: true })];
                 }
                 return [2 /*return*/, res.json({ success: true })];
         }
