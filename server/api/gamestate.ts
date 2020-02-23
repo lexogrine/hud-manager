@@ -66,7 +66,12 @@ const GSITemplate: GSI  = {
 
 export const checkGSIFile: express.RequestHandler = async (req, res) => {
     const config = await loadConfig();
-    const CSGOPath = getGamePath(730);
+    let CSGOPath;
+    try {
+        CSGOPath = getGamePath(730);
+    } catch {
+        return res.json({success: false, message: "CSGO path couldn't be found", accessible: false});
+    }
     if (!config || !CSGOPath || !CSGOPath.game || !CSGOPath.game.path) {
         return res.json({success: false, message: "CSGO path couldn't be found", accessible: false});
     }
@@ -123,7 +128,12 @@ export const createGSIFile: express.RequestHandler = async (req, res) => {
         return res.sendStatus(422);
     }
     
-    const CSGOPath = getGamePath(730);
+    let CSGOPath;
+    try {
+        CSGOPath = getGamePath(730);
+    } catch {
+        return res.json({});
+    }
     if (!CSGOPath || !CSGOPath.game || !CSGOPath.game.path) {
         return res.json({});
     }

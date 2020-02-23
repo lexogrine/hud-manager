@@ -64,32 +64,49 @@ function createCFG(customRadar, customKillfeed) {
     return { cfg: cfg, file: file };
 }
 function exists(file) {
-    var CSGOPath = steam_game_path_1.getGamePath(730);
-    if (!CSGOPath || !CSGOPath.game || !CSGOPath.game.path) {
+    try {
+        var CSGOPath = steam_game_path_1.getGamePath(730);
+        if (!CSGOPath || !CSGOPath.game || !CSGOPath.game.path) {
+            return false;
+        }
+        var cfgDir = path_1["default"].join(CSGOPath.game.path, 'csgo', 'cfg');
+        return fs_1["default"].existsSync(path_1["default"].join(cfgDir, file));
+    }
+    catch (_a) {
         return false;
     }
-    var cfgDir = path_1["default"].join(CSGOPath.game.path, 'csgo', 'cfg');
-    return fs_1["default"].existsSync(path_1["default"].join(cfgDir, file));
 }
 function isCorrect(cfg) {
-    var CSGOPath = steam_game_path_1.getGamePath(730);
-    if (!CSGOPath || !CSGOPath.game || !CSGOPath.game.path) {
+    try {
+        var CSGOPath = steam_game_path_1.getGamePath(730);
+        if (!CSGOPath || !CSGOPath.game || !CSGOPath.game.path) {
+            return false;
+        }
+        var file = cfg.file;
+        var cfgDir = path_1["default"].join(CSGOPath.game.path, 'csgo', 'cfg');
+        return fs_1["default"].readFileSync(path_1["default"].join(cfgDir, file), 'UTF-8') === cfg.cfg;
+    }
+    catch (_a) {
         return false;
     }
-    var file = cfg.file;
-    var cfgDir = path_1["default"].join(CSGOPath.game.path, 'csgo', 'cfg');
-    return fs_1["default"].readFileSync(path_1["default"].join(cfgDir, file), 'UTF-8') === cfg.cfg;
 }
 exports.checkCFGs = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var config, CSGOPath, switcher, cfgs, files;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4 /*yield*/, config_1.loadConfig()];
+    var config, CSGOPath, _a, switcher, cfgs, files;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
+            case 0:
+                _b.trys.push([0, 2, , 3]);
+                return [4 /*yield*/, config_1.loadConfig()];
             case 1:
-                config = _a.sent();
+                config = _b.sent();
                 CSGOPath = steam_game_path_1.getGamePath(730);
+                return [3 /*break*/, 3];
+            case 2:
+                _a = _b.sent();
+                return [2 /*return*/, res.json({ success: false, message: "CSGO path couldn't be found", accessible: false })];
+            case 3:
                 if (!config || !CSGOPath || !CSGOPath.game || !CSGOPath.game.path) {
-                    return [2 /*return*/, res.json({ success: false, message: "Couldn't find the game", accessible: false })];
+                    return [2 /*return*/, res.json({ success: false, message: "CSGO path couldn't be found", accessible: false })];
                 }
                 switcher = [true, false];
                 cfgs = [];
@@ -112,9 +129,14 @@ exports.checkCFGs = function (req, res) { return __awaiter(void 0, void 0, void 
 exports.createCFGs = function (_req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var CSGOPath, cfgDir, switcher_1;
     return __generator(this, function (_a) {
-        CSGOPath = steam_game_path_1.getGamePath(730);
+        try {
+            CSGOPath = steam_game_path_1.getGamePath(730);
+        }
+        catch (_b) {
+            return [2 /*return*/, res.json({ success: false, message: 'Unexpected error occured' })];
+        }
         if (!CSGOPath || !CSGOPath.game || !CSGOPath.game.path) {
-            return [2 /*return*/, res.json({})];
+            return [2 /*return*/, res.json({ success: false, message: 'Unexpected error occured' })];
         }
         cfgDir = path_1["default"].join(CSGOPath.game.path, 'csgo', 'cfg');
         try {
@@ -131,7 +153,7 @@ exports.createCFGs = function (_req, res) { return __awaiter(void 0, void 0, voi
             });
             return [2 /*return*/, res.json({ success: true, message: 'Configs were successfully saved' })];
         }
-        catch (_b) {
+        catch (_c) {
             return [2 /*return*/, res.json({ success: false, message: 'Unexpected error occured' })];
         }
         return [2 /*return*/];
@@ -143,8 +165,14 @@ exports.getLatestData = function (_req, res) { return __awaiter(void 0, void 0, 
     });
 }); };
 exports.getSteamPath = function (_req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var CSGOPath;
+    var CSGOPath_1, CSGOPath;
     return __generator(this, function (_a) {
+        try {
+            CSGOPath_1 = steam_game_path_1.getGamePath(730);
+        }
+        catch (_b) {
+            return [2 /*return*/, res.status(404).json({ success: false })];
+        }
         CSGOPath = steam_game_path_1.getGamePath(730);
         if (!CSGOPath || !CSGOPath.steam || !CSGOPath.steam.path) {
             return [2 /*return*/, res.status(404).json({ success: false })];
@@ -162,7 +190,12 @@ exports.run = function (req, res) { return __awaiter(void 0, void 0, void 0, fun
                 if (!config || !req.query.config || typeof req.query.config !== "string") {
                     return [2 /*return*/, res.sendStatus(422)];
                 }
-                CSGOData = steam_game_path_1.getGamePath(730);
+                try {
+                    CSGOData = steam_game_path_1.getGamePath(730);
+                }
+                catch (_b) {
+                    return [2 /*return*/, res.sendStatus(404)];
+                }
                 if (!CSGOData || !CSGOData.steam || !CSGOData.steam.path || !CSGOData.game || !CSGOData.game.path) {
                     return [2 /*return*/, res.sendStatus(404)];
                 }

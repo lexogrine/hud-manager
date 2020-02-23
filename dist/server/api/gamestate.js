@@ -85,7 +85,12 @@ exports.checkGSIFile = function (req, res) { return __awaiter(void 0, void 0, vo
             case 0: return [4 /*yield*/, config_1.loadConfig()];
             case 1:
                 config = _a.sent();
-                CSGOPath = steam_game_path_1.getGamePath(730);
+                try {
+                    CSGOPath = steam_game_path_1.getGamePath(730);
+                }
+                catch (_b) {
+                    return [2 /*return*/, res.json({ success: false, message: "CSGO path couldn't be found", accessible: false })];
+                }
                 if (!config || !CSGOPath || !CSGOPath.game || !CSGOPath.game.path) {
                     return [2 /*return*/, res.json({ success: false, message: "CSGO path couldn't be found", accessible: false })];
                 }
@@ -116,7 +121,7 @@ exports.checkGSIFile = function (req, res) { return __awaiter(void 0, void 0, vo
                     }
                     return [2 /*return*/, res.json({ success: true })];
                 }
-                catch (_b) {
+                catch (_c) {
                     return [2 /*return*/, res.json({ success: false, message: 'Unexpected error occured', accessible: true })];
                 }
                 return [2 /*return*/];
@@ -154,7 +159,12 @@ exports.createGSIFile = function (req, res) { return __awaiter(void 0, void 0, v
                 if (!text) {
                     return [2 /*return*/, res.sendStatus(422)];
                 }
-                CSGOPath = steam_game_path_1.getGamePath(730);
+                try {
+                    CSGOPath = steam_game_path_1.getGamePath(730);
+                }
+                catch (_b) {
+                    return [2 /*return*/, res.json({})];
+                }
                 if (!CSGOPath || !CSGOPath.game || !CSGOPath.game.path) {
                     return [2 /*return*/, res.json({})];
                 }
@@ -166,7 +176,7 @@ exports.createGSIFile = function (req, res) { return __awaiter(void 0, void 0, v
                     fs_1["default"].writeFileSync(cfgPath, text, 'UTF-8');
                     return [2 /*return*/, res.json({ success: true, message: 'Config file was successfully saved' })];
                 }
-                catch (_b) {
+                catch (_c) {
                     return [2 /*return*/, res.json({ success: false, message: 'Unexpected error occured' })];
                 }
                 return [2 /*return*/];

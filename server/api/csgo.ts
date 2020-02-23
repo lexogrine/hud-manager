@@ -6,6 +6,7 @@ import express from 'express';
 import { loadConfig } from './config';
 import { GSI } from './../sockets';
 import { spawn } from 'child_process';
+import { Config } from '../../types/interfaces';
 
 interface CFG {
     cfg: string,
@@ -32,28 +33,42 @@ function createCFG(customRadar: boolean, customKillfeed: boolean): CFG {
 }
 
 function exists(file: string) {
-    const CSGOPath = getGamePath(730);
-    if (!CSGOPath || !CSGOPath.game || !CSGOPath.game.path) {
+    try {
+        const CSGOPath = getGamePath(730);
+        if (!CSGOPath || !CSGOPath.game || !CSGOPath.game.path) {
+            return false;
+        }
+        const cfgDir = path.join(CSGOPath.game.path, 'csgo', 'cfg');
+    
+        return fs.existsSync(path.join(cfgDir, file));
+    } catch {
         return false;
     }
-    const cfgDir = path.join(CSGOPath.game.path, 'csgo', 'cfg');
-
-    return fs.existsSync(path.join(cfgDir, file));
 }
 
 function isCorrect(cfg: CFG) {
-    const CSGOPath = getGamePath(730);
-    if (!CSGOPath || !CSGOPath.game || !CSGOPath.game.path) {
+    try {
+        const CSGOPath = getGamePath(730);
+        if (!CSGOPath || !CSGOPath.game || !CSGOPath.game.path) {
+            return false;
+        }
+        const file = cfg.file;
+        const cfgDir = path.join(CSGOPath.game.path, 'csgo', 'cfg');
+        return fs.readFileSync(path.join(cfgDir, file), 'UTF-8') === cfg.cfg;
+    } catch {
         return false;
     }
-    const file = cfg.file;
-    const cfgDir = path.join(CSGOPath.game.path, 'csgo', 'cfg');
-    return fs.readFileSync(path.join(cfgDir, file), 'UTF-8') === cfg.cfg;
 }
 
 export const checkCFGs: express.RequestHandler = async (req, res) => {
-    const config = await loadConfig();
-    const CSGOPath = getGamePath(730);
+    let config: Config;
+    let CSGOPath;
+    try {
+        config = await loadConfig();
+        CSGOPath = getGamePath(730);
+    } catch {
+        return res.json({ success: false, message: "CSGO path couldn't be found", accessible: false});
+    }
     if (!config || !CSGOPath || !CSGOPath.game || !CSGOPath.game.path) {
         return res.json({ success: false, message: "CSGO path couldn't be found", accessible: false});
     }
@@ -77,9 +92,14 @@ export const checkCFGs: express.RequestHandler = async (req, res) => {
 }
 
 export const createCFGs: express.RequestHandler = async (_req, res) => {
-    const CSGOPath = getGamePath(730);
+    let CSGOPath;
+    try {
+        CSGOPath = getGamePath(730);
+    } catch {
+        return res.json({ success: false, message: 'Unexpected error occured' });
+    }
     if (!CSGOPath || !CSGOPath.game || !CSGOPath.game.path) {
-        return res.json({});
+        return res.json({ success: false, message: 'Unexpected error occured' });
     }
     const cfgDir = path.join(CSGOPath.game.path, 'csgo', 'cfg');
 
@@ -107,6 +127,11 @@ export const getLatestData: express.RequestHandler = async (_req, res) => {
 }
 
 export const getSteamPath: express.RequestHandler = async (_req, res) => {
+    try {
+        const CSGOPath = getGamePath(730);
+    } catch {
+        return res.status(404).json({success: false});
+    }
     const CSGOPath = getGamePath(730);
     if(!CSGOPath || !CSGOPath.steam || !CSGOPath.steam.path){
         return res.status(404).json({success: false});
@@ -119,7 +144,12 @@ export const run: express.RequestHandler = async (req, res) => {
     if(!config ||!req.query.config || typeof req.query.config !== "string"){
         return res.sendStatus(422);
     }
-    const CSGOData = getGamePath(730);
+    let CSGOData;
+    try {
+        CSGOData = getGamePath(730);
+    } catch {
+        return res.sendStatus(404);
+    }
     if(!CSGOData || !CSGOData.steam || !CSGOData.steam.path || !CSGOData.game || !CSGOData.game.path){
         return res.sendStatus(404);
     }
