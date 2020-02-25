@@ -33,3 +33,19 @@ Below you can specify the HLAE.exe path - it is required to use automatic CS:GO 
 Moreover, you don't need to bother your head with copying the config files. You can see the status of both GSI and config files live, and if they are missing, invalid, or otherwise broken you can just click one button and done - they are installed (provided that Manager found CS:GO's location). Important fact to mention - when you change GSI port, you will need to restart the Manager, so it will start listening on the new one.
 
 In situation when config installation doesn't success or Manager doesn't find the CS:GO, you can download the GSI config and archive with all of the required cfg files using two buttons at the bottom of this section.
+
+# Technicalities
+
+HUD Manager uses, among the others, Express.js for REST API and GSI endpoints, `csgogsi` `csgogsi-socket` for data parsing, joining the additional info about teams and players and listening for events such as end of round.
+
+HUD Manager exposes port specified in settings as entry point for WebSockets, and sends `update` event that comes with CSGOParsed object, which definition you can find here: https://www.npmjs.com/package/csgogsi
+
+In the background, HUD Manager also regurarly checks if the port 3000 is taken, and if yes - it tries to see if the HUD in dev mode works there. If yes, it will show it in HUDs tab and allow to use it locally as any other HUD.
+
+Local data is stored in Nedb.js database locally in %HOME%\hud_manager directory. It includes config, teams, players and match data.
+
+For looking up the Steam's and CS:GO's directory it uses `steam-game-path` package.
+
+HUD Manager was written with Windows environment in mind. It probably works on Linux and Mac after compilation, however no promises.
+
+# REST API
