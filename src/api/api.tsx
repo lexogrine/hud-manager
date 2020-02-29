@@ -50,7 +50,12 @@ export default {
     config: {
         get: async (): Promise<I.Config> => await apiV2('config'),
         update: async (config: I.Config) => await apiV2('config', 'PATCH', config),
-        download: async (target: 'gsi' | 'cfgs') => await apiV2(`${target}/download`)
+        download: async (target: 'gsi' | 'cfgs') => {
+            if(config.isElectron){
+                return await apiV2(`${target}/download`)
+            }
+            window.location.assign(`${config.isDev ? apiUrl : '/'}api/${target}/download`)
+        }
     },
     cfgs: {
         check: async (): Promise<I.CFGGSIResponse> => await apiV2('cfg'),

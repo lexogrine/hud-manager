@@ -493,7 +493,7 @@ img.smallLogo {
     background-color: #7ad9f5 !important;
     color: #24272d;
 }
-#teams, select, #team_name, #short_name, #country, #players, #first_name, #nick, #last_name, #steamid, #matchType, #type, #side, input[type="text"] {
+#teams, select, #team_name, #short_name, #country, #players, #first_name, #nick, #last_name, #steamid, #matchType, #type, #side, input[type="text"], input[type="number"] {
     font-size:12px;
     height:44px;
 }
@@ -550,6 +550,40 @@ img.smallLogo {
 .scoreboard_container.right .scoreboard_player .name i {
     
     margin-right: auto;
+}
+.scoreboard_score.right {
+    flex-direction: row-reverse;
+}
+.scoreboard_score .score {
+    text-align: center;
+}
+.scoreboard_score {
+    height: 50px;
+    background-color: rgba(0,0,0,0.2);
+    display: flex;
+    align-items: center;
+}
+.scoreboard_score .score {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+}
+.scoreboard_score .team_name {
+
+    text-transform: uppercase;
+    letter-spacing: 1.25px;
+}
+.scoreboard_score.right .team_name {
+    flex-direction: row-reverse;
+    text-align: right;
+}
+.scoreboard_score.CT {
+    color: lightskyblue;
+}
+.scoreboard_score.T {
+    color: orange;
 }
 .scoreboard_container .scoreboard_player .name i.saved{
     color: green;
@@ -906,4 +940,18 @@ input:checked ~ .customCheckbox {
 }
 .veto_modal .modal-save:hover {
     background-color: #4a7f8f !important;
+}
+.download-container .btn {
+    margin-left: 5px;
+}
+.bottom-margin {
+    margin-bottom:70px;
+}
+.no-margin-row {
+    margin-left:0 !important;
+    margin-right:0 !important;
+}
+.no-padding-col {
+    padding-left:0 !important;
+    padding-right:0 !important;
 }

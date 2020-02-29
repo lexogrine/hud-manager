@@ -196,7 +196,7 @@ export default class Players extends React.Component<{ cxt: IContextData, data: 
                     <Row>
                         <Col className="main-buttons-container">
                             <Button color="secondary" onClick={this.delete} disabled={this.state.form._id === "empty"}>Delete</Button>
-                            <Button color="primary" onClick={this.save}>Save</Button>
+                            <Button color="primary" onClick={this.save}>{this.state.form._id === "empty" ? "+Add player":"Save"}</Button>
                         </Col>
                     </Row>
                 </div>

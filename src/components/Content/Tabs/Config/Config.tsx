@@ -1,8 +1,11 @@
 import React from 'react';
-import { Form, FormGroup, Input, Row, Col, Toast, ToastBody, ToastHeader, Button } from 'reactstrap';
+import { Form, FormGroup, Input, Row, Col, Button } from 'reactstrap';
 import * as I from './../../../../api/interfaces';
 import api from './../../../../api/api';
+import config from './../../../../api/config';
 import DragInput from './../../../DragFileInput';
+
+const { isElectron } = config;
 
 interface ConfigStatus extends I.CFGGSIResponse {
     loading: boolean
@@ -38,16 +41,18 @@ export default class Config extends React.Component<any, { config: I.Config, cfg
         }
     }
     loadHLAE = (files: FileList) => {
-        if(!files || !files[0]) return;
+        if (!files || !files[0]) return;
         const file: ExtendedFile = files[0];
-        if(!file.path) return;
+        if (!file.path) return;
         const { config } = this.state;
         config.hlaePath = file.path;
-        this.setState({config});
-
+        this.setState({ config });
     }
     download = (target: 'gsi' | 'cfgs') => {
         api.config.download(target);
+    }
+    getDownloadUrl = (target: 'gsi' | 'cfgs') => {
+        return `${config.isDev ? config.apiAddress : '/'}api/${target}/download`
     }
     getConfig = async () => {
         const config = await api.config.get();
@@ -134,22 +139,22 @@ export default class Config extends React.Component<any, { config: I.Config, cfg
                         <Col md="4">
                             <FormGroup>
                                 {/*<Label for="port"><Tip id="gsiport_tooltip" label="CSGO GSI Port">Use values between 1000 and 9999 - after saving changes also restart the manager</Tip></Label>*/}
-                                <Input type="number" name="port" id="port" onChange={this.changeHandler} value={this.state.config.port} placeholder="CSGO GSI Port"/>
+                                <Input type="number" name="port" id="port" onChange={this.changeHandler} value={this.state.config.port} placeholder="CSGO GSI Port" />
                             </FormGroup>
                         </Col>
                         <Col md="4">
                             <FormGroup>
                                 {/*<Label for="token"><Tip id="gsitoken_tooltip" label="CSGO GSI Token">Token to identify your game - you can leave it empty</Tip></Label>*/}
-                                <Input type="text" name="token" id="token" onChange={this.changeHandler} value={this.state.config.token} placeholder="CSGO GSI Token"/>
+                                <Input type="text" name="token" id="token" onChange={this.changeHandler} value={this.state.config.token} placeholder="CSGO GSI Token" />
                             </FormGroup>
                         </Col>
                     </Row>
-                    <Row className="config-container">
+                    <Row className="config-container bottom-margin">
                         <Col md="12" className="config-entry">
                             <div className="config-description">
                                 HLAE Path: {this.state.config.hlaePath ? 'Loaded' : 'Not loaded'}
                             </div>
-                            <DragInput id="hlae_input" label="SET HLAE PATH" accept=".exe" onChange={this.loadHLAE} className="path_selector"/>
+                            <DragInput id="hlae_input" label="SET HLAE PATH" accept=".exe" onChange={this.loadHLAE} className="path_selector" />
                         </Col>
                         <Col md="12" className="config-entry">
                             <div className="config-description">
@@ -169,9 +174,20 @@ export default class Config extends React.Component<any, { config: I.Config, cfg
                             </div>
                             <Button className="lightblue-btn round-btn" onClick={() => this.props.toggle('credits')}>See now</Button>
                         </Col>
+                        <Col md="12" className="config-entry">
+                            <div className="config-description">
+                                Downloads
+                            </div>
+                            {isElectron ? <div className="download-container">
+                                <Button onClick={() => this.download('gsi')} className="purple-btn round-btn" >GSI config</Button>
+                                <Button onClick={() => this.download('cfgs')} className="purple-btn round-btn" >HUD configs</Button>
+                            </div> : <div className="download-container">
+                                    <Button href={this.getDownloadUrl('gsi')} className="purple-btn round-btn" download target="_blank">GSI config</Button>
+                                    <Button href={this.getDownloadUrl('cfgs')} className="purple-btn round-btn" download target="_blank">HUD configs</Button>
+                                </div>}
+                        </Col>
                     </Row>
-                    <Button onClick={() => this.download('gsi')}>Download GSI config</Button>
-                    <Button onClick={() => this.download('cfgs')}>Download HUD configs</Button>
+
                     {/*<Toast isOpen={this.state.restartRequired} className="fixed-toast">
                         <ToastHeader>Change of port detected</ToastHeader>
                         <ToastBody>It seems like you've changed GSI port - for all changes to be set in place you should now restart the Manager and update the GSI files</ToastBody>

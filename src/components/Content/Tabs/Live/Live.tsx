@@ -8,9 +8,13 @@ export const { GSI, socket } = CSGOGSI(`${config.isDev ? config.apiAddress : '/'
 
 class Teamboard extends Component<{ players: Player[], steamids: string[], team: Team, toggle: Function }> {
     render() {
-        const { steamids, toggle } = this.props;
+        const { steamids, toggle, team } = this.props;
         return (
             <Col s={12} md={6}>
+                <Row className={`scoreboard_score ${this.props.team.orientation} no-margin-row ${team.side}`}>
+                    <Col s={12} md={10} className="team_name">{team.name}</Col>
+                    <Col s={12} md={2} className="score">{team.score}</Col>
+                </Row>
                 <div className={`scoreboard_container ${this.props.team.orientation}`}>
                     {this.props.players.map(player =>
                         <div className="scoreboard_player" key={player.steamid} onClick={() => toggle('players', { steamid: player.steamid })}>
@@ -53,14 +57,14 @@ export default class Match extends Component<any, { game: CSGO | null, steamids:
         const { game } = this.state;
         if (!game) return  <React.Fragment>
             <div className="tab-title-container">Live</div>
-            <div className="tab-content-container"></div>
+            <div className="tab-content-container">No game is currently live</div>
         </React.Fragment>;
         const teams = [game.map.team_ct, game.map.team_t]
         const left = teams.filter(team => team.orientation === "left")[0];
         const right = teams.filter(team => team.orientation === "right")[0];
         return (
             <React.Fragment>
-                <div className="tab-title-container">Create New Team</div>
+                <div className="tab-title-container">Live</div>
                 <div className="tab-content-container">
                     <Row>
                         <Col md="12" className="config-container no-margin" style={{ flexDirection: 'column' }}>

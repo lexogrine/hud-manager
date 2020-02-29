@@ -54,7 +54,6 @@ class SetTeamModal extends React.Component<Props, State> {
           </FormGroup>
           <FormGroup>
             <Input type="select" name="wins" id="wins" value={this.state.form.wins} onChange={this.changeHandler('wins')}>
-              <option value={"empty"}>Empty team</option>
               <option value={0}>0</option>
               <option value={1}>1</option>
               <option value={2}>2</option>

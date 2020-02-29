@@ -9,13 +9,9 @@ import Switch from './../../../../components/Switch/Switch';
 import DragInput from './../../../DragFileInput';
 import HudEntry from './HudEntry';
 import goBack from "./../../../../styles/goBack.png";
+import config from './../../../../api/config';
+const isElectron = config.isElectron;
 
-var userAgent = navigator.userAgent.toLowerCase();
-let isElectron = false;
-
-if (userAgent.indexOf(' electron/') > -1) {
-    isElectron = true;
-}
 interface CFG {
     cfg: string,
     file: string

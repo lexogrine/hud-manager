@@ -160,7 +160,7 @@ export default class Teams extends React.Component<{ cxt: IContextData }, { opti
                     <Row>
                         <Col className="main-buttons-container">
                             <Button color="secondary" onClick={this.delete} disabled={this.state.form._id === "empty"}>Delete</Button>
-                            <Button color="primary" onClick={this.save}>Save</Button>
+                            <Button color="primary" onClick={this.save}>{this.state.form._id === "empty" ? "+Add team":"Save"}</Button>
                         </Col>
                     </Row>
                 </div>
