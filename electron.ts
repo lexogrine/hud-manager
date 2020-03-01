@@ -27,7 +27,7 @@ async function createMainWindow(server: Server) {
         show: false,
         //frame:false,
         //titleBarStyle:"hidden",
-        resizable: isDev,
+        //resizable: isDev,
         title: "HUD Manager",
         icon: path.join(__dirname, 'assets/icon.png'),
         webPreferences: {
