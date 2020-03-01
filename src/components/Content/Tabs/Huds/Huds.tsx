@@ -140,7 +140,7 @@ export default class Huds extends React.Component<{ cxt: IContextData }, { confi
                                     </React.Fragment> : ''}
                                 </div>
                                 <div className="warning">
-                                        {killfeed && !config.hlaePath ? 'Specify HLAE path in settings in order to use custom killfeed functionality' : ''}
+                                        {killfeed && !config.hlaePath && isElectron ? 'Specify HLAE path in settings in order to use custom killfeed functionality' : ''}
                                 </div>
                             </div>
 
