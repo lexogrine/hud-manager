@@ -18,6 +18,7 @@ export interface Team {
 
 export type PanelInputType = 'text' | 'number' | 'select' | 'image';
 
+
 export type PanelInput = {
     type: PanelInputType,
     name: string,
@@ -78,11 +79,12 @@ export interface Config {
     "GSIToken": "120987"*/
 }
 
+export type VetoType = 'ban' | 'pick' | 'decider';
 export interface Veto {
     teamId: string,
     mapName: string,
     side: 'CT' | 'T' | 'NO',
-    type: 'ban' | 'pick',
+    type: VetoType,
     reversed?:boolean,
     score?: {
         [key: string]: number

@@ -15,6 +15,9 @@ function generateDescription(veto: I.Veto, team?: I.Team, secTeam?: I.Team){
     if (!team || !team.name || !veto.mapName) {
         return "";
     }
+    if(veto.type === "decider"){
+        return `${veto.mapName} decider`
+    }
     let text = `${team.name} ${veto.type}s ${veto.mapName}`;
     if (secTeam && secTeam.name && veto.side !== "NO"){
         text += `, ${secTeam.name} chooses ${veto.side} side`;

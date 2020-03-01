@@ -16,6 +16,7 @@ export interface Team {
     logo: string
 };
 
+export type VetoType = 'ban' | 'pick' | 'decider';
 export interface Match {
     id: string,
     current: boolean,
@@ -32,7 +33,7 @@ export interface Match {
         teamId: string,
         mapName: string,
         side: 'CT' | 'T' | 'NO',
-        type: 'ban' | 'pick',
+        type: VetoType,
         reversed?:boolean,
         score?: {
             [key: string]: number
