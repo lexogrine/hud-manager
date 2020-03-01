@@ -77,7 +77,8 @@ export default {
     },
     match: {
         get: async (): Promise<I.Match[]> => await apiV2('match'),
-        set: async (match: I.Match[]): Promise<I.Match[]> => apiV2('match', 'PATCH', match)
+        set: async (match: I.Match[]): Promise<I.Match[]> => apiV2('match', 'PATCH', match),
+        getMaps: async (): Promise<string[]> => await apiV2('maps')
     },
     files: {
         imgToBase64: async (url: string) => {

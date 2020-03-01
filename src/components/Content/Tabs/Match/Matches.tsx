@@ -62,11 +62,12 @@ class MatchRow extends Component<{ match: I.Match, teams: I.Team[], cxt: IContex
     }
 }
 
-export default class Matches extends Component<{ cxt: IContextData }, { match: I.Match | null }> {
+export default class Matches extends Component<{ cxt: IContextData }, { match: I.Match | null, maps: string[] }> {
     constructor(props: {cxt: IContextData}){
         super(props);
         this.state = {
-            match: null
+            match: null,
+            maps: []
         }
     }
     add = async () => {
@@ -117,11 +118,13 @@ export default class Matches extends Component<{ cxt: IContextData }, { match: I
 
     async componentDidMount() {
         await this.props.cxt.reload();
+        const maps = await api.match.getMaps();
+        this.setState({maps});
 
     }
 
     render() {
-        const { match } = this.state;
+        const { match, maps } = this.state;
         return (
             <React.Fragment>
                 { match ?
@@ -131,7 +134,7 @@ export default class Matches extends Component<{ cxt: IContextData }, { match: I
                     <div className="tab-title-container">Matches</div>
                 }
                 <div className="tab-content-container no-padding">
-                    {match ? <MatchEdit match={match} edit={this.edit} teams={this.props.cxt.teams} cxt={this.props.cxt} /> :
+                    {match ? <MatchEdit match={match} edit={this.edit} teams={this.props.cxt.teams} cxt={this.props.cxt} maps={maps}  /> :
                     <>
                         <Row className="matches_container">
                             {this.props.cxt.matches.map(match => <MatchRow key={match.id} edit={this.startEdit} setCurrent={this.setCurrent(match.id)} match={match} teams={this.props.cxt.teams} cxt={this.props.cxt} />)}

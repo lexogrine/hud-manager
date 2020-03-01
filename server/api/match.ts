@@ -4,32 +4,12 @@ import { GSI } from './../sockets';
 import db from "./../../init/database";
 import socketio from 'socket.io';
 import { getTeamById } from './teams';
+import { app } from 'electron';
 import uuidv4 from 'uuid/v4';
+import path from 'path';
+import fs from 'fs';
 
 const matchesDb = db.matches;
-
-const testmatches: Match[] = [{
-    id: "a",
-    left: {
-        id: "H427BFDoR9chqgwe",
-        wins: 0
-    },
-    right: {
-        id: "XXH5JceBg3miQgBt",
-        wins: 0
-    },
-    current: true,
-    matchType: "bo3",
-    vetos: [
-        { teamId: "H427BFDoR9chqgwe", mapName: "de_overpass", side: "CT", type: "pick", mapEnd: false },
-        { teamId: "XXH5JceBg3miQgBt", mapName: "de_mirage", side: "T", type: "pick", mapEnd: false, reverseSide: true },
-        { teamId: "H427BFDoR9chqgwe", mapName: "de_inferno", side: "CT", type: "pick", mapEnd: false },
-        { teamId: "", mapName: "", side: "NO", type: "pick", mapEnd: false },
-        { teamId: "", mapName: "", side: "NO", type: "pick", mapEnd: false },
-        { teamId: "", mapName: "", side: "NO", type: "pick", mapEnd: false },
-        { teamId: "", mapName: "", side: "NO", type: "pick", mapEnd: false }
-    ]
-}];
 
 export const getMatchesRoute: express.RequestHandler = async (req, res) => {
     const matches = await getMatches();
@@ -87,11 +67,6 @@ export const updateMatch = async (updateMatches: Match[]) => {
     })
     await setMatches(matchesFixed);
 
-    //console.log(updateMatches);
-    //matches.length = 0;
-    //console.log(JSON.stringify(updateMatches));
-    //matches.push(...updateMatches);
-
 }
 
 
@@ -100,4 +75,18 @@ export const setMatch = (io: socketio.Server) => async (req, res) => {
     io.emit('match');
     const matches = await getMatches();
     return res.json(matches);
+}
+
+export const getMaps: express.RequestHandler = (req, res) => {
+    const defaultMaps = ["de_mirage", "de_dust2", "de_inferno", "de_nuke", "de_train", "de_overpass", "de_vertigo"];
+    const mapFilePath = path.join(app.getPath('userData'), 'maps.json');
+    try {
+        const maps = JSON.parse(fs.readFileSync(mapFilePath, "utf8"));
+        if(Array.isArray(maps)){
+            return res.json(maps);
+        }
+        return res.json(defaultMaps);
+    } catch {
+        return res.json(defaultMaps);
+    }
 }

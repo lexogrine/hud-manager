@@ -1,5 +1,4 @@
 import express from 'express';
-import { app, dialog } from 'electron';
 import socketio from 'socket.io';
 import * as players from './players';
 import * as teams from './teams';
@@ -58,6 +57,9 @@ export default function (router: express.Router, io: socketio.Server) {
 
     router.route('/api/huds/:hudDir/start')
         .post(huds.showHUD(io));
+
+    router.route('/api/maps')
+        .get(match.getMaps)
 
     router.route('/api/gsi')
         .get(gsi.checkGSIFile)

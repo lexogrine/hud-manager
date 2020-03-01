@@ -1,6 +1,7 @@
 import React from 'react';
 import { Modal, ModalHeader, ModalBody, FormGroup, Label, Input } from 'reactstrap';
 import * as I from './../../../../api/interfaces';
+import api from './../../../../api/api';
 
 const maps = ["de_mirage", "de_dust2", "de_inferno", "de_nuke", "de_train", "de_overpass", "de_vertigo"];
 
@@ -11,7 +12,8 @@ interface Props {
 	teams: I.Team[],
 	isOpen: boolean,
 	toggle: () => void,
-	onChange: (name: string, map: number) => any;
+	onChange: (name: string, map: number) => any,
+	maps: string[]
 }
 export default class VetoModal extends React.Component<Props, { isOpen: boolean }> {
 	state = {
@@ -56,7 +58,7 @@ export default class VetoModal extends React.Component<Props, { isOpen: boolean 
 					<FormGroup>
 						<Input type="select" name="type" id="type" value={this.props.veto.mapName} onChange={this.props.onChange('mapName', this.props.map)}>
 							<option value="" disabled defaultChecked>Map</option>
-							{maps.map(map => <option value={map} key={map}>{map.replace("de_", "")[0].toUpperCase()}{map.replace("de_", "").substr(1)}</option>)}
+							{this.props.maps.map(map => <option value={map} key={map}>{map.replace("de_", "")[0].toUpperCase()}{map.replace("de_", "").substr(1)}</option>)}
 						</Input>
 					</FormGroup>
 					<FormGroup check>

@@ -8,7 +8,8 @@ interface Props {
     veto: I.Veto,
     teams: I.Team[],
     match: I.Match,
-    onSave: (name: string, map: number) => void;
+    onSave: (name: string, map: number) => void,
+    maps: string[]
 }
 
 function generateDescription(veto: I.Veto, team?: I.Team, secTeam?: I.Team) {
@@ -65,7 +66,7 @@ class SingleVeto extends React.Component<Props> {
                                     </div> : ''}
                                 </div>*/}
 
-                            <VetoModal map={this.props.map} veto={this.props.veto} teams={this.props.teams} isOpen={this.state.isOpen} toggle={this.toggle} onChange={this.props.onSave} />
+                            <VetoModal maps={this.props.maps} map={this.props.map} veto={this.props.veto} teams={this.props.teams} isOpen={this.state.isOpen} toggle={this.toggle} onChange={this.props.onSave} />
                         </>
                 }
 

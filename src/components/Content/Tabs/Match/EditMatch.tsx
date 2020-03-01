@@ -23,7 +23,8 @@ interface IProps {
     cxt: IContextData,
     match: I.Match,
     teams: I.Team[],
-    edit: Function
+    edit: Function,
+    maps: string[]
 }
 
 
@@ -148,7 +149,7 @@ export default class MatchEdit extends Component<IProps, I.Match> {
                         </Col>
                     </Row>
                     <Row>
-                        {this.state.vetos.map((veto, i) => <SingleVeto key={i} map={i} onSave={this.vetoHandler} veto={veto} teams={teams} match={this.state} />)}
+                        {this.state.vetos.map((veto, i) => <SingleVeto key={i} map={i} maps={this.props.maps} onSave={this.vetoHandler} veto={veto} teams={teams} match={this.state} />)}
                     </Row>
                 </Form>
             </>

@@ -7,8 +7,8 @@ import SingleVeto from './SingleVeto';
 import { IContextData } from '../../../Context';
 import { socket } from '../Live/Live';
 
-export default class MatchForm extends Component<{ cxt: IContextData, match: I.Match, edit: Function }, I.Match> {
-    constructor(props: { cxt: IContextData, match: I.Match, edit: Function }) {
+export default class MatchForm extends Component<{ cxt: IContextData, match: I.Match, edit: Function, maps: string[] }, I.Match> {
+    constructor(props: { cxt: IContextData, match: I.Match, edit: Function, maps: string[]  }) {
         super(props);
         this.state = this.props.match
     }
@@ -125,7 +125,7 @@ export default class MatchForm extends Component<{ cxt: IContextData, match: I.M
                     </Col>
                 </Row>*/}
                 <Row>
-                {this.state.vetos.map((veto, i) => <SingleVeto key={i} map={i} onSave={this.vetoHandler} veto={veto} teams={teams} match={this.state} />)}
+                {this.state.vetos.map((veto, i) => <SingleVeto maps={this.props.maps} key={i} map={i} onSave={this.vetoHandler} veto={veto} teams={teams} match={this.state} />)}
                 </Row>
             </Form>
         )
