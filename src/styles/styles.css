@@ -28,6 +28,9 @@ body {
     text-transform: uppercase;
     border-bottom: 1px solid #373a40 !important;
 }
+.navbar-container > li:nth-last-child(2) > a {
+    border-bottom: none !important;
+}
 .navbar-container > li > a.active{
     width:100%;
     height: 100%;
@@ -531,6 +534,7 @@ img.smallLogo {
 }
 .scoreboard_container .scoreboard_player {
     flex:1;
+    cursor: pointer;
     background-color: rgba(0,0,0,0.5);
     height:40px;
     padding:10px;
