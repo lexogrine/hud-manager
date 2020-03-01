@@ -20,5 +20,11 @@ function checkDirectories() {
     var userData = electron_1.app.getPath('userData');
     var database = path.join(userData, 'databases');
     [hudsData, userData, database].forEach(createIfMissing);
+    var mapFile = path.join(electron_1.app.getPath('userData'), 'maps.json');
+    console.log(mapFile);
+    if (!fs.existsSync(mapFile)) {
+        var maps = ["de_mirage", "de_dust2", "de_inferno", "de_nuke", "de_train", "de_overpass", "de_vertigo"];
+        fs.writeFileSync(mapFile, JSON.stringify(maps));
+    }
 }
 exports.checkDirectories = checkDirectories;

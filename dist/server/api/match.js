@@ -53,30 +53,11 @@ exports.__esModule = true;
 var sockets_1 = require("./../sockets");
 var database_1 = __importDefault(require("./../../init/database"));
 var teams_1 = require("./teams");
+var electron_1 = require("electron");
 var v4_1 = __importDefault(require("uuid/v4"));
+var path_1 = __importDefault(require("path"));
+var fs_1 = __importDefault(require("fs"));
 var matchesDb = database_1["default"].matches;
-var testmatches = [{
-        id: "a",
-        left: {
-            id: "H427BFDoR9chqgwe",
-            wins: 0
-        },
-        right: {
-            id: "XXH5JceBg3miQgBt",
-            wins: 0
-        },
-        current: true,
-        matchType: "bo3",
-        vetos: [
-            { teamId: "H427BFDoR9chqgwe", mapName: "de_overpass", side: "CT", type: "pick", mapEnd: false },
-            { teamId: "XXH5JceBg3miQgBt", mapName: "de_mirage", side: "T", type: "pick", mapEnd: false, reverseSide: true },
-            { teamId: "H427BFDoR9chqgwe", mapName: "de_inferno", side: "CT", type: "pick", mapEnd: false },
-            { teamId: "", mapName: "", side: "NO", type: "pick", mapEnd: false },
-            { teamId: "", mapName: "", side: "NO", type: "pick", mapEnd: false },
-            { teamId: "", mapName: "", side: "NO", type: "pick", mapEnd: false },
-            { teamId: "", mapName: "", side: "NO", type: "pick", mapEnd: false }
-        ]
-    }];
 exports.getMatchesRoute = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var matches;
     return __generator(this, function (_a) {
@@ -165,3 +146,17 @@ exports.setMatch = function (io) { return function (req, res) { return __awaiter
         }
     });
 }); }; };
+exports.getMaps = function (req, res) {
+    var defaultMaps = ["de_mirage", "de_dust2", "de_inferno", "de_nuke", "de_train", "de_overpass", "de_vertigo"];
+    var mapFilePath = path_1["default"].join(electron_1.app.getPath('userData'), 'maps.json');
+    try {
+        var maps = JSON.parse(fs_1["default"].readFileSync(mapFilePath, "utf8"));
+        if (Array.isArray(maps)) {
+            return res.json(maps);
+        }
+        return res.json(defaultMaps);
+    }
+    catch (_a) {
+        return res.json(defaultMaps);
+    }
+};

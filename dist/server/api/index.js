@@ -53,6 +53,8 @@ function default_1(router, io) {
         .post(huds.closeHUD);
     router.route('/api/huds/:hudDir/start')
         .post(huds.showHUD(io));
+    router.route('/api/maps')
+        .get(match.getMaps);
     router.route('/api/gsi')
         .get(gsi.checkGSIFile)
         .put(gsi.createGSIFile);
