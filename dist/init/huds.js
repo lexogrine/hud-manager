@@ -46,7 +46,6 @@ exports.__esModule = true;
 var electron_1 = require("electron");
 var huds_1 = require("./../server/api/huds");
 var path = __importStar(require("path"));
-var config_1 = require("./../server/api/config");
 var HUD = /** @class */ (function () {
     function HUD() {
         this.current = null;
@@ -55,7 +54,7 @@ var HUD = /** @class */ (function () {
     }
     HUD.prototype.open = function (dirName, io) {
         return __awaiter(this, void 0, void 0, function () {
-            var hud, hudWindow, tray, config;
+            var hud, hudWindow, tray;
             var _this = this;
             return __generator(this, function (_a) {
                 switch (_a.label) {
@@ -93,22 +92,25 @@ var HUD = /** @class */ (function () {
                         });
                         this.tray = tray;
                         this.current = hudWindow;
-                        return [4 /*yield*/, config_1.loadConfig()];
-                    case 2:
-                        config = _a.sent();
-                        hudWindow.once('ready-to-show', function () {
-                            hudWindow.show();
-                            if (hud.keybinds) {
-                                var _loop_1 = function (bind) {
-                                    electron_1.globalShortcut.register(bind.bind, function () {
-                                        io.to(hud.dir).emit("keybindAction", bind.action);
-                                    });
-                                };
-                                for (var _i = 0, _a = hud.keybinds; _i < _a.length; _i++) {
-                                    var bind = _a[_i];
-                                    _loop_1(bind);
+                        /*
+                                const showHUD = () => {
+                                    hudWindow.show();
+                                    if(hud.keybinds){
+                                        for(let bind of hud.keybinds){
+                                            globalShortcut.register(bind.bind, () => {
+                                                io.to(hud.dir).emit("keybindAction", bind.action);
+                                            });
+                                        }
+                                    }
                                 }
-                            }
+                                if(!hud.isDev){
+                                    const hudWinRef: any = hudWindow;
+                                    hudWinRef.once('did-finish-load', showHUD);
+                                } else {
+                                    showHUD();
+                                }*/
+                        setTimeout(function () {
+                            _this.showWindow(hud, io);
                         });
                         hudWindow.loadURL(hud.url);
                         hudWindow.on('close', function () {
@@ -122,6 +124,23 @@ var HUD = /** @class */ (function () {
                 }
             });
         });
+    };
+    HUD.prototype.showWindow = function (hud, io) {
+        if (!this.current)
+            return;
+        this.current.setOpacity(1);
+        this.current.show();
+        if (hud.keybinds) {
+            var _loop_1 = function (bind) {
+                electron_1.globalShortcut.register(bind.bind, function () {
+                    io.to(hud.dir).emit("keybindAction", bind.action);
+                });
+            };
+            for (var _i = 0, _a = hud.keybinds; _i < _a.length; _i++) {
+                var bind = _a[_i];
+                _loop_1(bind);
+            }
+        }
     };
     HUD.prototype.toggleVisibility = function () {
         this.show = !this.show;

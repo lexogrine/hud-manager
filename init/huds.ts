@@ -3,6 +3,7 @@ import { getHUDData } from './../server/api/huds';
 import * as path from 'path';
 //import ip from 'ip';
 import socketio from 'socket.io';
+import * as I from './../types/interfaces';
 import { loadConfig } from './../server/api/config';
 
 class HUD {
@@ -49,16 +50,9 @@ class HUD {
         this.tray = tray;
 
         this.current = hudWindow;
-        const config = await loadConfig();
-        hudWindow.once('ready-to-show', () => {
-            hudWindow.show();
-            if(hud.keybinds){
-                for(let bind of hud.keybinds){
-                    globalShortcut.register(bind.bind, () => {
-                        io.to(hud.dir).emit("keybindAction", bind.action);
-                    });
-                }
-            }
+
+        setTimeout(() => {
+            this.showWindow(hud, io);
         });
         hudWindow.loadURL(hud.url);
 
@@ -71,6 +65,20 @@ class HUD {
         });
 
         return true;
+    }
+
+    showWindow(hud: I.HUD, io: socketio.Server){
+        if(!this.current) return;
+        this.current.setOpacity(1);
+        this.current.show();
+        if(hud.keybinds){
+            for(let bind of hud.keybinds){
+                globalShortcut.register(bind.bind, () => {
+                    io.to(hud.dir).emit("keybindAction", bind.action);
+                });
+            }
+        }
+
     }
 
     toggleVisibility(){
