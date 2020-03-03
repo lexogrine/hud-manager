@@ -51,9 +51,7 @@ class HUD {
 
         this.current = hudWindow;
 
-        setTimeout(() => {
-            this.showWindow(hud, io);
-        });
+        this.showWindow(hud, io);
         hudWindow.loadURL(hud.url);
 
         hudWindow.on('close', () => {
