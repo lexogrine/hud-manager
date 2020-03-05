@@ -10,6 +10,7 @@ const wss = new WebSocket.Server({
 // Will contain the filenames of all rendered scripts
 let scripts = []
 // Get a list of available renderers
+try{
 let renderers = fs.readdirSync(path.join(__dirname, "renderers"))
 
 for (let renderer of renderers) {
@@ -47,3 +48,4 @@ process.on("message", data => {
 		}
 	})
 })
+}catch{}

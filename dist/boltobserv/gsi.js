@@ -7,6 +7,7 @@ const host = "localhost"
 
 let oldPhase = false
 let infernosOnMap = [] //initial molotov status
+try {
 let server = http.createServer((req, res) => {
 	if (req.method != "POST") {
 		res.writeHead(405)
@@ -211,3 +212,4 @@ let server = http.createServer((req, res) => {
 
 server.listen(config.game.networkPort, host)
 console.info(`GSI input expected at http://${host}:${config.game.networkPort}`)
+}catch{}

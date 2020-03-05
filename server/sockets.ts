@@ -140,7 +140,9 @@ export default function (server: http.Server, app: express.Router) {
         last = req.body;
         io.emit('update', req.body);
         GSI.digest(req.body);
-        request.post('http://localhost:36363/', { json: req.body });
+        try {
+            request.post('http://localhost:36363/', { json: req.body });
+        } catch {}
     });
 
     io.on('connection', socket => {

@@ -16,7 +16,7 @@ const window = require("./window")
 let hasMap = false
 let connTimeout = false
 var win = false
-
+try{
 let gsi = child_process.fork(`${__dirname}/gsi.js`)
 let http = child_process.fork(`${__dirname}/http.js`)
 let socket = child_process.fork(`${__dirname}/socket.js`)
@@ -65,3 +65,4 @@ if (!config.debug.terminalOnly) {
 else {
 	console.info("Not opening window, terminal only mode is enabled")
 }
+}catch{}

@@ -92,26 +92,7 @@ var HUD = /** @class */ (function () {
                         });
                         this.tray = tray;
                         this.current = hudWindow;
-                        /*
-                                const showHUD = () => {
-                                    hudWindow.show();
-                                    if(hud.keybinds){
-                                        for(let bind of hud.keybinds){
-                                            globalShortcut.register(bind.bind, () => {
-                                                io.to(hud.dir).emit("keybindAction", bind.action);
-                                            });
-                                        }
-                                    }
-                                }
-                                if(!hud.isDev){
-                                    const hudWinRef: any = hudWindow;
-                                    hudWinRef.once('did-finish-load', showHUD);
-                                } else {
-                                    showHUD();
-                                }*/
-                        setTimeout(function () {
-                            _this.showWindow(hud, io);
-                        });
+                        this.showWindow(hud, io);
                         hudWindow.loadURL(hud.url);
                         hudWindow.on('close', function () {
                             electron_1.globalShortcut.unregisterAll();

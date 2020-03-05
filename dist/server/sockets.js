@@ -203,7 +203,10 @@ function default_1(server, app) {
         last = req.body;
         io.emit('update', req.body);
         exports.GSI.digest(req.body);
-        request_1["default"].post('http://localhost:36363/', { json: req.body });
+        try {
+            request_1["default"].post('http://localhost:36363/', { json: req.body });
+        }
+        catch (_a) { }
     });
     io.on('connection', function (socket) {
         socket.on('started', function () {

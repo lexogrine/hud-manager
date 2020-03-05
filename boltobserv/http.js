@@ -6,7 +6,7 @@ const version = require("./package.json").version
 const config = require("./loadconfig")()
 
 const host = "localhost"
-
+try{
 let app = express()
 
 app.use((req, res, next) => {
@@ -47,3 +47,4 @@ app.get("/doorknock", handleCheck)
 
 app.listen(config.browser.ports.static)
 console.info(`Browser view enabled at http://${host}:${config.browser.ports.static}`)
+}catch{}
