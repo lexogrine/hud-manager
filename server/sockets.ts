@@ -218,10 +218,19 @@ export default function (server: http.Server, app: express.Router) {
                 veto.mapEnd = true;
                 return veto;
             });
+            const isReversed = vetos.filter(veto => veto.mapName === score.map.name && veto.reverseSide)[0];
             if (match.left.id === score.winner.id) {
-                match.left.wins++;
+                if(isReversed){
+                    match.right.wins++;
+                } else {
+                    match.left.wins++;
+                }
             } else if (match.right.id === score.winner.id) {
-                match.right.wins++;
+                if(isReversed){
+                    match.left.wins++;
+                } else {
+                    match.right.wins++;
+                }
             }
             match.vetos = vetos;
             await updateMatch(matches);

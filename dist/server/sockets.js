@@ -273,7 +273,7 @@ function default_1(server, app) {
         });
     }); });
     exports.GSI.on("matchEnd", function (score) { return __awaiter(_this, void 0, void 0, function () {
-        var matches, match, vetos;
+        var matches, match, vetos, isReversed;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, match_1.getMatches()];
@@ -290,11 +290,22 @@ function default_1(server, app) {
                         veto.mapEnd = true;
                         return veto;
                     });
+                    isReversed = vetos.filter(function (veto) { return veto.mapName === score.map.name && veto.reverseSide; })[0];
                     if (match.left.id === score.winner.id) {
-                        match.left.wins++;
+                        if (isReversed) {
+                            match.right.wins++;
+                        }
+                        else {
+                            match.left.wins++;
+                        }
                     }
                     else if (match.right.id === score.winner.id) {
-                        match.right.wins++;
+                        if (isReversed) {
+                            match.left.wins++;
+                        }
+                        else {
+                            match.right.wins++;
+                        }
                     }
                     match.vetos = vetos;
                     return [4 /*yield*/, match_1.updateMatch(matches)];
