@@ -88,6 +88,9 @@ export default class MatchEdit extends Component<IProps, I.Match> {
         const { match, teams } = this.props;
         const left = teams.filter(team => team._id === match.left.id)[0];
         const right = teams.filter(team => team._id === match.right.id)[0];
+        const vetoTeams: I.Team[] = [];
+        if(left) vetoTeams.push(left);
+        if(right) vetoTeams.push(right);
         return (
             <>
                 <div className={`match_row editing ${match.current ? 'live' : ''}`}>
@@ -149,7 +152,7 @@ export default class MatchEdit extends Component<IProps, I.Match> {
                         </Col>
                     </Row>
                     <Row>
-                        {this.state.vetos.map((veto, i) => <SingleVeto key={i} map={i} maps={this.props.maps} onSave={this.vetoHandler} veto={veto} teams={teams} match={this.state} />)}
+                        {this.state.vetos.map((veto, i) => <SingleVeto vetoTeams={vetoTeams} key={i} map={i} maps={this.props.maps} onSave={this.vetoHandler} veto={veto} teams={teams} match={this.state} />)}
                     </Row>
                 </Form>
             </>

@@ -61,6 +61,9 @@ export default class MatchForm extends Component<{ cxt: IContextData, match: I.M
         const teams = cxt.teams.filter(team => [this.state.left.id, this.state.right.id].includes(team._id));
         const leftTeam = match && teams.filter(team => team._id === match.left.id)[0];
         const rightTeam = match && teams.filter(team => team._id === match.right.id)[0];
+        const vetoTeams: I.Team[] = [];
+        if(leftTeam) vetoTeams.push(leftTeam);
+        if(rightTeam) vetoTeams.push(rightTeam);
         return (
             <Form id="match_form">
                 <Row>
@@ -125,7 +128,7 @@ export default class MatchForm extends Component<{ cxt: IContextData, match: I.M
                     </Col>
                 </Row>*/}
                 <Row>
-                {this.state.vetos.map((veto, i) => <SingleVeto maps={this.props.maps} key={i} map={i} onSave={this.vetoHandler} veto={veto} teams={teams} match={this.state} />)}
+                {this.state.vetos.map((veto, i) => <SingleVeto vetoTeams={vetoTeams} maps={this.props.maps} key={i} map={i} onSave={this.vetoHandler} veto={veto} teams={teams} match={this.state} />)}
                 </Row>
             </Form>
         )

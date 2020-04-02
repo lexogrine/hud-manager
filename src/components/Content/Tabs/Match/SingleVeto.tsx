@@ -7,6 +7,7 @@ interface Props {
     map: number,
     veto: I.Veto,
     teams: I.Team[],
+    vetoTeams: I.Team[],
     match: I.Match,
     onSave: (name: string, map: number) => void,
     maps: string[]
@@ -45,7 +46,7 @@ class SingleVeto extends React.Component<Props> {
         return (
             <div className={`veto-container ${this.props.veto.teamId === "" ? "empty" : ""} ${this.props.veto.teamId ? this.props.veto.type : ""}`}>
                 {
-                    this.props.teams.length !== 2 ? "Pick both teams to set vetos" :
+                    (this.props.vetoTeams.length !== 2) ? "Pick both teams to set vetos" :
                         <>
                             <div className="veto-main">
                                 <div className="veto-title">VETO {this.props.map + 1}:</div>
