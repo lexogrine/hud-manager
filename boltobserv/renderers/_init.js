@@ -10,6 +10,26 @@ let hasMap = false
 let hasInited = false
 
 /**
+ * Load custom css if specified
+ */
+const url = new URL(window.location.href);
+const hud = url.searchParams.get("hud") || '';
+const isDev = url.searchParams.get("dev") === "true";
+
+const customStyle = document.createElement("link");
+
+customStyle.rel = 'stylesheet'
+if(!hud.length){
+	customStyle.href = '/boltobserv/css/custom.css';
+} else {
+	customStyle.href = '/boltobserv/custom/css/custom.css?hud='+hud;
+}
+if(isDev){
+	customStyle.href = 'http://localhost:3500/radar.css';
+}
+document.head.appendChild(customStyle);
+
+/**
  * Add script elements for scripts to import, can also be called from _map.js
  */
 function importScripts() {

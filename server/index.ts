@@ -9,16 +9,12 @@ import { app as application } from 'electron';
 import fs from 'fs';
 import { loadConfig,setConfig } from './api/config';
 
-const child_process = require("child_process");
-
 export default async function init(){
     
     let config = await loadConfig();
     const app = express();
     const server = http.createServer(app);
 
-    
-    //const _boltobserv = child_process.fork(path.join(__dirname, '../boltobserv/index.js'));
 
     const port = await getPort({port:config.port});
     if(port !== config.port){

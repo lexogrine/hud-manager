@@ -60,7 +60,6 @@ var path_1 = __importDefault(require("path"));
 var electron_1 = require("electron");
 var fs_1 = __importDefault(require("fs"));
 var config_1 = require("./api/config");
-var child_process = require("child_process");
 function init() {
     return __awaiter(this, void 0, void 0, function () {
         var config, app, server, port, io;

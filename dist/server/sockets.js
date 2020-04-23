@@ -52,7 +52,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 exports.__esModule = true;
 var socket_io_1 = __importDefault(require("socket.io"));
 var csgogsi_1 = __importDefault(require("csgogsi"));
+var electron_1 = require("electron");
+var path_1 = __importDefault(require("path"));
 var request_1 = __importDefault(require("request"));
+var huds_1 = require("./../server/api/huds");
 var match_1 = require("./api/match");
 var portscanner_1 = __importDefault(require("portscanner"));
 var radar = require("./../boltobserv/index.js");
@@ -200,6 +203,27 @@ function default_1(server, app) {
         }); });
     });
     portListener.start();
+    app.get('/boltobserv/custom/css/custom.css', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+        var hud, dir;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    if (!req.query.hud) {
+                        return [2 /*return*/, res.sendFile(path_1["default"].join(__dirname, "../boltobserv", "css", "custom.css"))];
+                    }
+                    return [4 /*yield*/, huds_1.getHUDData(req.query.hud)];
+                case 1:
+                    hud = _a.sent();
+                    if (!hud.css)
+                        return [2 /*return*/, res.sendFile(path_1["default"].join(__dirname, "../boltobserv", "css", "custom.css"))];
+                    if (hud.url === 'http://localhost:3500/') {
+                        return [2 /*return*/, res.sendFile(path_1["default"].join(__dirname, "../boltobserv", "css", "custom.css"))];
+                    }
+                    dir = path_1["default"].join(electron_1.app.getPath('home'), 'HUDs', req.query.hud);
+                    return [2 /*return*/, res.sendFile(path_1["default"].join(dir, "radar.css"))];
+            }
+        });
+    }); });
     radar.startRadar(app, io);
     app.post('/', function (req, res) {
         res.sendStatus(200);

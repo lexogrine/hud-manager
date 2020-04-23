@@ -2,8 +2,11 @@ import socketio from 'socket.io';
 import http from 'http';
 import express from 'express';
 import CSGOGSI from 'csgogsi';
+import { app as Application } from 'electron';
+import path from 'path';
 import * as I from './../types/interfaces';
 import request from 'request';
+import { getHUDData } from './../server/api/huds';
 import { getMatches, updateMatch } from './api/match';
 import portscanner from 'portscanner';
 
@@ -136,6 +139,16 @@ export default function (server: http.Server, app: express.Router) {
     });
 
     portListener.start();
+
+    app.get('/boltobserv/custom/css/custom.css', async (req, res) => {
+        if(!req.query.hud){
+            return res.sendFile(path.join(__dirname, "../boltobserv", "css", `custom.css`));
+        }
+        const hud = await getHUDData(req.query.hud);
+        if(!hud.css) return res.sendFile(path.join(__dirname, "../boltobserv", "css", `custom.css`));
+        const dir = path.join(Application.getPath('home'), 'HUDs', req.query.hud);
+        return res.sendFile(path.join(dir, "radar.css"));
+    });
 
     radar.startRadar(app, io);
 

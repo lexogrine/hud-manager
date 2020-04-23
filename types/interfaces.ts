@@ -99,5 +99,6 @@ export interface HUD {
     panel?: PanelTemplate[],
     keybinds?: KeyBind[],
     url: string,
+    css?: boolean;
     isDev: boolean
 }
