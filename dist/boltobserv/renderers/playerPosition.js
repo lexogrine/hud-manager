@@ -3,7 +3,7 @@
 // Sets player dot style and pushed to player location buffer, but does not set
 // the location.
 
-socket.element.addEventListener("players", event => {
+websocket.on("players", event => {
 	let data = event.data
 
 	// Abort if no map has been selected yet
@@ -33,6 +33,7 @@ socket.element.addEventListener("players", event => {
 		global.playerPos[player.num].x = global.positionToPerc(player.position, "x", player.num)
 		global.playerPos[player.num].y = global.positionToPerc(player.position, "y", player.num)
 		global.playerPos[player.num].a = player.angle
+		global.playerPos[player.num].z = player.position.z
 
 		// Set the player alive attribute (used in autozoom)
 		global.playerPos[player.num].alive = player.alive
@@ -40,7 +41,7 @@ socket.element.addEventListener("players", event => {
 })
 
 // On round reset
-socket.element.addEventListener("roundend", event => {
+websocket.on("roundend", event => {
 	let phase = event.data
 
 	// Go through each player
@@ -51,6 +52,7 @@ socket.element.addEventListener("roundend", event => {
 		global.playerPos[num] = {
 			x: null,
 			y: null,
+			z: null,
 			a: null,
 			alive: false
 		}

@@ -7,7 +7,9 @@ import request from 'request';
 import { getMatches, updateMatch } from './api/match';
 import portscanner from 'portscanner';
 
+const radar = require("./../boltobserv/index.js");
 const mirv = require("./server").default;
+const launchTime = (new Date()).getTime();
 
 class DevHUDListener {
     port: number;
@@ -135,14 +137,19 @@ export default function (server: http.Server, app: express.Router) {
 
     portListener.start();
 
+    radar.startRadar(app, io);
+
     app.post('/', (req, res) => {
         res.sendStatus(200);
         last = req.body;
         io.emit('update', req.body);
         GSI.digest(req.body);
-        try {
-            request.post('http://localhost:36363/', { json: req.body });
-        } catch {}
+        radar.digestRadar(req.body);
+        /*try {
+            if((new Date()).getTime() - launchTime > 10000){
+                request.post('http://localhost:36363/', { json: req.body });
+            }
+        } catch {}*/
     });
 
     io.on('connection', socket => {

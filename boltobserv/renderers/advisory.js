@@ -26,7 +26,7 @@ function updateAdvisory() {
 	document.getElementById("advisory").className = ""
 }
 
-socket.element.addEventListener("players", event => {
+websocket.on("players", event => {
 	let data = event.data
 	let ctsAlive = []
 	let tsAlive = []
@@ -59,7 +59,7 @@ socket.element.addEventListener("players", event => {
 	updateAdvisory()
 })
 
-socket.element.addEventListener("bomb", event => {
+websocket.on("bomb", event => {
 	let data = event.data
 
 	if (idToNum[trim(data.player)]) {

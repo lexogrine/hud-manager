@@ -1,4 +1,4 @@
-body {
+body.waiting {
 	background: rgba(0, 0, 0, .24);
 }
 
@@ -8,93 +8,29 @@ body {
 	align-items: center;
 	justify-content: center;
 }
-
-#cfgs {
-	position: fixed;
-	top: 0;
-	left: 0;
-	width: 100vw;
-	z-index: 2000;
-	-webkit-app-region: no-drag;
-	cursor: default;
+body:not(.waiting) #game {
+	display: none;
 }
-
-#cfgs > div {
-	display: flex;
-	flex-direction: row;
-	background: #a647c7;
-	padding: 6px;
-	font-size: 13px;
-	margin-bottom: 3px;
-	line-height: 20px;
-	width: 100%;
-	box-sizing: border-box;
-}
-
-#cfgs span {
-	font-weight: bold;
-	padding-left: 6px;
-}
-
-#cfgs small {
-	font-size: 13px;
-	flex: 1;
-	overflow: hidden;
-	white-space: nowrap;
-	text-overflow: ellipsis;
-	min-width: 0;
-	padding: 0 .4em 0 .3em;
-}
-
-#cfgs button {
-	background: #FFF;
-	border: 0;
-	color: #a647c7;
-	padding: 3px 0;
-	margin-right: 2px;
-	font-weight: bold;
-	font-size: 12px;
-	cursor: pointer;
-	position: relative;
-	text-align: center;
-	width: 60px;
-	text-transform: uppercase;
-	transform: scale(1);
-	transition: transform .15s;
-}
-
-#cfgs button:hover {
-	transform: scale(1.05);
-}
-
-#cfgs button:active {
-	transform: scale(0.98);
-}
-
-#cfgs button:focus {
-	outline: none;
-}
-
-img {
+#game img {
 	height: 20vmin;
 	animation: beat 2s infinite ease-in-out;
 }
 
 @keyframes beat {
 	40% {
-		transform: rotate(0deg);
+		transform: scale(1) rotate(0deg);
 	}
 
 	60% {
-		transform: rotate(190deg);
+		transform: scale(1.1) rotate(190deg);
 	}
 
 	70% {
-		transform: rotate(180deg);
+		transform: scale(1) rotate(180deg);
 	}
 
 	100% {
-		transform: rotate(180deg);
+		transform: scale(1) rotate(180deg);
 	}
 }
 
@@ -128,10 +64,6 @@ img {
 	-webkit-app-region: no-drag;
 }
 
-#dragarea {
-	max-width: initial;
-	max-height: initial;
-}
 
 @media (min-height: 800px) and (min-width: 800px) {
 	#version {

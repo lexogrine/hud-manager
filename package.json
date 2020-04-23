@@ -21,6 +21,7 @@
     "express": "^4.17.1",
     "get-port": "^5.1.1",
     "ip": "^1.1.5",
+    "json5": "^2.1.3",
     "nedb": "^1.8.0",
     "node-fetch": "^2.6.0",
     "portscanner": "^2.2.0",
@@ -45,7 +46,7 @@
     "appId": "com.lexogrine.hudmanager",
     "productName": "Lexogrine HUD Manager",
     "win": {
-      "icon":"./dist/build/favicon.ico",
+      "icon": "./dist/build/favicon.ico",
       "target": "NSIS"
     },
     "directories": {

@@ -6,7 +6,9 @@ body {
 	-webkit-backface-visibility: hidden;
 	transition: transform .025;
 }
-
+body.waiting #container {
+	display:none;
+}
 #radar {
 	height: 100%;
 	position: absolute;
@@ -16,7 +18,7 @@ body {
 	transform: scale(1) translate(0%, 0%);
 
 	will-change: transform;
-	outline: .1vmin solid transparent
+	outline: .1vmin solid transparent;
 	-webkit-backface-visibility: hidden;
 }
 
@@ -88,22 +90,23 @@ body {
 
 #bomb {
 	position: absolute;
-	background-image: url("../img/bomb-dropped.png");
+	background-image: url("/boltobserv/img/bomb-dropped.png");
 	background-size: contain;
 	height: 2.2vmin;
 	width: 2.2vmin;
 	bottom: -30%;
 	left: -30%;
 	transform: translate(-50%, -50%);
+	transform-origin: top left;
 }
 
 #bomb.defused {
-	background-image: url("../img/bomb-defused.png");
+	background-image: url("/boltobserv/img/bomb-defused.png");
 	filter: drop-shadow(0 0 .4vmin rgba(0, 255, 0, .3));
 }
 
 #bomb.planted {
-	background-image: url("../img/bomb-planted.png");
+	background-image: url("/boltobserv/img/bomb-planted.png");
 	animation: beep 1s infinite;
 }
 
@@ -124,8 +127,8 @@ body {
 
 div.dot, div.label {
 	position: absolute;
-	height: 2.8vmin;
-	width: 2.8vmin;
+	height: 5.6vmin;
+	width: 5.6vmin;
 	left: -100vw;
 	bottom: -100vh;
 	display: block;
@@ -133,7 +136,7 @@ div.dot, div.label {
 	transform: translate(-50%, -50%);
 	transform-origin: top left;
 	border-radius: 100% .2vmin 100% 100%;
-	box-shadow: 0 0 .8vmin .4vmin rgba(0, 0, 0, .2);
+	box-shadow: 0 0 1.6vmin .8vmin rgba(0, 0, 0, .2);
 	opacity: 1;
 	z-index: 15;
 
@@ -152,13 +155,13 @@ div.dot.T {
 }
 
 div.dot.bomb {
-	border-radius: 1vmin .2vmin 1vmin 1.2vmin;
+	border-radius: 2vmin .4vmin 2vmin 2.4vmin;
 	background: #FF8200;
 }
 
 div.dot.active {
 	z-index: 16;
-	box-shadow: 0 0 0 .1vmin rgba(0, 0, 0, .9), 0 0 0 .5vmin rgba(255, 255, 255, .9), 0 0 1.2vmin .6vmin rgba(255, 255, 255, .2);
+	box-shadow: 0 0 0 .2vmin rgba(0, 0, 0, .9), 0 0 0 1vmin rgba(255, 255, 255, .9), 0 0 2.4vmin 1.2vmin rgba(255, 255, 255, .2);
 }
 
 div.dot.dead {
@@ -176,15 +179,15 @@ div.label {
 	text-align: center;
 	color: black;
 	font-weight: bold;
-	text-shadow: 0 0 .8vmin rgba(255, 255, 255, .2);
+	text-shadow: 0 0 1.2vmin rgba(255, 255, 255, .2);
 	box-shadow: none;
-	line-height: 2.8vmin;
-	font-size: 2.4vmin;
+	line-height: 5.6vmin;
+	font-size: 4.8vmin;
 }
 
 div.label.active {
 	z-index: 16;
-	font-size: 2.5vmin;
+	font-size: 5vmin;
 }
 
 div.label.dead {
@@ -233,7 +236,7 @@ div.label.dead {
 }
 
 #advisory.planting::before {
-	background-image: url("../img/adv-plant.png");
+	background-image: url("/boltobserv/img/adv-plant.png");
 }
 
 #advisory.planting {
@@ -242,7 +245,7 @@ div.label.dead {
 }
 
 #advisory.defuse::before {
-	background-image: url("../img/adv-defuse.png");
+	background-image: url("/boltobserv/img/adv-defuse.png");
 }
 
 #advisory.defuse {
@@ -251,7 +254,7 @@ div.label.dead {
 }
 
 #advisory.solesurvivor::before {
-	background-image: url("../img/adv-solesurvivor.png");
+	background-image: url("/boltobserv/img/adv-solesurvivor.png");
 }
 
 #advisory.solesurvivor {

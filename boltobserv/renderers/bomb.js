@@ -5,7 +5,7 @@
 let bombElement = document.getElementById("bomb")
 let bombStyle = bombElement.style
 
-socket.element.addEventListener("bomb", event => {
+websocket.on("bomb", event => {
 	let bomb =  event.data
 
 	if (bomb.state == "carried" || bomb.state == "exploded") {

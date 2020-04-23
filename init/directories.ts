@@ -15,7 +15,6 @@ export function checkDirectories(){
 
     [hudsData, userData, database].forEach(createIfMissing);
     const mapFile = path.join(app.getPath('userData'), 'maps.json');
-    console.log(mapFile)
     if(!fs.existsSync(mapFile)){
         const maps = ["de_mirage", "de_dust2", "de_inferno", "de_nuke", "de_train", "de_overpass", "de_vertigo"];
         fs.writeFileSync(mapFile, JSON.stringify(maps));

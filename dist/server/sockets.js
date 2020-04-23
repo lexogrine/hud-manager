@@ -55,7 +55,9 @@ var csgogsi_1 = __importDefault(require("csgogsi"));
 var request_1 = __importDefault(require("request"));
 var match_1 = require("./api/match");
 var portscanner_1 = __importDefault(require("portscanner"));
+var radar = require("./../boltobserv/index.js");
 var mirv = require("./server")["default"];
+var launchTime = (new Date()).getTime();
 var DevHUDListener = /** @class */ (function () {
     function DevHUDListener(port) {
         var _this = this;
@@ -198,15 +200,18 @@ function default_1(server, app) {
         }); });
     });
     portListener.start();
+    radar.startRadar(app, io);
     app.post('/', function (req, res) {
         res.sendStatus(200);
         last = req.body;
         io.emit('update', req.body);
         exports.GSI.digest(req.body);
-        try {
-            request_1["default"].post('http://localhost:36363/', { json: req.body });
-        }
-        catch (_a) { }
+        radar.digestRadar(req.body);
+        /*try {
+            if((new Date()).getTime() - launchTime > 10000){
+                request.post('http://localhost:36363/', { json: req.body });
+            }
+        } catch {}*/
     });
     io.on('connection', function (socket) {
         socket.on('started', function () {

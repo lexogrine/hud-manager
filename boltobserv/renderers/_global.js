@@ -3,7 +3,10 @@
 // Provides shared variables and functions for all renderers.
 
 global = {
+	// Config loaded from disk
 	config: {},
+	// Effects triggered by key-binds
+	effects: {},
 	mapData: {},
 	currentMap: "none",
 	// The last known game phase
@@ -82,7 +85,7 @@ for (var i = 0; i < 10; i++) {
 }
 
 // On a round indicator packet
-socket.element.addEventListener("round", event => {
+websocket.on("round", event => {
 	let phase = event.data
 
 	// Abort if there's no change in phase
@@ -92,9 +95,14 @@ socket.element.addEventListener("round", event => {
 	if ((phase == "freezetime" && global.gamePhase == "over") || (phase == "live" && global.gamePhase == "over")) {
 		// Emit a custom event
 		let roundend = new Event("roundend")
-		socket.element.dispatchEvent(roundend)
+		// socket.element.dispatchEvent(roundend)
 	}
 
 	// Set the new phase
 	global.gamePhase = phase
+})
+
+// On a round indicator packet
+websocket.on("effect", event => {
+	global.effects[event.data.key] = event.data.value
 })

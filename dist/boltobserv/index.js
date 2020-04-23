@@ -1,68 +1,20 @@
-// ==============================================================================
-//
-//                              PLEASE READ:
-// This project is under a GPL-3 license, you are REQUIRED to publish any changes
-// or upgrades you make to the codebase, it strengthens the community.
-// Contact me if you have any questions regarding the license.
-//
-// ==============================================================================
-
+const express = require("express")
+const gsi = require("./modules/gsi")
 const path = require("path")
-const child_process = require("child_process")
 
-const config = require("./loadconfig")()
-const window = require("./window")
-
-let hasMap = false
-let connTimeout = false
-var win = false
-try{
-let gsi = child_process.fork(`${__dirname}/gsi.js`)
-let http = child_process.fork(`${__dirname}/http.js`)
-let socket = child_process.fork(`${__dirname}/socket.js`)
-
-function setActivePage(page, win) {
-	if (window.win !== false) window.win.loadFile(`html/${page}.html`)
-	http.send(page)
-
-	socket.send({
-		type: "pageUpdate"
-	})
+const radar = {
+    startRadar: (app, io) => {
+        gsi.init(io);
+        for (let dir of ["css", "renderers", "img", "maps"]) {
+            app.use(`/boltobserv/${dir}`, express.static(path.join(__dirname, dir)))
+        }
+        app.get("/radar", (req, res) => {
+            res.sendFile(path.join(__dirname, "html", "index.html"))
+        })
+    },
+    digestRadar: csogsi => {
+        gsi.digest(csogsi);
+    }
 }
 
-gsi.on("message", (message) => {
-	socket.send(message)
-
-	if (message.type == "connection") {
-		if (message.data.status == "up" && connTimeout === false && config.game.connectionTimout >= 0) {
-			console.info("CSGO has pinged server, connection established")
-		}
-	}
-	else if (!hasMap) {
-		if (message.type == "map") {
-			setActivePage("map", win)
-			hasMap = true
-
-			console.info(`Map ${message.data} selected`)
-		}
-	}
-
-	if (config.game.connectionTimout >= 0) {
-		clearTimeout(connTimeout)
-		connTimeout = setTimeout(() => {
-			hasMap = false
-			setActivePage("waiting", win)
-		}, config.game.connectionTimout * 1000)
-	}
-})
-
-if (!config.debug.terminalOnly) {
-	window.gsi = gsi
-	window.http = http
-	window.socket = socket
-	window.build()
-}
-else {
-	console.info("Not opening window, terminal only mode is enabled")
-}
-}catch{}
+module.exports = radar

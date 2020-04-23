@@ -63,7 +63,7 @@ var config_1 = require("./api/config");
 var child_process = require("child_process");
 function init() {
     return __awaiter(this, void 0, void 0, function () {
-        var config, app, server, _boltobserv, port, io;
+        var config, app, server, port, io;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, config_1.loadConfig()];
@@ -71,7 +71,6 @@ function init() {
                     config = _a.sent();
                     app = express_1["default"]();
                     server = http_1["default"].createServer(app);
-                    _boltobserv = child_process.fork(path_1["default"].join(__dirname, '../boltobserv/index.js'));
                     return [4 /*yield*/, get_port_1["default"]({ port: config.port })];
                 case 2:
                     port = _a.sent();
