@@ -216,9 +216,6 @@ function default_1(server, app) {
                     hud = _a.sent();
                     if (!hud.css)
                         return [2 /*return*/, res.sendFile(path_1["default"].join(__dirname, "../boltobserv", "css", "custom.css"))];
-                    if (hud.url === 'http://localhost:3500/') {
-                        return [2 /*return*/, res.sendFile(path_1["default"].join(__dirname, "../boltobserv", "css", "custom.css"))];
-                    }
                     dir = path_1["default"].join(electron_1.app.getPath('home'), 'HUDs', req.query.hud);
                     return [2 /*return*/, res.sendFile(path_1["default"].join(dir, "radar.css"))];
             }
