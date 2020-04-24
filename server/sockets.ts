@@ -141,13 +141,32 @@ export default function (server: http.Server, app: express.Router) {
     portListener.start();
 
     app.get('/boltobserv/custom/css/custom.css', async (req, res) => {
+        const sendDefault = () => res.sendFile(path.join(__dirname, "../boltobserv", "css", `custom.css`));
         if(!req.query.hud){
-            return res.sendFile(path.join(__dirname, "../boltobserv", "css", `custom.css`));
+            return sendDefault();
         }
         const hud = await getHUDData(req.query.hud);
-        if(!hud.css) return res.sendFile(path.join(__dirname, "../boltobserv", "css", `custom.css`));
+
+        if(!hud?.boltobserv?.css) return sendDefault();
+
         const dir = path.join(Application.getPath('home'), 'HUDs', req.query.hud);
         return res.sendFile(path.join(dir, "radar.css"));
+    });
+
+    app.get('/boltobserv/custom/maps/:mapName/radar.png', async (req, res) => {
+        const sendDefault = () => res.sendFile(path.join(__dirname, "../boltobserv", "maps", req.params.mapName, "radar.png"));
+
+        if(!req.params.mapName) {
+            return res.sendStatus(404);
+        }
+        if(!req.query.hud) return sendDefault();
+
+        const hud = await getHUDData(req.query.hud);
+        if(!hud?.boltobserv?.maps) return sendDefault();
+        
+        const dir = path.join(Application.getPath('home'), 'HUDs', req.query.hud);
+        return res.sendFile(path.join(dir, "maps", req.params.mapName, "radar.css"));
+
     });
 
     radar.startRadar(app, io);

@@ -38,7 +38,18 @@ websocket.on("map", event => {
 		document.getElementById("unknownMap").style.display = "none"
 
 		// Show the radar backdrop
-		document.getElementById("radar").src = `/boltobserv/maps/${mapName}/radar.png`
+		const url = new URL(window.location.href);
+		const hud = url.searchParams.get("hud") || '';
+		const isDev = url.searchParams.get("devMaps") === "true";
+
+		let radarSrc = `/boltobserv/maps/${mapName}/radar.png`;
+		if(hud.length){
+			radarSrc = `/boltobserv/custom/maps/${mapName}/radar.png?hud=${hud}`;
+		}
+		if(isDev){
+			radarSrc = `http://localhost:3500/maps/${mapName}/radar.png`;
+		}
+		document.getElementById("radar").src = radarSrc
 
 		// Set the map as the current map and in the window title
 		global.currentMap = mapName

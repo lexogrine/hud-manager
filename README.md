@@ -102,13 +102,16 @@ HUD **must have** a valid `hud.json` to be considered valid. For optional functi
   HUD Manager upload field accepts HUD zip files that contain proper `hud.json` file. It should look like that:
   ```javascript
   {
-"name":"Example HUD", //Name of the HUD
-"version":"1.0.0", //Version
-"author":"osztenkurden", //Author(s)
-"legacy": false, //Specify whether it was created for old system - it should work, but you shouldnt expect that
-"radar": true, //Does the HUD include radar support
-"killfeed": true, //Does the HUD include killfeed support
-"css":true //Does the HUD include css file for radar
+	"name":"Example HUD", //Name of the HUD
+	"version":"1.0.0", //Version
+	"author":"osztenkurden", //Author(s)
+	"legacy": false, //Specify whether it was created for old system - it should work, but you shouldnt expect that
+	"radar": true, //Does the HUD include radar support
+	"killfeed": true, //Does the HUD include killfeed support
+	"boltobserv": {
+		"css":true, //Does the HUD have custom.css radar file
+		"maps":true //Does the HUD have custom radar backgrounds
+	}
 }
   ```
   HUD Manager will not accept any zip files that do not have correct `hud.json` in their root.
@@ -226,9 +229,11 @@ This file is basically another way to communicate with the HUD. Lets look at the
 ```
 It's one more time just an array of the actions. Each bind has only `bind` and `action` property. Bind is of course key bind you want to use, and action is the identifier of the action. What makes difference from the `panel.json` action input, is that in here we don't have additional data packed with the action name.
 #### Radar
-Radar is hosted by the HUD Manager, so you don't have to include it yourself. You can access it on `/radar`. To load HUDs custom radar.css you should add `?hud=` query with the directory name of the HUD to the URL, unless you work on the dev mode of the HUD - in this case you should add `?isDev=true` to the URL. If you are using the `csgo-react-hud` repo you don't have to think about those things, as it adds query params by itself.
+Radar is hosted by the HUD Manager, so you don't have to include it yourself. You can access it on `/radar`. To load HUDs custom radar.css you should add `?hud=` query with the directory name of the HUD to the URL, unless you work on the dev mode of the HUD - in this case you should add `?devCSS=true` if you have `custom.css` and `devMaps=true` if you have custom radar backgrounds. If you are using the `csgo-react-hud` repo you don't have to think about those things, as it adds query params by itself.
 #### radar.css
 This file works as `custom.css` file from `boltobserv` and loads itself into the radar for any given HUD. It requires for `css` property in `hud.json` to be set to `true`.
+#### Radar files
+Radar background files have the same structure as in `boltobserv`. You should have `maps` folder, and in it for each map a directory with name with this map. Inside put `radar.png` with the background for the given map.
 #### thumb.png	
 For nice display in the HUDs tab in  the Manager you should include this file, as it will be displayed next to its name. Recommended size: 64px x 64px
 ## Technicalities

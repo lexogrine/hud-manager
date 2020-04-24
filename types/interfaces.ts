@@ -99,6 +99,9 @@ export interface HUD {
     panel?: PanelTemplate[],
     keybinds?: KeyBind[],
     url: string,
-    css?: boolean;
+    boltobserv?: {
+        css?: boolean;
+        maps?: boolean;
+    };
     isDev: boolean
 }
