@@ -225,8 +225,10 @@ This file is basically another way to communicate with the HUD. Lets look at the
 ]
 ```
 It's one more time just an array of the actions. Each bind has only `bind` and `action` property. Bind is of course key bind you want to use, and action is the identifier of the action. What makes difference from the `panel.json` action input, is that in here we don't have additional data packed with the action name.
+#### Radar
+Radar is hosted by the HUD Manager, so you don't have to include it yourself. You can access it on `/radar`. To load HUDs custom radar.css you should add `?hud=` query with the directory name of the HUD to the URL, unless you work on the dev mode of the HUD - in this case you should add `?isDev=true` to the URL. If you are using the `csgo-react-hud` repo you don't have to think about those things, as it adds query params by itself.
 #### radar.css
-This file works as `custom.css` file from boltobserv and loads itself into the radar for any given HUD. It requires for `css` property in `hud.json` to be set to `true`.
+This file works as `custom.css` file from `boltobserv` and loads itself into the radar for any given HUD. It requires for `css` property in `hud.json` to be set to `true`.
 #### thumb.png	
 For nice display in the HUDs tab in  the Manager you should include this file, as it will be displayed next to its name. Recommended size: 64px x 64px
 ## Technicalities
