@@ -256,6 +256,18 @@ For looking up the Steam's and CS:GO's directory it uses `steam-game-path` packa
   
 
 HUD Manager was written with Windows environment in mind. It probably works on Linux and Mac after compilation, however no promises.
+
+### Build
+
+In case you want to compile the Manager by yourself, you should fork and clone the repo, run `npm install` and after that `npm run compile`. You might stumble into errors, that usually are fixed by the following commands:
+
+```
+npm rebuild
+npm install registry-js
+./node_modules/.bin/electron-rebuild
+```
+If the build has been successfull, you should have an `app` directory, with the installer and the unpacked version of the Manager.
+
 ### Sockets
 Once connected to the HUD Manager with sockets, Manager sends events:
 
