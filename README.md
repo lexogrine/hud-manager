@@ -100,7 +100,7 @@ In situation when config installation doesn't success or Manager doesn't find th
 HUD **must have** a valid `hud.json` to be considered valid. For optional functionalities, there are `panel.json` and `keybinds.json`
 #### hud.json
   HUD Manager upload field accepts HUD zip files that contain proper `hud.json` file. It should look like that:
-  ```json
+  ```javascript
   {
 "name":"Example HUD", //Name of the HUD
 "version":"1.0.0", //Version
@@ -175,7 +175,7 @@ HUD **must have** a valid `hud.json` to be considered valid. For optional functi
   And gives the result of:
   ![enter image description here](https://i.imgur.com/qmhSrXt.png)
   This file is basically an array of section objects. Each section object looks like this:
-  ```json
+  ```javascript
 {
 	"label":"Displayed name of sections",
 	"name":"id_name",
@@ -183,7 +183,7 @@ HUD **must have** a valid `hud.json` to be considered valid. For optional functi
 }
 ```
 And each input object looks like this:
-  ```json
+  ```javascript
 {
 	"type":"text" | "image",
 	"name":"id_name",
@@ -191,14 +191,14 @@ And each input object looks like this:
 }
 ```
 Additional there is an action input that sends predetermined data and renders as a buttons - it's useful for toggling on-screen effects.
-  ```json
+  ```javascript
 {
 	"type":"action",
 	"name":"id_name",
-	"values": [
+	"values": [{
 		"name":"id_name" //It is used as value for id_name action",
 		"label":"Displayed name" //Label of the button
-	]
+    }]
 }
 ```
 Each value in the action input is seperate button. To see how to listen for data from the HUD side please this part of the CSGO React HUD documentation.
