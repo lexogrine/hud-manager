@@ -14,22 +14,23 @@ module.exports = {
         io = socketio;
         io.of("/radar").on("connection", socket => {
             if(!socket.emit) return;
-            socket.emit("welcome", {data:{
-                scripts: [
-                    "advisory.js",
-                    "bomb.js",
-                    "loopFast.js",
-                    "loopSlow.js",
-                    "playerPosition.js",
-                    "smokes.js"
-                ],
-                config: {
-                    browser: config.browser,
-                    radar: config.radar,
-                    autozoom: config.autozoom
-                }
-            }})
-        
+            socket.on("configRequest", () => {
+                socket.emit("welcome", {data:{
+                    scripts: [
+                        "advisory.js",
+                        "bomb.js",
+                        "loopFast.js",
+                        "loopSlow.js",
+                        "playerPosition.js",
+                        "smokes.js"
+                    ],
+                    config: {
+                        browser: config.browser,
+                        radar: config.radar,
+                        autozoom: config.autozoom
+                    }
+                }})
+            })
         })
     },
     digest: (game) => {

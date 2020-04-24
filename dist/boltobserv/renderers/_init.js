@@ -32,6 +32,9 @@ document.head.appendChild(customStyle);
 /**
  * Add script elements for scripts to import, can also be called from _map.js
  */
+let looping = setInterval(() => {
+	importScripts();
+}, 1000);
 function importScripts() {
 	// Only do this once, and only if we already have both the map and the config
 	if (!hasConfig || !hasMap || hasInited) return
@@ -43,10 +46,13 @@ function importScripts() {
 		tag.setAttribute("src", "/boltobserv/renderers/" + script)
 		document.body.appendChild(tag)
 	}
+	clearInterval(looping);
 	document.body.classList.remove("waiting")
 }
+
 websocket.on("welcome", event => {
 	if (hasConfig) return
+	console.log("WELCOME!")
 	hasConfig = event.data.scripts
 	global.config = event.data.config
 
@@ -64,7 +70,15 @@ websocket.on("welcome", event => {
 	// Do the same for the bomb icon
 	document.getElementById("bomb").style.transform = `scale(${event.data.config.radar.playerDotScale}) translate(-50%, -50%)`
 })
-
+function requestConfig(){
+	if(hasConfig) return;
+	websocket.emit("configRequest");
+}
+websocket.on("connect", requestConfig);
+if(websocket.id){
+	requestConfig();
+}
+/*
 window.addEventListener("DOMContentLoaded", () => {
 	// If not electron (browser)
 	if (navigator.userAgent.toLowerCase().indexOf(" electron/") <= -1) {
@@ -73,4 +87,4 @@ window.addEventListener("DOMContentLoaded", () => {
 			location.reload()
 		})
 	}
-})
+})*/
