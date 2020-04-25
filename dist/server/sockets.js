@@ -57,6 +57,7 @@ var path_1 = __importDefault(require("path"));
 var request_1 = __importDefault(require("request"));
 var huds_1 = require("./../server/api/huds");
 var match_1 = require("./api/match");
+var fs_1 = __importDefault(require("fs"));
 var portscanner_1 = __importDefault(require("portscanner"));
 var radar = require("./../boltobserv/index.js");
 var mirv = require("./server")["default"];
@@ -224,7 +225,7 @@ function default_1(server, app) {
         });
     }); });
     app.get('/boltobserv/maps/:mapName/radar.png', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
-        var sendDefault, hud, dir;
+        var sendDefault, hud, dir, pathFile;
         var _a, _b;
         return __generator(this, function (_c) {
             switch (_c.label) {
@@ -241,7 +242,10 @@ function default_1(server, app) {
                     if (!((_b = (_a = hud) === null || _a === void 0 ? void 0 : _a.boltobserv) === null || _b === void 0 ? void 0 : _b.maps))
                         return [2 /*return*/, sendDefault()];
                     dir = path_1["default"].join(electron_1.app.getPath('home'), 'HUDs', req.query.hud);
-                    return [2 /*return*/, res.sendFile(path_1["default"].join(dir, "maps", req.params.mapName, "radar.png"))];
+                    pathFile = path_1["default"].join(dir, "maps", req.params.mapName, "radar.png");
+                    if (!fs_1["default"].existsSync(pathFile))
+                        return [2 /*return*/, sendDefault()];
+                    return [2 /*return*/, res.sendFile(pathFile)];
             }
         });
     }); });

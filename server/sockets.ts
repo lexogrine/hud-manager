@@ -8,6 +8,7 @@ import * as I from './../types/interfaces';
 import request from 'request';
 import { getHUDData } from './../server/api/huds';
 import { getMatches, updateMatch } from './api/match';
+import fs from 'fs';
 import portscanner from 'portscanner';
 
 const radar = require("./../boltobserv/index.js");
@@ -165,7 +166,9 @@ export default function (server: http.Server, app: express.Router) {
         if(!hud?.boltobserv?.maps) return sendDefault();
         
         const dir = path.join(Application.getPath('home'), 'HUDs', req.query.hud);
-        return res.sendFile(path.join(dir, "maps", req.params.mapName, "radar.png"));
+        const pathFile = path.join(dir, "maps", req.params.mapName, "radar.png");
+        if(!fs.existsSync(pathFile)) return sendDefault();
+        return res.sendFile(pathFile);
 
     });
 

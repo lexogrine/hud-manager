@@ -23,14 +23,15 @@ async function createMainWindow(server: Server) {
     }
 
     win = new BrowserWindow({
-        height: 699,
+        height: 700,
         show: false,
-        //frame:false,
-        //titleBarStyle:"hidden",
+        frame:false,
+        titleBarStyle:"hidden",
         //resizable: isDev,
         title: "HUD Manager",
         icon: path.join(__dirname, 'assets/icon.png'),
         webPreferences: {
+            nodeIntegration: true,
             backgroundThrottling: false,
         },
         width: 1010,

@@ -16,11 +16,11 @@ body {
 }
 .navbar-container > li {
     width:100%;
-    height: 135px;
+    height: calc(calc(100vh - 64px)/5);
 }
 .navbar-container > li > a{
     width:100%;
-    height: 134px;
+    height: calc(calc(100vh - 64px)/5 - 1px);
     background-color: #2b2e34; 
     display: flex;
     align-items: center;
@@ -64,6 +64,15 @@ body {
     font-size: 32px;
     z-index:1;
     top: 0;
+}
+.loaded.electron {
+    padding-top:64px;
+}
+.loaded.electron .tab-title-container {
+    top:64px;
+}
+.loaded.electron #settings {
+    top:64px;
 }
 .tab-content-container {
     padding: 53px;
@@ -941,6 +950,40 @@ input:checked ~ .customCheckbox {
     font-size: 12px;
     font-weight: 700;
     text-transform: uppercase;
+}
+.window-app {
+    width: 100%;
+}
+.window-bar  {
+    width:100%;
+    height:64px;
+    position: fixed;
+    top: 0;
+    z-index: 2;
+    display:flex;
+    background: url("./app_bar.png"), linear-gradient(to right, #79d1f5, #6c28fe);
+    background-repeat: no-repeat;
+    background-position: left center;
+}
+
+.loaded:not(.electron) .window-bar {
+    display: none;    
+}
+.window-bar .app-control {
+    width:64px;
+    height:64px;
+    display: flex;
+    align-items:center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    color:rgba(255, 255, 255, 0.50);
+    cursor: default;
+}
+
+.window-bar .window-drag-bar{
+    flex:1;
+    -webkit-app-region: drag;
 }
 .veto_modal .modal-save:hover {
     background-color: #4a7f8f !important;

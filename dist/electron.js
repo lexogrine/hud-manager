@@ -69,14 +69,15 @@ function createMainWindow(server) {
                         });
                     }
                     win = new electron_1.BrowserWindow({
-                        height: 699,
+                        height: 700,
                         show: false,
-                        //frame:false,
-                        //titleBarStyle:"hidden",
+                        frame: false,
+                        titleBarStyle: "hidden",
                         //resizable: isDev,
                         title: "HUD Manager",
                         icon: path_1["default"].join(__dirname, 'assets/icon.png'),
                         webPreferences: {
+                            nodeIntegration: true,
                             backgroundThrottling: false
                         },
                         width: 1010
