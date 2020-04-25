@@ -57,7 +57,7 @@ export default class Match extends Component<any, { game: CSGO | null, steamids:
         const { game } = this.state;
         if (!game) return  <React.Fragment>
             <div className="tab-title-container">Live</div>
-            <div className="tab-content-container">No game is currently live</div>
+            <div className="tab-content-container full-scroll">No game is currently live</div>
         </React.Fragment>;
         const teams = [game.map.team_ct, game.map.team_t]
         const left = teams.filter(team => team.orientation === "left")[0];
@@ -65,7 +65,7 @@ export default class Match extends Component<any, { game: CSGO | null, steamids:
         return (
             <React.Fragment>
                 <div className="tab-title-container">Live</div>
-                <div className="tab-content-container">
+                <div className="tab-content-container full-scroll">
                     <Row>
                         <Col md="12" className="config-container no-margin" style={{ flexDirection: 'column' }}>
                             <div>Players Currently In Match, Click to Add Player to Players List</div>
