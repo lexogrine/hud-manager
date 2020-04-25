@@ -1,9 +1,7 @@
 
-# HUD Manager
+# Lexogrine HUD Manager
 
 If you are in the business of broadcasting professional CS:GO matches, the Lexogrine HUD Manager is the tool just for you. It allows for easy management of data during tournaments; you can set up matches, vetos, team photographs, and then use it in any compatible HUD you have.
-
-  
 
 ## Features
 - Player database
