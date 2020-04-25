@@ -22,7 +22,7 @@ customStyle.rel = 'stylesheet'
 if(!hud.length){
 	customStyle.href = '/boltobserv/css/custom.css';
 } else {
-	customStyle.href = '/boltobserv/custom/css/custom.css?hud='+hud;
+	customStyle.href = '/boltobserv/css/custom.css?hud='+hud;
 }
 if(isDev){
 	customStyle.href = 'http://localhost:3500/radar.css';

@@ -140,7 +140,7 @@ export default function (server: http.Server, app: express.Router) {
 
     portListener.start();
 
-    app.get('/boltobserv/custom/css/custom.css', async (req, res) => {
+    app.get('/boltobserv/css/custom.css', async (req, res) => {
         const sendDefault = () => res.sendFile(path.join(__dirname, "../boltobserv", "css", `custom.css`));
         if(!req.query.hud){
             return sendDefault();
@@ -153,7 +153,7 @@ export default function (server: http.Server, app: express.Router) {
         return res.sendFile(path.join(dir, "radar.css"));
     });
 
-    app.get('/boltobserv/custom/maps/:mapName/radar.png', async (req, res) => {
+    app.get('/boltobserv/maps/:mapName/radar.png', async (req, res) => {
         const sendDefault = () => res.sendFile(path.join(__dirname, "../boltobserv", "maps", req.params.mapName, "radar.png"));
 
         if(!req.params.mapName) {
@@ -165,7 +165,7 @@ export default function (server: http.Server, app: express.Router) {
         if(!hud?.boltobserv?.maps) return sendDefault();
         
         const dir = path.join(Application.getPath('home'), 'HUDs', req.query.hud);
-        return res.sendFile(path.join(dir, "maps", req.params.mapName, "radar.css"));
+        return res.sendFile(path.join(dir, "maps", req.params.mapName, "radar.png"));
 
     });
 

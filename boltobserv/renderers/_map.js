@@ -44,7 +44,7 @@ websocket.on("map", event => {
 
 		let radarSrc = `/boltobserv/maps/${mapName}/radar.png`;
 		if(hud.length){
-			radarSrc = `/boltobserv/custom/maps/${mapName}/radar.png?hud=${hud}`;
+			radarSrc = `/boltobserv/maps/${mapName}/radar.png?hud=${hud}`;
 		}
 		if(isDev){
 			radarSrc = `http://localhost:3500/maps/${mapName}/radar.png`;

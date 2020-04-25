@@ -14,7 +14,7 @@ let hasInited = false
  */
 const url = new URL(window.location.href);
 const hud = url.searchParams.get("hud") || '';
-const isDev = url.searchParams.get("dev") === "true";
+const isDev = url.searchParams.get("devCSS") === "true";
 
 const customStyle = document.createElement("link");
 
@@ -22,7 +22,7 @@ customStyle.rel = 'stylesheet'
 if(!hud.length){
 	customStyle.href = '/boltobserv/css/custom.css';
 } else {
-	customStyle.href = '/boltobserv/custom/css/custom.css?hud='+hud;
+	customStyle.href = '/boltobserv/css/custom.css?hud='+hud;
 }
 if(isDev){
 	customStyle.href = 'http://localhost:3500/radar.css';
@@ -52,7 +52,6 @@ function importScripts() {
 
 websocket.on("welcome", event => {
 	if (hasConfig) return
-	console.log("WELCOME!")
 	hasConfig = event.data.scripts
 	global.config = event.data.config
 
