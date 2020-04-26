@@ -103,7 +103,7 @@ export default class Huds extends React.Component<{ cxt: IContextData }, { confi
                     <img src={goBack} onClick={this.toggleConfig()} className="go-back-button" alt="Go back"/>
                     HUD Settings
                 </div>
-                <div className="tab-content-container">
+                <div className="tab-content-container full-scroll">
                     <Panel hud={active} cxt={this.props.cxt} />
                 </div>
             </React.Fragment>
@@ -111,7 +111,7 @@ export default class Huds extends React.Component<{ cxt: IContextData }, { confi
         return (
             <React.Fragment>
                 <div className="tab-title-container">HUDS</div>
-                <div className="tab-content-container no-padding">
+                <div className={`tab-content-container no-padding ${!isElectron ? 'full-scroll':''}`}>
                     <Row className="config-container">
                         <Col md="12" className="config-entry">
                             <div className="config-description">

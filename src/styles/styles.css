@@ -45,6 +45,10 @@ body {
     border-color: transparent !important;
     border-bottom: 1px solid #373a40 !important;
 }
+.navbar-container > li:nth-last-child(2) > a:hover{
+    border-color: transparent !important;
+    border-bottom: none !important;
+}
 
 .main-container {
     display:flex;
@@ -297,9 +301,12 @@ img.smallLogo {
     font-weight: 700;
     padding-right:5px;
 }
-.veto-container .edit-veto {
+.veto-container .edit-veto:first-of-type {
     margin-left:auto;
-    width: 68px;
+    margin-right:16px;
+}
+.veto-container .edit-veto {
+    min-width: 68px;
     height: 29px;
     border-radius: 14px;
     font-size: 10px;

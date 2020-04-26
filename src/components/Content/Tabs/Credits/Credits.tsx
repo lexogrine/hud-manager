@@ -17,14 +17,14 @@ export default class Credits extends React.Component {
     return (
       <React.Fragment>
         <div className="tab-title-container">Credits</div>
-        <div className="tab-content-container">
+        <div className="tab-content-container full-scroll">
           <Row>
             <Col>
               <CreditsEntry title="Application and HUD API" people={["osztenkurden"]} />
               <CreditsEntry title="Testing and Debugging" people={["osztenkurden", "Komodo"]} />
               <CreditsEntry title="Custom radar by" people={["boltgolt"]} />
               <CreditsEntry title="Initial Layout Idea" people={["Drożdżu"]} />
-              <CreditsEntry title="Feedback & Ideas" people={["boltgolt", "Komodo", "TeDY", "Wiethoofd", "Laeye"]} />
+              <CreditsEntry title="Feedback & Ideas" people={["boltgolt", "Komodo", "TeDY", "Wiethoofd", "Laeye", "Loxar"]} />
             </Col>
           </Row>
         </div>

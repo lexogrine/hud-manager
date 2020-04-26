@@ -4,6 +4,7 @@ import express from 'express';
 import CSGOGSI from 'csgogsi';
 import { app as Application } from 'electron';
 import path from 'path';
+import fetch from 'node-fetch';
 import * as I from './../types/interfaces';
 import request from 'request';
 import { getHUDData } from './../server/api/huds';
@@ -69,10 +70,10 @@ class HUDStateManager {
 
 class SocketManager {
     io: SocketIO.Server | null;
-    constructor(io?: SocketIO.Server){
+    constructor(io?: SocketIO.Server) {
         this.io = io || null;
     }
-    set(io: SocketIO.Server){
+    set(io: SocketIO.Server) {
         this.io = io;
     }
 }
@@ -143,31 +144,57 @@ export default function (server: http.Server, app: express.Router) {
 
     app.get('/boltobserv/css/custom.css', async (req, res) => {
         const sendDefault = () => res.sendFile(path.join(__dirname, "../boltobserv", "css", `custom.css`));
-        if(!req.query.hud){
+        if (!req.query.hud) {
             return sendDefault();
         }
         const hud = await getHUDData(req.query.hud);
 
-        if(!hud?.boltobserv?.css) return sendDefault();
+        if (!hud?.boltobserv?.css) return sendDefault();
 
         const dir = path.join(Application.getPath('home'), 'HUDs', req.query.hud);
         return res.sendFile(path.join(dir, "radar.css"));
     });
 
+    app.get('/boltobserv/maps/:mapName/meta.json5', async (req, res) => {
+        const sendDefault = () => res.sendFile(path.join(__dirname, "../boltobserv", "maps", req.params.mapName, "meta.json5"));
+
+        if (!req.params.mapName) {
+            return res.sendStatus(404);
+        }
+        if(req.query.dev === "true"){
+            try {
+                const result = await fetch(`http://localhost:3500/maps/${req.params.mapName}/meta.json5`, {});
+                return res.send(await result.text());
+            } catch {
+                return sendDefault();
+            }
+        }
+        if (!req.query.hud) return sendDefault();
+
+        const hud = await getHUDData(req.query.hud);
+        if (!hud?.boltobserv?.maps) return sendDefault();
+
+        const dir = path.join(Application.getPath('home'), 'HUDs', req.query.hud);
+        const pathFile = path.join(dir, "maps", req.params.mapName, "meta.json5");
+        if (!fs.existsSync(pathFile)) return sendDefault();
+        return res.sendFile(pathFile);
+
+    });
+
     app.get('/boltobserv/maps/:mapName/radar.png', async (req, res) => {
         const sendDefault = () => res.sendFile(path.join(__dirname, "../boltobserv", "maps", req.params.mapName, "radar.png"));
 
-        if(!req.params.mapName) {
+        if (!req.params.mapName) {
             return res.sendStatus(404);
         }
-        if(!req.query.hud) return sendDefault();
+        if (!req.query.hud) return sendDefault();
 
         const hud = await getHUDData(req.query.hud);
-        if(!hud?.boltobserv?.maps) return sendDefault();
-        
+        if (!hud?.boltobserv?.maps) return sendDefault();
+
         const dir = path.join(Application.getPath('home'), 'HUDs', req.query.hud);
         const pathFile = path.join(dir, "maps", req.params.mapName, "radar.png");
-        if(!fs.existsSync(pathFile)) return sendDefault();
+        if (!fs.existsSync(pathFile)) return sendDefault();
         return res.sendFile(pathFile);
 
     });
@@ -226,49 +253,51 @@ export default function (server: http.Server, app: express.Router) {
     GSI.on("roundEnd", async score => {
         const matches = await getMatches();
         const match = matches.filter(match => match.current)[0];
-        if (match) {
-            const { vetos } = match;
-            vetos.map(veto => {
-                if (veto.mapName !== score.map.name || !score.map.team_ct.id || !score.map.team_t.id) {
-                    return veto;
-                }
-                if (!veto.score) {
-                    veto.score = {};
-                }
-                veto.score[score.map.team_ct.id] = score.map.team_ct.score;
-                veto.score[score.map.team_t.id] = score.map.team_t.score;
+        if (!match) return;
+        const { vetos } = match;
+        const mapName = score.map.name.substring(score.map.name.lastIndexOf('/')+1);
+        vetos.map(veto => {
+            if (veto.mapName !== mapName || !score.map.team_ct.id || !score.map.team_t.id || veto.mapEnd) {
                 return veto;
-            });
-            match.vetos = vetos;
-            await updateMatch(matches);
+            }
+            if (!veto.score) {
+                veto.score = {};
+            }
+            veto.score[score.map.team_ct.id] = score.map.team_ct.score;
+            veto.score[score.map.team_t.id] = score.map.team_t.score;
+            return veto;
+        });
+        match.vetos = vetos;
+        await updateMatch(matches);
 
-            io.emit('match', true);
-        }
+        io.emit('match', true);
+
     });
 
 
     GSI.on("matchEnd", async score => {
         const matches = await getMatches();
         const match = matches.filter(match => match.current)[0];
+        const mapName = score.map.name.substring(score.map.name.lastIndexOf('/')+1);
         if (match) {
             const { vetos } = match;
             vetos.map(veto => {
-                if (veto.mapName !== score.map.name || !score.map.team_ct.id || !score.map.team_t.id) {
+                if (veto.mapName !== mapName || !score.map.team_ct.id || !score.map.team_t.id) {
                     return veto;
                 }
                 veto.winner = score.map.team_ct.score > score.map.team_t.score ? score.map.team_ct.id : score.map.team_t.id;
                 veto.mapEnd = true;
                 return veto;
             });
-            const isReversed = vetos.filter(veto => veto.mapName === score.map.name && veto.reverseSide)[0];
+            const isReversed = vetos.filter(veto => veto.mapName === mapName && veto.reverseSide)[0];
             if (match.left.id === score.winner.id) {
-                if(isReversed){
+                if (isReversed) {
                     match.right.wins++;
                 } else {
                     match.left.wins++;
                 }
             } else if (match.right.id === score.winner.id) {
-                if(isReversed){
+                if (isReversed) {
                     match.left.wins++;
                 } else {
                     match.right.wins++;

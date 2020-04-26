@@ -133,7 +133,7 @@ export default class Matches extends Component<{ cxt: IContextData }, { match: I
                     </div> :
                     <div className="tab-title-container">Matches</div>
                 }
-                <div className="tab-content-container no-padding">
+                <div className={`tab-content-container no-padding ${match ? "full-scroll":""}`}>
                     {match ? <MatchEdit match={match} edit={this.edit} teams={this.props.cxt.teams} cxt={this.props.cxt} maps={maps}  /> :
                     <>
                         <Row className="matches_container">

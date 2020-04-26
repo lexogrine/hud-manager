@@ -20,10 +20,21 @@ websocket.on("map", event => {
 	}
 	// If map is unchanged we do not need to do anything
 	if (global.currentMap == mapName) return
+	
+	const url = new URL(window.location.href);
+	const hud = url.searchParams.get("hud") || '';
+	const isDev = url.searchParams.get("devMaps") === "true";
 
+	let metaSrc = `/boltobserv/maps/${mapName}/meta.json5`;
+	if(hud.length){
+		metaSrc = `/boltobserv/maps/${mapName}/meta.json5?hud=${hud}`;
+	}
+	if(isDev){
+		metaSrc = `/boltobserv/maps/${mapName}/meta.json5?dev=true`
+		//metaSrc = `http://localhost:3500/maps/${mapName}/meta.json5`;
+	}
 
-
-	fetch(window.location.origin + `/boltobserv/maps/${mapName}/meta.json5`)
+	fetch(metaSrc)
 	.then(resp => resp.text())
 	.then(data => {
 		data = data.replace(/^\s*?\/\/.*?$/gm, "")
@@ -38,9 +49,6 @@ websocket.on("map", event => {
 		document.getElementById("unknownMap").style.display = "none"
 
 		// Show the radar backdrop
-		const url = new URL(window.location.href);
-		const hud = url.searchParams.get("hud") || '';
-		const isDev = url.searchParams.get("devMaps") === "true";
 
 		let radarSrc = `/boltobserv/maps/${mapName}/radar.png`;
 		if(hud.length){

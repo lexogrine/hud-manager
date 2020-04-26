@@ -32,7 +32,7 @@ export default class HudEntry extends Component<IProps> {
                         </Col>
                         <Col style={{ flex: 10, display: 'flex', justifyContent: 'center', flexDirection: 'column' }}>
                             <Row>
-                                <Col><strong className="hudName">{hud.isDev ? '[DEV]' : ''}{hud.name}</strong> <span className='hudVersion'>({hud.version})</span></Col>
+                                <Col><strong className="hudName">{hud.isDev ? '[DEV] ' : ''}{hud.name}</strong> <span className='hudVersion'>({hud.version})</span></Col>
                             </Row>
                             <Row>
                                 <Col className="hudAuthor"><div>{hud.author}</div></Col>

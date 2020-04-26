@@ -54,6 +54,7 @@ var socket_io_1 = __importDefault(require("socket.io"));
 var csgogsi_1 = __importDefault(require("csgogsi"));
 var electron_1 = require("electron");
 var path_1 = __importDefault(require("path"));
+var node_fetch_1 = __importDefault(require("node-fetch"));
 var request_1 = __importDefault(require("request"));
 var huds_1 = require("./../server/api/huds");
 var match_1 = require("./api/match");
@@ -224,6 +225,45 @@ function default_1(server, app) {
             }
         });
     }); });
+    app.get('/boltobserv/maps/:mapName/meta.json5', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+        var sendDefault, result, _a, _b, _c, hud, dir, pathFile;
+        var _d, _e;
+        return __generator(this, function (_f) {
+            switch (_f.label) {
+                case 0:
+                    sendDefault = function () { return res.sendFile(path_1["default"].join(__dirname, "../boltobserv", "maps", req.params.mapName, "meta.json5")); };
+                    if (!req.params.mapName) {
+                        return [2 /*return*/, res.sendStatus(404)];
+                    }
+                    if (!(req.query.dev === "true")) return [3 /*break*/, 5];
+                    _f.label = 1;
+                case 1:
+                    _f.trys.push([1, 4, , 5]);
+                    return [4 /*yield*/, node_fetch_1["default"]("http://localhost:3500/maps/" + req.params.mapName + "/meta.json5", {})];
+                case 2:
+                    result = _f.sent();
+                    _b = (_a = res).send;
+                    return [4 /*yield*/, result.text()];
+                case 3: return [2 /*return*/, _b.apply(_a, [_f.sent()])];
+                case 4:
+                    _c = _f.sent();
+                    return [2 /*return*/, sendDefault()];
+                case 5:
+                    if (!req.query.hud)
+                        return [2 /*return*/, sendDefault()];
+                    return [4 /*yield*/, huds_1.getHUDData(req.query.hud)];
+                case 6:
+                    hud = _f.sent();
+                    if (!((_e = (_d = hud) === null || _d === void 0 ? void 0 : _d.boltobserv) === null || _e === void 0 ? void 0 : _e.maps))
+                        return [2 /*return*/, sendDefault()];
+                    dir = path_1["default"].join(electron_1.app.getPath('home'), 'HUDs', req.query.hud);
+                    pathFile = path_1["default"].join(dir, "maps", req.params.mapName, "meta.json5");
+                    if (!fs_1["default"].existsSync(pathFile))
+                        return [2 /*return*/, sendDefault()];
+                    return [2 /*return*/, res.sendFile(pathFile)];
+            }
+        });
+    }); });
     app.get('/boltobserv/maps/:mapName/radar.png', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
         var sendDefault, hud, dir, pathFile;
         var _a, _b;
@@ -296,17 +336,19 @@ function default_1(server, app) {
         io.emit("update_mirv", data);
     });
     exports.GSI.on("roundEnd", function (score) { return __awaiter(_this, void 0, void 0, function () {
-        var matches, match, vetos;
+        var matches, match, vetos, mapName;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, match_1.getMatches()];
                 case 1:
                     matches = _a.sent();
                     match = matches.filter(function (match) { return match.current; })[0];
-                    if (!match) return [3 /*break*/, 3];
+                    if (!match)
+                        return [2 /*return*/];
                     vetos = match.vetos;
+                    mapName = score.map.name.substring(score.map.name.lastIndexOf('/') + 1);
                     vetos.map(function (veto) {
-                        if (veto.mapName !== score.map.name || !score.map.team_ct.id || !score.map.team_t.id) {
+                        if (veto.mapName !== mapName || !score.map.team_ct.id || !score.map.team_t.id || veto.mapEnd) {
                             return veto;
                         }
                         if (!veto.score) {
@@ -321,30 +363,30 @@ function default_1(server, app) {
                 case 2:
                     _a.sent();
                     io.emit('match', true);
-                    _a.label = 3;
-                case 3: return [2 /*return*/];
+                    return [2 /*return*/];
             }
         });
     }); });
     exports.GSI.on("matchEnd", function (score) { return __awaiter(_this, void 0, void 0, function () {
-        var matches, match, vetos, isReversed;
+        var matches, match, mapName, vetos, isReversed;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, match_1.getMatches()];
                 case 1:
                     matches = _a.sent();
                     match = matches.filter(function (match) { return match.current; })[0];
+                    mapName = score.map.name.substring(score.map.name.lastIndexOf('/') + 1);
                     if (!match) return [3 /*break*/, 3];
                     vetos = match.vetos;
                     vetos.map(function (veto) {
-                        if (veto.mapName !== score.map.name || !score.map.team_ct.id || !score.map.team_t.id) {
+                        if (veto.mapName !== mapName || !score.map.team_ct.id || !score.map.team_t.id) {
                             return veto;
                         }
                         veto.winner = score.map.team_ct.score > score.map.team_t.score ? score.map.team_ct.id : score.map.team_t.id;
                         veto.mapEnd = true;
                         return veto;
                     });
-                    isReversed = vetos.filter(function (veto) { return veto.mapName === score.map.name && veto.reverseSide; })[0];
+                    isReversed = vetos.filter(function (veto) { return veto.mapName === mapName && veto.reverseSide; })[0];
                     if (match.left.id === score.winner.id) {
                         if (isReversed) {
                             match.right.wins++;
