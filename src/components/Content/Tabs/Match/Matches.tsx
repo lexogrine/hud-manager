@@ -9,6 +9,7 @@ import uuidv4 from 'uuid/v4';
 import { IContextData } from '../../../Context';
 
 import goBack from "./../../../../styles/goBack.png";
+import { socket } from '../Live/Live';
 
 class MatchRow extends Component<{ match: I.Match, teams: I.Team[], cxt: IContextData, edit: Function, setCurrent: Function }> {
     delete = async () => {
@@ -120,6 +121,14 @@ export default class Matches extends Component<{ cxt: IContextData }, { match: I
         await this.props.cxt.reload();
         const maps = await api.match.getMaps();
         this.setState({maps});
+        socket.on('match', async (force?: boolean) => {
+            const match = this.state.match;
+            if(!force || !match || !match.id) return;
+            await this.props.cxt.reload();
+            const current = this.props.cxt.matches.filter(match => match.id === match.id)[0];
+            if(!current) return;
+            this.startEdit(current);
+        });
 
     }
 

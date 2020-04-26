@@ -60,7 +60,6 @@ class SingleVeto extends React.Component<Props> {
     render() {
         const team = this.props.teams.filter(team => team._id === this.props.veto.teamId)[0];
         const secTeam = this.props.teams.filter(team => team._id !== this.props.veto.teamId)[0];
-        console.log(this.props.veto)
         return (
             <div className={`veto-container ${this.props.veto.teamId === "" ? "empty" : ""} ${this.props.veto.teamId ? this.props.veto.type : ""}`}>
                 {

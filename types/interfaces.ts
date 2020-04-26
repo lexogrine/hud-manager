@@ -34,7 +34,6 @@ export interface Match {
         mapName: string,
         side: 'CT' | 'T' | 'NO',
         type: VetoType,
-        reversed?:boolean,
         score?: {
             [key: string]: number
         },

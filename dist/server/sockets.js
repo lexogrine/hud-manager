@@ -349,6 +349,24 @@ function default_1(server, app) {
                     mapName = score.map.name.substring(score.map.name.lastIndexOf('/') + 1);
                     vetos.map(function (veto) {
                         if (veto.mapName !== mapName || !score.map.team_ct.id || !score.map.team_t.id || veto.mapEnd) {
+                            if (!veto.mapEnd || !veto.winner || !veto.score || !score.winner || !score.loser) {
+                                return veto;
+                            }
+                            var sumRecorded = Object.values(veto.score).reduce(function (a, b) { return a + b; }, 0);
+                            var sumReceived = score.winner.score + score.loser.score;
+                            if (Math.abs(sumReceived - sumRecorded) !== 1) {
+                                return score;
+                            }
+                            var ids = Object.keys(veto.score);
+                            if (!Number.isInteger(veto.score[ids[0]]) || !Number.isInteger(veto.score[ids[1]])) {
+                                return score;
+                            }
+                            if (veto.score[ids[0]] > veto.score[ids[1]]) {
+                                veto.score[ids[0]]++;
+                            }
+                            else if (veto.score[ids[0]] < veto.score[ids[1]]) {
+                                veto.score[ids[1]]++;
+                            }
                             return veto;
                         }
                         if (!veto.score) {
@@ -356,6 +374,10 @@ function default_1(server, app) {
                         }
                         veto.score[score.map.team_ct.id] = score.map.team_ct.score;
                         veto.score[score.map.team_t.id] = score.map.team_t.score;
+                        if (veto.reverseSide) {
+                            veto.score[score.map.team_t.id] = score.map.team_ct.score;
+                            veto.score[score.map.team_ct.id] = score.map.team_t.score;
+                        }
                         return veto;
                     });
                     match.vetos = vetos;
@@ -368,7 +390,7 @@ function default_1(server, app) {
         });
     }); });
     exports.GSI.on("matchEnd", function (score) { return __awaiter(_this, void 0, void 0, function () {
-        var matches, match, mapName, vetos, isReversed;
+        var matches, match, mapName, vetos, isReversed_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, match_1.getMatches()];
@@ -378,17 +400,20 @@ function default_1(server, app) {
                     mapName = score.map.name.substring(score.map.name.lastIndexOf('/') + 1);
                     if (!match) return [3 /*break*/, 3];
                     vetos = match.vetos;
+                    isReversed_1 = vetos.filter(function (veto) { return veto.mapName === mapName && veto.reverseSide; })[0];
                     vetos.map(function (veto) {
                         if (veto.mapName !== mapName || !score.map.team_ct.id || !score.map.team_t.id) {
                             return veto;
                         }
                         veto.winner = score.map.team_ct.score > score.map.team_t.score ? score.map.team_ct.id : score.map.team_t.id;
+                        if (isReversed_1) {
+                            veto.winner = score.map.team_ct.score > score.map.team_t.score ? score.map.team_t.id : score.map.team_ct.id;
+                        }
                         veto.mapEnd = true;
                         return veto;
                     });
-                    isReversed = vetos.filter(function (veto) { return veto.mapName === mapName && veto.reverseSide; })[0];
                     if (match.left.id === score.winner.id) {
-                        if (isReversed) {
+                        if (isReversed_1) {
                             match.right.wins++;
                         }
                         else {
@@ -396,7 +421,7 @@ function default_1(server, app) {
                         }
                     }
                     else if (match.right.id === score.winner.id) {
-                        if (isReversed) {
+                        if (isReversed_1) {
                             match.left.wins++;
                         }
                         else {
