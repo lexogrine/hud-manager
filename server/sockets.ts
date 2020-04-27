@@ -144,7 +144,7 @@ export default function (server: http.Server, app: express.Router) {
 
     app.get('/boltobserv/css/custom.css', async (req, res) => {
         const sendDefault = () => res.sendFile(path.join(__dirname, "../boltobserv", "css", `custom.css`));
-        if (!req.query.hud) {
+        if (!req.query.hud || typeof req.query.hud !== "string") {
             return sendDefault();
         }
         const hud = await getHUDData(req.query.hud);
@@ -169,7 +169,7 @@ export default function (server: http.Server, app: express.Router) {
                 return sendDefault();
             }
         }
-        if (!req.query.hud) return sendDefault();
+        if (!req.query.hud || typeof req.query.hud !== "string") return sendDefault();
 
         const hud = await getHUDData(req.query.hud);
         if (!hud?.boltobserv?.maps) return sendDefault();
@@ -187,7 +187,7 @@ export default function (server: http.Server, app: express.Router) {
         if (!req.params.mapName) {
             return res.sendStatus(404);
         }
-        if (!req.query.hud) return sendDefault();
+        if (!req.query.hud || typeof req.query.hud !== "string") return sendDefault();
 
         const hud = await getHUDData(req.query.hud);
         if (!hud?.boltobserv?.maps) return sendDefault();

@@ -122,10 +122,10 @@ export default class Matches extends Component<{ cxt: IContextData }, { match: I
         const maps = await api.match.getMaps();
         this.setState({maps});
         socket.on('match', async (force?: boolean) => {
-            const match = this.state.match;
-            if(!force || !match || !match.id) return;
+            const currentlyEditing = this.state.match;
+            if(!force || !currentlyEditing || !currentlyEditing.id) return;
             await this.props.cxt.reload();
-            const current = this.props.cxt.matches.filter(match => match.id === match.id)[0];
+            const current = this.props.cxt.matches.filter(match => match.id === currentlyEditing.id)[0];
             if(!current) return;
             this.startEdit(current);
         });

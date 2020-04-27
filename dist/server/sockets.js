@@ -207,18 +207,18 @@ function default_1(server, app) {
     portListener.start();
     app.get('/boltobserv/css/custom.css', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
         var sendDefault, hud, dir;
-        var _a, _b;
-        return __generator(this, function (_c) {
-            switch (_c.label) {
+        var _a;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
                 case 0:
                     sendDefault = function () { return res.sendFile(path_1["default"].join(__dirname, "../boltobserv", "css", "custom.css")); };
-                    if (!req.query.hud) {
+                    if (!req.query.hud || typeof req.query.hud !== "string") {
                         return [2 /*return*/, sendDefault()];
                     }
                     return [4 /*yield*/, huds_1.getHUDData(req.query.hud)];
                 case 1:
-                    hud = _c.sent();
-                    if (!((_b = (_a = hud) === null || _a === void 0 ? void 0 : _a.boltobserv) === null || _b === void 0 ? void 0 : _b.css))
+                    hud = _b.sent();
+                    if (!((_a = hud === null || hud === void 0 ? void 0 : hud.boltobserv) === null || _a === void 0 ? void 0 : _a.css))
                         return [2 /*return*/, sendDefault()];
                     dir = path_1["default"].join(electron_1.app.getPath('home'), 'HUDs', req.query.hud);
                     return [2 /*return*/, res.sendFile(path_1["default"].join(dir, "radar.css"))];
@@ -227,34 +227,34 @@ function default_1(server, app) {
     }); });
     app.get('/boltobserv/maps/:mapName/meta.json5', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
         var sendDefault, result, _a, _b, _c, hud, dir, pathFile;
-        var _d, _e;
-        return __generator(this, function (_f) {
-            switch (_f.label) {
+        var _d;
+        return __generator(this, function (_e) {
+            switch (_e.label) {
                 case 0:
                     sendDefault = function () { return res.sendFile(path_1["default"].join(__dirname, "../boltobserv", "maps", req.params.mapName, "meta.json5")); };
                     if (!req.params.mapName) {
                         return [2 /*return*/, res.sendStatus(404)];
                     }
                     if (!(req.query.dev === "true")) return [3 /*break*/, 5];
-                    _f.label = 1;
+                    _e.label = 1;
                 case 1:
-                    _f.trys.push([1, 4, , 5]);
+                    _e.trys.push([1, 4, , 5]);
                     return [4 /*yield*/, node_fetch_1["default"]("http://localhost:3500/maps/" + req.params.mapName + "/meta.json5", {})];
                 case 2:
-                    result = _f.sent();
+                    result = _e.sent();
                     _b = (_a = res).send;
                     return [4 /*yield*/, result.text()];
-                case 3: return [2 /*return*/, _b.apply(_a, [_f.sent()])];
+                case 3: return [2 /*return*/, _b.apply(_a, [_e.sent()])];
                 case 4:
-                    _c = _f.sent();
+                    _c = _e.sent();
                     return [2 /*return*/, sendDefault()];
                 case 5:
-                    if (!req.query.hud)
+                    if (!req.query.hud || typeof req.query.hud !== "string")
                         return [2 /*return*/, sendDefault()];
                     return [4 /*yield*/, huds_1.getHUDData(req.query.hud)];
                 case 6:
-                    hud = _f.sent();
-                    if (!((_e = (_d = hud) === null || _d === void 0 ? void 0 : _d.boltobserv) === null || _e === void 0 ? void 0 : _e.maps))
+                    hud = _e.sent();
+                    if (!((_d = hud === null || hud === void 0 ? void 0 : hud.boltobserv) === null || _d === void 0 ? void 0 : _d.maps))
                         return [2 /*return*/, sendDefault()];
                     dir = path_1["default"].join(electron_1.app.getPath('home'), 'HUDs', req.query.hud);
                     pathFile = path_1["default"].join(dir, "maps", req.params.mapName, "meta.json5");
@@ -266,20 +266,20 @@ function default_1(server, app) {
     }); });
     app.get('/boltobserv/maps/:mapName/radar.png', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
         var sendDefault, hud, dir, pathFile;
-        var _a, _b;
-        return __generator(this, function (_c) {
-            switch (_c.label) {
+        var _a;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
                 case 0:
                     sendDefault = function () { return res.sendFile(path_1["default"].join(__dirname, "../boltobserv", "maps", req.params.mapName, "radar.png")); };
                     if (!req.params.mapName) {
                         return [2 /*return*/, res.sendStatus(404)];
                     }
-                    if (!req.query.hud)
+                    if (!req.query.hud || typeof req.query.hud !== "string")
                         return [2 /*return*/, sendDefault()];
                     return [4 /*yield*/, huds_1.getHUDData(req.query.hud)];
                 case 1:
-                    hud = _c.sent();
-                    if (!((_b = (_a = hud) === null || _a === void 0 ? void 0 : _a.boltobserv) === null || _b === void 0 ? void 0 : _b.maps))
+                    hud = _b.sent();
+                    if (!((_a = hud === null || hud === void 0 ? void 0 : hud.boltobserv) === null || _a === void 0 ? void 0 : _a.maps))
                         return [2 /*return*/, sendDefault()];
                     dir = path_1["default"].join(electron_1.app.getPath('home'), 'HUDs', req.query.hud);
                     pathFile = path_1["default"].join(dir, "maps", req.params.mapName, "radar.png");

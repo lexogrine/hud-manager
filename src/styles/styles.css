@@ -524,6 +524,9 @@ img.smallLogo {
 .btn.purple-btn {
     background-color: #6b1cff;
 }
+.btn.disabled {
+    cursor: default;
+}
 .btn.run-csgo {
     background-color: #7ad9f5;
     color: #24272d;
@@ -979,6 +982,7 @@ input:checked ~ .customCheckbox {
     font-size: 12px;
     font-weight: 700;
     text-transform: uppercase;
+    margin: 0;
 }
 .window-app {
     width: 100%;
