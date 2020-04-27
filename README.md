@@ -36,7 +36,9 @@ This tab allows you to specify a player's displayed name, their country, real na
 In this section you can specify upcoming matchups you will spectate and choose which one is currently played.
 You have the option to set up teams taking part, their map scores and veto process.
 
-Additionaly, while the match is live the current score is being saved in the background, and once a map finishes, it's score for the winning team increases. (Note - that map has to be set up in veto in order for the Manager to gather data).
+Additionaly, while the match is live the current score is being saved in the background, and once a map finishes, it's match score for the winning team increases. You can see the current map score in the veto view, and reset it if needed. Current map score is updated each time it gets detects end of the round from the CS:GO, unless the map has been marked as finished - in that case the score won't be updated, but still can be resetted, which will set the map back to non-finished state.
+
+>Note - match has to be set as active and that map has to be set up in veto in order for the Manager to gather data.
 
 ### HUDS
 
@@ -171,7 +173,7 @@ Additionally, there is an action input that sends predetermined data and renders
     }]
 }
 ```
-Each value in the action input is a seperate button. To see how to listen for data from the HUD's side, please see this part of the CSGO React HUD documentation.
+Each value in the action input is a seperate button. To see how to listen for data from the HUD's side, please see "`panel.json API`" part of the CSGO React HUD documentation.
 #### keybinds.json
 This file is basically another way to communicate with the HUD. Let's look at the example file:
 ```json
