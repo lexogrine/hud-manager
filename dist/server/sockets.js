@@ -60,6 +60,7 @@ var huds_1 = require("./../server/api/huds");
 var match_1 = require("./api/match");
 var fs_1 = __importDefault(require("fs"));
 var portscanner_1 = __importDefault(require("portscanner"));
+var config_1 = require("./api/config");
 var radar = require("./../boltobserv/index.js");
 var mirv = require("./server")["default"];
 var launchTime = (new Date()).getTime();
@@ -164,7 +165,7 @@ function default_1(server, app) {
         if (exports.HUDState.devHUD)
             return;
         request_1["default"].get('http://localhost:3500/hud.json', function (err, res) { return __awaiter(_this, void 0, void 0, function () {
-            var hud, _a, _b, _c;
+            var hud, _a, _b, cfg, _c;
             return __generator(this, function (_d) {
                 switch (_d.label) {
                     case 0:
@@ -172,7 +173,7 @@ function default_1(server, app) {
                             return [2 /*return*/, io.emit('reloadHUDs', false)];
                         _d.label = 1;
                     case 1:
-                        _d.trys.push([1, 4, , 5]);
+                        _d.trys.push([1, 5, , 6]);
                         hud = JSON.parse(res.body);
                         if (!hud)
                             return [2 /*return*/];
@@ -188,18 +189,21 @@ function default_1(server, app) {
                         _b.panel = _d.sent();
                         hud.isDev = true;
                         hud.dir = (Math.random() * 1000 + 1).toString(36).replace(/[^a-z]+/g, '').substr(0, 15);
-                        hud.url = 'http://localhost:3500/';
+                        return [4 /*yield*/, config_1.loadConfig()];
+                    case 4:
+                        cfg = _d.sent();
+                        hud.url = "http://localhost:3500/?port=" + cfg.port;
                         exports.HUDState.devHUD = hud;
                         if (devSocket) {
                             io.to(hud.dir).emit('hud_config', exports.HUDState.get(hud.dir));
                         }
                         io.emit('reloadHUDs');
-                        return [3 /*break*/, 5];
-                    case 4:
+                        return [3 /*break*/, 6];
+                    case 5:
                         _c = _d.sent();
                         io.emit('reloadHUDs');
-                        return [3 /*break*/, 5];
-                    case 5: return [2 /*return*/];
+                        return [3 /*break*/, 6];
+                    case 6: return [2 /*return*/];
                 }
             });
         }); });

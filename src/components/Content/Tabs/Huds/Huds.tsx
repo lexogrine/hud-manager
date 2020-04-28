@@ -40,7 +40,7 @@ export default class Huds extends React.Component<{ cxt: IContextData }, { confi
             config: {
                 steamApiKey: '',
                 hlaePath: '',
-                port: 1337,
+                port: 1349,
                 token: ''
             },
             form: {

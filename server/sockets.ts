@@ -11,6 +11,7 @@ import { getHUDData } from './../server/api/huds';
 import { getMatches, updateMatch } from './api/match';
 import fs from 'fs';
 import portscanner from 'portscanner';
+import { loadConfig,setConfig } from './api/config';
 
 const radar = require("./../boltobserv/index.js");
 const mirv = require("./server").default;
@@ -128,7 +129,8 @@ export default function (server: http.Server, app: express.Router) {
                 hud.panel = await getJSONArray('http://localhost:3500/panel.json');
                 hud.isDev = true;
                 hud.dir = (Math.random() * 1000 + 1).toString(36).replace(/[^a-z]+/g, '').substr(0, 15);
-                hud.url = 'http://localhost:3500/';
+                const cfg = await loadConfig();
+                hud.url = `http://localhost:3500/?port=${cfg.port}`;
                 HUDState.devHUD = hud;
                 if (devSocket) {
                     io.to(hud.dir).emit('hud_config', HUDState.get(hud.dir));

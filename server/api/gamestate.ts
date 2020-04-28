@@ -38,7 +38,7 @@ interface GSI {
 
 const GSITemplate: GSI  = {
     HUDMANAGERGSI: {
-        uri: 'http://localhost:1337/',
+        uri: 'http://localhost:1349/',
         timeout: 0.1,
         buffer: 0,
         throttle: 0,

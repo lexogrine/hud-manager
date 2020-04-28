@@ -21,7 +21,7 @@ export default class Config extends React.Component<any, { config: I.Config, cfg
         this.state = {
             config: {
                 steamApiKey: '',
-                port: 1337,
+                port: 1349,
                 token: '',
                 hlaePath: ''
             },

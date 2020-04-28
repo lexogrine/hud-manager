@@ -62,7 +62,7 @@ exports.loadConfig = function () { return __awaiter(void 0, void 0, void 0, func
                                 return [4 /*yield*/, exports.setConfig(config[0])];
                             case 1: return [2 /*return*/, _a.apply(void 0, [_b.sent()])];
                             case 2:
-                                configs.insert({ steamApiKey: '', token: '', port: 1337, hlaePath: '' }, function (err, config) {
+                                configs.insert({ steamApiKey: '', token: '', port: 1349, hlaePath: '' }, function (err, config) {
                                     if (err) {
                                         return res(null);
                                     }
@@ -96,7 +96,7 @@ exports.updateConfig = function (req, res) { return __awaiter(void 0, void 0, vo
             case 0:
                 updated = {
                     steamApiKey: req.body.steamApiKey,
-                    port: req.body.port,
+                    port: Number(req.body.port),
                     token: req.body.token,
                     hlaePath: req.body.hlaePath
                 };

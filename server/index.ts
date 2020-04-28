@@ -2,7 +2,7 @@ import express from 'express';
 import sockets from './sockets';
 import http from 'http';
 import cors from 'cors';
-import getPort from 'get-port';
+import getPort, { makeRange } from 'get-port';
 import router from './api';
 import path from 'path';
 import { app as application } from 'electron';
@@ -16,10 +16,12 @@ export default async function init(){
     const server = http.createServer(app);
 
 
-    const port = await getPort({port:config.port});
+    let port = await getPort({port:config.port});
     if(port !== config.port){
+
+        port = await getPort({port: makeRange(1300, 50000)});
         console.log(`Port ${config.port} is not available, changing to ${port}`);
-        config = await setConfig({...config, port});
+        config = await setConfig({...config, port: port});
     }
     console.log(`Server listening on ${port}`);
 

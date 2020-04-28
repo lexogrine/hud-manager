@@ -155,7 +155,7 @@ export const renderLegacy: express.RequestHandler = (req, res) => {
     const dir = path.join(app.getPath('home'), 'HUDs', req.params.dir);
     return res.render(path.join(dir, 'template.pug'), {
         ip:'localhost',
-        port:1337,
+        port:1349,
         avatars: false,
         hud: path.join('/legacy', req.params.dir, 'index.js'),
         css: path.join('/legacy', req.params.dir, 'style.css'),

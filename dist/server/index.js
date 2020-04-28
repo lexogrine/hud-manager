@@ -49,12 +49,19 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 exports.__esModule = true;
 var express_1 = __importDefault(require("express"));
 var sockets_1 = __importDefault(require("./sockets"));
 var http_1 = __importDefault(require("http"));
 var cors_1 = __importDefault(require("cors"));
-var get_port_1 = __importDefault(require("get-port"));
+var get_port_1 = __importStar(require("get-port"));
 var api_1 = __importDefault(require("./api"));
 var path_1 = __importDefault(require("path"));
 var electron_1 = require("electron");
@@ -73,13 +80,16 @@ function init() {
                     return [4 /*yield*/, get_port_1["default"]({ port: config.port })];
                 case 2:
                     port = _a.sent();
-                    if (!(port !== config.port)) return [3 /*break*/, 4];
+                    if (!(port !== config.port)) return [3 /*break*/, 5];
+                    return [4 /*yield*/, get_port_1["default"]({ port: get_port_1.makeRange(1300, 50000) })];
+                case 3:
+                    port = _a.sent();
                     console.log("Port " + config.port + " is not available, changing to " + port);
                     return [4 /*yield*/, config_1.setConfig(__assign(__assign({}, config), { port: port }))];
-                case 3:
-                    config = _a.sent();
-                    _a.label = 4;
                 case 4:
+                    config = _a.sent();
+                    _a.label = 5;
+                case 5:
                     console.log("Server listening on " + port);
                     app.use(express_1["default"].urlencoded({ extended: true }));
                     app.use(express_1["default"].raw({ limit: '10Mb', type: 'application/json' }));

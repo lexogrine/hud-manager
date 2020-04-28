@@ -18,7 +18,7 @@ If you are in the business of broadcasting professional CS:GO matches, the Lexog
 
 ## Usage
 
-By default, Lexogrine HUD Manager runs on port 1337. During startup, if it detects that this port is being used by other process, it will instead use a randomly chosen port. After startup, you may want to check if the config files are loaded into CS:GO in the Settings tab (more about it below).
+By default, Lexogrine HUD Manager runs on port 1349. During startup, if it detects that this port is being used by other process, it will instead use a randomly chosen port. After startup, you may want to check if the config files are loaded into CS:GO in the Settings tab (more about it below).
 
 When setting up the Manager for an upcoming match, it is recommended to follow the points below in order: 
 Teams -> Players -> Matches -> HUDs

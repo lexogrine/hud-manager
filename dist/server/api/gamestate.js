@@ -54,7 +54,7 @@ var config_1 = require("./config");
 var electron_1 = require("electron");
 var GSITemplate = {
     HUDMANAGERGSI: {
-        uri: 'http://localhost:1337/',
+        uri: 'http://localhost:1349/',
         timeout: 0.1,
         buffer: 0,
         throttle: 0,

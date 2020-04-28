@@ -2,7 +2,7 @@ import queryString from 'query-string';
 
 
 const query = queryString.parseUrl(window.location.href).query;
-const port = (query && Number(query.port)) || 1337;
+const port = (query && Number(query.port)) || 1349;
 
 var userAgent = navigator.userAgent.toLowerCase();
 let isElectron = false;
