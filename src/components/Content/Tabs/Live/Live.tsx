@@ -2,13 +2,37 @@ import React, { Component } from 'react';
 import api from './../../../../api/api';
 import config from './../../../../api/config';
 import { Col, Row } from 'reactstrap';
-import CSGOGSI, { CSGO, Player, Team } from 'csgogsi-socket';
+import CSGOGSI, { CSGO, Player, Team, PlayerExtension } from 'csgogsi-socket';
+import { IContextData } from '../../../Context';
 
 export const { GSI, socket } = CSGOGSI(`${config.isDev ? config.apiAddress : '/'}`, 'update')
 
-class Teamboard extends Component<{ players: Player[], steamids: string[], team: Team, toggle: Function }> {
+class Teamboard extends Component<{ players: Player[], team: Team, toggle: Function,cxt:IContextData }> {
+    remapPlayer = (player: Player): PlayerExtension => {
+        const { players } = this.props.cxt;
+        const data = players.filter(origin => origin.steamid === player.steamid)[0];
+        if(!data){
+            return {
+                id: player.steamid,
+                name: player.name,
+                steamid: player.steamid,
+                realName: null,
+                country: null,
+                avatar: null,
+            }
+        }
+        return {
+            id: data._id,
+            name: data.username,
+            steamid: data.steamid,
+            realName: data.firstName + ' ' + data.lastName,
+            country: data.country,
+            avatar: data.avatar,
+        }
+    }
+
     render() {
-        const { steamids, toggle, team } = this.props;
+        const { cxt, toggle, team } = this.props;
         return (
             <Col s={12} md={6}>
                 <Row className={`scoreboard_score ${this.props.team.orientation} no-margin-row ${team.side}`}>
@@ -16,9 +40,9 @@ class Teamboard extends Component<{ players: Player[], steamids: string[], team:
                     <Col s={12} md={2} className="score">{team.score}</Col>
                 </Row>
                 <div className={`scoreboard_container ${this.props.team.orientation}`}>
-                    {this.props.players.map(player =>
+                    {this.props.players.map(this.remapPlayer).map(player =>
                         <div className="scoreboard_player" key={player.steamid} onClick={() => toggle('players', { steamid: player.steamid })}>
-                            <div className="name">{player.name} <i className="material-icons">{steamids.includes(player.steamid) ? 'check_circle_outline' : 'edit'}</i></div>
+                            <div className="name">{player.name} <i className="material-icons">{cxt.players.map(player => player.steamid).includes(player.steamid) ? 'check_circle_outline' : 'edit'}</i></div>
                             <div className="steamid">{player.steamid}</div>
                         </div>)}
                 </div>
@@ -26,32 +50,17 @@ class Teamboard extends Component<{ players: Player[], steamids: string[], team:
     }
 }
 
-export default class Match extends Component<any, { game: CSGO | null, steamids: string[] }> {
+export default class Live extends Component<{toggle: Function, cxt: IContextData}, { game: CSGO | null }> {
     constructor(props: any) {
         super(props);
         this.state = {
-            game: null,
-            steamids: []
+            game: null
         }
     }
     async componentDidMount() {
         GSI.on('data', game => {
             this.setState({ game });
         });
-        const players = await api.players.get();
-
-        GSI.loadPlayers(players.map(player => (
-            {
-                id: player._id,
-                steamid: player.steamid,
-                name: player.username,
-                country: player.country,
-                realName: player.firstName,
-                avatar: player.avatar
-            }
-        )));
-
-        this.setState({ steamids: players.map(player => player.steamid) });
     }
     render() {
         const { game } = this.state;
@@ -72,8 +81,8 @@ export default class Match extends Component<any, { game: CSGO | null, steamids:
                         </Col>
                     </Row>
                     <Row>
-                        <Teamboard players={game.players.filter(player => player.team.orientation === "left")} team={left} steamids={this.state.steamids} toggle={this.props.toggle} />
-                        <Teamboard players={game.players.filter(player => player.team.orientation === "right")} team={right} steamids={this.state.steamids} toggle={this.props.toggle} />
+                        <Teamboard players={game.players.filter(player => player.team.orientation === "left")} cxt={this.props.cxt} team={left} toggle={this.props.toggle} />
+                        <Teamboard players={game.players.filter(player => player.team.orientation === "right")} cxt={this.props.cxt} team={right} toggle={this.props.toggle} />
 
                     </Row>
                 </div>
