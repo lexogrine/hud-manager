@@ -97,8 +97,8 @@ export const getHUDPanelSetting = (dirName: string) => {
 }
 
 export const openHUDsDirectory: express.RequestHandler = async (_req, res) => {
-    const dir = path.join(app.getPath('home'), 'HUDs', 'AA');
-    shell.showItemInFolder(dir);
+    const dir = path.join(app.getPath('home'), 'HUDs');
+    shell.openItem(dir);
     return res.sendStatus(200);
 }
 
