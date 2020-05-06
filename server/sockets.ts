@@ -144,7 +144,7 @@ export default function (server: http.Server, app: express.Router) {
 
     portListener.start();
 
-    app.get('/boltobserv/css/custom.css', async (req, res) => {
+    const customRadarCSS: express.RequestHandler = async (req, res) => {
         const sendDefault = () => res.sendFile(path.join(__dirname, "../boltobserv", "css", `custom.css`));
         if (!req.query.hud || typeof req.query.hud !== "string") {
             return sendDefault();
@@ -155,7 +155,14 @@ export default function (server: http.Server, app: express.Router) {
 
         const dir = path.join(Application.getPath('home'), 'HUDs', req.query.hud);
         return res.sendFile(path.join(dir, "radar.css"));
-    });
+    }
+
+    app.get('/boltobserv/css/custom.css', customRadarCSS);
+
+    app.get('/huds/:hud/custom.css', (req, res, next) =>{
+        req.query.hud = req.params.hud;
+        return customRadarCSS(req,res, next);
+    })
 
     app.get('/boltobserv/maps/:mapName/meta.json5', async (req, res) => {
         const sendDefault = () => res.sendFile(path.join(__dirname, "../boltobserv", "maps", req.params.mapName, "meta.json5"));
@@ -245,6 +252,10 @@ export default function (server: http.Server, app: express.Router) {
         })
         socket.on('get_config', (hud: string) => {
             socket.emit("hud_config", HUDState.get(hud));
+        });
+
+        socket.on("set_active_hlae", (hudUrl: string) => {
+            io.emit('active_hlae', hudUrl);
         });
     });
 

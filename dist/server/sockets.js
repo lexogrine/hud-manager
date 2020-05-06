@@ -209,7 +209,7 @@ function default_1(server, app) {
         }); });
     });
     portListener.start();
-    app.get('/boltobserv/css/custom.css', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
+    var customRadarCSS = function (req, res) { return __awaiter(_this, void 0, void 0, function () {
         var sendDefault, hud, dir;
         var _a;
         return __generator(this, function (_b) {
@@ -228,7 +228,12 @@ function default_1(server, app) {
                     return [2 /*return*/, res.sendFile(path_1["default"].join(dir, "radar.css"))];
             }
         });
-    }); });
+    }); };
+    app.get('/boltobserv/css/custom.css', customRadarCSS);
+    app.get('/huds/:hud/custom.css', function (req, res, next) {
+        req.query.hud = req.params.hud;
+        return customRadarCSS(req, res, next);
+    });
     app.get('/boltobserv/maps/:mapName/meta.json5', function (req, res) { return __awaiter(_this, void 0, void 0, function () {
         var sendDefault, result, _a, _b, _c, hud, dir, pathFile;
         var _d;
@@ -334,6 +339,9 @@ function default_1(server, app) {
         });
         socket.on('get_config', function (hud) {
             socket.emit("hud_config", exports.HUDState.get(hud));
+        });
+        socket.on("set_active_hlae", function (hudUrl) {
+            io.emit('active_hlae', hudUrl);
         });
     });
     mirv(function (data) {
