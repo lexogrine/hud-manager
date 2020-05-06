@@ -7,7 +7,7 @@ import * as directories from './init/directories';
 import init from './server'
 import { loadConfig } from './server/api/config';
 
-const isDev = process.env.DEV === "true";
+export const isDev = process.env.DEV === "true";
 
 async function createMainWindow(server: Server) {
     let win: BrowserWindow | null;

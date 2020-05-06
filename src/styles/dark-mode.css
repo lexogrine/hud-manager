@@ -1,6 +1,9 @@
 body{
-    background-color: #24272d;
+   background-color: transparent;
     color: #f4f4f4;
+}
+body.hlaegui {
+    overflow: hidden;
 }
 button.btn-primary:hover, button.btn-primary.disabled {
     background-color: #a63b03;

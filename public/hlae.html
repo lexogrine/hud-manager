@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Title of the document</title>
+</head>
+<style>
+    html,
+    body,
+    iframe {
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0);
+        width: 100vw;
+    }
+    body {
+        overflow: hidden;
+    }
+</style>
+
+<body style="margin:0;">
+    <iframe src="./?hlaegui" style="border: none; overflow:hidden;"></iframe>
+</body>
+
+<script>
+    //alert(window.afxInterop.pipeName);
+    setInterval(function () {
+        window.afxInterop.process();
+    }, 1);
+</script>
+
+</html>

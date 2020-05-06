@@ -335,6 +335,9 @@ function default_1(server, app) {
         socket.on('get_config', function (hud) {
             socket.emit("hud_config", exports.HUDState.get(hud));
         });
+        socket.on("set_active_hlae", function (hudUrl) {
+            io.emit('active_hlae', hudUrl);
+        });
     });
     mirv(function (data) {
         io.emit("update_mirv", data);

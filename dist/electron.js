@@ -52,7 +52,7 @@ var args_1 = __importDefault(require("./init/args"));
 var directories = __importStar(require("./init/directories"));
 var server_1 = __importDefault(require("./server"));
 var config_1 = require("./server/api/config");
-var isDev = process.env.DEV === "true";
+exports.isDev = process.env.DEV === "true";
 function createMainWindow(server) {
     return __awaiter(this, void 0, void 0, function () {
         var win, config, startUrl;
@@ -96,7 +96,7 @@ function createMainWindow(server) {
                         e.preventDefault();
                         electron_1.shell.openExternal(url);
                     });
-                    win.loadURL("" + (isDev ? "http://localhost:3000/?port=" + config.port : startUrl));
+                    win.loadURL("" + (exports.isDev ? "http://localhost:3000/?port=" + config.port : startUrl));
                     win.on("close", function () {
                         server.close();
                         win = null;

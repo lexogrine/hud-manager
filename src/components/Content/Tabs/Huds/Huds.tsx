@@ -55,6 +55,9 @@ export default class Huds extends React.Component<{ cxt: IContextData }, { confi
         const config = createCFG(this.state.form.radar, this.state.form.killfeed).file;
         api.csgo.run(config);
     }
+    runCSGOExperimental = () => {
+        api.csgo.runExperimental();
+    }
 
     handleZIPs = (files: FileList) => {
         const file = files[0];
@@ -137,6 +140,7 @@ export default class Huds extends React.Component<{ cxt: IContextData }, { confi
                                             OR
                                          </div>
                                         <Button className="round-btn run-csgo" disabled={killfeed && !config.hlaePath} onClick={this.runCSGO}>RUN CSGO</Button>
+                                        <Button className="round-btn run-csgo" disabled={killfeed && !config.hlaePath} onClick={this.runCSGOExperimental}>RUN EXPERIMENTAL</Button>
                                     </React.Fragment> : ''}
                                 </div>
                                 <div className="warning">

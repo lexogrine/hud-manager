@@ -71,6 +71,9 @@ body {
     z-index:1;
     top: 0;
 }
+.loaded {
+    background-color: #24272d;
+}
 .loaded.electron {
     padding-top:64px;
 }

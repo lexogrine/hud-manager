@@ -9,6 +9,7 @@ import Settings from './../../../../styles/Settings.png';
 import Display from './../../../../styles/Display.png';
 import Map from './../../../../styles/Map.png';
 import Killfeed from './../../../../styles/Killfeed.png';
+import { socket } from '../Live/Live';
 
 const hashCode = (s: string) => s.split('').reduce((a, b) => { a = ((a << 5) - a) + b.charCodeAt(0); return a & a }, 0).toString();
 
@@ -20,6 +21,9 @@ interface IProps {
 export default class HudEntry extends Component<IProps> {
     startHUD(dir: string) {
         api.huds.start(dir);
+    }
+    setHUD = (url: string) => {
+        socket.emit("set_active_hlae", url);
     }
     render() {
         const { hud, toggleConfig } = this.props;
@@ -49,6 +53,7 @@ export default class HudEntry extends Component<IProps> {
                             <img src={HyperLink} id={`hud_link_${hashCode(hud.dir)}`} className='action' alt="Local network's HUD's URL"/>
                             {hud.panel ? <img src={Settings} onClick={toggleConfig(hud)} className='action' alt="HUD's panel" /> : ''}
                             { Config.isElectron ? <img src={Display} onClick={() => this.startHUD(hud.dir)} className='action' alt="Start HUD" /> : null}
+                            { Config.isElectron ? <div onClick={() => this.setHUD(hud.url)}>Set</div>: null}
                         </Col>
                     </Row>
                     <Row>

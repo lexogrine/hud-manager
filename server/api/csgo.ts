@@ -5,12 +5,17 @@ import { getGamePath } from 'steam-game-path';
 import express from 'express';
 import { loadConfig } from './config';
 import { GSI } from './../sockets';
-import { spawn } from 'child_process';
+import { spawn, ChildProcess } from 'child_process';
 import { Config } from '../../types/interfaces';
+import { isDev } from './../../electron';
 
 interface CFG {
     cfg: string,
     file: string
+}
+
+const interop: { process: ChildProcess | null} = {
+    process: null
 }
 
 function createCFG(customRadar: boolean, customKillfeed: boolean): CFG {
@@ -160,6 +165,10 @@ export const run: express.RequestHandler = async (req, res) => {
     const isHLAE = req.query.config.includes("killfeed");
     const exePath = isHLAE ? HLAEPath : path.join(CSGOData.steam.path, "Steam.exe");
 
+    if(isHLAE && (!HLAEPath || !fs.existsSync(HLAEPath))){
+        return res.sendStatus(404);
+    }
+
     const args = [];
 
     if(!isHLAE){
@@ -171,6 +180,53 @@ export const run: express.RequestHandler = async (req, res) => {
     try {
         const steam = spawn(`"${exePath}"`, args, { detached: true, shell: true, stdio: 'ignore' });
         steam.unref();
+    } catch(e) {
+        return res.sendStatus(500);
+    }
+    return res.sendStatus(200);
+}
+export const runExperimental: express.RequestHandler = async (req, res) => {
+    const config = await loadConfig();
+    if(!config){
+        return res.sendStatus(422);
+    }
+    let CSGOData;
+    try {
+        CSGOData = getGamePath(730);
+    } catch {
+        return res.sendStatus(404);
+    }
+    if(!CSGOData || !CSGOData.steam || !CSGOData.steam.path || !CSGOData.game || !CSGOData.game.path){
+        return res.sendStatus(404);
+    }
+
+    const HLAEPath = config.hlaePath;
+    const CSGOPath = path.join(CSGOData.game.path, 'csgo.exe');
+
+    const exePath = HLAEPath;
+
+    if(!HLAEPath || !fs.existsSync(HLAEPath)){
+        return res.sendStatus(404);
+    }
+
+    const args = [];
+
+    const url = isDev ? `http://localhost:3000/hlae.html` : `http://localhost:${config.port}/hlae.html`;
+
+    args.push('-csgoLauncher','-noGui', '-autoStart', `-csgoExe "${CSGOPath}"`, '-gfxFull false', `-customLaunchOptions "-afxInteropLight"`);
+    
+
+    try {
+        const steam = spawn(`"${exePath}"`, args, { detached: true, shell: true, stdio: 'ignore' });
+        steam.unref();
+        if(!interop.process){
+
+            //TODO: Change to path in config
+            const pathTo = path.join("D:", "HLAEHUD", "afx-cefhud-interop.exe");
+            const process = spawn(`${pathTo}`, [`--url=${url}`]);
+            //console.log(pathTo, `--url=${url}`);
+            interop.process = process;
+        }
     } catch(e) {
         return res.sendStatus(500);
     }

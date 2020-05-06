@@ -165,7 +165,6 @@ exports.openHUDsDirectory = function (_req, res) { return __awaiter(void 0, void
     var dir;
     return __generator(this, function (_a) {
         dir = path.join(electron_1.app.getPath('home'), 'HUDs');
-        console.log(dir);
         electron_1.shell.openItem(dir);
         return [2 /*return*/, res.sendStatus(200)];
     });

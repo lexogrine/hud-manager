@@ -66,6 +66,8 @@ function default_1(router, io) {
         .get(csgo.getLatestData);
     router.route('/api/csgo/run')
         .get(csgo.run);
+    router.route('/api/csgo/experimental')
+        .get(csgo.runExperimental);
     router.route('/api/cfg')
         .get(csgo.checkCFGs)
         .put(csgo.createCFGs);

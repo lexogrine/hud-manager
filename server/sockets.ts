@@ -246,6 +246,10 @@ export default function (server: http.Server, app: express.Router) {
         socket.on('get_config', (hud: string) => {
             socket.emit("hud_config", HUDState.get(hud));
         });
+
+        socket.on("set_active_hlae", (hudUrl: string) => {
+            io.emit('active_hlae', hudUrl);
+        })
     });
 
     mirv(data => {
