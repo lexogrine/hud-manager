@@ -7,15 +7,11 @@ import { loadConfig } from './config';
 import { GSI } from './../sockets';
 import { spawn, ChildProcess } from 'child_process';
 import { Config } from '../../types/interfaces';
-import { isDev } from './../../electron';
+import { isDev, AFXInterop } from './../../electron';
 
 interface CFG {
     cfg: string,
     file: string
-}
-
-const interop: { process: ChildProcess | null} = {
-    process: null
 }
 
 function createCFG(customRadar: boolean, customKillfeed: boolean): CFG {
@@ -219,12 +215,12 @@ export const runExperimental: express.RequestHandler = async (req, res) => {
     try {
         const steam = spawn(`"${exePath}"`, args, { detached: true, shell: true, stdio: 'ignore' });
         steam.unref();
-        if(!interop.process){
+        if(!AFXInterop.process){
 
             //TODO: Change to path in config
-            const process = spawn(`${config.afxCEFHudInteropPath}`, [`--url=${url}`]);
+            const process = spawn(`${config.afxCEFHudInteropPath}`, [`--url=${url}`], { stdio: 'ignore' });
             //console.log(pathTo, `--url=${url}`);
-            interop.process = process;
+            AFXInterop.process = process;
         }
     } catch(e) {
         return res.sendStatus(500);

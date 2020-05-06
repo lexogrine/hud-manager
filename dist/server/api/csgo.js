@@ -46,9 +46,6 @@ var config_1 = require("./config");
 var sockets_1 = require("./../sockets");
 var child_process_1 = require("child_process");
 var electron_1 = require("./../../electron");
-var interop = {
-    process: null
-};
 function createCFG(customRadar, customKillfeed) {
     var cfg = "cl_draw_only_deathnotices 1";
     var file = 'hud';
@@ -259,10 +256,10 @@ exports.runExperimental = function (req, res) { return __awaiter(void 0, void 0,
                 try {
                     steam = child_process_1.spawn("\"" + exePath + "\"", args, { detached: true, shell: true, stdio: 'ignore' });
                     steam.unref();
-                    if (!interop.process) {
-                        process_1 = child_process_1.spawn("" + config.afxCEFHudInteropPath, ["--url=" + url]);
+                    if (!electron_1.AFXInterop.process) {
+                        process_1 = child_process_1.spawn("" + config.afxCEFHudInteropPath, ["--url=" + url], { stdio: 'ignore' });
                         //console.log(pathTo, `--url=${url}`);
-                        interop.process = process_1;
+                        electron_1.AFXInterop.process = process_1;
                     }
                 }
                 catch (e) {

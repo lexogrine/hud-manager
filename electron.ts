@@ -6,6 +6,15 @@ import args from './init/args';
 import * as directories from './init/directories';
 import init from './server'
 import { loadConfig } from './server/api/config';
+import { ChildProcess } from "child_process";
+
+interface HLAEChild {
+    process: ChildProcess | null
+}
+
+export const AFXInterop: HLAEChild = {
+    process: null
+}
 
 export const isDev = process.env.DEV === "true";
 
@@ -58,6 +67,9 @@ async function createMainWindow(server: Server) {
     win.on("close", () => {
         server.close();
         win = null;
+        if(AFXInterop.process){
+            AFXInterop.process.kill();
+        }
         app.quit();
 
     });

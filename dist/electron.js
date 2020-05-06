@@ -52,6 +52,9 @@ var args_1 = __importDefault(require("./init/args"));
 var directories = __importStar(require("./init/directories"));
 var server_1 = __importDefault(require("./server"));
 var config_1 = require("./server/api/config");
+exports.AFXInterop = {
+    process: null
+};
 exports.isDev = process.env.DEV === "true";
 function createMainWindow(server) {
     return __awaiter(this, void 0, void 0, function () {
@@ -100,6 +103,9 @@ function createMainWindow(server) {
                     win.on("close", function () {
                         server.close();
                         win = null;
+                        if (exports.AFXInterop.process) {
+                            exports.AFXInterop.process.kill();
+                        }
                         electron_1.app.quit();
                     });
                     return [2 /*return*/];
