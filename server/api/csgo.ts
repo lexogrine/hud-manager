@@ -205,7 +205,7 @@ export const runExperimental: express.RequestHandler = async (req, res) => {
 
     const exePath = HLAEPath;
 
-    if(!HLAEPath || !fs.existsSync(HLAEPath)){
+    if(!HLAEPath || !fs.existsSync(HLAEPath) || !config.afxCEFHudInteropPath || !fs.existsSync(config.afxCEFHudInteropPath)){
         return res.sendStatus(404);
     }
 
@@ -213,7 +213,7 @@ export const runExperimental: express.RequestHandler = async (req, res) => {
 
     const url = isDev ? `http://localhost:3000/hlae.html` : `http://localhost:${config.port}/hlae.html`;
 
-    args.push('-csgoLauncher','-noGui', '-autoStart', `-csgoExe "${CSGOPath}"`, '-gfxFull false', `-customLaunchOptions "-afxInteropLight"`);
+    args.push('-csgoLauncher','-noGui', '-autoStart', `-csgoExe "${CSGOPath}"`, '-gfxFull false', `-customLaunchOptions "-afxInteropLight +exec hud_interop"`);
     
 
     try {
@@ -222,8 +222,7 @@ export const runExperimental: express.RequestHandler = async (req, res) => {
         if(!interop.process){
 
             //TODO: Change to path in config
-            const pathTo = path.join("D:", "HLAEHUD", "afx-cefhud-interop.exe");
-            const process = spawn(`${pathTo}`, [`--url=${url}`]);
+            const process = spawn(`${config.afxCEFHudInteropPath}`, [`--url=${url}`]);
             //console.log(pathTo, `--url=${url}`);
             interop.process = process;
         }

@@ -12,14 +12,21 @@ export const loadConfig = async (): Promise<Config | null> => {
                 return res(null);
             }
             if(config.length){
-                if(!config[0].hlaePath || fs.existsSync(config[0].hlaePath)){
+                if((!config[0].hlaePath || fs.existsSync(config[0].hlaePath)) && (!config[0].afxCEFHudInteropPath || fs.existsSync(config[0].afxCEFHudInteropPath))){
                     return res(config[0]);
                 }
-                config[0].hlaePath = '';
+                if(config[0].hlaePath && !fs.existsSync(config[0].hlaePath)){
+                    config[0].hlaePath = '';
+                }
+                
+                if(config[0].afxCEFHudInteropPath && !fs.existsSync(config[0].afxCEFHudInteropPath)){
+                    config[0].afxCEFHudInteropPath = '';
+                }
+                
                 return res(await setConfig(config[0]));
 
             }
-            configs.insert({steamApiKey:'',token:'',port:1349, hlaePath: ''}, (err, config) => {
+            configs.insert({steamApiKey:'',token:'',port:1349, hlaePath: '', afxCEFHudInteropPath: ''}, (err, config) => {
                 if(err){
                     return res(null);
                 }
@@ -42,7 +49,8 @@ export const updateConfig: express.RequestHandler = async (req, res) => {
         steamApiKey: req.body.steamApiKey,
         port: Number(req.body.port),
         token: req.body.token,
-        hlaePath: req.body.hlaePath
+        hlaePath: req.body.hlaePath,
+        afxCEFHudInteropPath: req.body.afxCEFHudInteropPath
     }
 
     const config = await setConfig(updated);

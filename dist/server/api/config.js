@@ -54,15 +54,20 @@ exports.loadConfig = function () { return __awaiter(void 0, void 0, void 0, func
                                     return [2 /*return*/, res(null)];
                                 }
                                 if (!config.length) return [3 /*break*/, 2];
-                                if (!config[0].hlaePath || fs_1["default"].existsSync(config[0].hlaePath)) {
+                                if ((!config[0].hlaePath || fs_1["default"].existsSync(config[0].hlaePath)) && (!config[0].afxCEFHudInteropPath || fs_1["default"].existsSync(config[0].afxCEFHudInteropPath))) {
                                     return [2 /*return*/, res(config[0])];
                                 }
-                                config[0].hlaePath = '';
+                                if (config[0].hlaePath && !fs_1["default"].existsSync(config[0].hlaePath)) {
+                                    config[0].hlaePath = '';
+                                }
+                                if (config[0].afxCEFHudInteropPath && !fs_1["default"].existsSync(config[0].afxCEFHudInteropPath)) {
+                                    config[0].afxCEFHudInteropPath = '';
+                                }
                                 _a = res;
                                 return [4 /*yield*/, exports.setConfig(config[0])];
                             case 1: return [2 /*return*/, _a.apply(void 0, [_b.sent()])];
                             case 2:
-                                configs.insert({ steamApiKey: '', token: '', port: 1349, hlaePath: '' }, function (err, config) {
+                                configs.insert({ steamApiKey: '', token: '', port: 1349, hlaePath: '', afxCEFHudInteropPath: '' }, function (err, config) {
                                     if (err) {
                                         return res(null);
                                     }
@@ -98,7 +103,8 @@ exports.updateConfig = function (req, res) { return __awaiter(void 0, void 0, vo
                     steamApiKey: req.body.steamApiKey,
                     port: Number(req.body.port),
                     token: req.body.token,
-                    hlaePath: req.body.hlaePath
+                    hlaePath: req.body.hlaePath,
+                    afxCEFHudInteropPath: req.body.afxCEFHudInteropPath
                 };
                 return [4 /*yield*/, exports.setConfig(updated)];
             case 1:

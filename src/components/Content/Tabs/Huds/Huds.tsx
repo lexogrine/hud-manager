@@ -41,7 +41,8 @@ export default class Huds extends React.Component<{ cxt: IContextData }, { confi
                 steamApiKey: '',
                 hlaePath: '',
                 port: 1349,
-                token: ''
+                token: '',
+                afxCEFHudInteropPath:''
             },
             form: {
                 killfeed: false,
@@ -140,7 +141,7 @@ export default class Huds extends React.Component<{ cxt: IContextData }, { confi
                                             OR
                                          </div>
                                         <Button className="round-btn run-csgo" disabled={killfeed && !config.hlaePath} onClick={this.runCSGO}>RUN CSGO</Button>
-                                        <Button className="round-btn run-csgo" disabled={killfeed && !config.hlaePath} onClick={this.runCSGOExperimental}>RUN EXPERIMENTAL</Button>
+                                        <Button className="round-btn run-csgo" disabled={!config.hlaePath || !config.afxCEFHudInteropPath} onClick={this.runCSGOExperimental}>RUN EXPERIMENTAL</Button>
                                     </React.Fragment> : ''}
                                 </div>
                                 <div className="warning">

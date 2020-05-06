@@ -229,7 +229,7 @@ exports.run = function (req, res) { return __awaiter(void 0, void 0, void 0, fun
     });
 }); };
 exports.runExperimental = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var config, CSGOData, HLAEPath, CSGOPath, exePath, args, url, steam, pathTo, process_1;
+    var config, CSGOData, HLAEPath, CSGOPath, exePath, args, url, steam, process_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0: return [4 /*yield*/, config_1.loadConfig()];
@@ -250,18 +250,17 @@ exports.runExperimental = function (req, res) { return __awaiter(void 0, void 0,
                 HLAEPath = config.hlaePath;
                 CSGOPath = path_1["default"].join(CSGOData.game.path, 'csgo.exe');
                 exePath = HLAEPath;
-                if (!HLAEPath || !fs_1["default"].existsSync(HLAEPath)) {
+                if (!HLAEPath || !fs_1["default"].existsSync(HLAEPath) || !config.afxCEFHudInteropPath || !fs_1["default"].existsSync(config.afxCEFHudInteropPath)) {
                     return [2 /*return*/, res.sendStatus(404)];
                 }
                 args = [];
                 url = electron_1.isDev ? "http://localhost:3000/hlae.html" : "http://localhost:" + config.port + "/hlae.html";
-                args.push('-csgoLauncher', '-noGui', '-autoStart', "-csgoExe \"" + CSGOPath + "\"", '-gfxFull false', "-customLaunchOptions \"-afxInteropLight +afx_interop connect 1\"");
+                args.push('-csgoLauncher', '-noGui', '-autoStart', "-csgoExe \"" + CSGOPath + "\"", '-gfxFull false', "-customLaunchOptions \"-afxInteropLight +exec hud_interop\"");
                 try {
                     steam = child_process_1.spawn("\"" + exePath + "\"", args, { detached: true, shell: true, stdio: 'ignore' });
                     steam.unref();
                     if (!interop.process) {
-                        pathTo = path_1["default"].join("D:", "HLAEHUD", "afx-cefhud-interop.exe");
-                        process_1 = child_process_1.spawn("" + pathTo, ["--url=" + url]);
+                        process_1 = child_process_1.spawn("" + config.afxCEFHudInteropPath, ["--url=" + url]);
                         //console.log(pathTo, `--url=${url}`);
                         interop.process = process_1;
                     }

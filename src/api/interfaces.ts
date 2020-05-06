@@ -62,7 +62,8 @@ export interface Config {
     port: number,
     steamApiKey: string,
     token: string,
-    hlaePath: string
+    hlaePath: string,
+    afxCEFHudInteropPath: string,
 
     /*"PrintPlayerData": false,
     "DisplayAvatars": true,
