@@ -29,6 +29,6 @@ export default class App extends React.Component<any, IState> {
             <Layout></Layout>
         )
         if(!this.state.hudURL) return null;
-        return <iframe src={this.state.hudURL} style={{border:'none',width:'100vw',height:'100%', overflow:'hidden'}}></iframe>
+        return <iframe src={this.state.hudURL} style={{border:'none',width:'100vw',height:'100%', overflow:'hidden'}} title="AFX Mode HUD"></iframe>
     }
 }

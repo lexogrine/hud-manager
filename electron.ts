@@ -1,7 +1,6 @@
 import { app, BrowserWindow, shell } from "electron";
 import path from 'path';
 import { Server } from 'http';
-import url from 'url';
 import args from './init/args';
 import * as directories from './init/directories';
 import init from './server'

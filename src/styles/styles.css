@@ -488,7 +488,7 @@ img.smallLogo {
     padding-right:0;
 }
 .config-entry .running-csgo-container .warning{
-    position: absolute;
+    flex-direction:column;
     align-self: center;
     bottom:4px;
     font-size:10pt;
