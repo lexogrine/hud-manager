@@ -166,19 +166,19 @@ exports.getLatestData = function (_req, res) { return __awaiter(void 0, void 0, 
     });
 }); };
 exports.getSteamPath = function (_req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var CSGOPath_1, CSGOPath;
+    var CSGOPath;
     return __generator(this, function (_a) {
         try {
-            CSGOPath_1 = steam_game_path_1.getGamePath(730);
+            CSGOPath = steam_game_path_1.getGamePath(730);
+            if (!CSGOPath || !CSGOPath.steam || !CSGOPath.steam.path) {
+                return [2 /*return*/, res.status(404).json({ success: false })];
+            }
+            return [2 /*return*/, res.json({ success: true, steamPath: path_1["default"].join(CSGOPath.steam.path, 'Steam.exe') })];
         }
         catch (_b) {
             return [2 /*return*/, res.status(404).json({ success: false })];
         }
-        CSGOPath = steam_game_path_1.getGamePath(730);
-        if (!CSGOPath || !CSGOPath.steam || !CSGOPath.steam.path) {
-            return [2 /*return*/, res.status(404).json({ success: false })];
-        }
-        return [2 /*return*/, res.json({ success: true, steamPath: path_1["default"].join(CSGOPath.steam.path, 'Steam.exe') })];
+        return [2 /*return*/];
     });
 }); };
 exports.run = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
@@ -258,7 +258,6 @@ exports.runExperimental = function (req, res) { return __awaiter(void 0, void 0,
                     steam.unref();
                     if (!electron_1.AFXInterop.process) {
                         process_1 = child_process_1.spawn("" + config.afxCEFHudInteropPath, ["--url=" + url], { stdio: 'ignore' });
-                        //console.log(pathTo, `--url=${url}`);
                         electron_1.AFXInterop.process = process_1;
                     }
                 }

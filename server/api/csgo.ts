@@ -1,11 +1,10 @@
 import fs from 'fs';
 import path from 'path';
-import * as VDF from '@node-steam/vdf';
 import { getGamePath } from 'steam-game-path';
 import express from 'express';
 import { loadConfig } from './config';
 import { GSI } from './../sockets';
-import { spawn, ChildProcess } from 'child_process';
+import { spawn } from 'child_process';
 import { Config } from '../../types/interfaces';
 import { isDev, AFXInterop } from './../../electron';
 
@@ -130,14 +129,13 @@ export const getLatestData: express.RequestHandler = async (_req, res) => {
 export const getSteamPath: express.RequestHandler = async (_req, res) => {
     try {
         const CSGOPath = getGamePath(730);
+        if(!CSGOPath || !CSGOPath.steam || !CSGOPath.steam.path){
+            return res.status(404).json({success: false});
+        }
+        return res.json({success:true, steamPath: path.join(CSGOPath.steam.path, 'Steam.exe')});
     } catch {
         return res.status(404).json({success: false});
     }
-    const CSGOPath = getGamePath(730);
-    if(!CSGOPath || !CSGOPath.steam || !CSGOPath.steam.path){
-        return res.status(404).json({success: false});
-    }
-    return res.json({success:true, steamPath: path.join(CSGOPath.steam.path, 'Steam.exe')});
 }
 
 export const run: express.RequestHandler = async (req, res) => {
@@ -217,9 +215,7 @@ export const runExperimental: express.RequestHandler = async (req, res) => {
         steam.unref();
         if(!AFXInterop.process){
 
-            //TODO: Change to path in config
             const process = spawn(`${config.afxCEFHudInteropPath}`, [`--url=${url}`], { stdio: 'ignore' });
-            //console.log(pathTo, `--url=${url}`);
             AFXInterop.process = process;
         }
     } catch(e) {

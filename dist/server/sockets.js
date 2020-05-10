@@ -63,7 +63,6 @@ var portscanner_1 = __importDefault(require("portscanner"));
 var config_1 = require("./api/config");
 var radar = require("./../boltobserv/index.js");
 var mirv = require("./server")["default"];
-var launchTime = (new Date()).getTime();
 var DevHUDListener = /** @class */ (function () {
     function DevHUDListener(port) {
         var _this = this;
