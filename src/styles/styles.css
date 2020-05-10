@@ -847,7 +847,7 @@ form .card > .card-body > button.btn {
     margin-top: 17px;
 }
 .radar_support, .killfeed_support {
-    z-index:0;
+    z-index:5;
     position:relative;
 }
 .radar_support:hover, .killfeed_support:hover {
