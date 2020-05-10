@@ -47,21 +47,8 @@ export interface Config {
     port: number,
     steamApiKey: string,
     token: string,
-    hlaePath: string
-
-    /*"PrintPlayerData": false,
-    "DisplayAvatars": true,
-    "DisplayPlayerAvatars": true,
-    "DisplayTeamFlags": false,
-    "DisplayPlayerFlags": true,
-    "SpecialEvent": "SHOWMATCH",
-    "LeftImage": "/files/league/league.png",
-    "LeftPrimary": "Primary League Text",
-    "LeftSecondary": "Secondary League Text",
-    "RightImage": "/files/img/elements/icon_microphone.png",
-    "RightPrimary": "Make sure to follow me",
-    "RightSecondary": "@KomodoAU on Twitter and Twitch",
-    "GSIToken": "120987"*/
+    hlaePath: string,
+    afxCEFHudInteropPath: string,
 }
 export type PanelInput = {
     type: 'text' | 'number' | 'select' | 'image'

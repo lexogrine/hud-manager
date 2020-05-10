@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import api from './../../../../api/api';
 import config from './../../../../api/config';
 import { Col, Row } from 'reactstrap';
 import CSGOGSI, { CSGO, Player, Team, PlayerExtension } from 'csgogsi-socket';

@@ -45,6 +45,7 @@ var steam_game_path_1 = require("steam-game-path");
 var config_1 = require("./config");
 var sockets_1 = require("./../sockets");
 var child_process_1 = require("child_process");
+var electron_1 = require("./../../electron");
 function createCFG(customRadar, customKillfeed) {
     var cfg = "cl_draw_only_deathnotices 1";
     var file = 'hud';
@@ -165,19 +166,19 @@ exports.getLatestData = function (_req, res) { return __awaiter(void 0, void 0, 
     });
 }); };
 exports.getSteamPath = function (_req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var CSGOPath_1, CSGOPath;
+    var CSGOPath;
     return __generator(this, function (_a) {
         try {
-            CSGOPath_1 = steam_game_path_1.getGamePath(730);
+            CSGOPath = steam_game_path_1.getGamePath(730);
+            if (!CSGOPath || !CSGOPath.steam || !CSGOPath.steam.path) {
+                return [2 /*return*/, res.status(404).json({ success: false })];
+            }
+            return [2 /*return*/, res.json({ success: true, steamPath: path_1["default"].join(CSGOPath.steam.path, 'Steam.exe') })];
         }
         catch (_b) {
             return [2 /*return*/, res.status(404).json({ success: false })];
         }
-        CSGOPath = steam_game_path_1.getGamePath(730);
-        if (!CSGOPath || !CSGOPath.steam || !CSGOPath.steam.path) {
-            return [2 /*return*/, res.status(404).json({ success: false })];
-        }
-        return [2 /*return*/, res.json({ success: true, steamPath: path_1["default"].join(CSGOPath.steam.path, 'Steam.exe') })];
+        return [2 /*return*/];
     });
 }); };
 exports.run = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
@@ -203,6 +204,9 @@ exports.run = function (req, res) { return __awaiter(void 0, void 0, void 0, fun
                 CSGOPath = path_1["default"].join(CSGOData.game.path, 'csgo.exe');
                 isHLAE = req.query.config.includes("killfeed");
                 exePath = isHLAE ? HLAEPath : path_1["default"].join(CSGOData.steam.path, "Steam.exe");
+                if (isHLAE && (!HLAEPath || !fs_1["default"].existsSync(HLAEPath))) {
+                    return [2 /*return*/, res.sendStatus(404)];
+                }
                 args = [];
                 if (!isHLAE) {
                     args.push('-applaunch 730', "+exec " + req.query.config);
@@ -213,6 +217,49 @@ exports.run = function (req, res) { return __awaiter(void 0, void 0, void 0, fun
                 try {
                     steam = child_process_1.spawn("\"" + exePath + "\"", args, { detached: true, shell: true, stdio: 'ignore' });
                     steam.unref();
+                }
+                catch (e) {
+                    return [2 /*return*/, res.sendStatus(500)];
+                }
+                return [2 /*return*/, res.sendStatus(200)];
+        }
+    });
+}); };
+exports.runExperimental = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var config, CSGOData, HLAEPath, CSGOPath, exePath, args, url, steam, process_1;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, config_1.loadConfig()];
+            case 1:
+                config = _a.sent();
+                if (!config) {
+                    return [2 /*return*/, res.sendStatus(422)];
+                }
+                try {
+                    CSGOData = steam_game_path_1.getGamePath(730);
+                }
+                catch (_b) {
+                    return [2 /*return*/, res.sendStatus(404)];
+                }
+                if (!CSGOData || !CSGOData.steam || !CSGOData.steam.path || !CSGOData.game || !CSGOData.game.path) {
+                    return [2 /*return*/, res.sendStatus(404)];
+                }
+                HLAEPath = config.hlaePath;
+                CSGOPath = path_1["default"].join(CSGOData.game.path, 'csgo.exe');
+                exePath = HLAEPath;
+                if (!HLAEPath || !fs_1["default"].existsSync(HLAEPath) || !config.afxCEFHudInteropPath || !fs_1["default"].existsSync(config.afxCEFHudInteropPath)) {
+                    return [2 /*return*/, res.sendStatus(404)];
+                }
+                args = [];
+                url = electron_1.isDev ? "http://localhost:3000/hlae.html" : "http://localhost:" + config.port + "/hlae.html";
+                args.push('-csgoLauncher', '-noGui', '-autoStart', "-csgoExe \"" + CSGOPath + "\"", '-gfxFull false', "-customLaunchOptions \"-afxInteropLight +exec hud_interop\"");
+                try {
+                    steam = child_process_1.spawn("\"" + exePath + "\"", args, { detached: true, shell: true, stdio: 'ignore' });
+                    steam.unref();
+                    if (!electron_1.AFXInterop.process) {
+                        process_1 = child_process_1.spawn("" + config.afxCEFHudInteropPath, ["--url=" + url], { stdio: 'ignore' });
+                        electron_1.AFXInterop.process = process_1;
+                    }
                 }
                 catch (e) {
                     return [2 /*return*/, res.sendStatus(500)];

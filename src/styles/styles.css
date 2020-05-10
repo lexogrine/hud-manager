@@ -71,6 +71,9 @@ body {
     z-index:1;
     top: 0;
 }
+.loaded {
+    background-color: #24272d;
+}
 .loaded.electron {
     padding-top:64px;
 }
@@ -485,7 +488,7 @@ img.smallLogo {
     padding-right:0;
 }
 .config-entry .running-csgo-container .warning{
-    position: absolute;
+    flex-direction:column;
     align-self: center;
     bottom:4px;
     font-size:10pt;
@@ -844,7 +847,7 @@ form .card > .card-body > button.btn {
     margin-top: 17px;
 }
 .radar_support, .killfeed_support {
-    z-index:0;
+    z-index:5;
     position:relative;
 }
 .radar_support:hover, .killfeed_support:hover {

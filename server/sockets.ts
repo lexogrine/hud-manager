@@ -11,11 +11,10 @@ import { getHUDData } from './../server/api/huds';
 import { getMatches, updateMatch } from './api/match';
 import fs from 'fs';
 import portscanner from 'portscanner';
-import { loadConfig,setConfig } from './api/config';
+import { loadConfig } from './api/config';
 
 const radar = require("./../boltobserv/index.js");
 const mirv = require("./server").default;
-const launchTime = (new Date()).getTime();
 
 class DevHUDListener {
     port: number;

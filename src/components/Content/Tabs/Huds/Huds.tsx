@@ -32,7 +32,21 @@ function createCFG(customRadar: boolean, customKillfeed: boolean): CFG {
     return { cfg, file };
 }
 
-export default class Huds extends React.Component<{ cxt: IContextData }, { config: I.Config, huds: I.HUD[], form: { killfeed: boolean, radar: boolean }, active: I.HUD | null }> {
+interface IProps {
+    cxt: IContextData
+}
+interface IState {
+    config: I.Config,
+    huds: I.HUD[],
+    form: {
+        killfeed: boolean,
+        radar: boolean,
+        afx: boolean
+    },
+    active: I.HUD | null
+}
+
+export default class Huds extends React.Component<IProps, IState> {
     constructor(props: { cxt: IContextData }) {
         super(props);
         this.state = {
@@ -41,11 +55,13 @@ export default class Huds extends React.Component<{ cxt: IContextData }, { confi
                 steamApiKey: '',
                 hlaePath: '',
                 port: 1349,
-                token: ''
+                token: '',
+                afxCEFHudInteropPath:''
             },
             form: {
                 killfeed: false,
-                radar: false
+                radar: false,
+                afx: false
             },
             active: null
         }
@@ -54,6 +70,9 @@ export default class Huds extends React.Component<{ cxt: IContextData }, { confi
     runCSGO = () => {
         const config = createCFG(this.state.form.radar, this.state.form.killfeed).file;
         api.csgo.run(config);
+    }
+    runCSGOExperimental = () => {
+        api.csgo.runExperimental();
     }
 
     handleZIPs = (files: FileList) => {
@@ -70,7 +89,7 @@ export default class Huds extends React.Component<{ cxt: IContextData }, { confi
             api.huds.upload(reader.result);
         }
     }
-    changeForm = (name: 'killfeed' | 'radar') => (e: any) => {
+    changeForm = (name: 'killfeed' | 'radar' | 'afx') => (e: any) => {
         const { form } = this.state;
         form[name] = !form[name];
         this.setState({ form });
@@ -95,7 +114,7 @@ export default class Huds extends React.Component<{ cxt: IContextData }, { confi
         this.setState({ active: hud || null });
     }
     render() {
-        const { killfeed, radar } = this.state.form;
+        const { killfeed, radar, afx } = this.state.form;
         const { active, config } = this.state
         if (active) {
             return <React.Fragment>
@@ -126,6 +145,12 @@ export default class Huds extends React.Component<{ cxt: IContextData }, { confi
                             <Switch isOn={this.state.form.killfeed} id="killfeed-toggle" handleToggle={this.changeForm('killfeed')} />
                         </Col>
                         <Col md="12" className="config-entry">
+                            <div className="config-description">
+                                Use built-in HUD (Experimental mode, uses AFX Interop)
+                            </div>
+                            <Switch isOn={this.state.form.afx} id="afx-toggle" handleToggle={this.changeForm('afx')} />
+                        </Col>
+                        <Col md="12" className="config-entry">
                             <div className="running-csgo-container">
                                 <div>
                                     <div className="config-description">
@@ -136,11 +161,16 @@ export default class Huds extends React.Component<{ cxt: IContextData }, { confi
                                         <div className="config-description">
                                             OR
                                          </div>
-                                        <Button className="round-btn run-csgo" disabled={killfeed && !config.hlaePath} onClick={this.runCSGO}>RUN CSGO</Button>
+                                        <Button className="round-btn run-csgo" disabled={(killfeed && !config.hlaePath) || (afx && (!config.hlaePath || !config.afxCEFHudInteropPath))} onClick={!afx ? this.runCSGO : this.runCSGOExperimental}>RUN CSGO</Button>
                                     </React.Fragment> : ''}
                                 </div>
                                 <div className="warning">
-                                        {killfeed && !config.hlaePath && isElectron ? 'Specify HLAE path in settings in order to use custom killfeed functionality' : ''}
+                                        {(killfeed || afx) && !config.hlaePath && isElectron ? <div>Specify HLAE path in settings in order to use custom killfeeds or AFX mode</div> : null}
+                                        { afx && !config.afxCEFHudInteropPath && isElectron ? <div>Specify AFX Interop path in settings in order to use AFX mode</div> :null }
+                                        { afx && config.afxCEFHudInteropPath && config.hlaePath && isElectron ? <>
+                                            <div>When using AFX mode, after joining the match just click on "SET" button - no need to start overlay.</div>
+                                            <div>Note: You need to execute above commands manually in this mode</div>
+                                        </> :null }
                                 </div>
                             </div>
 

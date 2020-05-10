@@ -1,13 +1,21 @@
 import { app, BrowserWindow, shell } from "electron";
 import path from 'path';
 import { Server } from 'http';
-import url from 'url';
 import args from './init/args';
 import * as directories from './init/directories';
 import init from './server'
 import { loadConfig } from './server/api/config';
+import { ChildProcess } from "child_process";
 
-const isDev = process.env.DEV === "true";
+interface HLAEChild {
+    process: ChildProcess | null
+}
+
+export const AFXInterop: HLAEChild = {
+    process: null
+}
+
+export const isDev = process.env.DEV === "true";
 
 async function createMainWindow(server: Server) {
     let win: BrowserWindow | null;
@@ -58,6 +66,9 @@ async function createMainWindow(server: Server) {
     win.on("close", () => {
         server.close();
         win = null;
+        if(AFXInterop.process){
+            AFXInterop.process.kill();
+        }
         app.quit();
 
     });
