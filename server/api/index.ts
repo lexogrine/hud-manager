@@ -77,8 +77,8 @@ export default function (router: express.Router, io: socketio.Server) {
     router.route('/api/csgo/run')
         .get(csgo.run);
 
-    router.route('/api/csgo/experimental')
-        .get(csgo.runExperimental);
+    //router.route('/api/csgo/experimental')
+    //    .get(csgo.runExperimental);
 
     router.route('/api/cfg')
         .get(csgo.checkCFGs)

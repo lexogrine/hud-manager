@@ -71,9 +71,9 @@ export default class Huds extends React.Component<IProps, IState> {
         const config = createCFG(this.state.form.radar, this.state.form.killfeed).file;
         api.csgo.run(config);
     }
-    runCSGOExperimental = () => {
+    /*runCSGOExperimental = () => {
         api.csgo.runExperimental();
-    }
+    }*/
 
     handleZIPs = (files: FileList) => {
         const file = files[0];
@@ -144,12 +144,12 @@ export default class Huds extends React.Component<IProps, IState> {
                             </div>
                             <Switch isOn={this.state.form.killfeed} id="killfeed-toggle" handleToggle={this.changeForm('killfeed')} />
                         </Col>
-                        <Col md="12" className="config-entry">
+                        {/*<Col md="12" className="config-entry">
                             <div className="config-description">
                                 Use built-in HUD (Experimental mode, uses AFX Interop)
                             </div>
                             <Switch isOn={this.state.form.afx} id="afx-toggle" handleToggle={this.changeForm('afx')} />
-                        </Col>
+                        </Col>*/}
                         <Col md="12" className="config-entry">
                             <div className="running-csgo-container">
                                 <div>
@@ -161,16 +161,16 @@ export default class Huds extends React.Component<IProps, IState> {
                                         <div className="config-description">
                                             OR
                                          </div>
-                                        <Button className="round-btn run-csgo" disabled={(killfeed && !config.hlaePath) || (afx && (!config.hlaePath || !config.afxCEFHudInteropPath))} onClick={!afx ? this.runCSGO : this.runCSGOExperimental}>RUN CSGO</Button>
+                                        <Button className="round-btn run-csgo" disabled={killfeed && !config.hlaePath} onClick={this.runCSGO}>RUN CSGO</Button>
                                     </React.Fragment> : ''}
                                 </div>
                                 <div className="warning">
-                                        {(killfeed || afx) && !config.hlaePath && isElectron ? <div>Specify HLAE path in settings in order to use custom killfeeds or AFX mode</div> : null}
-                                        { afx && !config.afxCEFHudInteropPath && isElectron ? <div>Specify AFX Interop path in settings in order to use AFX mode</div> :null }
-                                        { afx && config.afxCEFHudInteropPath && config.hlaePath && isElectron ? <>
+                                        {(killfeed || afx) && !config.hlaePath && isElectron ? <div>Specify HLAE path in settings in order to use custom killfeeds</div> : null}
+                                        {/* afx && !config.afxCEFHudInteropPath && isElectron ? <div>Specify AFX Interop path in settings in order to use AFX mode</div> :null */}
+                                        {/* afx && config.afxCEFHudInteropPath && config.hlaePath && isElectron ? <>
                                             <div>When using AFX mode, after joining the match just click on "SET" button - no need to start overlay.</div>
                                             <div>Note: You need to execute above commands manually in this mode</div>
-                                        </> :null }
+                                        </> :null */}
                                 </div>
                             </div>
 

@@ -22,9 +22,9 @@ export default class HudEntry extends Component<IProps> {
     startHUD(dir: string) {
         api.huds.start(dir);
     }
-    setHUD = (url: string) => {
+    /*setHUD = (url: string) => {
         socket.emit("set_active_hlae", url);
-    }
+    }*/
     render() {
         const { hud, toggleConfig } = this.props;
         return (
@@ -53,7 +53,7 @@ export default class HudEntry extends Component<IProps> {
                             <img src={HyperLink} id={`hud_link_${hashCode(hud.dir)}`} className='action' alt="Local network's HUD's URL"/>
                             {hud.panel ? <img src={Settings} onClick={toggleConfig(hud)} className='action' alt="HUD's panel" /> : ''}
                             { Config.isElectron ? <img src={Display} onClick={() => this.startHUD(hud.dir)} className='action' alt="Start HUD" /> : null}
-                            { Config.isElectron ? <Button className="purple-btn round-btn" onClick={() => this.setHUD(hud.url)}>Set</Button>: null}
+                            {/* Config.isElectron ? <Button className="purple-btn round-btn" onClick={() => this.setHUD(hud.url)}>Set</Button>: null*/}
                         </Col>
                     </Row>
                     <Row>
