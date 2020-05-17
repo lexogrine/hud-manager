@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Row, Col, UncontrolledCollapse, Button } from 'reactstrap';
+import { Row, Col, UncontrolledCollapse } from 'reactstrap';
 import Config from './../../../../api/config';
 import Tip from './../../../Tooltip';
 import api from './../../../../api/api';
@@ -9,7 +9,6 @@ import Settings from './../../../../styles/Settings.png';
 import Display from './../../../../styles/Display.png';
 import Map from './../../../../styles/Map.png';
 import Killfeed from './../../../../styles/Killfeed.png';
-import { socket } from '../Live/Live';
 
 const hashCode = (s: string) => s.split('').reduce((a, b) => { a = ((a << 5) - a) + b.charCodeAt(0); return a & a }, 0).toString();
 
