@@ -58,21 +58,22 @@ class SingleVeto extends React.Component<Props> {
 
     }
     render() {
-        const team = this.props.teams.filter(team => team._id === this.props.veto.teamId)[0];
-        const secTeam = this.props.teams.filter(team => team._id !== this.props.veto.teamId)[0];
+        const { vetoTeams, veto, map, maps, teams, onSave } = this.props;
+        const team = vetoTeams.filter(team => team._id === veto.teamId)[0];
+        const secTeam = vetoTeams.filter(team => team._id !== veto.teamId)[0];
         return (
-            <div className={`veto-container ${this.props.veto.teamId === "" ? "empty" : ""} ${this.props.veto.teamId ? this.props.veto.type : ""}`}>
+            <div className={`veto-container ${veto.teamId === "" ? "empty" : ""} ${veto.teamId ? veto.type : ""}`}>
                 {
-                    (this.props.vetoTeams.length !== 2) ? "Pick both teams to set vetos" :
+                    (vetoTeams.length !== 2) ? "Pick both teams to set vetos" :
                         <>
                             <div className="veto-main">
-                                <div className="veto-title">VETO {this.props.map + 1}:</div>
-                                <div className="veto-summary">{generateDescription(this.props.veto, team, secTeam)}</div>
+                                <div className="veto-title">VETO {map + 1}:</div>
+                                <div className="veto-summary">{generateDescription(veto, team, secTeam)}</div>
                                 <Button onClick={this.resetScore} className="edit-veto purple-btn">Reset score</Button>
                                 <Button onClick={this.toggle} className="edit-veto purple-btn">Edit</Button>
                             </div>
 
-                            <VetoModal maps={this.props.maps} map={this.props.map} veto={this.props.veto} teams={this.props.teams} isOpen={this.state.isOpen} toggle={this.toggle} onChange={this.props.onSave} />
+                            <VetoModal maps={maps} map={map} veto={veto} teams={teams} isOpen={this.state.isOpen} toggle={this.toggle} onChange={onSave} />
                         </>
                 }
 
