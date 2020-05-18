@@ -14,7 +14,7 @@ If you are in the business of broadcasting professional CS:GO matches, the Lexog
 - Keybinding API
   
 ## Installation
- Simply download the ![Lexogrine HUD Manager's](https://github.com/lexogrine/hud-manager/releases/latest) installation file from its Github page and run it
+ Simply download the [Lexogrine HUD Manager's](https://github.com/lexogrine/hud-manager/releases/latest) installation file from its Github page and run it
 
 ## Usage
 
