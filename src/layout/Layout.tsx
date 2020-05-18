@@ -83,9 +83,9 @@ export default class Layout extends React.Component<any, {data: IContextData}> {
                 <div className={`loaded ${isElectron ? 'electron' : ''}`}>
                     <div className="window-bar">
                         <div className="window-drag-bar"></div>
-                        <div onClick={this.minimize} className="app-control">_</div>
-                        <div onClick={this.maximize} className="app-control">O</div>
-                        <div onClick={this.close} className="app-control close">X</div>
+                        <div onClick={this.minimize} className="app-control minimize"></div>
+                        <div onClick={this.maximize} className="app-control maximize"></div>
+                        <div onClick={this.close} className="app-control close"></div>
                     </div>
                     <Content/>
                 </div>

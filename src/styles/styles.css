@@ -1017,10 +1017,22 @@ input:checked ~ .customCheckbox {
     color:rgba(255, 255, 255, 1);
     cursor: default;
     text-shadow: none;
+    background-repeat: no-repeat;
+    background-position: center;
     user-select: none;
 }
 .window-bar .app-control:hover {
     opacity: 0.95;
+}
+.window-bar .app-control.close {
+    background-image: url('./close.png');
+}
+
+.window-bar .app-control.maximize {
+    background-image: url('./maximize.png');
+}
+.window-bar .app-control.minimize {
+    background-image: url('./minimize.png');
 }
 
 .window-bar .window-drag-bar{
