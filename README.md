@@ -49,7 +49,7 @@ For convenience at the top of the screen you can also push a command to run it i
 >Note - to use the killfeed you need to run CS:GO through HLAE, and if you check the "Use custom killfeed" option you will have to specify the path to HLAE.exe in the Settings section.
 
 
->Note #3 - it's impossible to set a custom loader/settings for HLAE if you launch HLAE CS:GO through the Manager, so in that case you still need to do it manually with HLAE.
+>Note #2 - it's impossible to set a custom loader/settings for HLAE if you launch HLAE CS:GO through the Manager, so in that case you still need to do it manually with HLAE.
 
 ### Live
 
