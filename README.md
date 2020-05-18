@@ -16,6 +16,13 @@ If you are in the business of broadcasting professional CS:GO matches, the Lexog
 ## Installation
  Simply download the [Lexogrine HUD Manager's](https://github.com/lexogrine/hud-manager/releases/latest) installation file from its Github page and run it
 
+## Example HUD 
+
+To get our example HUD, go to [CSGO React HUD github page](https://github.com/lexogrine/csgo-react-hud), download it and add it in the HUD Manager!
+
+
+![Preview of HUDs panel in action](preview.png)
+
 ## Usage
 
 By default, Lexogrine HUD Manager runs on port 1349. During startup, if it detects that this port is being used by other process, it will instead use a randomly chosen port. After startup, you may want to check if the config files are loaded into CS:GO in the Settings tab (more about it below).
