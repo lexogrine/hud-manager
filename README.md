@@ -174,7 +174,7 @@ Additionally, there is an action input that sends predetermined data and renders
     }]
 }
 ```
-Each value in the action input is a seperate button. To see how to listen for data from the HUD's side, please see "`panel.json API`" part of the CSGO React HUD documentation.
+Each value in the action input is a seperate button. To see how to listen for data from the HUD's side, please see "`panel.json API`" part of the [CSGO React HUD](https://github.com/lexogrine/csgo-react-hud) documentation.
 #### keybinds.json
 This file is basically another way to communicate with the HUD. Let's look at the example file:
 ```json
