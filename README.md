@@ -14,7 +14,7 @@ If you are in the business of broadcasting professional CS:GO matches, the Lexog
 - Keybinding API
   
 ## Installation
- Simply download the Lexogrine HUD Manager's installation file from its Github page and run it
+ Simply download the ![Lexogrine HUD Manager's](releases/latest) installation file from its Github page and run it
 
 ## Usage
 
@@ -261,3 +261,8 @@ Once connected to the HUD Manager with sockets, the Manager sends the following 
 |`/api/gsi`|GET|Check if GSI file is loaded|
 |`/api/cfg`|GET|Check if config files are loaded|
 |`/api/csgo`|GET|Get latest data from CS:GO|
+
+# Special credits
+Big shout out to Loxar, for providing his set of a brand new weapon icons!
+
+Also huge thanks to Wiethoofd, Komodo and TeDy for testing and massive amount of feedback and to boltgolt, for creating open-sourced custom radar <3
