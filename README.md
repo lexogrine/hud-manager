@@ -53,10 +53,14 @@ This part is for choosing which HUD you want to use - there's a drag'n'drop area
 
 For convenience at the top of the screen you can also push a command to run it in CS:GO (to hide the HUD, the radar, and/or the killfeed - each HUD should indicate whether they support the custom radar and killfeed or not). However, if you don't feel like running the commands on your own, if the Manager detects CS:GO on your PC, the option to run CS:GO with all configs executed automatically will be enabled.
 
+There is available experimental mode, which uses afx_interop to render HUD. Using this method the HUD will be rendered directly in CS:GO process, not as overlay application, which will enable using custom HUDs in the fullscreen mode as well, not just fullscreen windowed.
+
 >Note - to use the killfeed you need to run CS:GO through HLAE, and if you check the "Use custom killfeed" option you will have to specify the path to HLAE.exe in the Settings section.
 
 
->Note #2 - it's impossible to set a custom loader/settings for HLAE if you launch HLAE CS:GO through the Manager, so in that case you still need to do it manually with HLAE.
+>Note #2 - to use AFX (experimental) mode, beside specifing the path to the newest version of HLAE you are also required to set the path to the afx-cefhud-interop.exe file, which you will find in the [Release.7z and Release-Base.7z archive](https://drive.google.com/drive/folders/1CQFGMYhmz4x9DxunmwhWMp37ow6YOBON). You need to copy the exe file from Release.7z to files from Release-Base.7z
+
+>Note #3 - it's impossible to set a custom loader/settings for HLAE if you launch HLAE CS:GO through the Manager, so in that case you still need to do it manually with HLAE.
 
 ### Live
 
@@ -68,9 +72,18 @@ In order to use the Manager, correct configuration is required - you need a free
 
 Below you can specify the path to HLAE.exe - it is required if you want to automate the CS:GO launch with killfeed enabled.
 
+Under the HLAE.exe settings there is an option to set path to afx-cefhud-interop.exe file, which is required in order to use experimental mode - built-in HUD, instead of overlay. More about that in the section below.
+
 Moreover, you don't need to bother your head with copying the config files. You can see the status of both GSI and config files live, and if they are missing, invalid, or otherwise broken you can just click one button and done - they are installed (provided that the Manager detected your CS:GO location). Important fact to mention is when you change GSI port, you will need to restart the Manager, so it will start listening on the new one.
 
 In a situation when config installation doesn't succeed or the Manager is unable to locate CS:GO, you can download the GSI config and an archive with all of the required cfg files using two buttons at the bottom of this section.
+
+## Built-in HUD - AFX experimental mode
+
+At this point there is an option to embedd any HUD in CS:GO using HLAE and afx_interop. It gives the advantage of being able to use CS:GO in fullscreen mode while using the custom HUDs, however the effects on the smoothness of the gameplay are not as well known as the classic, overlayed HUDs.
+
+If you want to use this mode, you need to get HLAE and Release-Base.7z archive from here: https://drive.google.com/drive/folders/1CQFGMYhmz4x9DxunmwhWMp37ow6YOBON and set path to the afx-cefhud-interop.exe in the HUD Manager's settings. At this point the setup is completed - you just need to switch on the experimental mode in HUDs tab and click `RUN CSGO` (if you already have installed the config files of course). Once the CS:GO has loaded, you just need to click on the `SET` button on the HUD you want to use, and it should appear in the CS:GO.
+
 
 ## HUD API
 ### Structure

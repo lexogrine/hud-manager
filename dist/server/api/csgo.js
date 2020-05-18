@@ -53,6 +53,7 @@ function createCFG(customRadar, customKillfeed) {
         cfg += "\ncl_drawhud_force_radar 1";
     }
     else {
+        cfg += "\ncl_drawhud_force_radar 0";
         file += '_radar';
     }
     if (customKillfeed) {
@@ -92,7 +93,7 @@ function isCorrect(cfg) {
     }
 }
 exports.checkCFGs = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var config, CSGOPath, _a, switcher, cfgs, files;
+    var config, CSGOPath, _a, switcher, cfgs, afx_interop_cfg, files;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
@@ -111,6 +112,11 @@ exports.checkCFGs = function (req, res) { return __awaiter(void 0, void 0, void 
                 }
                 switcher = [true, false];
                 cfgs = [];
+                afx_interop_cfg = {
+                    cfg: 'afx_interop connect 1',
+                    file: 'hud_interop.cfg'
+                };
+                cfgs.push(afx_interop_cfg);
                 switcher.forEach(function (radar) {
                     switcher.forEach(function (killfeed) {
                         cfgs.push(createCFG(radar, killfeed));
@@ -128,7 +134,7 @@ exports.checkCFGs = function (req, res) { return __awaiter(void 0, void 0, void 
     });
 }); };
 exports.createCFGs = function (_req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var CSGOPath, cfgDir, switcher_1;
+    var CSGOPath, cfgDir, switcher_1, cfgs_2, afx_interop_cfg, _i, cfgs_1, cfg, cfgPath;
     return __generator(this, function (_a) {
         try {
             CSGOPath = steam_game_path_1.getGamePath(730);
@@ -142,16 +148,26 @@ exports.createCFGs = function (_req, res) { return __awaiter(void 0, void 0, voi
         cfgDir = path_1["default"].join(CSGOPath.game.path, 'csgo', 'cfg');
         try {
             switcher_1 = [true, false];
+            cfgs_2 = [];
+            afx_interop_cfg = {
+                cfg: 'afx_interop connect 1',
+                file: 'hud_interop.cfg'
+            };
+            cfgs_2.push(afx_interop_cfg);
             switcher_1.forEach(function (radar) {
                 switcher_1.forEach(function (killfeed) {
                     var cfg = createCFG(radar, killfeed);
-                    var cfgPath = path_1["default"].join(cfgDir, cfg.file);
-                    if (fs_1["default"].existsSync(cfgPath)) {
-                        fs_1["default"].unlinkSync(cfgPath);
-                    }
-                    fs_1["default"].writeFileSync(cfgPath, cfg.cfg, 'UTF-8');
+                    cfgs_2.push(cfg);
                 });
             });
+            for (_i = 0, cfgs_1 = cfgs_2; _i < cfgs_1.length; _i++) {
+                cfg = cfgs_1[_i];
+                cfgPath = path_1["default"].join(cfgDir, cfg.file);
+                if (fs_1["default"].existsSync(cfgPath)) {
+                    fs_1["default"].unlinkSync(cfgPath);
+                }
+                fs_1["default"].writeFileSync(cfgPath, cfg.cfg, 'UTF-8');
+            }
             return [2 /*return*/, res.json({ success: true, message: 'Configs were successfully saved' })];
         }
         catch (_c) {
@@ -251,7 +267,7 @@ exports.runExperimental = function (req, res) { return __awaiter(void 0, void 0,
                     return [2 /*return*/, res.sendStatus(404)];
                 }
                 args = [];
-                url = electron_1.isDev ? "http://localhost:3000/hlae.html" : "http://localhost:" + config.port + "/hlae.html";
+                url = "http://localhost:" + config.port + "/hlae.html";
                 args.push('-csgoLauncher', '-noGui', '-autoStart', "-csgoExe \"" + CSGOPath + "\"", '-gfxFull false', "-customLaunchOptions \"-afxInteropLight +exec hud_interop\"");
                 try {
                     steam = child_process_1.spawn("\"" + exePath + "\"", args, { detached: true, shell: true, stdio: 'ignore' });

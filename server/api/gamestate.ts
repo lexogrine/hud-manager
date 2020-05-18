@@ -90,7 +90,7 @@ export const checkGSIFile: express.RequestHandler = async (req, res) => {
             // wrong port
             return res.json({success: false, message: 'Wrong address', accessible: true});
         }
-        if(JSON.stringify(GSITemplate.HUDMANAGERGSI.data) != JSON.stringify(content.HUDMANAGERGSI.data)){
+        if(JSON.stringify(GSITemplate.HUDMANAGERGSI.data) !== JSON.stringify(content.HUDMANAGERGSI.data)){
             // wrong settings
             return res.json({success: false, message: 'Wrong configuration', accessible: true});
         }

@@ -6,7 +6,7 @@ import { loadConfig } from './config';
 import { GSI } from './../sockets';
 import { spawn } from 'child_process';
 import { Config } from '../../types/interfaces';
-import { isDev, AFXInterop } from './../../electron';
+import { AFXInterop } from './../../electron';
 
 interface CFG {
     cfg: string,
@@ -20,6 +20,7 @@ function createCFG(customRadar: boolean, customKillfeed: boolean): CFG {
     if (!customRadar) {
         cfg += `\ncl_drawhud_force_radar 1`;
     } else {
+        cfg += `\ncl_drawhud_force_radar 0`;
         file += '_radar';
     }
     if (customKillfeed) {
@@ -75,6 +76,11 @@ export const checkCFGs: express.RequestHandler = async (req, res) => {
 
     const switcher = [true, false];
     const cfgs: CFG[] = [];
+    const afx_interop_cfg: CFG = {
+        cfg: 'afx_interop connect 1',
+        file: 'hud_interop.cfg'
+    }
+    cfgs.push(afx_interop_cfg);
     switcher.forEach(radar => {
         switcher.forEach(killfeed => {
             cfgs.push(createCFG(radar, killfeed));
@@ -106,16 +112,27 @@ export const createCFGs: express.RequestHandler = async (_req, res) => {
     try {
         const switcher = [true, false];
 
+        const cfgs: CFG[] = [];
+        const afx_interop_cfg: CFG = {
+            cfg: 'afx_interop connect 1',
+            file: 'hud_interop.cfg'
+        }
+        cfgs.push(afx_interop_cfg);
+
         switcher.forEach(radar => {
             switcher.forEach(killfeed => {
                 const cfg = createCFG(radar, killfeed);
-                const cfgPath = path.join(cfgDir, cfg.file);
-                if (fs.existsSync(cfgPath)) {
-                    fs.unlinkSync(cfgPath);
-                }
-                fs.writeFileSync(cfgPath, cfg.cfg, 'UTF-8');
+                cfgs.push(cfg);
             });
         });
+        for(const cfg of cfgs){
+            
+            const cfgPath = path.join(cfgDir, cfg.file);
+            if (fs.existsSync(cfgPath)) {
+                fs.unlinkSync(cfgPath);
+            }
+            fs.writeFileSync(cfgPath, cfg.cfg, 'UTF-8');
+        }
         return res.json({ success: true, message: 'Configs were successfully saved' })
     } catch {
         return res.json({ success: false, message: 'Unexpected error occured' })
@@ -205,7 +222,7 @@ export const runExperimental: express.RequestHandler = async (req, res) => {
 
     const args = [];
 
-    const url = isDev ? `http://localhost:3000/hlae.html` : `http://localhost:${config.port}/hlae.html`;
+    const url = `http://localhost:${config.port}/hlae.html`;
 
     args.push('-csgoLauncher','-noGui', '-autoStart', `-csgoExe "${CSGOPath}"`, '-gfxFull false', `-customLaunchOptions "-afxInteropLight +exec hud_interop"`);
     

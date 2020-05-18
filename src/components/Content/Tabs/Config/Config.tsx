@@ -167,12 +167,12 @@ export default class Config extends React.Component<any, { config: I.Config, cfg
                             </div>
                             <DragInput id="hlae_input" label="SET HLAE PATH" accept=".exe" onChange={this.loadEXE("hlaePath")} className="path_selector" />
                         </Col>
-                        {/*<Col md="12" className="config-entry">
+                        {<Col md="12" className="config-entry">
                             <div className="config-description">
                                 AFX CEF HUD Interop: {this.state.config.afxCEFHudInteropPath ? 'Loaded' : 'Not loaded'}
                             </div>
                             <DragInput id="afx_input" label="SET AFX PATH" accept=".exe" onChange={this.loadEXE("afxCEFHudInteropPath")} className="path_selector" />
-                        </Col>*/}
+                        </Col>}
                         <Col md="12" className="config-entry">
                             <div className="config-description">
                                 GameState Integration: {gsi.message || 'Loaded succesfully'}

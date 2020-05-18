@@ -109,7 +109,7 @@ exports.checkGSIFile = function (req, res) { return __awaiter(void 0, void 0, vo
                         // wrong port
                         return [2 /*return*/, res.json({ success: false, message: 'Wrong address', accessible: true })];
                     }
-                    if (JSON.stringify(GSITemplate.HUDMANAGERGSI.data) != JSON.stringify(content.HUDMANAGERGSI.data)) {
+                    if (JSON.stringify(GSITemplate.HUDMANAGERGSI.data) !== JSON.stringify(content.HUDMANAGERGSI.data)) {
                         // wrong settings
                         return [2 /*return*/, res.json({ success: false, message: 'Wrong configuration', accessible: true })];
                     }
