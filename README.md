@@ -51,7 +51,12 @@ Additionaly, while the match is live the current score is being saved in the bac
 
 This part is for choosing which HUD you want to use - there's a drag'n'drop area for HUD .zip files, so installation of new ones is a matter of seconds. Additionaly you can use a local network address for Browser Source-type screen grab of the HUD view on another PC, access each of the HUD's action panels prepared by the authors, and run a transparent window with the HUD directly.
 
+![Start-up](assets/examples/upload.gif?raw=true)
+
 For convenience at the top of the screen you can also push a command to run it in CS:GO (to hide the HUD, the radar, and/or the killfeed - each HUD should indicate whether they support the custom radar and killfeed or not). However, if you don't feel like running the commands on your own, if the Manager detects CS:GO on your PC, the option to run CS:GO with all configs executed automatically will be enabled.
+
+
+![Start-up](assets/examples/toggles.gif?raw=true)
 
 There is available experimental mode, which uses afx_interop to render HUD. Using this method the HUD will be rendered directly in CS:GO process, not as overlay application, which will enable using custom HUDs in the fullscreen mode as well, not just fullscreen windowed.
 
@@ -75,6 +80,8 @@ Below you can specify the path to HLAE.exe - it is required if you want to autom
 Under the HLAE.exe settings there is an option to set path to afx-cefhud-interop.exe file, which is required in order to use experimental mode - built-in HUD, instead of overlay. More about that in the section below.
 
 Moreover, you don't need to bother your head with copying the config files. You can see the status of both GSI and config files live, and if they are missing, invalid, or otherwise broken you can just click one button and done - they are installed (provided that the Manager detected your CS:GO location). Important fact to mention is when you change GSI port, you will need to restart the Manager, so it will start listening on the new one.
+
+![Config](assets/examples/configs.gif?raw=true)
 
 In a situation when config installation doesn't succeed or the Manager is unable to locate CS:GO, you can download the GSI config and an archive with all of the required cfg files using two buttons at the bottom of this section.
 
