@@ -356,7 +356,7 @@ function loadHUD(base64) {
                                         hudFile = fs.readFileSync(path.join(tempBasePath, 'hud.json'), { encoding: 'utf8' });
                                         hud = JSON.parse(hudFile);
                                         if (!hud.name) {
-                                            throw new Error;
+                                            throw new Error();
                                         }
                                         dir = path.join(electron_1.app.getPath('home'), 'HUDs', hud.name.replace(/[^a-zA-Z0-9-_]/g, ''));
                                         if (fs.existsSync(dir)) {
@@ -368,7 +368,7 @@ function loadHUD(base64) {
                                         hudData = _a.sent();
                                         res(hudData);
                                         return [3 /*break*/, 3];
-                                    case 2: throw new Error;
+                                    case 2: throw new Error();
                                     case 3: return [2 /*return*/];
                                 }
                             });

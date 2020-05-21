@@ -8,6 +8,7 @@ import * as huds from './huds';
 import * as path from 'path';
 import * as gsi from './gamestate';
 import * as csgo from './csgo';
+import * as sync from './sync';
 
 export default function (router: express.Router, io: socketio.Server) {
     router.route('/api/players')
@@ -65,8 +66,15 @@ export default function (router: express.Router, io: socketio.Server) {
         .get(gsi.checkGSIFile)
         .put(gsi.createGSIFile);
 
+    router.route('/api/import')
+        .post(sync.importDb);
+
     router.route('/api/gsi/download')
         .get(gsi.saveFile('gamestate_integration_hudmanager.cfg', gsi.generateGSIFile()));
+
+    
+    router.route('/api/db/download')
+        .get(gsi.saveFile('hudmanagerdb.json', sync.exportDatabase()));
 
     //router.route('/api/events')
     //    .get(csgo.getEvents);

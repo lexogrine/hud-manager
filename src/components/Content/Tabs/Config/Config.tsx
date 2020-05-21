@@ -4,6 +4,7 @@ import * as I from './../../../../api/interfaces';
 import api from './../../../../api/api';
 import config from './../../../../api/config';
 import DragInput from './../../../DragFileInput';
+import { IContextData } from '../../../Context';
 
 const { isElectron } = config;
 
@@ -15,8 +16,20 @@ interface ExtendedFile extends File {
     path?: string;
 }
 
-export default class Config extends React.Component<any, { config: I.Config, cfg: ConfigStatus, gsi: ConfigStatus, restartRequired: boolean }>  {
-    constructor(props: any) {
+interface IProps {
+    cxt: IContextData;
+    toggle: Function;
+}
+
+interface IState {
+    config: I.Config,
+    cfg: ConfigStatus,
+    gsi: ConfigStatus,
+    restartRequired: boolean
+}
+
+export default class Config extends React.Component<IProps, IState>  {
+    constructor(props: IProps) {
         super(props);
         this.state = {
             config: {
@@ -51,15 +64,24 @@ export default class Config extends React.Component<any, { config: I.Config, cfg
             return state;
         })
     }
-    loadHLAE = (files: FileList) => {
+    import = (callback: Function) => (files: FileList) => {
         if (!files || !files[0]) return;
         const file: ExtendedFile = files[0];
-        if (!file.path) return;
-        const { config } = this.state;
-        config.hlaePath = file.path;
-        this.setState({ config });
+        if (!file.path || file.type !== "application/json") return;
+        let reader: any = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = async () => {
+            try {
+                const db64 = reader.result.replace(/^data:application\/json;base64,/, '');
+                const db = JSON.parse(Buffer.from(db64, 'base64').toString());
+                await api.files.sync(db);
+                callback();
+            } catch {
+
+            }
+        }
     }
-    download = (target: 'gsi' | 'cfgs') => {
+    download = (target: 'gsi' | 'cfgs' | 'db') => {
         api.config.download(target);
     }
     getDownloadUrl = (target: 'gsi' | 'cfgs') => {
@@ -135,6 +157,7 @@ export default class Config extends React.Component<any, { config: I.Config, cfg
         this.checkGSI();
     }
     render() {
+        const { cxt } = this.props;
         const { gsi, cfg } = this.state;
         return (
             <Form>
@@ -191,17 +214,21 @@ export default class Config extends React.Component<any, { config: I.Config, cfg
                             </div>
                             <Button className="lightblue-btn round-btn" onClick={() => this.props.toggle('credits')}>See now</Button>
                         </Col>
-                        <Col md="12" className="config-entry">
+                        {isElectron ? <Col md="12" className="config-entry">
                             <div className="config-description">
                                 Downloads
                             </div>
-                            {isElectron ? <div className="download-container">
+                            <div className="download-container">
                                 <Button onClick={() => this.download('gsi')} className="purple-btn round-btn" >GSI config</Button>
                                 <Button onClick={() => this.download('cfgs')} className="purple-btn round-btn" >HUD configs</Button>
-                            </div> : <div className="download-container">
-                                    <Button href={this.getDownloadUrl('gsi')} className="purple-btn round-btn" download target="_blank">GSI config</Button>
-                                    <Button href={this.getDownloadUrl('cfgs')} className="purple-btn round-btn" download target="_blank">HUD configs</Button>
-                                </div>}
+                                <Button onClick={() => this.download('db')} className="purple-btn round-btn" >Export db</Button>
+                            </div>
+                        </Col> : null}
+                        <Col md="12" className="config-entry">
+                            <div className="config-description">
+                                Import
+                            </div>
+                            <DragInput id="import_file" label="Import database" accept=".json" onChange={this.import(cxt.reload)} className="path_selector" />
                         </Col>
                     </Row>
 

@@ -322,7 +322,7 @@ img.smallLogo {
 }
 .veto-container .edit-veto {
     min-width: 68px;
-    height: 29px;
+    min-height: 29px;
     border-radius: 14px;
     font-size: 10px;
     border: none;

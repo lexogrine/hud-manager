@@ -5,7 +5,7 @@ import express from 'express';
 import * as I from './../../types/interfaces';
 import socketio from 'socket.io';
 import { loadConfig } from './config';
-import ip, { not } from 'ip';
+import ip from 'ip';
 import { HUDState } from './../sockets';
 import HUDWindow from './../../init/huds';
 import DecompressZip from 'decompress-zip';
@@ -260,7 +260,7 @@ async function loadHUD(base64: string): Promise <I.HUD | null> {
                     const hudFile = fs.readFileSync(path.join(tempBasePath, 'hud.json'), {encoding:'utf8'});
                     const hud = JSON.parse(hudFile);
                     if(!hud.name){
-                        throw new Error;
+                        throw new Error();
                     }
                     let dir = path.join(app.getPath('home'), 'HUDs', hud.name.replace(/[^a-zA-Z0-9-_]/g, ''));
                     if(fs.existsSync(dir)){
@@ -271,7 +271,7 @@ async function loadHUD(base64: string): Promise <I.HUD | null> {
                     res(hudData);
 
                 } else {
-                    throw new Error;
+                    throw new Error();
                 }
             });
             tempUnzipper.on('error', () => {

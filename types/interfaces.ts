@@ -17,6 +17,19 @@ export interface Team {
 };
 
 export type VetoType = 'ban' | 'pick' | 'decider';
+
+export interface Veto {
+    teamId: string,
+    mapName: string,
+    side: 'CT' | 'T' | 'NO',
+    type: VetoType,
+    score?: {
+        [key: string]: number
+    },
+    reverseSide?:boolean,
+    winner?: string,
+    mapEnd: boolean
+}
 export interface Match {
     id: string,
     current: boolean,
@@ -29,18 +42,7 @@ export interface Match {
         wins: number
     },
     matchType: 'bo1' | 'bo2' | 'bo3' | 'bo5',
-    vetos: {
-        teamId: string,
-        mapName: string,
-        side: 'CT' | 'T' | 'NO',
-        type: VetoType,
-        score?: {
-            [key: string]: number
-        },
-        reverseSide?:boolean,
-        winner?: string,
-        mapEnd: boolean
-    }[]
+    vetos: Veto[]
 }
 
 export interface Config {
@@ -50,8 +52,10 @@ export interface Config {
     hlaePath: string,
     afxCEFHudInteropPath: string,
 }
+export type PanelInputType = 'text' | 'number' | 'team' | 'image' | 'match';
+
 export type PanelInput = {
-    type: 'text' | 'number' | 'select' | 'image'
+    type: PanelInputType,
     name: string,
     label: string,
 } | {

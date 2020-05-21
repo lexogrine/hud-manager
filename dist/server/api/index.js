@@ -19,6 +19,7 @@ var huds = __importStar(require("./huds"));
 var path = __importStar(require("path"));
 var gsi = __importStar(require("./gamestate"));
 var csgo = __importStar(require("./csgo"));
+var sync = __importStar(require("./sync"));
 function default_1(router, io) {
     router.route('/api/players')
         .get(players.getPlayers)
@@ -58,8 +59,12 @@ function default_1(router, io) {
     router.route('/api/gsi')
         .get(gsi.checkGSIFile)
         .put(gsi.createGSIFile);
+    router.route('/api/import')
+        .post(sync.importDb);
     router.route('/api/gsi/download')
         .get(gsi.saveFile('gamestate_integration_hudmanager.cfg', gsi.generateGSIFile()));
+    router.route('/api/db/download')
+        .get(gsi.saveFile('hudmanagerdb.json', sync.exportDatabase()));
     //router.route('/api/events')
     //    .get(csgo.getEvents);
     router.route('/api/csgo')

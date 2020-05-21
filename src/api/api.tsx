@@ -1,7 +1,10 @@
 import config from './config';
 import * as I from './interfaces';
 const apiUrl = config.apiAddress;
-
+interface DB {
+    teams: I.Team[];
+    players: I.Player[];
+}
 function arrayBufferToBase64(buffer: any) {
     var binary = '';
     var bytes = [].slice.call(new Uint8Array(buffer));
@@ -50,7 +53,7 @@ export default {
     config: {
         get: async (): Promise<I.Config> => await apiV2('config'),
         update: async (config: I.Config) => await apiV2('config', 'PATCH', config),
-        download: async (target: 'gsi' | 'cfgs') => {
+        download: async (target: 'gsi' | 'cfgs' | 'db') => {
             if(config.isElectron){
                 return await apiV2(`${target}/download`)
             }
@@ -93,6 +96,7 @@ export default {
             } catch(e){
                 return null;
             }
-        }
+        },
+        sync: async(db: DB) => await apiV2('import', 'POST', db)
     }
 }
