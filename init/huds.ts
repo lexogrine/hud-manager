@@ -28,6 +28,7 @@ class HUD {
             alwaysOnTop: true,
             frame: false,
             transparent: true,
+            focusable: false,
             webPreferences: {
                 backgroundThrottling: false,
             }

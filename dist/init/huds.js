@@ -74,6 +74,7 @@ var HUD = /** @class */ (function () {
                             alwaysOnTop: true,
                             frame: false,
                             transparent: true,
+                            focusable: false,
                             webPreferences: {
                                 backgroundThrottling: false
                             }

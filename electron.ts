@@ -42,6 +42,8 @@ async function createMainWindow(server: Server) {
             nodeIntegration: true,
             backgroundThrottling: false,
         },
+        minWidth: 775,
+        minHeight:700,
         width: 1010,
     });
 

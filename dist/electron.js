@@ -83,6 +83,8 @@ function createMainWindow(server) {
                             nodeIntegration: true,
                             backgroundThrottling: false
                         },
+                        minWidth: 775,
+                        minHeight: 700,
                         width: 1010
                     });
                     win.once("ready-to-show", function () {
