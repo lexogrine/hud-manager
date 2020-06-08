@@ -3,6 +3,7 @@ body {
 }
 
 #container {
+	backface-visibility: hidden;
 	-webkit-backface-visibility: hidden;
 	transition: transform .025;
 }
@@ -19,6 +20,7 @@ body.waiting #container {
 
 	will-change: transform;
 	outline: .1vmin solid transparent;
+	backface-visibility: hidden;
 	-webkit-backface-visibility: hidden;
 }
 
@@ -32,14 +34,14 @@ body.waiting #container {
 }
 
 #smokes > div {
-	background: #f00;
 	position: absolute;
 	border-radius: 100%;
 	opacity: .8;
 	background: #9F9D9D;
 	box-sizing: border-box;
+	transform-origin: center;
 	border: #D7D7D7 solid .6vmin;
-	transform: translate(-50%, -50%);
+	transform: translate(-50%, 50%);
 	transition: opacity .3s;
 }
 
@@ -77,7 +79,7 @@ body.waiting #container {
 	background: #ff4848;
 	box-sizing: border-box;
 	border: #ce3f00 solid .2vmin;
-	transform: translate(-50%, -50%);
+	transform: translate(-50%, 50%);
 	transition: opacity .3s;
 }
 
@@ -133,8 +135,8 @@ div.dot, div.label {
 	bottom: -100vh;
 	display: block;
 	background: #f00;
-	transform: translate(-50%, -50%);
-	transform-origin: top left;
+	transform: translate(-50%, 50%);
+	transform-origin: 0% 100%;
 	border-radius: 100% .2vmin 100% 100%;
 	box-shadow: 0 0 1.6vmin .8vmin rgba(0, 0, 0, .2);
 	opacity: 1;

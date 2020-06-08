@@ -1,4 +1,4 @@
-const config = require("./../loadconfig")()
+const config = require("./../loadconfig");
 let oldPhase = false
 let infernosOnMap = [] //initial molotov status
 let io = null;

@@ -41,13 +41,9 @@ websocket.on("smokes", event => {
 			// Play the fade in animation
 			fadeIn(smokeElement)
 
-			// Calculate the offset needed to display the smoke correctly as seen in game
-			// Depends on the map resolution
-			let percOffset  = parseFloat(smokeElement.style.height) / 2
-
 			// Set the location of the smoke
 			smokeElement.style.left = global.positionToPerc(smoke.position, "x") + "%"
-			smokeElement.style.bottom = global.positionToPerc(smoke.position, "y") - percOffset + "%"
+			smokeElement.style.bottom = global.positionToPerc(smoke.position, "y") + "%"
 		}
 
 		// If the smoke has been here for over 15 seconds, ready the smoke element for the fade away
@@ -64,13 +60,13 @@ websocket.on("smokes", event => {
 	}
 })
 
-//molotov on radar
+// The position of all infernos
 websocket.on("infernos", event => {
 	let infernos = event.data
 
-	// Go through each smoke
+	// Go through each inferno
 	for (let inferno of infernos) {
-		// Get the molotov element
+		// Get the inferno element
 		let infernoElement = document.getElementById("inferno" + inferno.id)
 		let flameElementsStr = ""
 		let flameElement = []
@@ -81,31 +77,48 @@ websocket.on("infernos", event => {
 			infernoElement = document.createElement("div")
 			infernoElement.id = "inferno" + inferno.id
 			infernoElement.className = "inferno"
-			infernoElement.setAttribute('style', 'opacity:1')
+			infernoElement.style.opacity = 1
+
+			// Add it to the inferno container
 			document.getElementById("infernos").appendChild(infernoElement)
 
 		}
-			infernoElement = document.getElementById("inferno" + inferno.id)
-			for (var i = 0; i < inferno.flamesNum; i++) {
-				flameElement[i] = document.createElement("div")
-				flameElement[i].style.height = flameElement[i].style.width = 100 / global.mapData.resolution / 1024 * 100 + "%"
-				let percOffset  = parseFloat(flameElement[i].style.height) / 2
-				flameElement[i].style.left = global.positionToPerc(inferno.flamesPosition[i], "x") + "%"
-				flameElement[i].style.bottom = global.positionToPerc(inferno.flamesPosition[i], "y") - percOffset + "%"
-				flameElementsStr = flameElementsStr + flameElement[i].outerHTML
-			}
-			infernoElement.innerHTML = flameElementsStr
+
+		// For each flame in the inferno
+		for (var i = 0; i < inferno.flamesNum; i++) {
+			// Create a new flame
+			flameElement[i] = document.createElement("div")
+
+			// Style the flame
+			flameElement[i].style.height = flameElement[i].style.width = 100 / global.mapData.resolution / 1024 * 100 + "%"
+			flameElement[i].style.left = global.positionToPerc(inferno.flamesPosition[i], "x") + "%"
+			flameElement[i].style.bottom = global.positionToPerc(inferno.flamesPosition[i], "y") + "%"
+
+			// Add it to the parent inferno
+			flameElementsStr += flameElement[i].outerHTML
+		}
+		/*infernoElement = document.getElementById("inferno" + inferno.id)
+		for (var i = 0; i < inferno.flamesNum; i++) {
+			flameElement[i] = document.createElement("div")
+			flameElement[i].style.height = flameElement[i].style.width = 100 / global.mapData.resolution / 1024 * 100 + "%"
+			let percOffset = parseFloat(flameElement[i].style.height) / 2
+			flameElement[i].style.left = global.positionToPerc(inferno.flamesPosition[i], "x") + "%"
+			flameElement[i].style.bottom = global.positionToPerc(inferno.flamesPosition[i], "y") - percOffset + "%"
+			flameElementsStr = flameElementsStr + flameElement[i].outerHTML
+		}*/
+		// SHow the new inferno elements
+		infernoElement.innerHTML = flameElementsStr
 
 	}
 
 })
-
+// Remove inferno when burned out
 websocket.on("infernoRemove", event => {
 	if (document.getElementById("inferno" + event.data)) {
 		document.getElementById("inferno" + event.data).style.opacity = 0
 	}
 })
-// Clear all smokes on round reset
+// Clear all smokes and inmernos on round reset
 websocket.on("roundend", event => {
 	document.getElementById("smokes").innerHTML = ""
 	document.getElementById("infernos").innerHTML = ""
