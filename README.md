@@ -1,7 +1,7 @@
 ![Lexogrine HUD Manager](assets/githubLogo.png?raw=true)
 # Lexogrine HUD Manager
 
-If you are in the business of broadcasting professional CS:GO matches, the Lexogrine HUD Manager is the tool just for you. It allows for easy management of data during tournaments; you can set up matches, vetos, team photographs, and then use it in any compatible HUD you have.
+If you are in the business of broadcasting professional CS:GO matches, the Lexogrine HUD Manager is the tool just for you. It allows for a more effective management of data during tournaments; you can set up matches, vetos, team photographs, and then use it in any compatible HUD you have.
 
 # Content
 
@@ -45,17 +45,16 @@ If you are in the business of broadcasting professional CS:GO matches, the Lexog
 
 ## Example HUD 
 
-To get our example HUD, go to [CSGO React HUD github page](https://github.com/lexogrine/csgo-react-hud), download it and add it in the HUD Manager!
+To get our example HUD, go to [CSGO React HUD github page](https://github.com/lexogrine/csgo-react-hud), download it and add it in the Lexogrine HUD Manager!
 
 
 ![Preview of HUDs panel in action](preview.png)
 
 ## Usage
 
-By default, Lexogrine HUD Manager runs on port 1349. During startup, if it detects that this port is being used by other process, it will instead use a randomly chosen port. After startup, you may want to check if the config files are loaded into CS:GO in the Settings tab (more about it below).
+By default, Lexogrine HUD Manager runs on port 1349. During startup, if it detects that this port is being used by other process, it will use a randomly chosen port instead. After startup, you may want to check if the config files are loaded into CS:GO in the Settings tab (more info below).
 
-When setting up the Manager for an upcoming match, it is recommended to follow the points below in order: 
-Teams -> Players -> Matches -> HUDs
+When setting up the Manager for an upcoming match, it is recommended to follow the points in following order: Teams -> Players -> Matches -> HUDs.
 
 ### Teams
 
@@ -63,65 +62,64 @@ This section is for additional data display in HUDs and the Lexogrine HUD Manage
 
 ### Players
 
-This tab allows you to specify a player's displayed name, their country, real name and a picture as well. During matches, players are identified by their SteamID64.
+This tab allows you to specify a player's displayed name, their country, real name and a picture as well. During matches players are identified by their SteamID64.
 
 ### Matches
 
-In this section you can specify upcoming matchups you will spectate and choose which one is currently played.
-You have the option to set up teams taking part, their map scores and veto process.
+In this section you can specify upcoming matchups you will spectate and choose which one is currently played. You have the option to set up teams taking part, their map scores and veto process.
 
-Additionaly, while the match is live the current score is being saved in the background, and once a map finishes, it's match score for the winning team increases. You can see the current map score in the veto view, and reset it if needed. Current map score is updated each time it gets detects end of the round from the CS:GO, unless the map has been marked as finished - in that case the score won't be updated, but still can be resetted, which will set the map back to non-finished state.
+Additionaly, while the match is live the current score is being saved in the background. Once a map finishes, its match score for the winning team is increased accordingly. ou can see the current map score in the veto view, and reset it if needed. Current map score is updated each time it detects end of the round from the CS:GO, unless the map has been marked as finished - in that case the score won't be updated, but still can be resetted, which will set the map back to a non-finished state.
 
->Note - match has to be set as active and that map has to be set up in veto in order for the Manager to gather data.
+>Note - a match has to be set as active and a used map has to be set up in veto in order for the Manager to gather data.
 
 ### HUDS
 
-This part is for choosing which HUD you want to use - there's a drag'n'drop area for HUD .zip files, so installation of new ones is a matter of seconds. Additionaly you can use a local network address for Browser Source-type screen grab of the HUD view on another PC, access each of the HUD's action panels prepared by the authors, and run a transparent window with the HUD directly.
+This part is for choosing which HUD you want to use - there's a drag'n'drop area for HUD .zip files, so installation of new ones is a matter of seconds. Additionally you can use a local network address for Browser Source-type screen to grab of the HUD view on another PC, access each of the HUD's action panels prepared by the authors, and directly run a transparent window with the HUD.
 
 ![Start-up](assets/examples/upload.gif?raw=true)
 
-For convenience at the top of the screen you can also push a command to run it in CS:GO (to hide the HUD, the radar, and/or the killfeed - each HUD should indicate whether they support the custom radar and killfeed or not). However, if you don't feel like running the commands on your own, if the Manager detects CS:GO on your PC, the option to run CS:GO with all configs executed automatically will be enabled.
+For convenience at the top of the screen you can push a command to run it in CS:GO (to hide the HUD, the radar, and/or the killfeed each HUD should indicate whether it supports the custom radar and killfeed or not). However, if you don't feel like running the commands on your own,, the option to run CS:GO with all configs executed automatically will be enabled, when the Manager detects CS:GO on your PC.
 
 
 ![Start-up](assets/examples/toggles.gif?raw=true)
 
-There is available experimental mode, which uses afx_interop to render HUD. Using this method the HUD will be rendered directly in CS:GO process, not as overlay application, which will enable using custom HUDs in the fullscreen mode as well, not just fullscreen windowed.
+There is available an experimental mode to render HUD, which uses afx_interop. Using this method the HUD will be rendered directly in the CS:GO process, not as an overlay application. It will enable using custom HUDs in the fullscreen mode as well, not only fullscreen windowed.
 
->Note - to use the killfeed you need to run CS:GO through HLAE, and if you check the "Use custom killfeed" option you will have to specify the path to HLAE.exe in the Settings section.
+>Note #1 - to use the killfeed you need to run CS:GO through HLAE. If you check the "Use custom killfeed" option you will have to specify the path to HLAE.exe in the Settings section.
 
 
->Note #2 - to use AFX (experimental) mode, beside specifing the path to the newest version of HLAE you are also required to set the path to the afx-cefhud-interop.exe file, which you will find in the [Release.7z and Release-Base.7z archive](https://drive.google.com/drive/folders/1CQFGMYhmz4x9DxunmwhWMp37ow6YOBON). You need to copy the exe file from Release.7z to files from Release-Base.7z
+>Note #2 - to use AFX (experimental) mode, beside specifying the path to the newest version of HLAE you are also required to set the path to the afx-cefhud-interop.exe file, which you will find in the [Release.7z and Release-Base.7z archive](https://drive.google.com/drive/folders/1CQFGMYhmz4x9DxunmwhWMp37ow6YOBON). You need to copy the .exe file from Release.7z to files from Release-Base.7z.
 
->Note #3 - it's impossible to set a custom loader/settings for HLAE if you launch HLAE CS:GO through the Manager, so in that case you still need to do it manually with HLAE.
+>Note #3 - it's impossible to set a custom loader/settings for HLAE, if you launch HLAE CS:GO through the Manager, so in that case you still need to do it manually with HLAE.
 
 ### Live
 
-In here you will find the list of players currently on the server. If you couldn't get their SteamIDs before the match or the information you have in the database is incorrect, just click on a player you want to edit, and you will be redirected to the Players tab with the selected player already loaded in.
+Here you will find the list of players currently on the server. If you couldn't get their SteamIDs before the match, or the information you have in the database is incorrect, just click on a player you want to edit, and you will be redirected to the Players tab with the selected player already loaded in.
 
 ### Settings
 
-In order to use the Manager, correct configuration is required - you need a free port to use at least. To use avatars loaded from Steam you also need to get your own Steam API key, and you can additionaly specify the GSI token to filter out payloads in case you are using more than one Gamestate Integration system.
+Correct configuration is required to use the Lexogine HUD Manager - at least you need a free port. To use avatars loaded from Steam you also need to get your own Steam API key. You can additionaly specify the GSI token to filter out payloads in case you are using more than one Gamestate Integration system.
 
-Below you can specify the path to HLAE.exe - it is required if you want to automate the CS:GO launch with killfeed enabled.
+Below the Steam API key, port and GSI token you can specify the path to HLAE.exe - it is required if you want to automate the CS:GO launch with killfeed enabled or AFX Mode.
 
-Under the HLAE.exe settings there is an option to set path to afx-cefhud-interop.exe file, which is required in order to use experimental mode - built-in HUD, instead of overlay. More about that in the section below.
+Under the HLAE.exe settings there is an option to set a path to afx-cefhud-interop.exe file, which is required in order to use experimental mode - built-in HUD, instead of overlay. You can find out more in the "Built-in HUD - AFX experimental mode" section.
 
-Moreover, you don't need to bother your head with copying the config files. You can see the status of both GSI and config files live, and if they are missing, invalid, or otherwise broken you can just click one button and done - they are installed (provided that the Manager detected your CS:GO location). Important fact to mention is when you change GSI port, you will need to restart the Manager, so it will start listening on the new one.
+Moreover, you don't need to bother your head with copying the config files. You can see the status of both GSI and config files live, and if they are missing, invalid, or otherwise broken you can just click one button and done - they are installed (provided that the Manager has detected your CS:GO location). Important to mention is that when you change GSI port, you will need to restart the Lexogrine HUD Manager, so it will start listening on the new one.
 
 ![Config](assets/examples/configs.gif?raw=true)
 
-In a situation when config installation doesn't succeed or the Manager is unable to locate CS:GO, you can download the GSI config and an archive with all of the required cfg files using two buttons at the bottom of this section.
+In a situation when config installation doesn't succeed or the Lexogrine HUD Manager is unable to locate CS:GO, you can download the GSI config and an archive with all of the required cfg files using two buttons at the bottom of this section.
 
 ## Built-in HUD - AFX experimental mode
 
-At this point there is an option to embedd any HUD in CS:GO using HLAE and afx_interop. It gives the advantage of being able to use CS:GO in fullscreen mode while using the custom HUDs, however the effects on the smoothness of the gameplay are not as well known as the classic, overlayed HUDs.
+At this point there is an option to embedd any HUD in CS:GO using HLAE and afx_interop. It gives the advantage of being able to use CS:GO in fullscreen mode while using the custom HUDs. It must be noted however, that this mode may affect the framerate.
 
-If you want to use this mode, you need to get HLAE and Release-Base.7z archive from here: https://drive.google.com/drive/folders/1CQFGMYhmz4x9DxunmwhWMp37ow6YOBON and set path to the afx-cefhud-interop.exe in the HUD Manager's settings. At this point the setup is completed - you just need to switch on the experimental mode in HUDs tab and click `RUN CSGO` (if you already have installed the config files of course). Once the CS:GO has loaded, you just need to click on the `SET` button on the HUD you want to use, and it should appear in the CS:GO.
+If you want to use this mode, you need to get HLAE, Release.7z and Release-Base.7z archive from here: https://drive.google.com/drive/folders/1CQFGMYhmz4x9DxunmwhWMp37ow6YOBON and set path to the afx-cefhud-interop.exe in the Lexogrine HUD Manager's settings. At this point the setup is completed - you just need to switch to the experimental mode in HUDs tab and click RUN CSGO (if you already have installed the config files of course). Once the CS:GO has loaded, you just need to click on the SET button on the HUD you want to use, and it should appear in the CS:GO.
 
 
 ## HUD API
 ### Structure
-A HUD **must have** a valid `hud.json` to be considered valid. For optional functionalities, there are `panel.json` and `keybinds.json` files.
+A HUD **must have** a valid `hud.json` to be considered legitimate. For optional functionalities, there are `panel.json` and `keybinds.json` files.
 #### hud.json
   Lexogrine HUD Manager's upload field accepts HUD .zip files that contain a proper `hud.json` file. It should look like this:
   ```javascript
@@ -228,7 +226,7 @@ Additionally, there is an action input that sends predetermined data and renders
     }]
 }
 ```
-Each value in the action input is a seperate button. To see how to listen for data from the HUD's side, please see "`panel.json API`" part of the [CSGO React HUD](https://github.com/lexogrine/csgo-react-hud) documentation.
+Each value in the action input is a seperate button. To see how to listen for data from the HUD's side, please see "`panel.json API`" part of the [CSGO React HUD](https://github.com/lexogrine/csgo-react-hud#paneljson-api) documentation.
 #### keybinds.json
 This file is basically another way to communicate with the HUD. Let's look at the example file:
 ```json
@@ -251,7 +249,7 @@ This file is basically another way to communicate with the HUD. Let's look at th
 	}
 ]
 ```
-It is, again, just an array of actions. Each bind only has `bind` and `action` properties. Bind is the keybind you want to use, and action is the identifier of an action. What differentiates it from the `panel.json` action input, is that in here we don't have additional data packed with the action name.
+Again, It is just an array of actions. Each bind only has `bind` and `action` properties. Bind is the keybind you want to use, and action is the identifier of an action. What differentiates it from the `panel.json` action input, is that here we don't have additional data packed with the action name.
 #### Radar
 A radar is hosted by the HUD Manager, so you don't have to include it yourself. You can access it at `/radar`. To load a HUD's custom radar.css you should add a `?hud=` query with the directory name of the HUD to the URL, unless you're working on the dev mode of the HUD - in this case you should add `?devCSS=true` if you have `custom.css`, and `devMaps=true` if you have custom radar backgrounds. If you are using the `csgo-react-hud` repo you don't have to think about those things, as it adds query params by itself.
 #### radar.css
@@ -259,20 +257,20 @@ This file works as a `custom.css` file from `boltobserv` and loads itself into t
 #### Radar files
 Radar background files have the same structure as in `boltobserv`. You should have a `maps` folder, and in it a directory for each map with the name of this map. Inside, place a `radar.png` with the background for the given map.
 #### thumb.png	
-For nice display in the HUDs tab in the Manager you should include this file, as it will be displayed next to its name. Recommended size: 64px x 64px
+You should include this file for a nice display in the HUDs tab in the Lexogrine HUD Manager, as it will be displayed next to its name. Recommended size: 64px x 64px.
 ## Technicalities
 
 Lexogrine HUD Manager uses, among others, Express.js for its REST API and GSI endpoints, `csgogsi`  `csgogsi-socket` for data parsing, joining the additional info about teams and players and listening for events such as end of round.
 
 HUD Manager exposes the port specified in settings as entry point for WebSockets, and sends `update` event that comes with CSGOParsed object, which definition you can find here: https://www.npmjs.com/package/csgogsi
 
-In the background, HUD Manager also regularly checks if the port 3500 is taken, and if yes - it tries to see if a HUD in dev mode is running there. If yes, it will show it in the HUDs tab and allow to use it locally as any other HUD.
+In the background, HUD Manager also regularly checks if the port 3500 is taken, and if yes - it tries to see if a HUD in dev mode is running there. If it does, it will show it in the HUDs tab and allow to use it locally as any other HUD.
 
 Local data is stored in a NeDB.js database locally at `%HOME%\hud_manager`. It includes config, teams, players and match data.
 
 For looking up the Steam's and CS:GO's directory the `steam-game-path` package is used.
 
-HUD Manager was written with Windows environment in mind. It probably works on Linux and Mac after compilation, however this isn't supported at the moment.
+Lexogrine HUD Manager was written with Windows environment in mind. It probably works on Linux and Mac after compilation, however this isn't supported at the moment.
 
 ### Build
 
@@ -319,4 +317,4 @@ Once connected to the HUD Manager with sockets, the Manager sends the following 
 # Special credits
 Big shout out to Loxar, for providing his set of a brand new weapon icons!
 
-Also huge thanks to Wiethoofd, Komodo and TeDy for testing and massive amount of feedback and to boltgolt, for creating open-sourced custom radar <3
+Also huge thanks to Wiethoofd, Komodo and TeDY for testing and massive amount of feedback and to boltgolt, for creating open-sourced custom radar <3
