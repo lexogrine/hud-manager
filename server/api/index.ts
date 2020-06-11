@@ -98,6 +98,9 @@ export default function (router: express.Router, io: socketio.Server) {
     router.route('/huds/:dir/')
         .get(huds.renderHUD);
 
+    router.route('/hud/:dir/')
+        .get(huds.renderOverlay);
+
     router.use('/huds/:dir/', huds.renderAssets);
 
     router.route('/huds/:dir/thumbnail')

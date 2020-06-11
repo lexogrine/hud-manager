@@ -9,6 +9,7 @@ import ip from 'ip';
 import { HUDState } from './../sockets';
 import HUDWindow from './../../init/huds';
 import DecompressZip from 'decompress-zip';
+import overlay from './overlay';
 
 export const listHUDs = async () => {
     const dir = path.join(app.getPath('home'), 'HUDs');
@@ -52,7 +53,7 @@ export const getHUDData = async (dirName: string): Promise<I.HUD> => {
             config.keybinds = keybinds;
         }
 
-        config.url = `http://${ip.address()}:${globalConfig.port}/huds/${dirName}/?port=${globalConfig.port}&isProd=true`;
+        config.url = `http://${ip.address()}:${globalConfig.port}/hud/${dirName}/`;
         config.isDev = false;
 
 
@@ -103,8 +104,12 @@ export const openHUDsDirectory: express.RequestHandler = async (_req, res) => {
 }
 
 export const renderHUD: express.RequestHandler = async (req, res) => {
+    const cfg = await loadConfig();
     if(!req.params.dir){
         return res.sendStatus(404);
+    }
+    if(req.headers.referer !== `http://${ip.address()}:${cfg.port}/hud/${req.params.dir}/`){
+        return res.sendStatus(403);
     }
     const data = await getHUDData(req.params.dir);
     if(!data){
@@ -119,6 +124,12 @@ export const renderHUD: express.RequestHandler = async (req, res) => {
 export const render: express.RequestHandler = (req, res) => {
     const dir = path.join(app.getPath('home'), 'HUDs', req.params.dir);
     return res.sendFile(path.join(dir, 'index.html'))
+}
+
+export const renderOverlay: express.RequestHandler = async (req, res) => {
+    const cfg = await loadConfig();
+    const url = `http://${ip.address()}:${cfg.port}/huds/${req.params.dir}/?port=${cfg.port}&isProd=true`;
+    res.send(overlay(url));
 }
 
 export const renderThumbnail: express.RequestHandler = (req, res) => {

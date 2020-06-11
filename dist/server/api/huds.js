@@ -55,6 +55,7 @@ var ip_1 = __importDefault(require("ip"));
 var sockets_1 = require("./../sockets");
 var huds_1 = __importDefault(require("./../../init/huds"));
 var decompress_zip_1 = __importDefault(require("decompress-zip"));
+var overlay_1 = __importDefault(require("./overlay"));
 exports.listHUDs = function () { return __awaiter(void 0, void 0, void 0, function () {
     var dir, filtered, huds;
     return __generator(this, function (_a) {
@@ -119,7 +120,7 @@ exports.getHUDData = function (dirName) { return __awaiter(void 0, void 0, void 
                     if (keybinds) {
                         config.keybinds = keybinds;
                     }
-                    config.url = "http://" + ip_1["default"].address() + ":" + globalConfig.port + "/huds/" + dirName + "/?port=" + globalConfig.port + "&isProd=true";
+                    config.url = "http://" + ip_1["default"].address() + ":" + globalConfig.port + "/hud/" + dirName + "/";
                     config.isDev = false;
                     return [2 /*return*/, config];
                 }
@@ -170,15 +171,20 @@ exports.openHUDsDirectory = function (_req, res) { return __awaiter(void 0, void
     });
 }); };
 exports.renderHUD = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var data;
+    var cfg, data;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0:
+            case 0: return [4 /*yield*/, config_1.loadConfig()];
+            case 1:
+                cfg = _a.sent();
                 if (!req.params.dir) {
                     return [2 /*return*/, res.sendStatus(404)];
                 }
+                if (req.headers.referer !== "http://" + ip_1["default"].address() + ":" + cfg.port + "/hud/" + req.params.dir + "/") {
+                    return [2 /*return*/, res.sendStatus(403)];
+                }
                 return [4 /*yield*/, exports.getHUDData(req.params.dir)];
-            case 1:
+            case 2:
                 data = _a.sent();
                 if (!data) {
                     return [2 /*return*/, res.sendStatus(404)];
@@ -194,6 +200,19 @@ exports.render = function (req, res) {
     var dir = path.join(electron_1.app.getPath('home'), 'HUDs', req.params.dir);
     return res.sendFile(path.join(dir, 'index.html'));
 };
+exports.renderOverlay = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var cfg, url;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, config_1.loadConfig()];
+            case 1:
+                cfg = _a.sent();
+                url = "http://" + ip_1["default"].address() + ":" + cfg.port + "/huds/" + req.params.dir + "/?port=" + cfg.port + "&isProd=true";
+                res.send(overlay_1["default"](url));
+                return [2 /*return*/];
+        }
+    });
+}); };
 exports.renderThumbnail = function (req, res) {
     return res.sendFile(exports.getThumbPath(req.params.dir));
     /*

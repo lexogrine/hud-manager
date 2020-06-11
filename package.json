@@ -54,6 +54,9 @@
       "output": "app",
       "buildResources": "assets"
     },
+    "nsis":{
+      "license":"license.txt"
+    },
     "files": [
       "boltobserv/**/*",
       "dist/**/*",

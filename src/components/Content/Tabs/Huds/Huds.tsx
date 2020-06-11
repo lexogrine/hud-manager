@@ -154,14 +154,14 @@ export default class Huds extends React.Component<IProps, IState> {
                             <div className="running-csgo-container">
                                 <div>
                                     <div className="config-description">
-                                        Type in CS:GO console:
+                                        Type in the console:
                                     </div>
                                     <code className="exec-code">exec {createCFG(radar, killfeed).file}</code>
                                     {isElectron ? <React.Fragment>
                                         <div className="config-description">
                                             OR
                                          </div>
-                                         <Button className="round-btn run-csgo" disabled={(killfeed && !config.hlaePath) || (afx && (!config.hlaePath || !config.afxCEFHudInteropPath))} onClick={!afx ? this.runCSGO : this.runCSGOExperimental}>RUN CSGO</Button>
+                                         <Button className="round-btn run-csgo" disabled={(killfeed && !config.hlaePath) || (afx && (!config.hlaePath || !config.afxCEFHudInteropPath))} onClick={!afx ? this.runCSGO : this.runCSGOExperimental}>RUN GAME</Button>
                                     </React.Fragment> : ''}
                                 </div>
                                 <div className="warning">

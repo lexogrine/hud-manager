@@ -80,6 +80,8 @@ function default_1(router, io) {
         .get(gsi.saveFile('configs.zip', gsi.cfgsZIPBase64, true));
     router.route('/huds/:dir/')
         .get(huds.renderHUD);
+    router.route('/hud/:dir/')
+        .get(huds.renderOverlay);
     router.use('/huds/:dir/', huds.renderAssets);
     router.route('/huds/:dir/thumbnail')
         .get(huds.renderThumbnail);

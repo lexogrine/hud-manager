@@ -166,20 +166,17 @@ export default class Config extends React.Component<IProps, IState>  {
                     <Row className="padded base-config">
                         <Col md="4">
                             <FormGroup>
-                                {/*<Label for="steamApiKey"><Tip id="steamapikey_tooltip" label="Steam API Key" link='https://steamcommunity.com/dev/apikey'>It's neccessary to load Steam avatars, you can get yours on https://steamcommunity.com/dev/apikey</Tip></Label>*/}
                                 <Input type="text" name="steamApiKey" id="steamApiKey" onChange={this.changeHandler} value={this.state.config.steamApiKey} placeholder="Steam API Key" />
                             </FormGroup>
                         </Col>
                         <Col md="4">
                             <FormGroup>
-                                {/*<Label for="port"><Tip id="gsiport_tooltip" label="CSGO GSI Port">Use values between 1000 and 9999 - after saving changes also restart the manager</Tip></Label>*/}
-                                <Input type="number" name="port" id="port" onChange={this.changeHandler} value={this.state.config.port} placeholder="CSGO GSI Port" />
+                                <Input type="number" name="port" id="port" onChange={this.changeHandler} value={this.state.config.port} placeholder="GSI Port" />
                             </FormGroup>
                         </Col>
                         <Col md="4">
                             <FormGroup>
-                                {/*<Label for="token"><Tip id="gsitoken_tooltip" label="CSGO GSI Token">Token to identify your game - you can leave it empty</Tip></Label>*/}
-                                <Input type="text" name="token" id="token" onChange={this.changeHandler} value={this.state.config.token} placeholder="CSGO GSI Token" />
+                                <Input type="text" name="token" id="token" onChange={this.changeHandler} value={this.state.config.token} placeholder="GSI Token" />
                             </FormGroup>
                         </Col>
                     </Row>
