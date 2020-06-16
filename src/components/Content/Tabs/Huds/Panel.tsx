@@ -6,8 +6,15 @@ import { socket } from './../Live/Live';
 import { Row, Col, FormGroup, Input, Form, Button } from 'reactstrap';
 import FileInput from './../../../DragFileInput';
 
-export default class ActionPanel extends React.Component<{ cxt: IContextData, hud: I.HUD }, { form: any }> {
-    constructor(props: { cxt: IContextData, hud: I.HUD }) {
+interface IProps {
+    cxt: IContextData,
+    hud: I.HUD
+}
+interface IState {
+    form: any
+}
+export default class ActionPanel extends React.Component<IProps, IState> {
+    constructor(props: IProps) {
         super(props);
         this.state = {
             form: {}
@@ -86,11 +93,18 @@ export default class ActionPanel extends React.Component<{ cxt: IContextData, hu
     getImageInputs = (panel: I.PanelTemplate) => {
         return this.filterInputs(panel, "image");
     }
+    getTeamSelect = (panel: I.PanelTemplate) => {
+        return this.filterInputs(panel, "team");
+    }
+    getMatchSelect = (panel: I.PanelTemplate) => {
+        return this.filterInputs(panel, "match");
+    }
     getActions = (panel: I.PanelTemplate) => {
         return this.filterInputs(panel, "action");
     }
     render() {
-        const { hud }: { hud: I.HUD } = this.props;
+        const { hud, cxt } = this.props;
+        const { teams, matches } = cxt;
         if (!hud.panel) return '';
         const { form } = this.state;
         return (
@@ -111,6 +125,42 @@ export default class ActionPanel extends React.Component<{ cxt: IContextData, hu
                                 </FormGroup>
                             </Col>)}
                         </Row>)}
+                        {this.getTeamSelect(section).map(input => <Row key={input.name}>
+                            <Col s={12}>
+                                <FormGroup>
+                                    <Input
+                                        type="select"
+                                        id={input.name.toLowerCase()}
+                                        name={input.name.toLowerCase()}
+                                        value={(form[section.name] && form[section.name][input.name]) || ''}
+                                        onChange={this.changeForm(section.name, input.name)}
+                                    >
+                                        <option value="">No team</option>
+                                        {teams.map(team => <option value={team._id}>{team.name}</option>)}
+                                    </Input>
+                                </FormGroup>
+                            </Col>
+                        </Row>
+                        )}
+                        {this.getMatchSelect(section).map(input => <Row key={input.name}>
+                            <Col s={12}>
+                                <FormGroup>
+                                    <Input
+                                        type="select"
+                                        id={input.name.toLowerCase()}
+                                        name={input.name.toLowerCase()}
+                                        value={(form[section.name] && form[section.name][input.name]) || ''}
+                                        onChange={this.changeForm(section.name, input.name)}
+                                    >
+                                        <option value="">No match</option>
+                                        {matches.map(match => <option value={match.id}>
+                                            {(teams.find(team => team._id === match.left.id) || {}).name || '-'} vs {(teams.find(team => team._id === match.right.id) || {}).name || '-'}
+                                        </option>)}
+                                    </Input>
+                                </FormGroup>
+                            </Col>
+                        </Row>
+                        )}
 
                         {this.getImageInputs(section).map(input => <Row>
                             <Col s={12}>
@@ -133,36 +183,6 @@ export default class ActionPanel extends React.Component<{ cxt: IContextData, hu
                                     : ""}
                             </Col>)}
                         </Row>
-                        {/*section.inputs.map(input => <Row key={input.name}>
-                            <Col s={input.type === "text" ? 6 : 12}>
-                                <FormGroup>
-
-                                    <Label for={input.name.toLowerCase()}>{input.label}</Label>
-                                    {input.type === "text" ?
-                                        <Col md={6}>
-                                            <Input type="text"
-                                                name={input.name.toLowerCase()}
-                                                id={input.name.toLowerCase()}
-                                                onChange={this.changeForm(section.name, input.name)}
-                                                value={(form[section.name] && form[section.name][input.name]) || ''}
-                                            />
-                                        </Col> : ''}
-                                    {input.type === "action" ? <>
-                                        {input.values.map(value => <Button onClick={() => this.sendAction({ action: input.name, data: value.name })}>{value.label}</Button>)}
-                                    </> : ''}
-                                    {input.type === "image" ? <Row>
-                                        <Col md={12}>
-                                            <FileInput image
-                                                id={`file_${input.name}`}
-                                                onChange={this.handleImages(input.name, section.name)}
-                                                label={(input && input.label && input.label.toUpperCase()) || ''}
-                                                imgSrc={form[section.name] && form[section.name][input.name]}
-                                            />
-                                        </Col>
-                                    </Row> : ''}
-                                </FormGroup>
-                            </Col>
-                        </Row>)*/}
 
                         <Row className="section-save">
                             <Col s={12}>
