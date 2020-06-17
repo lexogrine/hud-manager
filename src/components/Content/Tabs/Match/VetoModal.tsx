@@ -43,7 +43,7 @@ export default class VetoModal extends React.Component<Props, { isOpen: boolean 
 						</FormGroup>
 						<FormGroup>
 							<Input type="select" name="side" id="side" value={this.props.veto.side} onChange={this.props.onChange('side', this.props.map)}>
-								<option value={"NO"} disabled defaultChecked>Does opponent pick a side?</option>
+								<option value={"NO"} disabled defaultChecked>Does the opponent pick a side?</option>
 								<option value={"NO"}>No</option>
 								<option value={"CT"}>CT</option>
 								<option value={"T"}>T</option>
@@ -61,7 +61,7 @@ export default class VetoModal extends React.Component<Props, { isOpen: boolean 
 						<Label check>
 							<Input type="checkbox" onChange={this.props.onChange('reverseSide', this.props.map)} checked={this.props.veto.reverseSide || false} />{' '}
 							<div className="customCheckbox"></div>
-							Side's reversed?
+							Reversed sides
 						</Label>
 					</FormGroup>
 				</ModalBody>

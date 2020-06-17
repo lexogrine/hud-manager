@@ -65,7 +65,7 @@ export default class Live extends Component<{toggle: Function, cxt: IContextData
         const { game } = this.state;
         if (!game) return  <React.Fragment>
             <div className="tab-title-container">Live</div>
-            <div className="tab-content-container full-scroll">No game is currently live</div>
+            <div className="tab-content-container full-scroll">No game is currently live.</div>
         </React.Fragment>;
         const teams = [game.map.team_ct, game.map.team_t]
         const left = teams.filter(team => team.orientation === "left")[0];
@@ -76,7 +76,7 @@ export default class Live extends Component<{toggle: Function, cxt: IContextData
                 <div className="tab-content-container full-scroll">
                     <Row>
                         <Col md="12" className="config-container no-margin" style={{ flexDirection: 'column' }}>
-                            <div>Players Currently In Match, Click to Add Player to Players List</div>
+                            <div>Players currently in match, click to add a player to the player list.</div>
                         </Col>
                     </Row>
                     <Row>

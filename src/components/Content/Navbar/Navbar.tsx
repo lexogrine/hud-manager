@@ -40,7 +40,7 @@ export default class Navbar extends React.Component<{activeTab: string, toggle: 
                         onClick={() => { this.props.toggle('huds'); }}
                     >
                         <img src={Tabs.HUDs} alt="HUDs"/>
-                        <div>HUDS</div>
+                        <div>HUDs</div>
                     </NavLink>
                 </NavItem>
                 <NavItem className="hover-pointer">

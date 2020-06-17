@@ -43,15 +43,15 @@ export default class HudEntry extends Component<IProps> {
                             </Row>
                             {hud.killfeed || hud.radar ? <Row>
                                 <Col>
-                                    {hud.radar ? <Tip id={`radar_support_${hud.dir}`} className="radar_support" label={<img src={Map} className='action' alt="Supports boltgolts radar"/>}>Includes Boltgolt's radar</Tip> : ''}
+                                    {hud.radar ? <Tip id={`radar_support_${hud.dir}`} className="radar_support" label={<img src={Map} className='action' alt="Supports boltgolt's radar"/>}>Includes Boltgolt's radar</Tip> : ''}
                                     {hud.killfeed ? <Tip id={`killfeed_support_${hud.dir}`} className="killfeed_support" label={<img src={Killfeed} className='action' alt="Supports custom killfeed" />}>Includes custom killfeed</Tip> : ''}
                                 </Col>
                             </Row> : ''}
                         </Col>
                         <Col style={{ flex: 1 }} className="centered">
                             {/*<i className="material-icons" id={`hud_link_${hashCode(hud.dir)}`}>link</i>*/}
-                            <img src={HyperLink} id={`hud_link_${hashCode(hud.dir)}`} className='action' alt="Local network's HUD's URL"/>
-                            {hud.panel ? <img src={Settings} onClick={toggleConfig(hud)} className='action' alt="HUD's panel" /> : ''}
+                            <img src={HyperLink} id={`hud_link_${hashCode(hud.dir)}`} className='action' alt="Local network HUD URL"/>
+                            {hud.panel ? <img src={Settings} onClick={toggleConfig(hud)} className='action' alt="HUD panel" /> : ''}
                             { Config.isElectron ? <img src={Display} onClick={() => this.startHUD(hud.dir)} className='action' alt="Start HUD" /> : null}
                             { Config.isElectron ? <Button className="purple-btn round-btn" onClick={() => this.setHUD(hud.url)}>Set</Button>: null}
                         </Col>

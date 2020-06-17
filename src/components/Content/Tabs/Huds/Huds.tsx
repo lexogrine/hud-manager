@@ -129,7 +129,7 @@ export default class Huds extends React.Component<IProps, IState> {
         }
         return (
             <React.Fragment>
-                <div className="tab-title-container">HUDS</div>
+                <div className="tab-title-container">HUDs</div>
                 <div className={`tab-content-container no-padding ${!isElectron ? 'full-scroll':''}`}>
                     <Row className="config-container">
                         <Col md="12" className="config-entry">
@@ -165,11 +165,11 @@ export default class Huds extends React.Component<IProps, IState> {
                                     </React.Fragment> : ''}
                                 </div>
                                 <div className="warning">
-                                        {(killfeed || afx) && !config.hlaePath && isElectron ? <div>Specify HLAE path in settings in order to use custom killfeeds</div> : null}
-                                        { afx && !config.afxCEFHudInteropPath && isElectron ? <div>Specify AFX Interop path in settings in order to use AFX mode</div> :null }
+                                        {(killfeed || afx) && !config.hlaePath && isElectron ? <div>Specify HLAE path in Settings in order to use custom killfeeds</div> : null}
+                                        { afx && !config.afxCEFHudInteropPath && isElectron ? <div>Specify AFX Interop path in Settings in order to use AFX mode</div> :null }
                                         { afx && config.afxCEFHudInteropPath && config.hlaePath && isElectron ? <>
-                                            <div>When using AFX mode, after joining the match just click on "SET" button - no need to start overlay.</div>
-                                            <div>Note: You need to execute above commands manually in this mode</div>
+                                            <div>When using AFX mode, after joining the match click on the SET button - no need to start the overlay.</div>
+                                            <div>Note: You need to execute the commands above manually in this mode</div>
                                         </> :null }
                                 </div>
                             </div>
@@ -180,7 +180,7 @@ export default class Huds extends React.Component<IProps, IState> {
                     <Row className="padded">
                         <Col>
                             <Col s={12}>
-                                <DragInput id={`hud_zip`} onChange={this.handleZIPs} label="UPLOAD HUD" accept=".zip" />
+                                <DragInput id={`hud_zip`} onChange={this.handleZIPs} label="ADD HUD" accept=".zip" />
                             </Col>
                             {this.state.huds.map(hud => <HudEntry key={hud.dir} hud={hud} toggleConfig={this.toggleConfig}/>)}
                         </Col>
@@ -188,7 +188,7 @@ export default class Huds extends React.Component<IProps, IState> {
 
                     {isElectron ? <Row>
                         <Col className="main-buttons-container">
-                            <Button onClick={api.huds.openDirectory} color="primary">Open HUDs directory</Button>
+                            <Button onClick={api.huds.openDirectory} color="primary">Open HUD directory</Button>
                         </Col>
                     </Row> : ''}
                 </div>
