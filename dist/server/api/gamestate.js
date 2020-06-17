@@ -79,22 +79,22 @@ var GSITemplate = {
     }
 };
 exports.checkGSIFile = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var config, CSGOPath, cfgPath, rawContent, content;
+    var config, GamePath, cfgPath, rawContent, content;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0: return [4 /*yield*/, config_1.loadConfig()];
             case 1:
                 config = _a.sent();
                 try {
-                    CSGOPath = steam_game_path_1.getGamePath(730);
+                    GamePath = steam_game_path_1.getGamePath(730);
                 }
                 catch (_b) {
-                    return [2 /*return*/, res.json({ success: false, message: "CSGO path couldn't be found", accessible: false })];
+                    return [2 /*return*/, res.json({ success: false, message: "Game path couldn't be found", accessible: false })];
                 }
-                if (!config || !CSGOPath || !CSGOPath.game || !CSGOPath.game.path) {
-                    return [2 /*return*/, res.json({ success: false, message: "CSGO path couldn't be found", accessible: false })];
+                if (!config || !GamePath || !GamePath.game || !GamePath.game.path) {
+                    return [2 /*return*/, res.json({ success: false, message: "Game path couldn't be found", accessible: false })];
                 }
-                cfgPath = path_1["default"].join(CSGOPath.game.path, 'csgo', 'cfg', 'gamestate_integration_hudmanager.cfg');
+                cfgPath = path_1["default"].join(GamePath.game.path, 'csgo', 'cfg', 'gamestate_integration_hudmanager.cfg');
                 if (!fs_1["default"].existsSync(cfgPath)) {
                     return [2 /*return*/, res.json({ success: false, message: 'File couldn\'t be found', accessible: true })];
                 }
@@ -150,7 +150,7 @@ exports.generateGSIFile = function () { return __awaiter(void 0, void 0, void 0,
     });
 }); };
 exports.createGSIFile = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var text, CSGOPath, cfgPath;
+    var text, GamePath, cfgPath;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0: return [4 /*yield*/, exports.generateGSIFile()];
@@ -160,15 +160,15 @@ exports.createGSIFile = function (req, res) { return __awaiter(void 0, void 0, v
                     return [2 /*return*/, res.sendStatus(422)];
                 }
                 try {
-                    CSGOPath = steam_game_path_1.getGamePath(730);
+                    GamePath = steam_game_path_1.getGamePath(730);
                 }
                 catch (_b) {
                     return [2 /*return*/, res.json({})];
                 }
-                if (!CSGOPath || !CSGOPath.game || !CSGOPath.game.path) {
+                if (!GamePath || !GamePath.game || !GamePath.game.path) {
                     return [2 /*return*/, res.json({})];
                 }
-                cfgPath = path_1["default"].join(CSGOPath.game.path, 'csgo', 'cfg', 'gamestate_integration_hudmanager.cfg');
+                cfgPath = path_1["default"].join(GamePath.game.path, 'csgo', 'cfg', 'gamestate_integration_hudmanager.cfg');
                 try {
                     if (fs_1["default"].existsSync(cfgPath)) {
                         fs_1["default"].unlinkSync(cfgPath);

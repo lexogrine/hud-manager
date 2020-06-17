@@ -68,9 +68,9 @@ export default {
         check: async (): Promise<I.CFGGSIResponse> => await apiV2('gsi'),
         create: async (): Promise<I.CFGGSIResponse> => await apiV2('gsi', 'PUT')
     },
-    csgo: {
-        run: async (config: string) => await apiV2(`csgo/run?config=${config}`),
-        runExperimental: async () => await apiV2(`csgo/experimental`)
+    game: {
+        run: async (config: string) => await apiV2(`game/run?config=${config}`),
+        runExperimental: async () => await apiV2(`game/experimental`)
     },
     huds: {
         get: async (): Promise<I.HUD[]> => await apiV2('huds'),

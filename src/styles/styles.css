@@ -469,7 +469,7 @@ img.smallLogo {
     margin-top:10px;
     margin-bottom:10px;
 }
-.config-entry .running-csgo-container {
+.config-entry .running-game-container {
     
     display: flex;
     flex: 1;
@@ -487,13 +487,13 @@ img.smallLogo {
     padding-left: 0;
     padding-right:0;
 }
-.config-entry .running-csgo-container .warning{
+.config-entry .running-game-container .warning{
     flex-direction:column;
     align-self: center;
     bottom:4px;
     font-size:10pt;
 }
-.config-entry .running-csgo-container > div {
+.config-entry .running-game-container > div {
     display: flex;
     align-items: center;
     flex-direction: row;
@@ -530,7 +530,7 @@ img.smallLogo {
 .btn.disabled {
     cursor: default;
 }
-.btn.run-csgo {
+.btn.run-game {
     background-color: #7ad9f5;
     color: #24272d;
     font-weight: 700;

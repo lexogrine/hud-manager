@@ -3,10 +3,10 @@ import path from 'path';
 import { getGamePath } from 'steam-game-path';
 import express from 'express';
 import { loadConfig } from './config';
-import { GSI } from './../sockets';
+import { GSI } from '../sockets';
 import { spawn } from 'child_process';
 import { Config } from '../../types/interfaces';
-import { AFXInterop } from './../../electron';
+import { AFXInterop } from '../../electron';
 
 interface CFG {
     cfg: string,
@@ -35,11 +35,11 @@ function createCFG(customRadar: boolean, customKillfeed: boolean): CFG {
 
 function exists(file: string) {
     try {
-        const CSGOPath = getGamePath(730);
-        if (!CSGOPath || !CSGOPath.game || !CSGOPath.game.path) {
+        const GamePath = getGamePath(730);
+        if (!GamePath || !GamePath.game || !GamePath.game.path) {
             return false;
         }
-        const cfgDir = path.join(CSGOPath.game.path, 'csgo', 'cfg');
+        const cfgDir = path.join(GamePath.game.path, 'csgo', 'cfg');
     
         return fs.existsSync(path.join(cfgDir, file));
     } catch {
@@ -49,12 +49,12 @@ function exists(file: string) {
 
 function isCorrect(cfg: CFG) {
     try {
-        const CSGOPath = getGamePath(730);
-        if (!CSGOPath || !CSGOPath.game || !CSGOPath.game.path) {
+        const GamePath = getGamePath(730);
+        if (!GamePath || !GamePath.game || !GamePath.game.path) {
             return false;
         }
         const file = cfg.file;
-        const cfgDir = path.join(CSGOPath.game.path, 'csgo', 'cfg');
+        const cfgDir = path.join(GamePath.game.path, 'csgo', 'cfg');
         return fs.readFileSync(path.join(cfgDir, file), 'UTF-8') === cfg.cfg;
     } catch {
         return false;
@@ -63,15 +63,15 @@ function isCorrect(cfg: CFG) {
 
 export const checkCFGs: express.RequestHandler = async (req, res) => {
     let config: Config;
-    let CSGOPath;
+    let GamePath;
     try {
         config = await loadConfig();
-        CSGOPath = getGamePath(730);
+        GamePath = getGamePath(730);
     } catch {
-        return res.json({ success: false, message: "CSGO path couldn't be found", accessible: false});
+        return res.json({ success: false, message: "Game path couldn't be found", accessible: false});
     }
-    if (!config || !CSGOPath || !CSGOPath.game || !CSGOPath.game.path) {
-        return res.json({ success: false, message: "CSGO path couldn't be found", accessible: false});
+    if (!config || !GamePath || !GamePath.game || !GamePath.game.path) {
+        return res.json({ success: false, message: "Game path couldn't be found", accessible: false});
     }
 
     const switcher = [true, false];
@@ -98,16 +98,16 @@ export const checkCFGs: express.RequestHandler = async (req, res) => {
 }
 
 export const createCFGs: express.RequestHandler = async (_req, res) => {
-    let CSGOPath;
+    let GamePath;
     try {
-        CSGOPath = getGamePath(730);
+        GamePath = getGamePath(730);
     } catch {
         return res.json({ success: false, message: 'Unexpected error occured' });
     }
-    if (!CSGOPath || !CSGOPath.game || !CSGOPath.game.path) {
+    if (!GamePath || !GamePath.game || !GamePath.game.path) {
         return res.json({ success: false, message: 'Unexpected error occured' });
     }
-    const cfgDir = path.join(CSGOPath.game.path, 'csgo', 'cfg');
+    const cfgDir = path.join(GamePath.game.path, 'csgo', 'cfg');
 
     try {
         const switcher = [true, false];
@@ -145,11 +145,11 @@ export const getLatestData: express.RequestHandler = async (_req, res) => {
 
 export const getSteamPath: express.RequestHandler = async (_req, res) => {
     try {
-        const CSGOPath = getGamePath(730);
-        if(!CSGOPath || !CSGOPath.steam || !CSGOPath.steam.path){
+        const GamePath = getGamePath(730);
+        if(!GamePath || !GamePath.steam || !GamePath.steam.path){
             return res.status(404).json({success: false});
         }
-        return res.json({success:true, steamPath: path.join(CSGOPath.steam.path, 'Steam.exe')});
+        return res.json({success:true, steamPath: path.join(GamePath.steam.path, 'Steam.exe')});
     } catch {
         return res.status(404).json({success: false});
     }
@@ -160,21 +160,21 @@ export const run: express.RequestHandler = async (req, res) => {
     if(!config ||!req.query.config || typeof req.query.config !== "string"){
         return res.sendStatus(422);
     }
-    let CSGOData;
+    let GamePath;
     try {
-        CSGOData = getGamePath(730);
+        GamePath = getGamePath(730);
     } catch {
         return res.sendStatus(404);
     }
-    if(!CSGOData || !CSGOData.steam || !CSGOData.steam.path || !CSGOData.game || !CSGOData.game.path){
+    if(!GamePath || !GamePath.steam || !GamePath.steam.path || !GamePath.game || !GamePath.game.path){
         return res.sendStatus(404);
     }
 
     const HLAEPath = config.hlaePath;
-    const CSGOPath = path.join(CSGOData.game.path, 'csgo.exe');
+    const GameExePath = path.join(GamePath.game.path, 'csgo.exe');
 
     const isHLAE = req.query.config.includes("killfeed");
-    const exePath = isHLAE ? HLAEPath : path.join(CSGOData.steam.path, "Steam.exe");
+    const exePath = isHLAE ? HLAEPath : path.join(GamePath.steam.path, "Steam.exe");
 
     if(isHLAE && (!HLAEPath || !fs.existsSync(HLAEPath))){
         return res.sendStatus(404);
@@ -185,7 +185,7 @@ export const run: express.RequestHandler = async (req, res) => {
     if(!isHLAE){
         args.push('-applaunch 730', `+exec ${req.query.config}`);
     } else {
-        args.push('-csgoLauncher','-noGui', '-autoStart', `-csgoExe "${CSGOPath}"`, `-customLaunchOptions "+exec ${req.query.config}"`);
+        args.push('-csgoLauncher','-noGui', '-autoStart', `-csgoExe "${GameExePath}"`, `-customLaunchOptions "+exec ${req.query.config}"`);
     }
 
     try {
@@ -201,18 +201,18 @@ export const runExperimental: express.RequestHandler = async (req, res) => {
     if(!config){
         return res.sendStatus(422);
     }
-    let CSGOData;
+    let GamePath;
     try {
-        CSGOData = getGamePath(730);
+        GamePath = getGamePath(730);
     } catch {
         return res.sendStatus(404);
     }
-    if(!CSGOData || !CSGOData.steam || !CSGOData.steam.path || !CSGOData.game || !CSGOData.game.path){
+    if(!GamePath || !GamePath.steam || !GamePath.steam.path || !GamePath.game || !GamePath.game.path){
         return res.sendStatus(404);
     }
 
     const HLAEPath = config.hlaePath;
-    const CSGOPath = path.join(CSGOData.game.path, 'csgo.exe');
+    const GameExePath = path.join(GamePath.game.path, 'csgo.exe');
 
     const exePath = HLAEPath;
 
@@ -224,7 +224,7 @@ export const runExperimental: express.RequestHandler = async (req, res) => {
 
     const url = `http://localhost:${config.port}/hlae.html`;
 
-    args.push('-csgoLauncher','-noGui', '-autoStart', `-csgoExe "${CSGOPath}"`, '-gfxFull false', `-customLaunchOptions "-afxInteropLight +exec hud_interop"`);
+    args.push('-csgoLauncher','-noGui', '-autoStart', `-csgoExe "${GameExePath}"`, '-gfxFull false', `-customLaunchOptions "-afxInteropLight +exec hud_interop"`);
     
 
     try {

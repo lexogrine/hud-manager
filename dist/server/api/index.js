@@ -18,7 +18,7 @@ var config = __importStar(require("./config"));
 var huds = __importStar(require("./huds"));
 var path = __importStar(require("path"));
 var gsi = __importStar(require("./gamestate"));
-var csgo = __importStar(require("./csgo"));
+var game = __importStar(require("./game"));
 var sync = __importStar(require("./sync"));
 function default_1(router, io) {
     router.route('/api/players')
@@ -66,16 +66,16 @@ function default_1(router, io) {
     router.route('/api/db/download')
         .get(gsi.saveFile('hudmanagerdb.json', sync.exportDatabase()));
     //router.route('/api/events')
-    //    .get(csgo.getEvents);
-    router.route('/api/csgo')
-        .get(csgo.getLatestData);
-    router.route('/api/csgo/run')
-        .get(csgo.run);
-    router.route('/api/csgo/experimental')
-        .get(csgo.runExperimental);
+    //    .get(game.getEvents);
+    router.route('/api/game')
+        .get(game.getLatestData);
+    router.route('/api/game/run')
+        .get(game.run);
+    router.route('/api/game/experimental')
+        .get(game.runExperimental);
     router.route('/api/cfg')
-        .get(csgo.checkCFGs)
-        .put(csgo.createCFGs);
+        .get(game.checkCFGs)
+        .put(game.createCFGs);
     router.route('/api/cfgs/download')
         .get(gsi.saveFile('configs.zip', gsi.cfgsZIPBase64, true));
     router.route('/huds/:dir/')

@@ -1,10 +1,10 @@
 import React, { Component } from 'react';
 import config from './../../../../api/config';
 import { Col, Row } from 'reactstrap';
-import CSGOGSI, { CSGO, Player, Team, PlayerExtension } from 'csgogsi-socket';
+import GSISocket, { CSGO, Player, Team, PlayerExtension } from 'csgogsi-socket';
 import { IContextData } from '../../../Context';
 
-export const { GSI, socket } = CSGOGSI(`${config.isDev ? config.apiAddress : '/'}`, 'update')
+export const { GSI, socket } = GSISocket(`${config.isDev ? config.apiAddress : '/'}`, 'update')
 
 class Teamboard extends Component<{ players: Player[], team: Team, toggle: Function,cxt:IContextData }> {
     remapPlayer = (player: Player): PlayerExtension => {

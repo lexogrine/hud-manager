@@ -66,16 +66,16 @@ const GSITemplate: GSI  = {
 
 export const checkGSIFile: express.RequestHandler = async (req, res) => {
     const config = await loadConfig();
-    let CSGOPath;
+    let GamePath;
     try {
-        CSGOPath = getGamePath(730);
+        GamePath = getGamePath(730);
     } catch {
-        return res.json({success: false, message: "CSGO path couldn't be found", accessible: false});
+        return res.json({success: false, message: "Game path couldn't be found", accessible: false});
     }
-    if (!config || !CSGOPath || !CSGOPath.game || !CSGOPath.game.path) {
-        return res.json({success: false, message: "CSGO path couldn't be found", accessible: false});
+    if (!config || !GamePath || !GamePath.game || !GamePath.game.path) {
+        return res.json({success: false, message: "Game path couldn't be found", accessible: false});
     }
-    const cfgPath = path.join(CSGOPath.game.path, 'csgo', 'cfg', 'gamestate_integration_hudmanager.cfg');
+    const cfgPath = path.join(GamePath.game.path, 'csgo', 'cfg', 'gamestate_integration_hudmanager.cfg');
     if (!fs.existsSync(cfgPath)) {
         return res.json({success: false, message: 'File couldn\'t be found', accessible: true});
     }
@@ -128,17 +128,17 @@ export const createGSIFile: express.RequestHandler = async (req, res) => {
         return res.sendStatus(422);
     }
     
-    let CSGOPath;
+    let GamePath;
     try {
-        CSGOPath = getGamePath(730);
+        GamePath = getGamePath(730);
     } catch {
         return res.json({});
     }
-    if (!CSGOPath || !CSGOPath.game || !CSGOPath.game.path) {
+    if (!GamePath || !GamePath.game || !GamePath.game.path) {
         return res.json({});
     }
 
-    const cfgPath = path.join(CSGOPath.game.path, 'csgo', 'cfg', 'gamestate_integration_hudmanager.cfg');
+    const cfgPath = path.join(GamePath.game.path, 'csgo', 'cfg', 'gamestate_integration_hudmanager.cfg');
     try {
         if(fs.existsSync(cfgPath)){
             fs.unlinkSync(cfgPath);

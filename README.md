@@ -312,7 +312,7 @@ Once connected to the Lexogrine HUD Manager with sockets, it sends the following
 |`/api/maps`|GET|Map pool array|
 |`/api/gsi`|GET|Check if GSI file is loaded|
 |`/api/cfg`|GET|Check if config files are loaded|
-|`/api/csgo`|GET|Get latest data from CS:GO|
+|`/api/game`|GET|Get latest data from CS:GO|
 
 # Special credits
 Big shout out to Loxar, for providing his set of a brand new weapon icons!

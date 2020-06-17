@@ -7,7 +7,7 @@ import * as config from './config';
 import * as huds from './huds';
 import * as path from 'path';
 import * as gsi from './gamestate';
-import * as csgo from './csgo';
+import * as game from './game';
 import * as sync from './sync';
 
 export default function (router: express.Router, io: socketio.Server) {
@@ -77,20 +77,20 @@ export default function (router: express.Router, io: socketio.Server) {
         .get(gsi.saveFile('hudmanagerdb.json', sync.exportDatabase()));
 
     //router.route('/api/events')
-    //    .get(csgo.getEvents);
+    //    .get(game.getEvents);
 
-    router.route('/api/csgo')
-        .get(csgo.getLatestData);
+    router.route('/api/game')
+        .get(game.getLatestData);
 
-    router.route('/api/csgo/run')
-        .get(csgo.run);
+    router.route('/api/game/run')
+        .get(game.run);
 
-    router.route('/api/csgo/experimental')
-        .get(csgo.runExperimental);
+    router.route('/api/game/experimental')
+        .get(game.runExperimental);
 
     router.route('/api/cfg')
-        .get(csgo.checkCFGs)
-        .put(csgo.createCFGs);
+        .get(game.checkCFGs)
+        .put(game.createCFGs);
 
     router.route('/api/cfgs/download')
         .get(gsi.saveFile('configs.zip', gsi.cfgsZIPBase64, true));

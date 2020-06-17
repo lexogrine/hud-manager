@@ -67,12 +67,12 @@ export default class Huds extends React.Component<IProps, IState> {
         }
     }
 
-    runCSGO = () => {
+    runGame = () => {
         const config = createCFG(this.state.form.radar, this.state.form.killfeed).file;
-        api.csgo.run(config);
+        api.game.run(config);
     }
-    runCSGOExperimental = () => {
-        api.csgo.runExperimental();
+    runGameExperimental = () => {
+        api.game.runExperimental();
     }
 
     handleZIPs = (files: FileList) => {
@@ -151,7 +151,7 @@ export default class Huds extends React.Component<IProps, IState> {
                             <Switch isOn={this.state.form.afx} id="afx-toggle" handleToggle={this.changeForm('afx')} />
                         </Col>}
                         <Col md="12" className="config-entry">
-                            <div className="running-csgo-container">
+                            <div className="running-game-container">
                                 <div>
                                     <div className="config-description">
                                         Type in the console:
@@ -161,7 +161,7 @@ export default class Huds extends React.Component<IProps, IState> {
                                         <div className="config-description">
                                             OR
                                          </div>
-                                         <Button className="round-btn run-csgo" disabled={(killfeed && !config.hlaePath) || (afx && (!config.hlaePath || !config.afxCEFHudInteropPath))} onClick={!afx ? this.runCSGO : this.runCSGOExperimental}>RUN GAME</Button>
+                                         <Button className="round-btn run-game" disabled={(killfeed && !config.hlaePath) || (afx && (!config.hlaePath || !config.afxCEFHudInteropPath))} onClick={!afx ? this.runGame : this.runGameExperimental}>RUN GAME</Button>
                                     </React.Fragment> : ''}
                                 </div>
                                 <div className="warning">
