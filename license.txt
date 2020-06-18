@@ -1,7 +1,7 @@
 LEXOGRINE HUD MANAGER END USER LICENSE AGREEMENT 
 PLEASE READ THIS END USER LICENSE AGREEMENT ("EULA") CAREFULLY BEFORE USING THE LEXOGRINE HUD MANAGER ("SOFTWARE"). BY USING THE SOFTWARE, YOU ARE AGREEING TO BE BOUND BY THE TERMS OF THIS EULA. IF YOU DO NOT AGREE TO THE TERMS OF THIS EULA, DO NOT INSTALL AND/OR USE THE SOFTWARE. 
 1. General. The Michal Majka Neurogrine, located in Armii Krajowej 7 Street, 30-150 Krakow, NIP: 6772308416, REGON: 369467404 ("Licensor") reserves all rights to the Software that have not been expressly granted to you. 
-The Licensor reserves that the "Powered by HUD Manager" watermark will be displayed during transmission. If you don't want to display the watermark contact us: michael@lexogrine.com .
+The Licensor reserves that the "Powered by Lexogrine HUD Manager" watermark will be displayed during transmission. If you don't want to display the watermark contact us: michael@lexogrine.com .
 2. Hardware Requirements. In order to use the Software it is required to have a device with access to the Internet. More specific information you can find here: https://github.com/lexogrine/hud-manager/blob/master/README.md.
 3. Data Protection. The Software does not periodically download any information about you or other users device or information on how to use the Software. The Licensor also does not collect any data about you.
 4. Scope of the License. 
