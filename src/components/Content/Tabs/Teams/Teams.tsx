@@ -18,8 +18,14 @@ export default class Teams extends React.Component<{ cxt: IContextData }, { opti
             logo: ""
         }
 
+        const countries = [...countryList().getData(), { value: "EU", label: "European Union" }].sort((a, b) => {
+            if(a.label < b.label) return -1;
+            if(a.label > b.label) return 1;
+            return 0;
+        });
+
         this.state = {
-            options: countryList().getData(),
+            options: countries,
             value: "",
             form: { ...this.emptyTeam }
         };

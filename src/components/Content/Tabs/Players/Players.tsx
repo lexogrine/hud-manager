@@ -20,8 +20,15 @@ export default class Players extends React.Component<{ cxt: IContextData, data: 
             country: "",
             steamid: ""
         }
+        
+        const countries = [...countryList().getData(), { value: "EU", label: "European Union" }].sort((a, b) => {
+            if(a.label < b.label) return -1;
+            if(a.label > b.label) return 1;
+            return 0;
+        });
+
         this.state = {
-            options: countryList().getData(),
+            options: countries,
             value: "",
             form: { ...this.emptyPlayer },
             forceLoad: false
