@@ -1,7 +1,7 @@
 import socketio from 'socket.io';
 import http from 'http';
 import express from 'express';
-import CSGOGSI from 'csgogsi';
+import CSGOGSI, { CSGORaw } from 'csgogsi';
 import { app as Application } from 'electron';
 import path from 'path';
 import fetch from 'node-fetch';
@@ -78,6 +78,12 @@ class SocketManager {
     }
 }
 
+interface RuntimeConfig {
+    last: CSGORaw | null,
+    devSocket: socketio.Socket | null,
+    currentHUD: string | null,
+};
+
 export const Sockets = new SocketManager();
 
 export const HUDState = new HUDStateManager();
@@ -104,8 +110,12 @@ export default function (server: http.Server, app: express.Router) {
         })
     };
 
-    let last = null;
-    let devSocket: socketio.Socket | null = null;
+    const runtimeConfig: RuntimeConfig = {
+        last: null,
+        devSocket: null,
+        currentHUD: null
+    }
+
     const io = socketio(server);
 
     Sockets.set(io);
@@ -131,7 +141,7 @@ export default function (server: http.Server, app: express.Router) {
                 const cfg = await loadConfig();
                 hud.url = `http://localhost:3500/?port=${cfg.port}`;
                 HUDState.devHUD = hud;
-                if (devSocket) {
+                if (runtimeConfig.devSocket) {
                     io.to(hud.dir).emit('hud_config', HUDState.get(hud.dir));
                 }
                 io.emit('reloadHUDs');
@@ -211,21 +221,16 @@ export default function (server: http.Server, app: express.Router) {
 
     app.post('/', (req, res) => {
         res.sendStatus(200);
-        last = req.body;
+        runtimeConfig.last = req.body;
         io.emit('update', req.body);
         GSI.digest(req.body);
         radar.digestRadar(req.body);
-        /*try {
-            if((new Date()).getTime() - launchTime > 10000){
-                request.post('http://localhost:36363/', { json: req.body });
-            }
-        } catch {}*/
     });
 
     io.on('connection', socket => {
         socket.on('started', () => {
-            if (last) {
-                socket.emit("update", last);
+            if (runtimeConfig.last) {
+                socket.emit("update", runtimeConfig.last);
             }
         })
         socket.emit('readyToRegister');
@@ -235,7 +240,7 @@ export default function (server: http.Server, app: express.Router) {
                 io.to(name).emit('hud_config', HUDState.get(name));
                 return;
             }
-            devSocket = socket;
+            runtimeConfig.devSocket = socket;
             if (HUDState.devHUD) {
                 socket.join(HUDState.devHUD.dir);
                 io.to(HUDState.devHUD.dir).emit('hud_config', HUDState.get(HUDState.devHUD.dir));
@@ -253,8 +258,17 @@ export default function (server: http.Server, app: express.Router) {
             socket.emit("hud_config", HUDState.get(hud));
         });
 
-        socket.on("set_active_hlae", (hudUrl: string) => {
-            io.emit('active_hlae', hudUrl);
+        socket.on("set_active_hlae", (hudUrl: string | null) => {
+            if(runtimeConfig.currentHUD === hudUrl){
+                runtimeConfig.currentHUD = null;
+            } else {
+                runtimeConfig.currentHUD = hudUrl;
+            }
+            io.emit('active_hlae', runtimeConfig.currentHUD);
+        });
+
+        socket.on("get_active_hlae", () => {
+            io.emit('active_hlae', runtimeConfig.currentHUD);
         });
     });
 

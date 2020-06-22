@@ -120,6 +120,7 @@ var SocketManager = /** @class */ (function () {
     };
     return SocketManager;
 }());
+;
 exports.Sockets = new SocketManager();
 exports.HUDState = new HUDStateManager();
 exports.GSI = new csgogsi_1["default"]();
@@ -151,8 +152,11 @@ function default_1(server, app) {
         });
     }
     ;
-    var last = null;
-    var devSocket = null;
+    var runtimeConfig = {
+        last: null,
+        devSocket: null,
+        currentHUD: null
+    };
     var io = socket_io_1["default"](server);
     exports.Sockets.set(io);
     var portListener = new DevHUDListener(3500);
@@ -193,7 +197,7 @@ function default_1(server, app) {
                         cfg = _d.sent();
                         hud.url = "http://localhost:3500/?port=" + cfg.port;
                         exports.HUDState.devHUD = hud;
-                        if (devSocket) {
+                        if (runtimeConfig.devSocket) {
                             io.to(hud.dir).emit('hud_config', exports.HUDState.get(hud.dir));
                         }
                         io.emit('reloadHUDs');
@@ -300,20 +304,15 @@ function default_1(server, app) {
     radar.startRadar(app, io);
     app.post('/', function (req, res) {
         res.sendStatus(200);
-        last = req.body;
+        runtimeConfig.last = req.body;
         io.emit('update', req.body);
         exports.GSI.digest(req.body);
         radar.digestRadar(req.body);
-        /*try {
-            if((new Date()).getTime() - launchTime > 10000){
-                request.post('http://localhost:36363/', { json: req.body });
-            }
-        } catch {}*/
     });
     io.on('connection', function (socket) {
         socket.on('started', function () {
-            if (last) {
-                socket.emit("update", last);
+            if (runtimeConfig.last) {
+                socket.emit("update", runtimeConfig.last);
             }
         });
         socket.emit('readyToRegister');
@@ -323,7 +322,7 @@ function default_1(server, app) {
                 io.to(name).emit('hud_config', exports.HUDState.get(name));
                 return;
             }
-            devSocket = socket;
+            runtimeConfig.devSocket = socket;
             if (exports.HUDState.devHUD) {
                 socket.join(exports.HUDState.devHUD.dir);
                 io.to(exports.HUDState.devHUD.dir).emit('hud_config', exports.HUDState.get(exports.HUDState.devHUD.dir));
@@ -340,7 +339,16 @@ function default_1(server, app) {
             socket.emit("hud_config", exports.HUDState.get(hud));
         });
         socket.on("set_active_hlae", function (hudUrl) {
-            io.emit('active_hlae', hudUrl);
+            if (runtimeConfig.currentHUD === hudUrl) {
+                runtimeConfig.currentHUD = null;
+            }
+            else {
+                runtimeConfig.currentHUD = hudUrl;
+            }
+            io.emit('active_hlae', runtimeConfig.currentHUD);
+        });
+        socket.on("get_active_hlae", function () {
+            io.emit('active_hlae', runtimeConfig.currentHUD);
         });
     });
     mirv(function (data) {

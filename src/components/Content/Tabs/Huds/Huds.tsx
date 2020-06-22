@@ -43,7 +43,8 @@ interface IState {
         radar: boolean,
         afx: boolean
     },
-    active: I.HUD | null
+    active: I.HUD | null,
+    currentHUD: string | null
 }
 
 export default class Huds extends React.Component<IProps, IState> {
@@ -63,7 +64,8 @@ export default class Huds extends React.Component<IProps, IState> {
                 radar: false,
                 afx: false
             },
-            active: null
+            active: null,
+            currentHUD: null
         }
     }
 
@@ -103,7 +105,11 @@ export default class Huds extends React.Component<IProps, IState> {
         this.setState({ huds });
     }
     async componentDidMount() {
-        socket.on('reloadHUDs', this.loadHUDs)
+        socket.on('reloadHUDs', this.loadHUDs);
+        socket.on('active_hlae', (hud: string | null) => {
+            this.setState({currentHUD: hud});
+        });
+        socket.emit("get_active_hlae");
         this.loadHUDs();
         this.getConfig();
     }
@@ -182,7 +188,7 @@ export default class Huds extends React.Component<IProps, IState> {
                             <Col s={12}>
                                 <DragInput id={`hud_zip`} onChange={this.handleZIPs} label="ADD HUD" accept=".zip" />
                             </Col>
-                            {this.state.huds.map(hud => <HudEntry key={hud.dir} hud={hud} toggleConfig={this.toggleConfig}/>)}
+                            {this.state.huds.map(hud => <HudEntry key={hud.dir} hud={hud} toggleConfig={this.toggleConfig} isActive={hud.url === this.state.currentHUD}/>)}
                         </Col>
                     </Row>
 
