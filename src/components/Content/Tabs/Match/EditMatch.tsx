@@ -152,7 +152,7 @@ export default class MatchEdit extends Component<IProps, I.Match> {
                         </Col>
                     </Row>
                     <Row>
-                        {this.state.vetos.map((veto, i) => <SingleVeto vetoTeams={vetoTeams} key={i} map={i} maps={this.props.maps} onSave={this.vetoHandler} veto={veto} teams={teams} match={this.state} />)}
+                        {this.state.vetos.map((veto, i) => <SingleVeto vetoTeams={vetoTeams} key={i} map={i} maps={this.props.maps} onSave={this.vetoHandler} veto={veto} match={this.state} />)}
                     </Row>
                 </Form>
             </>

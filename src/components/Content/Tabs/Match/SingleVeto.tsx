@@ -6,7 +6,6 @@ import VetoModal from './VetoModal'
 interface Props {
     map: number,
     veto: I.Veto,
-    teams: I.Team[],
     vetoTeams: I.Team[],
     match: I.Match,
     onSave: (name: string, map: number) => any,
@@ -21,7 +20,7 @@ function generateDescription(veto: I.Veto, team?: I.Team, secTeam?: I.Team) {
         return `${veto.mapName} decider`
     }
     if (!team || !team.name || !secTeam) {
-        return "";
+        return <strong>Wrong team selected</strong>;
     }
     let text = `${team.name} ${veto.type}s ${veto.mapName}`;
     if (secTeam && secTeam.name && veto.side !== "NO") {
@@ -58,7 +57,7 @@ class SingleVeto extends React.Component<Props> {
 
     }
     render() {
-        const { vetoTeams, veto, map, maps, teams, onSave } = this.props;
+        const { vetoTeams, veto, map, maps, onSave } = this.props;
         const team = vetoTeams.filter(team => team._id === veto.teamId)[0];
         const secTeam = vetoTeams.filter(team => team._id !== veto.teamId)[0];
         return (
@@ -73,7 +72,7 @@ class SingleVeto extends React.Component<Props> {
                                 <Button onClick={this.toggle} className="edit-veto purple-btn">Edit</Button>
                             </div>
 
-                            <VetoModal maps={maps} map={map} veto={veto} teams={teams} isOpen={this.state.isOpen} toggle={this.toggle} onChange={onSave} />
+                            <VetoModal maps={maps} map={map} veto={veto} teams={vetoTeams} isOpen={this.state.isOpen} toggle={this.toggle} onChange={onSave} />
                         </>
                 }
 

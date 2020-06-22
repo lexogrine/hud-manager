@@ -37,7 +37,7 @@ export default class VetoModal extends React.Component<Props, { isOpen: boolean 
 					this.props.veto.type !== "decider" ? <>
 						<FormGroup>
 							<Input type="select" name="teams" id="teams" value={this.props.veto.teamId} onChange={this.props.onChange('teamId', this.props.map)}>
-								<option value="">Team</option>
+								<option value="" disabled>Team</option>
 								{this.props.teams.map(teams => <option key={teams._id} value={teams._id}>{teams.name}</option>)}
 							</Input>
 						</FormGroup>
