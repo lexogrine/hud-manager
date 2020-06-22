@@ -1,5 +1,6 @@
 import express from 'express';
 import socketio from 'socket.io';
+import { globalShortcut} from 'electron';
 import * as players from './players';
 import * as teams from './teams';
 import * as match from './match';
@@ -120,7 +121,9 @@ export default function (router: express.Router, io: socketio.Server) {
 
     router.use('/', express.static(path.join(__dirname, '../static/legacy')))
 
-
+    globalShortcut.register("Ctrl+Alt+r", () => {
+        match.reverseSide(io);
+    });
 
     /**
      * END OF LEGACY ROUTING
