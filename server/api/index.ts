@@ -121,7 +121,7 @@ export default function (router: express.Router, io: socketio.Server) {
 
     router.use('/', express.static(path.join(__dirname, '../static/legacy')))
 
-    globalShortcut.register("Ctrl+Alt+r", () => {
+    globalShortcut.register("Alt+r", () => {
         match.reverseSide(io);
     });
 
