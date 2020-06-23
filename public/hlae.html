@@ -23,9 +23,8 @@
 </body>
 
 <script>
-    //alert(window.afxInterop.pipeName);
     setInterval(function () {
-        window.afxInterop.process();
+        window.afxInterop ? window.afxInterop.process() : null;
     }, 1);
 </script>
 

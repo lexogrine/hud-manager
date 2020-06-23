@@ -250,6 +250,16 @@ img.smallLogo {
     font-family: Montserrat;
     margin-bottom: 20px;
 }
+.hudRow .hud-toggle {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-left: 30px;
+}
+.hudRow .hud-options {
+    justify-content: space-around;
+    display: flex;
+}
 .hudRow .thumb {
     width: 55px;
     flex: unset;

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Row, Col, UncontrolledCollapse, Button } from 'reactstrap';
+import { Row, Col, UncontrolledCollapse } from 'reactstrap';
 import Config from './../../../../api/config';
 import Tip from './../../../Tooltip';
 import api from './../../../../api/api';
@@ -7,6 +7,7 @@ import * as I from './../../../../api/interfaces';
 import HyperLink from './../../../../styles/Hyperlink.png';
 import Settings from './../../../../styles/Settings.png';
 import Display from './../../../../styles/Display.png';
+import Switch from './../../../../components/Switch/Switch';
 import Map from './../../../../styles/Map.png';
 import Killfeed from './../../../../styles/Killfeed.png';
 import { socket } from '../Live/Live';
@@ -15,6 +16,7 @@ const hashCode = (s: string) => s.split('').reduce((a, b) => { a = ((a << 5) - a
 
 interface IProps {
     hud: I.HUD;
+    isActive: boolean;
     toggleConfig: (hud: I.HUD) => any;
 }
 
@@ -26,7 +28,7 @@ export default class HudEntry extends Component<IProps> {
         socket.emit("set_active_hlae", url);
     }
     render() {
-        const { hud, toggleConfig } = this.props;
+        const { hud, toggleConfig, isActive } = this.props;
         return (
             <Row key={hud.dir} className="hudRow">
                 <Col s={12}>
@@ -48,12 +50,15 @@ export default class HudEntry extends Component<IProps> {
                                 </Col>
                             </Row> : ''}
                         </Col>
-                        <Col style={{ flex: 1 }} className="centered">
-                            {/*<i className="material-icons" id={`hud_link_${hashCode(hud.dir)}`}>link</i>*/}
-                            <img src={HyperLink} id={`hud_link_${hashCode(hud.dir)}`} className='action' alt="Local network HUD URL"/>
-                            {hud.panel ? <img src={Settings} onClick={toggleConfig(hud)} className='action' alt="HUD panel" /> : ''}
-                            { Config.isElectron ? <img src={Display} onClick={() => this.startHUD(hud.dir)} className='action' alt="Start HUD" /> : null}
-                            { Config.isElectron ? <Button className="purple-btn round-btn" onClick={() => this.setHUD(hud.url)}>Set</Button>: null}
+                        <Col style={{ flex: 1 }} className="hud-options">
+                            <div className="centered">
+                                <img src={HyperLink} id={`hud_link_${hashCode(hud.dir)}`} className='action' alt="Local network HUD URL"/>
+                                {hud.panel ? <img src={Settings} onClick={toggleConfig(hud)} className='action' alt="HUD panel" /> : ''}
+                                { Config.isElectron ? <img src={Display} onClick={() => this.startHUD(hud.dir)} className='action' alt="Start HUD" /> : null }
+                            </div>
+                            { Config.isElectron ? <div className="hud-toggle">
+                                    <Switch id={`hud-switch-${hud.dir}`} isOn={isActive} handleToggle={() => this.setHUD(hud.url)} />
+                            </div>: null}
                         </Col>
                     </Row>
                     <Row>
