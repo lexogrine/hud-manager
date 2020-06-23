@@ -56,6 +56,8 @@ By default, Lexogrine HUD Manager runs on port 1349. During startup, if it detec
 
 When setting up the Lexogrine HUD Manager for an upcoming match, it is recommended to follow the points in following order: Teams -> Players -> Matches -> HUDs.
 
+>Note - if you notice during live game that the teams are on the wrong side, just press Alt+R.
+
 ### Teams
 
 This section is for additional data display in HUDs and the Lexogrine HUD Manager itself. It's an interface connected with a database that allows you to quickly edit any information about the team (name, logo, country flag).
@@ -114,7 +116,7 @@ In a situation when config installation doesn't succeed or the Lexogrine HUD Man
 
 At this point there is an option to embedd any HUD in CS:GO using HLAE and afx_interop. It gives the advantage of being able to use CS:GO in fullscreen mode while using the custom HUDs. It must be noted however, that this mode may affect the framerate.
 
-If you want to use this mode, you need to get HLAE, Release.7z and Release-Base.7z archive from here: https://drive.google.com/drive/folders/1CQFGMYhmz4x9DxunmwhWMp37ow6YOBON and set path to the afx-cefhud-interop.exe in the Lexogrine HUD Manager's settings. At this point the setup is completed - you just need to switch to the experimental mode in HUDs tab and click RUN GAME (if you already have installed the config files of course). Once the CS:GO has loaded, you just need to click on the SET button on the HUD you want to use, and it should appear in the CS:GO.
+If you want to use this mode, you need to get HLAE, Release.7z and Release-Base.7z archive from here: https://drive.google.com/drive/folders/1CQFGMYhmz4x9DxunmwhWMp37ow6YOBON and set path to the afx-cefhud-interop.exe in the Lexogrine HUD Manager's settings. At this point the setup is completed - you just need to switch to the experimental mode in HUDs tab, toggle which HUD you intend to use and click RUN GAME (if you already have installed the config files of course).
 
 
 ## HUD API
