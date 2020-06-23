@@ -168,14 +168,24 @@ exports.reverseSide = function (io) { return __awaiter(void 0, void 0, void 0, f
             case 1:
                 matches = _a.sent();
                 current = matches.find(function (match) { return match.current; });
-                if (!current || !sockets_1.GSI.last)
+                if (!current)
                     return [2 /*return*/];
+                if (current.vetos.filter(function (veto) { return veto.teamId; }).length > 0 && !sockets_1.GSI.last) {
+                    return [2 /*return*/];
+                }
+                if (!(current.vetos.filter(function (veto) { return veto.teamId; }).length === 0)) return [3 /*break*/, 3];
+                current.left = [current.right, current.right = current.left][0];
+                return [4 /*yield*/, exports.updateMatch([current])];
+            case 2:
+                _a.sent();
+                return [2 /*return*/, io.emit("match", true)];
+            case 3:
                 currentVetoMap = current.vetos.find(function (veto) { return sockets_1.GSI.last.map.name.includes(veto.mapName); });
                 if (!currentVetoMap)
                     return [2 /*return*/];
                 currentVetoMap.reverseSide = !currentVetoMap.reverseSide;
                 return [4 /*yield*/, exports.updateMatch([current])];
-            case 2:
+            case 4:
                 _a.sent();
                 io.emit("match", true);
                 return [2 /*return*/];

@@ -94,7 +94,15 @@ export const getMaps: express.RequestHandler = (req, res) => {
 export const reverseSide = async (io: socketio.Server) => {
     const matches = await getMatches();
     const current = matches.find(match => match.current);
-    if(!current || !GSI.last) return;
+    if(!current) return;
+    if(current.vetos.filter(veto => veto.teamId).length > 0 && !GSI.last){
+        return;
+    }
+    if(current.vetos.filter(veto => veto.teamId).length === 0){
+        current.left = [current.right, current.right = current.left][0];
+        await updateMatch([current]);
+        return io.emit("match", true);
+    }
     const currentVetoMap = current.vetos.find(veto => GSI.last.map.name.includes(veto.mapName));
     if(!currentVetoMap) return;
     currentVetoMap.reverseSide = !currentVetoMap.reverseSide;
