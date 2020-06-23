@@ -90,3 +90,15 @@ export const getMaps: express.RequestHandler = (req, res) => {
         return res.json(defaultMaps);
     }
 }
+
+export const reverseSide = async (io: socketio.Server) => {
+    const matches = await getMatches();
+    const current = matches.find(match => match.current);
+    if(!current || !GSI.last) return;
+    const currentVetoMap = current.vetos.find(veto => GSI.last.map.name.includes(veto.mapName));
+    if(!currentVetoMap) return;
+    currentVetoMap.reverseSide = !currentVetoMap.reverseSide;
+    await updateMatch([current]);
+
+    io.emit("match", true);
+}

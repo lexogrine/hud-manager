@@ -79,6 +79,9 @@ var HUD = /** @class */ (function () {
                                 backgroundThrottling: false
                             }
                         });
+                        hudWindow.on("show", function () {
+                            hudWindow.setAlwaysOnTop(true);
+                        });
                         hudWindow.setIgnoreMouseEvents(true);
                         tray = new electron_1.Tray(path.join(__dirname, 'favicon.ico'));
                         tray.setToolTip('HUD Manager');

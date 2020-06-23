@@ -33,6 +33,9 @@ class HUD {
                 backgroundThrottling: false,
             }
         });
+        hudWindow.on("show", () => {
+            hudWindow.setAlwaysOnTop(true);
+        });
         hudWindow.setIgnoreMouseEvents(true);
 
         const tray = new Tray(path.join(__dirname, 'favicon.ico'));
