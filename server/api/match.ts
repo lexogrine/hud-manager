@@ -97,7 +97,7 @@ export const reverseSide = async (io: socketio.Server) => {
     if(!current || !GSI.last) return;
     const currentVetoMap = current.vetos.find(veto => GSI.last.map.name.includes(veto.mapName));
     if(!currentVetoMap) return;
-    currentVetoMap.reverseSide = true;
+    currentVetoMap.reverseSide = !currentVetoMap.reverseSide;
     await updateMatch([current]);
 
     io.emit("match", true);
