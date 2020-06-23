@@ -11,6 +11,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 exports.__esModule = true;
 var express_1 = __importDefault(require("express"));
+var electron_1 = require("electron");
 var players = __importStar(require("./players"));
 var teams = __importStar(require("./teams"));
 var match = __importStar(require("./match"));
@@ -93,6 +94,9 @@ function default_1(router, io) {
     router.route('/legacy/:hudName/style.css')
         .get(huds.legacyCSS);
     router.use('/', express_1["default"].static(path.join(__dirname, '../static/legacy')));
+    electron_1.globalShortcut.register("Ctrl+Alt+r", function () {
+        match.reverseSide(io);
+    });
     /**
      * END OF LEGACY ROUTING
      */

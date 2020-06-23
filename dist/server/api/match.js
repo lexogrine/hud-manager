@@ -160,3 +160,25 @@ exports.getMaps = function (req, res) {
         return res.json(defaultMaps);
     }
 };
+exports.reverseSide = function (io) { return __awaiter(void 0, void 0, void 0, function () {
+    var matches, current, currentVetoMap;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, exports.getMatches()];
+            case 1:
+                matches = _a.sent();
+                current = matches.find(function (match) { return match.current; });
+                if (!current || !sockets_1.GSI.last)
+                    return [2 /*return*/];
+                currentVetoMap = current.vetos.find(function (veto) { return sockets_1.GSI.last.map.name.includes(veto.mapName); });
+                if (!currentVetoMap)
+                    return [2 /*return*/];
+                currentVetoMap.reverseSide = !currentVetoMap.reverseSide;
+                return [4 /*yield*/, exports.updateMatch([current])];
+            case 2:
+                _a.sent();
+                io.emit("match", true);
+                return [2 /*return*/];
+        }
+    });
+}); };
