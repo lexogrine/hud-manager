@@ -6,7 +6,8 @@ export interface IContextData {
     teams: I.Team[],
     players: I.Player[],
     matches: I.Match[],
-    reload: Function
+    reload: Function,
+    customer?: I.Customer,
 }
 
 const defaultContext: IContextData = {teams:[], players:[], reload: ()=>{}, matches: []}

@@ -20,7 +20,11 @@ function checkDirectories() {
     var userData = electron_1.app.getPath('userData');
     var database = path.join(userData, 'databases');
     [hudsData, userData, database].forEach(createIfMissing);
+    var cookieFile = path.join(database, "cookie");
     var mapFile = path.join(electron_1.app.getPath('userData'), 'maps.json');
+    if (!fs.existsSync(cookieFile)) {
+        fs.writeFileSync(cookieFile, "[]", 'utf8');
+    }
     if (!fs.existsSync(mapFile)) {
         var maps = ["de_mirage", "de_dust2", "de_inferno", "de_nuke", "de_train", "de_overpass", "de_vertigo"];
         fs.writeFileSync(mapFile, JSON.stringify(maps));

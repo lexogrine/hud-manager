@@ -6,8 +6,8 @@ body.hlaegui {
     overflow: hidden;
 }
 button.btn-primary:hover, button.btn-primary.disabled {
-    background-color: #a63b03;
-    border-color: #a63b03;
+    background-color: #4a7f8f !important;
+    border-color: #4a7f8f;
 }
 button.btn-primary {
     background-color: #c44d10;
@@ -22,3 +22,29 @@ button.btn-primary {
 /*.hudRow {
     background-color: #0000005c;
 }*/
+.loading-container {
+    display:flex;
+    opacity:1;
+    position: absolute;
+    width:100%;
+    height: calc(100% - 64px);
+    z-index:1060;
+    transition: opacity 0.5s, transform 0s 0.5s;
+    background-color: rgba(107, 28, 255, 0.82);
+}
+.loading-container.hide {
+    opacity:0;
+    transform: scale(0);
+}
+.login-error {
+    color: rgb(255, 255, 255);
+    font-size: 14px;
+}
+.license-status {
+    position: absolute;
+    z-index: 5;
+    text-transform: uppercase;
+    right: 164px;
+    font-size: 12px;
+    top: 69px;
+}

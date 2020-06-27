@@ -14,8 +14,34 @@ function arrayBufferToBase64(buffer: any) {
     return window.btoa(binary);
 };
 
-export async function apiV2(url: string, method = 'GET', body?: any) {
+const apiHandler = (url: string, method = 'GET', body?: any, credentials?: boolean) => {
+
     const options: RequestInit = {
+        method,
+        headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json',
+        },
+        credentials: credentials ? "include" : undefined
+    }
+    if (body) {
+        options.body = JSON.stringify(body)
+    }
+    let data: any = null;
+    return fetch(url, options)
+        .then(res => {
+            data = res;
+            return res.json().catch(_e => data && data.status < 300)
+        });
+}
+
+const sessionAPI = async (url: string, method = 'GET', body?: any) => {
+    return apiHandler(`http://localhost:5000/${url}`, method, body, true);
+}
+
+export async function apiV2(url: string, method = 'GET', body?: any) {
+    return apiHandler(`${config.isDev ? apiUrl : '/'}api/${url}`, method, body);
+    /*const options: RequestInit = {
         method,
         headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
     }
@@ -27,7 +53,7 @@ export async function apiV2(url: string, method = 'GET', body?: any) {
         .then(res => {
             data = res;
             return res.json().catch(_e => data && data.status < 300)
-        });
+        });*/
 }
 
 export default {
@@ -83,6 +109,11 @@ export default {
         get: async (): Promise<I.Match[]> => await apiV2('match'),
         set: async (match: I.Match[]): Promise<I.Match[]> => apiV2('match', 'PATCH', match),
         getMaps: async (): Promise<string[]> => await apiV2('maps')
+    },
+    user: {
+        get: async(): Promise<{token: string} | false> => await sessionAPI("auth"),
+        login: async(username: string, password: string): Promise<any> => await sessionAPI("auth", "POST", {username, password}),
+        verify: async(token: string): Promise<I.Customer | false> => await apiV2('user', "POST", { token })
     },
     files: {
         imgToBase64: async (url: string) => {

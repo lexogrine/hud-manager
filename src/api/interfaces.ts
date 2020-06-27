@@ -31,4 +31,27 @@ export interface CFGGSIResponse {
     message?: string
 }
 
+export interface User {
+    id: number,
+    email: string ,
+    password: string,
+    admin: boolean,
+    banned: boolean,
+}
+
+export type LicenseType = 'free' | 'professional' | 'enterprise';
+export interface License {
+    id: number,
+    type: LicenseType,
+    validUntil: Date,
+    owner: number,
+}
+
+export interface Customer {
+    user: User,
+    license: License,
+    iat: number,
+    exp: number
+}
+
 export type { PanelInput, PanelInputType, KeyBind, PanelTemplate, HUD, Match, Veto, VetoType };

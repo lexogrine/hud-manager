@@ -1,9 +1,10 @@
-import { app, BrowserWindow, shell } from "electron";
+import { app, BrowserWindow, shell, session } from "electron";
 import path from 'path';
-import { Server } from 'http';
+import fs from 'fs';
 import args from './init/args';
-import * as directories from './init/directories';
 import init from './server'
+import { Server } from 'http';
+import * as directories from './init/directories';
 import { loadConfig } from './server/api/config';
 import { ChildProcess } from "child_process";
 
@@ -19,16 +20,36 @@ export const isDev = process.env.DEV === "true";
 
 async function createMainWindow(server: Server) {
     let win: BrowserWindow | null;
+
+    const cookieFile = path.join(app.getPath('userData'), 'databases', 'cookie');
+
+    const cookie = fs.readFileSync(cookieFile, 'utf8');
+    try {
+        const cookies = JSON.parse(cookie);
+        if(Array.isArray(cookies)){
+            for(const cookie of cookies){
+                cookie.url = 'http://localhost:5000/';
+                await session.defaultSession.cookies.set(cookie);
+            }
+        }
+    } catch(e) { }
     if (app) {
         app.on("window-all-closed", app.quit);
     
-        app.on("before-quit", () => {
+        app.on("before-quit", async () => {
+            const cookies = await session.defaultSession.cookies.get({url:'http://localhost:5000/'});
+
+            fs.writeFileSync(cookieFile, JSON.stringify(cookies), 'utf8');
+
             if (!win) return;
+
             win.removeAllListeners("close");
             win.close();
         });
     
     }
+
+
 
     win = new BrowserWindow({
         height: 700,
@@ -41,6 +62,7 @@ async function createMainWindow(server: Server) {
         webPreferences: {
             nodeIntegration: true,
             backgroundThrottling: false,
+            devTools: isDev
         },
         minWidth: 775,
         minHeight:700,

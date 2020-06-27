@@ -10,6 +10,13 @@ import * as path from 'path';
 import * as gsi from './gamestate';
 import * as game from './game';
 import * as sync from './sync';
+import * as user from './user';
+import * as I from './../../types/interfaces';
+
+
+export const customer: I.CustomerData = {
+    customer: null
+}
 
 export default function (router: express.Router, io: socketio.Server) {
     router.route('/api/players')
@@ -107,6 +114,9 @@ export default function (router: express.Router, io: socketio.Server) {
     router.route('/huds/:dir/thumbnail')
         .get(huds.renderThumbnail);
 
+
+    router.route('/api/user')
+        .post(user.verifyToken);
 
 
 

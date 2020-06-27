@@ -21,6 +21,10 @@ var path = __importStar(require("path"));
 var gsi = __importStar(require("./gamestate"));
 var game = __importStar(require("./game"));
 var sync = __importStar(require("./sync"));
+var user = __importStar(require("./user"));
+exports.customer = {
+    customer: null
+};
 function default_1(router, io) {
     router.route('/api/players')
         .get(players.getPlayers)
@@ -86,6 +90,8 @@ function default_1(router, io) {
     router.use('/huds/:dir/', huds.renderAssets);
     router.route('/huds/:dir/thumbnail')
         .get(huds.renderThumbnail);
+    router.route('/api/user')
+        .post(user.verifyToken);
     /**
      * LEGACY ROUTING
      */
