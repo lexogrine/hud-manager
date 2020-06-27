@@ -72,14 +72,25 @@ function getPlayerBySteamId(steamid) {
         });
     });
 }
-exports.getPlayers = function (req, res) {
-    players.find({}, function (err, players) {
+exports.getPlayersList = function (query) { return new Promise(function (res, rej) {
+    players.find(query, function (err, players) {
         if (err) {
-            return res.sendStatus(500);
+            return res([]);
         }
-        return res.json(players);
+        return res(players);
     });
-};
+}); };
+exports.getPlayers = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var players;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, exports.getPlayersList({})];
+            case 1:
+                players = _a.sent();
+                return [2 /*return*/, res.json(players)];
+        }
+    });
+}); };
 exports.getPlayer = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var player;
     return __generator(this, function (_a) {

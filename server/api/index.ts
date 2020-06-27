@@ -71,6 +71,9 @@ export default function (router: express.Router, io: socketio.Server) {
     router.route('/api/import')
         .post(sync.importDb);
 
+    router.route('/api/import/verify')
+        .post(sync.checkForConflicts);
+
     router.route('/api/gsi/download')
         .get(gsi.saveFile('gamestate_integration_hudmanager.cfg', gsi.generateGSIFile()));
 

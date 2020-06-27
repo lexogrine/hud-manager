@@ -98,6 +98,7 @@ export default {
                 return null;
             }
         },
-        sync: async(db: DB) => await apiV2('import', 'POST', db)
+        sync: async(db: DB) => await apiV2('import', 'POST', db),
+        syncCheck: async(db:DB) => await apiV2('import/verify', 'POST', db)
     }
 }

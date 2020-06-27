@@ -5,7 +5,6 @@ import * as path from 'path';
 //import ip from 'ip';
 import socketio from 'socket.io';
 import * as I from './../types/interfaces';
-import { loadConfig } from './../server/api/config';
 
 class HUD {
     current: BrowserWindow | null;

@@ -38,17 +38,31 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (Object.hasOwnProperty.call(mod, k)) result[k] = mod[k];
+    result["default"] = mod;
+    return result;
+};
 exports.__esModule = true;
 var database_1 = __importDefault(require("./../../init/database"));
+var players = __importStar(require("./players"));
+var teams = __importStar(require("./teams"));
 var teamsDb = database_1["default"].teams, playersDb = database_1["default"].players;
 function importPlayers(players) {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             return [2 /*return*/, new Promise(function (res, rej) {
-                    playersDb.insert(players, function (err, newDocs) {
+                    var playerIdList = players.map(function (player) { return ({ _id: player._id }); });
+                    playersDb.remove({ $or: playerIdList }, { multi: true }, function (err, n) {
                         if (err)
                             return res([]);
-                        return res(newDocs);
+                        playersDb.insert(players, function (err, newDocs) {
+                            if (err)
+                                return res([]);
+                            return res(newDocs);
+                        });
                     });
                 })];
         });
@@ -58,10 +72,15 @@ function importTeams(teams) {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             return [2 /*return*/, new Promise(function (res, rej) {
-                    teamsDb.insert(teams, function (err, newDocs) {
+                    var teamIdList = teams.map(function (team) { return ({ _id: team._id }); });
+                    teamsDb.remove({ $or: teamIdList }, { multi: true }, function (err, n) {
                         if (err)
                             return res([]);
-                        return res(newDocs);
+                        teamsDb.insert(teams, function (err, newDocs) {
+                            if (err)
+                                return res([]);
+                            return res(newDocs);
+                        });
                     });
                 })];
         });
@@ -108,6 +127,8 @@ exports.importDb = function (req, res) { return __awaiter(void 0, void 0, void 0
         switch (_b.label) {
             case 0:
                 db = req.body;
+                if (!db || !db.players || !db.teams)
+                    return [2 /*return*/, res.sendStatus(422)];
                 _b.label = 1;
             case 1:
                 _b.trys.push([1, 3, , 4]);
@@ -115,6 +136,33 @@ exports.importDb = function (req, res) { return __awaiter(void 0, void 0, void 0
             case 2:
                 _b.sent();
                 return [2 /*return*/, res.sendStatus(200)];
+            case 3:
+                _a = _b.sent();
+                return [2 /*return*/, res.sendStatus(500)];
+            case 4: return [2 /*return*/];
+        }
+    });
+}); };
+exports.checkForConflicts = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var db, teamIdList, playerIdList, result, _a;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
+            case 0:
+                db = req.body;
+                if (!db || !db.teams || !db.players)
+                    return [2 /*return*/, res.sendStatus(422)];
+                teamIdList = db.teams.map(function (team) { return ({ _id: team._id }); });
+                playerIdList = db.players.map(function (player) { return ({ _id: player._id }); });
+                _b.label = 1;
+            case 1:
+                _b.trys.push([1, 3, , 4]);
+                return [4 /*yield*/, Promise.all([players.getPlayersList({ $or: playerIdList }), teams.getTeamsList({ $or: teamIdList })])];
+            case 2:
+                result = _b.sent();
+                return [2 /*return*/, res.json({
+                        players: result[0].length,
+                        teams: result[1].length
+                    })];
             case 3:
                 _a = _b.sent();
                 return [2 /*return*/, res.sendStatus(500)];
