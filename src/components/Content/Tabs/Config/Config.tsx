@@ -4,6 +4,7 @@ import * as I from "./../../../../api/interfaces";
 import api from "./../../../../api/api";
 import config from "./../../../../api/config";
 import DragInput from "./../../../DragFileInput";
+import ImportModal from './ImportModal';
 import { IContextData } from "../../../Context";
 
 const { isElectron } = config;
@@ -26,6 +27,12 @@ interface IState {
   cfg: ConfigStatus;
   gsi: ConfigStatus;
   restartRequired: boolean;
+  importModalOpen: boolean;
+  conflict: {
+    teams: number,
+    players: number
+  },
+  data: any
 }
 
 export default class Config extends React.Component<IProps, IState> {
@@ -51,7 +58,13 @@ export default class Config extends React.Component<IProps, IState> {
         message: "Loading data about GameState files...",
         accessible: true,
       },
+      importModalOpen: false,
       restartRequired: false,
+      conflict: {
+        teams: 0,
+        players: 0
+      },
+      data: {}
     };
   }
   loadEXE = (type: "hlaePath" | "afxCEFHudInteropPath") => (
@@ -66,7 +79,13 @@ export default class Config extends React.Component<IProps, IState> {
       return state;
     });
   };
-  import = (callback: Function) => (files: FileList) => {
+  import = (data: any, callback: any) => async () => {
+    try {
+      await api.files.sync(data);
+    } catch { }
+    this.setState({data: {}, conflict: { teams: 0, players: 0 }, importModalOpen: false }, callback);
+  }
+  importCheck = (callback: any) => (files: FileList) => {
     if (!files || !files[0]) return;
     const file: ExtendedFile = files[0];
     if (!file.path || file.type !== "application/json") return;
@@ -79,8 +98,22 @@ export default class Config extends React.Component<IProps, IState> {
           ""
         );
         const db = JSON.parse(Buffer.from(db64, "base64").toString());
-        await api.files.sync(db);
-        callback();
+        const response = await api.files.syncCheck(db);
+        if(!response){
+          return;
+        }
+        if(!response.players && !response.teams){
+          return this.import(db, callback)();
+        }
+        this.setState({
+          conflict: {
+            players: response.players,
+            teams: response.teams
+          },
+          importModalOpen: true,
+          data: db
+        });
+        
       } catch {}
     };
   };
@@ -168,6 +201,9 @@ export default class Config extends React.Component<IProps, IState> {
     this.setState({ config });
     // this.setState({ value })
   };
+  toggleModal = () => {
+    this.setState({importModalOpen: !this.state.importModalOpen});
+  }
   save = async () => {
     const { config } = this.state;
     const oldConfig = await api.config.get();
@@ -179,11 +215,18 @@ export default class Config extends React.Component<IProps, IState> {
   };
   render() {
     const { cxt } = this.props;
-    const { gsi, cfg } = this.state;
+    const { gsi, cfg, importModalOpen, conflict, data } = this.state;
     return (
       <Form>
         <div className="tab-title-container">Settings</div>
         <div className="tab-content-container no-padding">
+          <ImportModal 
+            isOpen={importModalOpen}
+            toggle={this.toggleModal}
+            teams={conflict.teams}
+            players={conflict.players}
+            save={this.import(data, cxt.reload)}
+          />
           <Row className="padded base-config">
             <Col md="4">
               <FormGroup>
@@ -317,7 +360,7 @@ export default class Config extends React.Component<IProps, IState> {
                 id="import_file"
                 label="Import database"
                 accept=".json"
-                onChange={this.import(cxt.reload)}
+                onChange={this.importCheck(cxt.reload)}
                 className="path_selector"
               />
             </Col>

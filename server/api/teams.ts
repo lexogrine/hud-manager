@@ -15,14 +15,21 @@ export async function getTeamById(id: string): Promise<Team | null>{
         });
     })
 }
-export const getTeams: express.RequestHandler = (req, res) => {
-    teams.find({}, (err, teams) => {
+
+export const getTeamsList = (query: any) => new Promise<Team[]>((res, rej) => {
+    teams.find(query, (err, teams) => {
         if(err){
-            return res.sendStatus(500);
+            return res([]);
         }
-        return res.json(teams);
+        return res(teams);
     });
+});
+
+export const getTeams: express.RequestHandler = async (req, res) => {
+    const teams = await getTeamsList({});
+    return res.json(teams);
 }
+
 export const getTeam: express.RequestHandler = async (req, res) => {
     if(!req.params.id){
         return res.sendStatus(422);

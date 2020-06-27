@@ -236,7 +236,7 @@ img.smallLogo {
     max-height:64px;
 }
 .modal-content {
-    color: black;
+    color: white;
 }
 .team-data, .card-subtitle {
     display: flex;
