@@ -48,7 +48,7 @@ function default_1(router, io) {
         .patch(match.setMatch(io));
     router.route('/api/huds')
         .get(huds.getHUDs)
-        .post(huds.openHUDsDirectory);
+        .post(huds.openHUDsDirectory)["delete"](huds.deleteHUD(io));
     router.route('/api/huds/add')
         .post(huds.uploadHUD);
     router.route('/api/huds/close')

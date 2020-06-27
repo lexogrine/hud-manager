@@ -56,6 +56,25 @@ var sockets_1 = require("./../sockets");
 var huds_1 = __importDefault(require("./../../init/huds"));
 var decompress_zip_1 = __importDefault(require("decompress-zip"));
 var overlay_1 = __importDefault(require("./overlay"));
+var remove = function (pathToRemove) {
+    if (!fs.existsSync(pathToRemove)) {
+        return;
+    }
+    var files = fs.readdirSync(pathToRemove);
+    files.forEach(function (file) {
+        var current = path.join(pathToRemove, file);
+        if (fs.lstatSync(current).isDirectory()) { // recurse
+            remove(current);
+            if (fs.existsSync(current))
+                fs.rmdirSync(current);
+        }
+        else { // delete file
+            if (fs.existsSync(current))
+                fs.unlinkSync(current);
+        }
+    });
+    fs.rmdirSync(pathToRemove);
+};
 exports.listHUDs = function () { return __awaiter(void 0, void 0, void 0, function () {
     var dir, filtered, huds;
     return __generator(this, function (_a) {
@@ -329,30 +348,30 @@ exports.uploadHUD = function (req, res) { return __awaiter(void 0, void 0, void 
         }
     });
 }); };
+exports.deleteHUD = function (io) { return function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var hudPath;
+    return __generator(this, function (_a) {
+        if (!req.query.hudDir || typeof req.query.hudDir !== "string" || huds_1["default"].current)
+            return [2 /*return*/, res.sendStatus(422)];
+        hudPath = path.join(electron_1.app.getPath('home'), 'HUDs', req.query.hudDir);
+        if (!fs.existsSync(hudPath)) {
+            return [2 /*return*/, res.sendStatus(200)];
+        }
+        try {
+            remove(hudPath);
+            io.emit('reloadHUDs');
+            return [2 /*return*/, res.sendStatus(200)];
+        }
+        catch (_b) {
+            return [2 /*return*/, res.sendStatus(500)];
+        }
+        return [2 /*return*/];
+    });
+}); }; };
 function loadHUD(base64) {
     return __awaiter(this, void 0, void 0, function () {
-        var remove;
         var _this = this;
         return __generator(this, function (_a) {
-            remove = function (pathToRemove) {
-                if (!fs.existsSync(pathToRemove)) {
-                    return;
-                }
-                var files = fs.readdirSync(pathToRemove);
-                files.forEach(function (file) {
-                    var current = path.join(pathToRemove, file);
-                    if (fs.lstatSync(current).isDirectory()) { // recurse
-                        remove(current);
-                        if (fs.existsSync(current))
-                            fs.rmdirSync(current);
-                    }
-                    else { // delete file
-                        if (fs.existsSync(current))
-                            fs.unlinkSync(current);
-                    }
-                });
-                fs.rmdirSync(pathToRemove);
-            };
             return [2 /*return*/, new Promise(function (res, rej) {
                     var tempBasePath = path.join(electron_1.app.getPath('userData'), 'hud_temp');
                     try {
