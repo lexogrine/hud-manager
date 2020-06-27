@@ -49,7 +49,8 @@ export default function (router: express.Router, io: socketio.Server) {
 
     router.route('/api/huds')
         .get(huds.getHUDs)
-        .post(huds.openHUDsDirectory);
+        .post(huds.openHUDsDirectory)
+        .delete(huds.deleteHUD(io));
 
     router.route('/api/huds/add')
         .post(huds.uploadHUD);
