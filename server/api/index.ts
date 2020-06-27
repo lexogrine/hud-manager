@@ -119,11 +119,7 @@ export default function (router: express.Router, io: socketio.Server) {
     router.route('/legacy/:hudName/style.css')
         .get(huds.legacyCSS);
 
-    router.use('/', express.static(path.join(__dirname, '../static/legacy')))
-
-    globalShortcut.register("Alt+r", () => {
-        match.reverseSide(io);
-    });
+    router.use('/', express.static(path.join(__dirname, '../static/legacy')));
 
     /**
      * END OF LEGACY ROUTING
