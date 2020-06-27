@@ -1,5 +1,6 @@
 import { BrowserWindow, Tray, Menu, globalShortcut } from "electron";
 import { getHUDData } from './../server/api/huds';
+import * as match from './../server/api/match';
 import * as path from 'path';
 //import ip from 'ip';
 import socketio from 'socket.io';
@@ -10,18 +11,18 @@ class HUD {
     current: BrowserWindow | null;
     tray: Tray | null;
     show: boolean;
-    constructor(){
+    constructor() {
         this.current = null;
         this.tray = null;
         this.show = true;
     }
 
-    async open(dirName: string, io: socketio.Server){
-        if(this.current !== null) return null;
+    async open(dirName: string, io: socketio.Server) {
+        if (this.current !== null) return null;
         const hud = await getHUDData(dirName);
-        if(hud === null) return null;
+        if (hud === null) return null;
         const hudWindow = new BrowserWindow({
-            fullscreen:true,
+            fullscreen: true,
             show: false,
             title: hud.name,
             resizable: false,
@@ -45,7 +46,7 @@ class HUD {
             const contextMenu = Menu.buildFromTemplate([
                 { label: hud.name, enabled: false },
                 { type: "separator" },
-                { label: 'Show', type: "checkbox", click: () => this.toggleVisibility(), checked:this.show },
+                { label: 'Show', type: "checkbox", click: () => this.toggleVisibility(), checked: this.show },
                 { label: 'Close HUD', click: () => this.close() }
             ]);
             tray.popUpContextMenu(contextMenu);
@@ -61,7 +62,7 @@ class HUD {
         hudWindow.on('close', () => {
             globalShortcut.unregisterAll();
             this.current = null;
-            if(this.tray !== null){
+            if (this.tray !== null) {
                 this.tray.destroy();
             }
         });
@@ -69,12 +70,22 @@ class HUD {
         return true;
     }
 
-    showWindow(hud: I.HUD, io: socketio.Server){
-        if(!this.current) return;
+    showWindow(hud: I.HUD, io: socketio.Server) {
+        if (!this.current) return;
         this.current.setOpacity(1);
         this.current.show();
-        if(hud.keybinds){
-            for(let bind of hud.keybinds){
+
+        globalShortcut.register("Alt+r", () => {
+            match.reverseSide(io);
+        });
+
+        globalShortcut.register("Alt+F", () => {
+            if(!this.current || !hud || !hud.url) return;
+            this.current.loadURL(hud.url);
+        });
+
+        if (hud.keybinds) {
+            for (let bind of hud.keybinds) {
                 globalShortcut.register(bind.bind, () => {
                     io.to(hud.dir).emit("keybindAction", bind.action);
                 });
@@ -83,18 +94,18 @@ class HUD {
 
     }
 
-    toggleVisibility(){
+    toggleVisibility() {
         this.show = !this.show;
-        if(this.current){
+        if (this.current) {
             this.current.setOpacity(this.show ? 1 : 0);
         }
     }
 
-    close(){
-        if(this.tray !== null){
+    close() {
+        if (this.tray !== null) {
             this.tray.destroy();
         }
-        if(this.current === null) return null;
+        if (this.current === null) return null;
 
         this.current.close();
         this.current = null;
