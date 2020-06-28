@@ -56,7 +56,8 @@ export default function (router: express.Router, io: socketio.Server) {
 
     router.route('/api/huds')
         .get(huds.getHUDs)
-        .post(huds.openHUDsDirectory);
+        .post(huds.openHUDsDirectory)
+        .delete(huds.deleteHUD(io));
 
     router.route('/api/huds/add')
         .post(huds.uploadHUD);
@@ -76,6 +77,9 @@ export default function (router: express.Router, io: socketio.Server) {
 
     router.route('/api/import')
         .post(sync.importDb);
+
+    router.route('/api/import/verify')
+        .post(sync.checkForConflicts);
 
     router.route('/api/gsi/download')
         .get(gsi.saveFile('gamestate_integration_hudmanager.cfg', gsi.generateGSIFile()));
@@ -129,11 +133,7 @@ export default function (router: express.Router, io: socketio.Server) {
     router.route('/legacy/:hudName/style.css')
         .get(huds.legacyCSS);
 
-    router.use('/', express.static(path.join(__dirname, '../static/legacy')))
-
-    globalShortcut.register("Alt+r", () => {
-        match.reverseSide(io);
-    });
+    router.use('/', express.static(path.join(__dirname, '../static/legacy')));
 
     /**
      * END OF LEGACY ROUTING

@@ -28,13 +28,18 @@ async function getPlayerBySteamId(steamid: string): Promise<Player | null>{
     })
 }
 
-export const getPlayers: express.RequestHandler = (req, res) => {
-    players.find({}, (err, players) => {
+export const getPlayersList = (query: any) => new Promise<Player[]>((res, rej) => {
+    players.find(query, (err, players) => {
         if(err){
-            return res.sendStatus(500);
+            return res([]);
         }
-        return res.json(players);
+        return res(players);
     });
+});
+
+export const getPlayers: express.RequestHandler = async (req, res) => {
+    const players = await getPlayersList({});
+    return res.json(players);
 }
 export const getPlayer: express.RequestHandler = async (req, res) => {
     if(!req.params.id){

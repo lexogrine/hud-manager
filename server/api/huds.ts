@@ -11,6 +11,23 @@ import HUDWindow from './../../init/huds';
 import DecompressZip from 'decompress-zip';
 import overlay from './overlay';
 
+const remove = (pathToRemove: string) => {
+    if (!fs.existsSync(pathToRemove)) {
+        return;
+    }
+    const files = fs.readdirSync(pathToRemove);
+    files.forEach(function (file) {
+        const current = path.join(pathToRemove, file);
+        if (fs.lstatSync(current).isDirectory()) { // recurse
+            remove(current);
+            if(fs.existsSync(current)) fs.rmdirSync(current)
+        } else { // delete file
+            if(fs.existsSync(current)) fs.unlinkSync(current);
+        }
+    });
+    fs.rmdirSync(pathToRemove)
+}
+
 export const listHUDs = async () => {
     const dir = path.join(app.getPath('home'), 'HUDs');
     const filtered = fs.readdirSync(dir, { withFileTypes: true })
@@ -235,24 +252,22 @@ export const uploadHUD: express.RequestHandler = async (req, res) => {
     return res.sendStatus(response ? 200 : 500);
 }
 
+export const deleteHUD = (io: socketio.Server): express.RequestHandler => async (req, res) => {
+    if(!req.query.hudDir || typeof req.query.hudDir !== "string" || HUDWindow.current) return res.sendStatus(422);
+    const hudPath = path.join(app.getPath('home'), 'HUDs', req.query.hudDir);
+    if(!fs.existsSync(hudPath)){
+        return res.sendStatus(200);
+    }
+    try {
+        remove(hudPath);
+        io.emit('reloadHUDs');
+        return res.sendStatus(200);
+    } catch {
+        return res.sendStatus(500);
+    }
+}
 
 async function loadHUD(base64: string): Promise <I.HUD | null> {
-    const remove = (pathToRemove: string) => {
-        if (!fs.existsSync(pathToRemove)) {
-            return;
-        }
-        const files = fs.readdirSync(pathToRemove);
-        files.forEach(function (file) {
-            const current = path.join(pathToRemove, file);
-            if (fs.lstatSync(current).isDirectory()) { // recurse
-                remove(current);
-                if(fs.existsSync(current)) fs.rmdirSync(current)
-            } else { // delete file
-                if(fs.existsSync(current)) fs.unlinkSync(current);
-            }
-        });
-        fs.rmdirSync(pathToRemove)
-    }
     return new Promise((res, rej) => {
         const tempBasePath = path.join(app.getPath('userData'), 'hud_temp');
         try {
@@ -303,5 +318,5 @@ async function loadHUD(base64: string): Promise <I.HUD | null> {
             res(null);
         }
     })
-
 }
+

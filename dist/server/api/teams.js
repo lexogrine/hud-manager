@@ -57,14 +57,25 @@ function getTeamById(id) {
     });
 }
 exports.getTeamById = getTeamById;
-exports.getTeams = function (req, res) {
-    teams.find({}, function (err, teams) {
+exports.getTeamsList = function (query) { return new Promise(function (res, rej) {
+    teams.find(query, function (err, teams) {
         if (err) {
-            return res.sendStatus(500);
+            return res([]);
         }
-        return res.json(teams);
+        return res(teams);
     });
-};
+}); };
+exports.getTeams = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var teams;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, exports.getTeamsList({})];
+            case 1:
+                teams = _a.sent();
+                return [2 /*return*/, res.json(teams)];
+        }
+    });
+}); };
 exports.getTeam = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var team;
     return __generator(this, function (_a) {

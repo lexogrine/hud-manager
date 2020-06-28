@@ -11,7 +11,6 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 exports.__esModule = true;
 var express_1 = __importDefault(require("express"));
-var electron_1 = require("electron");
 var players = __importStar(require("./players"));
 var teams = __importStar(require("./teams"));
 var match = __importStar(require("./match"));
@@ -52,7 +51,7 @@ function default_1(router, io) {
         .patch(match.setMatch(io));
     router.route('/api/huds')
         .get(huds.getHUDs)
-        .post(huds.openHUDsDirectory);
+        .post(huds.openHUDsDirectory)["delete"](huds.deleteHUD(io));
     router.route('/api/huds/add')
         .post(huds.uploadHUD);
     router.route('/api/huds/close')
@@ -66,6 +65,8 @@ function default_1(router, io) {
         .put(gsi.createGSIFile);
     router.route('/api/import')
         .post(sync.importDb);
+    router.route('/api/import/verify')
+        .post(sync.checkForConflicts);
     router.route('/api/gsi/download')
         .get(gsi.saveFile('gamestate_integration_hudmanager.cfg', gsi.generateGSIFile()));
     router.route('/api/db/download')
@@ -100,9 +101,6 @@ function default_1(router, io) {
     router.route('/legacy/:hudName/style.css')
         .get(huds.legacyCSS);
     router.use('/', express_1["default"].static(path.join(__dirname, '../static/legacy')));
-    electron_1.globalShortcut.register("Alt+r", function () {
-        match.reverseSide(io);
-    });
     /**
      * END OF LEGACY ROUTING
      */

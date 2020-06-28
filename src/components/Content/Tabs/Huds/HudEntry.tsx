@@ -5,12 +5,14 @@ import Tip from './../../../Tooltip';
 import api from './../../../../api/api';
 import * as I from './../../../../api/interfaces';
 import HyperLink from './../../../../styles/Hyperlink.png';
+import trash from './../../../../styles/trash.svg';
 import Settings from './../../../../styles/Settings.png';
 import Display from './../../../../styles/Display.png';
 import Switch from './../../../../components/Switch/Switch';
 import Map from './../../../../styles/Map.png';
 import Killfeed from './../../../../styles/Killfeed.png';
 import { socket } from '../Live/Live';
+import RemoveHUDModal from './RemoveModal';
 
 const hashCode = (s: string) => s.split('').reduce((a, b) => { a = ((a << 5) - a) + b.charCodeAt(0); return a & a }, 0).toString();
 
@@ -20,17 +22,41 @@ interface IProps {
     toggleConfig: (hud: I.HUD) => any;
 }
 
-export default class HudEntry extends Component<IProps> {
+interface IState {
+    isOpen: boolean,
+}
+export default class HudEntry extends Component<IProps, IState> {
+    constructor(props:  IProps){
+        super(props);
+        this.state = {
+            isOpen: false
+        }
+    }
+    toggleModal = () => {
+        this.setState({ isOpen: !this.state.isOpen });
+    }
     startHUD(dir: string) {
         api.huds.start(dir);
     }
     setHUD = (url: string) => {
         socket.emit("set_active_hlae", url);
     }
+    delete = async () => {
+        try {
+            await api.huds.delete(this.props.hud.dir);
+        } catch { }
+        this.toggleModal();
+    }
     render() {
         const { hud, toggleConfig, isActive } = this.props;
         return (
             <Row key={hud.dir} className="hudRow">
+                <RemoveHUDModal
+                    isOpen={this.state.isOpen}
+                    toggle={this.toggleModal}
+                    hud={hud}
+                    remove={this.delete}
+                />
                 <Col s={12}>
                     <Row>
                         <Col className='centered thumb'>
@@ -55,6 +81,7 @@ export default class HudEntry extends Component<IProps> {
                                 <img src={HyperLink} id={`hud_link_${hashCode(hud.dir)}`} className='action' alt="Local network HUD URL"/>
                                 {hud.panel ? <img src={Settings} onClick={toggleConfig(hud)} className='action' alt="HUD panel" /> : ''}
                                 { Config.isElectron ? <img src={Display} onClick={() => this.startHUD(hud.dir)} className='action' alt="Start HUD" /> : null }
+                                { Config.isElectron && !hud.isDev ? <img src={trash} onClick={this.toggleModal} className='action' alt="Delete HUD" /> : null }
                             </div>
                             { Config.isElectron ? <div className="hud-toggle">
                                     <Switch id={`hud-switch-${hud.dir}`} isOn={isActive} handleToggle={() => this.setHUD(hud.url)} />

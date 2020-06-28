@@ -45,6 +45,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 exports.__esModule = true;
 var electron_1 = require("electron");
 var huds_1 = require("./../server/api/huds");
+var match = __importStar(require("./../server/api/match"));
 var path = __importStar(require("path"));
 var HUD = /** @class */ (function () {
     function HUD() {
@@ -111,10 +112,19 @@ var HUD = /** @class */ (function () {
         });
     };
     HUD.prototype.showWindow = function (hud, io) {
+        var _this = this;
         if (!this.current)
             return;
         this.current.setOpacity(1);
         this.current.show();
+        electron_1.globalShortcut.register("Alt+r", function () {
+            match.reverseSide(io);
+        });
+        electron_1.globalShortcut.register("Alt+F", function () {
+            if (!_this.current || !hud || !hud.url)
+                return;
+            _this.current.loadURL(hud.url);
+        });
         if (hud.keybinds) {
             var _loop_1 = function (bind) {
                 electron_1.globalShortcut.register(bind.bind, function () {
