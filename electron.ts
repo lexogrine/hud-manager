@@ -28,7 +28,7 @@ async function createMainWindow(server: Server) {
         const cookies = JSON.parse(cookie);
         if(Array.isArray(cookies)){
             for(const cookie of cookies){
-                cookie.url = 'http://localhost:5000/';
+                cookie.url = 'https://hmapi.lexogrine.com/';
                 await session.defaultSession.cookies.set(cookie);
             }
         }
@@ -37,7 +37,7 @@ async function createMainWindow(server: Server) {
         app.on("window-all-closed", app.quit);
     
         app.on("before-quit", async () => {
-            const cookies = await session.defaultSession.cookies.get({url:'http://localhost:5000/'});
+            const cookies = await session.defaultSession.cookies.get({url: 'https://hmapi.lexogrine.com/'});
 
             fs.writeFileSync(cookieFile, JSON.stringify(cookies), 'utf8');
 

@@ -220,11 +220,11 @@ export default function (server: http.Server, app: express.Router) {
     radar.startRadar(app, io);
 
     app.post('/', (req, res) => {
-        res.sendStatus(200);
         runtimeConfig.last = req.body;
         io.emit('update', req.body);
         GSI.digest(req.body);
         radar.digestRadar(req.body);
+        res.sendStatus(200);
     });
 
     io.on('connection', socket => {
@@ -277,6 +277,12 @@ export default function (server: http.Server, app: express.Router) {
     });
 
     GSI.on("roundEnd", async score => {
+        if(score.loser && score.loser.logo){
+            delete score.loser.logo;
+        }
+        if(score.winner && score.winner.logo){
+            delete score.winner.logo;
+        }
         const matches = await getMatches();
         const match = matches.filter(match => match.current)[0];
         if (!match) return;
@@ -284,23 +290,6 @@ export default function (server: http.Server, app: express.Router) {
         const mapName = score.map.name.substring(score.map.name.lastIndexOf('/') + 1);
         vetos.map(veto => {
             if (veto.mapName !== mapName || !score.map.team_ct.id || !score.map.team_t.id || veto.mapEnd) {
-                if (!veto.mapEnd || !veto.winner || !veto.score || !score.winner || !score.loser) {
-                    return veto;
-                }
-                const sumRecorded = Object.values(veto.score).reduce((a, b) => a + b, 0);
-                const sumReceived = score.winner.score + score.loser.score;
-                if (Math.abs(sumReceived - sumRecorded) !== 1) {
-                    return score;
-                }
-                const ids = Object.keys(veto.score);
-                if(!Number.isInteger(veto.score[ids[0]]) || !Number.isInteger(veto.score[ids[1]])){
-                    return score;
-                }
-                if(veto.score[ids[0]] > veto.score[ids[1]]){
-                    veto.score[ids[0]]++;
-                } else if (veto.score[ids[0]] < veto.score[ids[1]]){
-                    veto.score[ids[1]]++;
-                }
                 return veto;
             }
             if (!veto.score) {
@@ -336,6 +325,9 @@ export default function (server: http.Server, app: express.Router) {
                 veto.winner = score.map.team_ct.score > score.map.team_t.score ? score.map.team_ct.id : score.map.team_t.id;
                 if (isReversed) {
                     veto.winner = score.map.team_ct.score > score.map.team_t.score ? score.map.team_t.id : score.map.team_ct.id;
+                }
+                if(veto.score && veto.score[veto.winner]){
+                    veto.score[veto.winner]++;
                 }
                 veto.mapEnd = true;
                 return veto;

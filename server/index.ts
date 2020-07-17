@@ -27,7 +27,7 @@ export default async function init(){
 
 
     app.use(express.urlencoded({extended:true}));
-    app.use(express.raw({limit: '10Mb', type: 'application/json'}));
+    app.use(express.raw({limit: '100Mb', type: 'application/json'}));
     app.use((req, res, next) => {
         try{
             if(req.body){

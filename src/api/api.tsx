@@ -36,7 +36,7 @@ const apiHandler = (url: string, method = 'GET', body?: any, credentials?: boole
 }
 
 const sessionAPI = async (url: string, method = 'GET', body?: any) => {
-    return apiHandler(`http://localhost:5000/${url}`, method, body, true);
+    return apiHandler(`https://hmapi.lexogrine.com/${url}`, method, body, true);
 }
 
 export async function apiV2(url: string, method = 'GET', body?: any) {
@@ -106,15 +106,20 @@ export default {
         upload: async (hud: string) => await apiV2(`huds/add`, 'POST', { hud }),
         delete: async (hudDir: string) => await apiV2(`huds?hudDir=${hudDir}`, "DELETE")
     },
+    machine: {
+        get: async(): Promise<{ id: string }> => await apiV2('machine')
+    },
     match: {
         get: async (): Promise<I.Match[]> => await apiV2('match'),
         set: async (match: I.Match[]): Promise<I.Match[]> => apiV2('match', 'PATCH', match),
         getMaps: async (): Promise<string[]> => await apiV2('maps')
     },
     user: {
-        get: async(): Promise<{token: string} | false> => await sessionAPI("auth"),
+        get: async(machineId: string): Promise<{token: string} | {error:string} | false> => await sessionAPI(`auth/${machineId}`),
         login: async(username: string, password: string): Promise<any> => await sessionAPI("auth", "POST", {username, password}),
-        verify: async(token: string): Promise<I.Customer | false> => await apiV2('user', "POST", { token })
+        logout: async() => await Promise.all([sessionAPI("auth", "DELETE"), apiV2('auth', "DELETE")]),
+        verify: async(token: string): Promise<I.Customer | false> => await apiV2('user', "POST", { token }),
+        getCurrent: async(): Promise<I.Customer | false> => await apiV2('auth'),
     },
     files: {
         imgToBase64: async (url: string) => {

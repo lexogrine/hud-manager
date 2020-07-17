@@ -10,14 +10,16 @@ class HUD {
     current: BrowserWindow | null;
     tray: Tray | null;
     show: boolean;
+    hud: I.HUD | null;
     constructor() {
         this.current = null;
         this.tray = null;
         this.show = true;
+        this.hud = null;
     }
 
     async open(dirName: string, io: socketio.Server) {
-        if (this.current !== null) return null;
+        if (this.current !== null || this.hud !== null) return null;
         const hud = await getHUDData(dirName);
         if (hud === null) return null;
         const hudWindow = new BrowserWindow({
@@ -54,12 +56,21 @@ class HUD {
         this.tray = tray;
 
         this.current = hudWindow;
+        this.hud = hud;
 
         this.showWindow(hud, io);
         hudWindow.loadURL(hud.url);
 
         hudWindow.on('close', () => {
-            globalShortcut.unregisterAll();
+            if(this.hud && this.hud.keybinds){
+                for(const keybind of this.hud.keybinds){
+                    globalShortcut.unregister(keybind.bind);
+                }
+            }
+            globalShortcut.unregister("Alt+r");
+            globalShortcut.unregister("Alt+F");
+            
+            this.hud = null;
             this.current = null;
             if (this.tray !== null) {
                 this.tray.destroy();

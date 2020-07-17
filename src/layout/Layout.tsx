@@ -6,6 +6,7 @@ import * as I from './../api/interfaces';
 import config from './../api/config';
 import { socket } from './../components/Content/Tabs/Live/Live';
 import LoginRegisterModal from './LoginRegisterModal';
+import ElectronOnly from './../components/ElectronOnly';
 
 
 declare let window: any;
@@ -54,10 +55,23 @@ export default class Layout extends React.Component<IProps, IState> {
     loadUser = async () => {
 
         try{
-            const user = await api.user.get();
-            if(!user) return this.setState({loading: false});
+            const appLoadedUser = await api.user.getCurrent();
+            if(appLoadedUser){
+                this.setUser(appLoadedUser);
+                return this.setState({loading:false})
+            }
+            
+			const machine = await api.machine.get();
+
+            const user = await api.user.get(machine.id);
+            if(!user) return this.setState({loading: false}, () => this.setUser());
+
+            if("error" in user){
+                return this.setState({loading: false, loginError: user.error}, () => this.setUser());
+            }
+
             const userData = await api.user.verify(user.token);
-            if(!userData) return this.setState({loading: false, loginError: "It seems that your session has expired - please login again"});
+            if(!userData) return this.setState({loading: false, loginError: "It seems that your session has expired - please restart & login again"}, () => this.setUser());
             this.setUser(userData);
             this.setState({loading: false});
         } catch {
@@ -65,7 +79,7 @@ export default class Layout extends React.Component<IProps, IState> {
             return this.setState({loading: false});
         }
     }
-    setUser = (user: I.Customer) => {
+    setUser = (user?: I.Customer) => {
         const { data } = this.state;
         data.customer = user;
         this.setState({data});
@@ -106,6 +120,10 @@ export default class Layout extends React.Component<IProps, IState> {
             remote.getCurrentWindow().maximize();
         }
     }
+    logout = async () => {
+        await api.user.logout();
+        this.loadUser();
+    }
     close = () => {
         if(!remote) return;
         remote.getCurrentWindow().close();
@@ -125,10 +143,11 @@ export default class Layout extends React.Component<IProps, IState> {
                         <div onClick={this.maximize} className="app-control maximize"></div>
                         <div onClick={this.close} className="app-control close"></div>
                     </div>
-                    {data.customer ? <div className="license-status">
+                    {data.customer ? <div className={`license-status ${isElectron ? 'electron' : ''}`}>
                         {data.customer.license.type}
+                        <ElectronOnly><div className="logout-button" onClick={this.logout}>Logout</div></ElectronOnly>
                     </div>:null}
-                    {<div className={`loading-container ${loading ? '' :'hide'}`} />}
+                    {<div className={`loading-container ${loading ? '' :'hide'}`} >Loading...</div>}
                     <LoginRegisterModal isOpen={!data.customer} loading={loadingLogin} setLoading={this.setLoading} setUser={this.setUser} error={loginError}/>
                     <Content/>
                 </div>

@@ -303,11 +303,11 @@ function default_1(server, app) {
     }); });
     radar.startRadar(app, io);
     app.post('/', function (req, res) {
-        res.sendStatus(200);
         runtimeConfig.last = req.body;
         io.emit('update', req.body);
         exports.GSI.digest(req.body);
         radar.digestRadar(req.body);
+        res.sendStatus(200);
     });
     io.on('connection', function (socket) {
         socket.on('started', function () {
@@ -358,7 +358,14 @@ function default_1(server, app) {
         var matches, match, vetos, mapName;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, match_1.getMatches()];
+                case 0:
+                    if (score.loser && score.loser.logo) {
+                        delete score.loser.logo;
+                    }
+                    if (score.winner && score.winner.logo) {
+                        delete score.winner.logo;
+                    }
+                    return [4 /*yield*/, match_1.getMatches()];
                 case 1:
                     matches = _a.sent();
                     match = matches.filter(function (match) { return match.current; })[0];
@@ -368,24 +375,6 @@ function default_1(server, app) {
                     mapName = score.map.name.substring(score.map.name.lastIndexOf('/') + 1);
                     vetos.map(function (veto) {
                         if (veto.mapName !== mapName || !score.map.team_ct.id || !score.map.team_t.id || veto.mapEnd) {
-                            if (!veto.mapEnd || !veto.winner || !veto.score || !score.winner || !score.loser) {
-                                return veto;
-                            }
-                            var sumRecorded = Object.values(veto.score).reduce(function (a, b) { return a + b; }, 0);
-                            var sumReceived = score.winner.score + score.loser.score;
-                            if (Math.abs(sumReceived - sumRecorded) !== 1) {
-                                return score;
-                            }
-                            var ids = Object.keys(veto.score);
-                            if (!Number.isInteger(veto.score[ids[0]]) || !Number.isInteger(veto.score[ids[1]])) {
-                                return score;
-                            }
-                            if (veto.score[ids[0]] > veto.score[ids[1]]) {
-                                veto.score[ids[0]]++;
-                            }
-                            else if (veto.score[ids[0]] < veto.score[ids[1]]) {
-                                veto.score[ids[1]]++;
-                            }
                             return veto;
                         }
                         if (!veto.score) {
@@ -427,6 +416,9 @@ function default_1(server, app) {
                         veto.winner = score.map.team_ct.score > score.map.team_t.score ? score.map.team_ct.id : score.map.team_t.id;
                         if (isReversed_1) {
                             veto.winner = score.map.team_ct.score > score.map.team_t.score ? score.map.team_t.id : score.map.team_ct.id;
+                        }
+                        if (veto.score && veto.score[veto.winner]) {
+                            veto.score[veto.winner]++;
                         }
                         veto.mapEnd = true;
                         return veto;

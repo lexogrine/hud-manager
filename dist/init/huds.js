@@ -52,6 +52,7 @@ var HUD = /** @class */ (function () {
         this.current = null;
         this.tray = null;
         this.show = true;
+        this.hud = null;
     }
     HUD.prototype.open = function (dirName, io) {
         return __awaiter(this, void 0, void 0, function () {
@@ -60,7 +61,7 @@ var HUD = /** @class */ (function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        if (this.current !== null)
+                        if (this.current !== null || this.hud !== null)
                             return [2 /*return*/, null];
                         return [4 /*yield*/, huds_1.getHUDData(dirName)];
                     case 1:
@@ -97,10 +98,19 @@ var HUD = /** @class */ (function () {
                         });
                         this.tray = tray;
                         this.current = hudWindow;
+                        this.hud = hud;
                         this.showWindow(hud, io);
                         hudWindow.loadURL(hud.url);
                         hudWindow.on('close', function () {
-                            electron_1.globalShortcut.unregisterAll();
+                            if (_this.hud && _this.hud.keybinds) {
+                                for (var _i = 0, _a = _this.hud.keybinds; _i < _a.length; _i++) {
+                                    var keybind = _a[_i];
+                                    electron_1.globalShortcut.unregister(keybind.bind);
+                                }
+                            }
+                            electron_1.globalShortcut.unregister("Alt+r");
+                            electron_1.globalShortcut.unregister("Alt+F");
+                            _this.hud = null;
                             _this.current = null;
                             if (_this.tray !== null) {
                                 _this.tray.destroy();

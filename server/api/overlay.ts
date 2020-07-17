@@ -29,7 +29,7 @@ export default function overlay(hud: string) {
         </style>
     </head>
     <body>
-        <iframe id="hud-container" src="${hud}"></iframe>
+        <iframe id="hud-container" src="${hud.substr(hud.indexOf('/hud'))}"></iframe>
         ${ !customer.customer || customer.customer.license.type === "free" ? '<div id="watermark">Powered by Lexogrine HUD Manager</div>':''}
     </body>
 </html>`

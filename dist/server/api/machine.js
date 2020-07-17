@@ -39,39 +39,20 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
-var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-var publickey_1 = require("./publickey");
-var api_1 = require("./../api");
-exports.verifyToken = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var result;
+var fs_1 = __importDefault(require("fs"));
+var electron_1 = require("electron");
+var path_1 = __importDefault(require("path"));
+exports.getMachineId = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var machinePath, id;
     return __generator(this, function (_a) {
-        if (!req.body || !req.body.token)
-            return [2 /*return*/, res.sendStatus(422)];
-        try {
-            result = jsonwebtoken_1["default"].verify(req.body.token, publickey_1.publicKey, { algorithms: ['RS256'] });
-            if (result.user && result.license) {
-                api_1.customer.customer = result;
-                return [2 /*return*/, res.json(result)];
-            }
-            return [2 /*return*/, res.sendStatus(403)];
+        machinePath = path_1["default"].join(electron_1.app.getPath('userData'), 'machine.hm');
+        id = (Math.random() * 1000 + 1).toString(36).replace(/[^a-z]+/g, '').substr(0, 15);
+        if (!fs_1["default"].existsSync(machinePath)) {
+            fs_1["default"].writeFileSync(machinePath, id, 'UTF-8');
         }
-        catch (_b) {
-            return [2 /*return*/, res.sendStatus(403)];
+        else {
+            id = fs_1["default"].readFileSync(machinePath, 'UTF-8');
         }
-        return [2 /*return*/];
-    });
-}); };
-exports.getCurrent = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    return __generator(this, function (_a) {
-        if (api_1.customer.customer) {
-            return [2 /*return*/, res.json(api_1.customer.customer)];
-        }
-        return [2 /*return*/, res.sendStatus(403)];
-    });
-}); };
-exports.logout = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    return __generator(this, function (_a) {
-        api_1.customer.customer = null;
-        return [2 /*return*/, res.sendStatus(200)];
+        return [2 /*return*/, res.json({ id: id })];
     });
 }); };

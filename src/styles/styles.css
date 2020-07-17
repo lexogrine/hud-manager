@@ -328,12 +328,15 @@ img.smallLogo {
 }
 .veto-container .edit-veto:first-of-type {
     margin-left:auto;
-    margin-right:16px;
+}
+.veto-container .edit-veto:last-of-type {
+    margin-right: 0;
 }
 .veto-container .edit-veto {
     min-width: 68px;
     min-height: 29px;
     border-radius: 14px;
+    margin-right:16px;
     font-size: 10px;
     border: none;
     font-weight: 600;

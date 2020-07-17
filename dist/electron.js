@@ -76,7 +76,7 @@ function createMainWindow(server) {
                 case 2:
                     if (!(_i < cookies_1.length)) return [3 /*break*/, 5];
                     cookie_1 = cookies_1[_i];
-                    cookie_1.url = 'http://localhost:5000/';
+                    cookie_1.url = 'https://hmapi.lexogrine.com/';
                     return [4 /*yield*/, electron_1.session.defaultSession.cookies.set(cookie_1)];
                 case 3:
                     _a.sent();
@@ -95,7 +95,7 @@ function createMainWindow(server) {
                             var cookies;
                             return __generator(this, function (_a) {
                                 switch (_a.label) {
-                                    case 0: return [4 /*yield*/, electron_1.session.defaultSession.cookies.get({ url: 'http://localhost:5000/' })];
+                                    case 0: return [4 /*yield*/, electron_1.session.defaultSession.cookies.get({ url: 'https://hmapi.lexogrine.com/' })];
                                     case 1:
                                         cookies = _a.sent();
                                         fs_1["default"].writeFileSync(cookieFile, JSON.stringify(cookies), 'utf8');

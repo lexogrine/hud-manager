@@ -92,7 +92,7 @@ function init() {
                 case 5:
                     console.log("Server listening on " + port);
                     app.use(express_1["default"].urlencoded({ extended: true }));
-                    app.use(express_1["default"].raw({ limit: '10Mb', type: 'application/json' }));
+                    app.use(express_1["default"].raw({ limit: '100Mb', type: 'application/json' }));
                     app.use(function (req, res, next) {
                         try {
                             if (req.body) {

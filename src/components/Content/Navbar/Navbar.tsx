@@ -2,8 +2,12 @@ import React from 'react';
 import {Nav, NavItem, NavLink} from "reactstrap";
 import * as Tabs from './TabIcons';
 
-
-export default class Navbar extends React.Component<{activeTab: string, toggle: Function}, any> {
+interface IProps {
+    activeTab: string,
+    toggle: Function,
+    gsi: boolean,
+}
+export default class Navbar extends React.Component<IProps> {
     render() {
         return (
             <Nav tabs className="navbar-container">
@@ -56,7 +60,7 @@ export default class Navbar extends React.Component<{activeTab: string, toggle: 
                     <NavLink
                         active={ this.props.activeTab === 'config' }
                         onClick={() => { this.props.toggle('config'); }}
-                    >Settings
+                    >Settings {!this.props.gsi ? <i className='material-icons'>warning</i> : null}
                     </NavLink>
                 </NavItem>
                 {/*<NavItem className="hover-pointer">

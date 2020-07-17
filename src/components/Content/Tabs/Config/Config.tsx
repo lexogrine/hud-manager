@@ -20,6 +20,7 @@ interface ExtendedFile extends File {
 interface IProps {
   cxt: IContextData;
   toggle: Function;
+  gsiCheck: Function;
 }
 
 interface IState {
@@ -134,6 +135,7 @@ export default class Config extends React.Component<IProps, IState> {
     this.setState({ gsi });
     await api.gamestate.create();
     this.checkGSI();
+    this.props.gsiCheck();
   };
   createCFG = async () => {
     const { cfg } = this.state;

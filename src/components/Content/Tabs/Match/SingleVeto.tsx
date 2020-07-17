@@ -2,6 +2,7 @@ import React from 'react';
 import { Button } from 'reactstrap';
 import * as I from './../../../../api/interfaces';
 import VetoModal from './VetoModal'
+import EditScoreModal from './EditScoreModal';
 
 interface Props {
     map: number,
@@ -11,7 +12,10 @@ interface Props {
     onSave: (name: string, map: number) => any,
     maps: string[]
 }
-
+interface State {
+    isOpen: boolean,
+    isScoreOpen: boolean,
+}
 function generateDescription(veto: I.Veto, team?: I.Team, secTeam?: I.Team) {
     if(!veto.mapName){
         return "";
@@ -22,28 +26,43 @@ function generateDescription(veto: I.Veto, team?: I.Team, secTeam?: I.Team) {
     if (!team || !team.name || !secTeam) {
         return <strong>Wrong team selected</strong>;
     }
-    let text = `${team.name} ${veto.type}s ${veto.mapName}`;
+    const text = `${team.name} ${veto.type}s ${veto.mapName}`;
+    let sidePick = '';
+    let scoreDescription = '';
+    let winnerDescription = '';
     if (secTeam && secTeam.name && veto.side !== "NO") {
-        text += `, ${secTeam.name} chooses ${veto.side} side`;
+        sidePick = `, ${secTeam.name} chooses ${veto.side} side`;
     }
     if(veto.score && Number.isInteger(veto.score[team._id]) && Number.isInteger(veto.score[secTeam._id])){
-        text += ` (${team.shortName} ${veto.score[team._id]}:${veto.score[secTeam._id]} ${secTeam.shortName})`;
+        scoreDescription = `${team.shortName} ${veto.score[team._id]}:${veto.score[secTeam._id]} ${secTeam.shortName}`;
     }
 
     if(veto.mapEnd && veto.winner){
         if(team && team._id === veto.winner) {
-            text += ` - ${team.name} wins`;
+            winnerDescription += `${team.name} wins`;
         } else if (secTeam && secTeam._id === veto.winner){
-            text += ` - ${secTeam.name} wins`;
+            winnerDescription += `${secTeam.name} wins`;
         }
     }
 
-    return text; 
+    return <>
+        <div>{text} { sidePick || null}</div>
+        {scoreDescription ? <div>{scoreDescription}</div> : null}
+        {winnerDescription ? <div>{winnerDescription}</div> : null}
+    </>
+
 }
 
-class SingleVeto extends React.Component<Props> {
-    state = {
-        isOpen: false
+class SingleVeto extends React.Component<Props, State> {
+    constructor(props: Props){
+        super(props);
+        this.state = {
+            isOpen: false,
+            isScoreOpen: false
+        }
+    }
+    toggleScoreOpen = () => {
+        this.setState({ isScoreOpen: !this.state.isScoreOpen });
     }
     toggle = () => {
         this.setState({ isOpen: !this.state.isOpen });
@@ -52,6 +71,23 @@ class SingleVeto extends React.Component<Props> {
         this.props.onSave("winner", this.props.map)({target:{value:undefined}});
         this.props.onSave("mapEnd", this.props.map)({target:{value:false}});
         this.props.onSave("score", this.props.map)({target:{value:{}}});
+    }
+    setScore = (teamId: string, score: number) => () => {
+
+        const { veto, vetoTeams } = this.props;
+        let scores: { [key: string]: number } = {};
+        if(veto.score){
+            scores = veto.score;
+        }
+        if(!scores[vetoTeams[0]._id]) scores[vetoTeams[0]._id] = 0;
+        if(!scores[vetoTeams[1]._id]) scores[vetoTeams[1]._id] = 0;
+        if(score < 0) score = 0;
+        scores[teamId] = score;
+        this.props.onSave("score", this.props.map)({target:{value:scores}});
+    }
+    setWinner = (team?: string) => () =>{
+        this.props.onSave("winner", this.props.map)({target:{value:team}});
+        this.props.onSave("mapEnd", this.props.map)({target:{value:!!team}});
     }
     componentDidMount() {
 
@@ -69,9 +105,10 @@ class SingleVeto extends React.Component<Props> {
                                 <div className="veto-title">VETO {map + 1}:</div>
                                 <div className="veto-summary">{generateDescription(veto, team, secTeam)}</div>
                                 <Button onClick={this.resetScore} className="edit-veto purple-btn">Reset score</Button>
+                                {veto.mapName?<Button onClick={this.toggleScoreOpen} className="edit-veto purple-btn">Set score</Button>:null}
                                 <Button onClick={this.toggle} className="edit-veto purple-btn">Edit</Button>
                             </div>
-
+                            { veto.mapName ? <EditScoreModal setWinner={this.setWinner} teams={vetoTeams} toggle={this.toggleScoreOpen} isOpen={this.state.isScoreOpen} veto={veto} saveScore={this.setScore}/> : null}
                             <VetoModal maps={maps} map={map} veto={veto} teams={vetoTeams} isOpen={this.state.isOpen} toggle={this.toggle} onChange={onSave} />
                         </>
                 }
