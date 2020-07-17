@@ -328,12 +328,15 @@ img.smallLogo {
 }
 .veto-container .edit-veto:first-of-type {
     margin-left:auto;
-    margin-right:16px;
+}
+.veto-container .edit-veto:last-of-type {
+    margin-right: 0;
 }
 .veto-container .edit-veto {
     min-width: 68px;
     min-height: 29px;
     border-radius: 14px;
+    margin-right:16px;
     font-size: 10px;
     border: none;
     font-weight: 600;
@@ -550,7 +553,7 @@ img.smallLogo {
     background-color: #7ad9f5 !important;
     color: #24272d;
 }
-#teams, select, #team_name, #short_name, #country, #players, #first_name, #nick, #last_name, #steamid, #matchType, #type, #side, input[type="text"], input[type="number"] {
+#teams, select, #team_name, #short_name, #country, #players, #first_name, #nick, #last_name, #steamid, #matchType, #type, #side, input[type="text"], input[type="number"], input[type="email"], input[type="password"] {
     font-size:12px;
     height:44px;
 }
@@ -944,6 +947,8 @@ form .card > .card-body > button.btn {
     border-bottom: 2px solid #ffffff66;
     padding-bottom:17px;
     cursor:pointer;
+    outline: none;
+    text-decoration: none;
 }
 .veto_modal .veto_type .type.active {
     color: white;
@@ -1005,7 +1010,7 @@ input:checked ~ .customCheckbox {
     height:64px;
     position: fixed;
     top: 0;
-    z-index: 2;
+    z-index: 999;
     display:flex;
     background: url("./app_bar.png"), linear-gradient(to right, #79d1f5, #6c28fe);
     background-repeat: no-repeat;

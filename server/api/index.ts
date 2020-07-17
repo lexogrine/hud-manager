@@ -1,6 +1,6 @@
 import express from 'express';
 import socketio from 'socket.io';
-import { globalShortcut} from 'electron';
+import { globalShortcut } from 'electron';
 import * as players from './players';
 import * as teams from './teams';
 import * as match from './match';
@@ -10,8 +10,21 @@ import * as path from 'path';
 import * as gsi from './gamestate';
 import * as game from './game';
 import * as sync from './sync';
+import * as machine from './machine';
+import * as user from './user';
+import * as I from './../../types/interfaces';
+
+
+export const customer: I.CustomerData = {
+    customer: null
+}
 
 export default function (router: express.Router, io: socketio.Server) {
+
+    router.route('/api/auth')
+        .get(user.getCurrent)
+        .delete(user.logout)
+
     router.route('/api/players')
         .get(players.getPlayers)
         .post(players.addPlayer);
@@ -106,14 +119,20 @@ export default function (router: express.Router, io: socketio.Server) {
     router.route('/hud/:dir/')
         .get(huds.renderOverlay);
 
+    router.route('/api/machine')
+        .get(machine.getMachineId)
+
     router.use('/huds/:dir/', huds.renderAssets);
 
     router.route('/huds/:dir/thumbnail')
         .get(huds.renderThumbnail);
 
 
+    router.route('/api/user')
+        .post(user.verifyToken);
 
 
+    globalShortcut.register("Alt+Shift+F", () => io.emit("refreshHUD"));
     /**
      * LEGACY ROUTING
      */

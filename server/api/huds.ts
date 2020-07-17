@@ -31,7 +31,7 @@ const remove = (pathToRemove: string) => {
 export const listHUDs = async () => {
     const dir = path.join(app.getPath('home'), 'HUDs');
     const filtered = fs.readdirSync(dir, { withFileTypes: true })
-        .filter(dirent => dirent.isDirectory());
+        .filter(dirent => dirent.isDirectory()).filter(dirent =>  /^[0-9a-zA-Z-]+$/g.test(dirent.name));
 
     const huds = (await Promise.all(filtered.map(async dirent => await getHUDData(dirent.name)))).filter(hud => hud !== null);
     if(HUDState.devHUD){

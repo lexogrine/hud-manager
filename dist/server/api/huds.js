@@ -82,7 +82,7 @@ exports.listHUDs = function () { return __awaiter(void 0, void 0, void 0, functi
             case 0:
                 dir = path.join(electron_1.app.getPath('home'), 'HUDs');
                 filtered = fs.readdirSync(dir, { withFileTypes: true })
-                    .filter(function (dirent) { return dirent.isDirectory(); });
+                    .filter(function (dirent) { return dirent.isDirectory(); }).filter(function (dirent) { return /^[0-9a-zA-Z-]+$/g.test(dirent.name); });
                 return [4 /*yield*/, Promise.all(filtered.map(function (dirent) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
                         switch (_a.label) {
                             case 0: return [4 /*yield*/, exports.getHUDData(dirent.name)];

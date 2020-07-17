@@ -1,3 +1,6 @@
+
+import { customer } from ".";
+
 export default function overlay(hud: string) {
     return `<!DOCTYPE html>
 <html>
@@ -26,8 +29,8 @@ export default function overlay(hud: string) {
         </style>
     </head>
     <body>
-        <iframe id="hud-container" src="${hud}"></iframe>
-        <div id="watermark">Powered by Lexogrine HUD Manager</div>
+        <iframe id="hud-container" src="${hud.substr(hud.indexOf('/hud'))}"></iframe>
+        ${ !customer.customer || customer.customer.license.type === "free" ? '<div id="watermark">Powered by Lexogrine HUD Manager</div>':''}
     </body>
 </html>`
 }

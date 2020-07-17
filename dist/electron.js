@@ -48,9 +48,10 @@ var __importStar = (this && this.__importStar) || function (mod) {
 exports.__esModule = true;
 var electron_1 = require("electron");
 var path_1 = __importDefault(require("path"));
+var fs_1 = __importDefault(require("fs"));
 var args_1 = __importDefault(require("./init/args"));
-var directories = __importStar(require("./init/directories"));
 var server_1 = __importDefault(require("./server"));
+var directories = __importStar(require("./init/directories"));
 var config_1 = require("./server/api/config");
 exports.AFXInterop = {
     process: null
@@ -58,18 +59,54 @@ exports.AFXInterop = {
 exports.isDev = process.env.DEV === "true";
 function createMainWindow(server) {
     return __awaiter(this, void 0, void 0, function () {
-        var win, config, startUrl;
+        var win, cookieFile, cookie, cookies, _i, cookies_1, cookie_1, e_1, config, startUrl;
+        var _this = this;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
+                    cookieFile = path_1["default"].join(electron_1.app.getPath('userData'), 'databases', 'cookie');
+                    cookie = fs_1["default"].readFileSync(cookieFile, 'utf8');
+                    _a.label = 1;
+                case 1:
+                    _a.trys.push([1, 6, , 7]);
+                    cookies = JSON.parse(cookie);
+                    if (!Array.isArray(cookies)) return [3 /*break*/, 5];
+                    _i = 0, cookies_1 = cookies;
+                    _a.label = 2;
+                case 2:
+                    if (!(_i < cookies_1.length)) return [3 /*break*/, 5];
+                    cookie_1 = cookies_1[_i];
+                    cookie_1.url = 'https://hmapi.lexogrine.com/';
+                    return [4 /*yield*/, electron_1.session.defaultSession.cookies.set(cookie_1)];
+                case 3:
+                    _a.sent();
+                    _a.label = 4;
+                case 4:
+                    _i++;
+                    return [3 /*break*/, 2];
+                case 5: return [3 /*break*/, 7];
+                case 6:
+                    e_1 = _a.sent();
+                    return [3 /*break*/, 7];
+                case 7:
                     if (electron_1.app) {
                         electron_1.app.on("window-all-closed", electron_1.app.quit);
-                        electron_1.app.on("before-quit", function () {
-                            if (!win)
-                                return;
-                            win.removeAllListeners("close");
-                            win.close();
-                        });
+                        electron_1.app.on("before-quit", function () { return __awaiter(_this, void 0, void 0, function () {
+                            var cookies;
+                            return __generator(this, function (_a) {
+                                switch (_a.label) {
+                                    case 0: return [4 /*yield*/, electron_1.session.defaultSession.cookies.get({ url: 'https://hmapi.lexogrine.com/' })];
+                                    case 1:
+                                        cookies = _a.sent();
+                                        fs_1["default"].writeFileSync(cookieFile, JSON.stringify(cookies), 'utf8');
+                                        if (!win)
+                                            return [2 /*return*/];
+                                        win.removeAllListeners("close");
+                                        win.close();
+                                        return [2 /*return*/];
+                                }
+                            });
+                        }); });
                     }
                     win = new electron_1.BrowserWindow({
                         height: 700,
@@ -81,7 +118,8 @@ function createMainWindow(server) {
                         icon: path_1["default"].join(__dirname, 'assets/icon.png'),
                         webPreferences: {
                             nodeIntegration: true,
-                            backgroundThrottling: false
+                            backgroundThrottling: false,
+                            devTools: exports.isDev
                         },
                         minWidth: 775,
                         minHeight: 700,
@@ -93,7 +131,7 @@ function createMainWindow(server) {
                         }
                     });
                     return [4 /*yield*/, config_1.loadConfig()];
-                case 1:
+                case 8:
                     config = _a.sent();
                     win.setMenuBarVisibility(false);
                     startUrl = "http://localhost:" + config.port + "/";

@@ -11,6 +11,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 exports.__esModule = true;
 var express_1 = __importDefault(require("express"));
+var electron_1 = require("electron");
 var players = __importStar(require("./players"));
 var teams = __importStar(require("./teams"));
 var match = __importStar(require("./match"));
@@ -20,7 +21,14 @@ var path = __importStar(require("path"));
 var gsi = __importStar(require("./gamestate"));
 var game = __importStar(require("./game"));
 var sync = __importStar(require("./sync"));
+var machine = __importStar(require("./machine"));
+var user = __importStar(require("./user"));
+exports.customer = {
+    customer: null
+};
 function default_1(router, io) {
+    router.route('/api/auth')
+        .get(user.getCurrent)["delete"](user.logout);
     router.route('/api/players')
         .get(players.getPlayers)
         .post(players.addPlayer);
@@ -84,9 +92,14 @@ function default_1(router, io) {
         .get(huds.renderHUD);
     router.route('/hud/:dir/')
         .get(huds.renderOverlay);
+    router.route('/api/machine')
+        .get(machine.getMachineId);
     router.use('/huds/:dir/', huds.renderAssets);
     router.route('/huds/:dir/thumbnail')
         .get(huds.renderThumbnail);
+    router.route('/api/user')
+        .post(user.verifyToken);
+    electron_1.globalShortcut.register("Alt+Shift+F", function () { return io.emit("refreshHUD"); });
     /**
      * LEGACY ROUTING
      */

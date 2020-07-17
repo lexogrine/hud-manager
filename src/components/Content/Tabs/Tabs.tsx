@@ -9,7 +9,14 @@ import Credits from "./Credits/Credits";
 import Live from "./Live/Live";
 import { ContextData } from './../../Context';
 
-export default class Tabs extends React.Component<{ activeTab: string, data: any, toggle: Function}> {
+interface IProps {
+    activeTab: string,
+    data: any,
+    toggle: Function,
+    gsiCheck: Function
+}
+
+export default class Tabs extends React.Component<IProps> {
     render() {
         const { Consumer } = ContextData;
         return (
@@ -32,7 +39,7 @@ export default class Tabs extends React.Component<{ activeTab: string, data: any
                                     <Live toggle={this.props.toggle} cxt={data}></Live>
                                 </TabPane>
                                 <TabPane tabId="config" >
-                                    <Config cxt={data} toggle={this.props.toggle}></Config>
+                                    <Config cxt={data} toggle={this.props.toggle} gsiCheck={this.props.gsiCheck}></Config>
                                 </TabPane>
                                 <TabPane tabId="credits" >
                                     <Credits></Credits>

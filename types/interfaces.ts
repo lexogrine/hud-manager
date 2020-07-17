@@ -95,3 +95,28 @@ export interface HUD {
     };
     isDev: boolean
 }
+export interface User {
+    id: number,
+    email: string ,
+    password: string,
+    admin: boolean,
+    banned: boolean,
+}
+
+export type LicenseType = 'free' | 'professional' | 'enterprise';
+export interface License {
+    id: number,
+    type: LicenseType,
+    validUntil: Date,
+    owner: number,
+}
+
+export interface Customer {
+    user: User,
+    license: License,
+    iat: number,
+    exp: number
+}
+export interface CustomerData {
+    customer: Customer | null
+}
