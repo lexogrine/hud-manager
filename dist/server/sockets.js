@@ -100,14 +100,40 @@ var HUDStateManager = /** @class */ (function () {
         this.data = new Map();
         this.devHUD = null;
     }
+    HUDStateManager.prototype.save = function (hud, data) {
+        return __awaiter(this, void 0, void 0, function () {
+            var hudPath;
+            return __generator(this, function (_a) {
+                hudPath = path_1["default"].join(electron_1.app.getPath('home'), 'HUDs', hud);
+                if (!fs_1["default"].existsSync(hudPath))
+                    return [2 /*return*/];
+                fs_1["default"].writeFileSync(path_1["default"].join(hudPath, "config.hm"), JSON.stringify(data));
+                return [2 /*return*/];
+            });
+        });
+    };
     HUDStateManager.prototype.set = function (hud, section, data) {
         var _a;
         var form = this.get(hud);
         var newForm = __assign(__assign({}, form), (_a = {}, _a[section] = data, _a));
+        this.save(hud, newForm);
         this.data.set(hud, newForm);
     };
-    HUDStateManager.prototype.get = function (hud) {
-        return this.data.get(hud);
+    HUDStateManager.prototype.get = function (hud, force) {
+        if (force === void 0) { force = false; }
+        var hudData = this.data.get(hud);
+        var hudPath = path_1["default"].join(electron_1.app.getPath('home'), 'HUDs', hud);
+        var hudConfig = path_1["default"].join(hudPath, "config.hm");
+        if (hudData || !force || !fs_1["default"].existsSync(hudPath) || !fs_1["default"].existsSync(hudConfig))
+            return hudData;
+        var rawData = fs_1["default"].readFileSync(hudConfig, "utf8");
+        try {
+            var data = JSON.parse(rawData);
+            return this.data.set(hud, data).get(hud);
+        }
+        catch (_a) {
+            return undefined;
+        }
     };
     return HUDStateManager;
 }());
@@ -319,7 +345,7 @@ function default_1(server, app) {
         socket.on('register', function (name, isDev) {
             if (!isDev) {
                 socket.join(name);
-                io.to(name).emit('hud_config', exports.HUDState.get(name));
+                io.to(name).emit('hud_config', exports.HUDState.get(name, true));
                 return;
             }
             runtimeConfig.devSocket = socket;
@@ -336,7 +362,7 @@ function default_1(server, app) {
             io.to(data.hud).emit("hud_action", data.action);
         });
         socket.on('get_config', function (hud) {
-            socket.emit("hud_config", exports.HUDState.get(hud));
+            socket.emit("hud_config", exports.HUDState.get(hud, true));
         });
         socket.on("set_active_hlae", function (hudUrl) {
             if (runtimeConfig.currentHUD === hudUrl) {

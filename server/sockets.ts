@@ -58,13 +58,30 @@ class HUDStateManager {
         this.data = new Map();
         this.devHUD = null;
     }
+    async save(hud: string, data: object) {
+        const hudPath = path.join(Application.getPath('home'), 'HUDs', hud);
+        if(!fs.existsSync(hudPath)) return;
+        fs.writeFileSync(path.join(hudPath, "config.hm"), JSON.stringify(data));
+    }
     set(hud: string, section: string, data) {
         const form = this.get(hud);
         const newForm = { ...form, [section]: data };
+        this.save(hud, newForm);
         this.data.set(hud, newForm);
     }
-    get(hud: string) {
-        return this.data.get(hud);
+    get(hud: string, force = false) {
+        const hudData = this.data.get(hud);
+        const hudPath = path.join(Application.getPath('home'), 'HUDs', hud);
+        const hudConfig = path.join(hudPath, "config.hm");
+
+        if(hudData || !force || !fs.existsSync(hudPath) || !fs.existsSync(hudConfig)) return hudData;
+        const rawData = fs.readFileSync(hudConfig, "utf8");
+        try {
+            const data = JSON.parse(rawData);
+            return this.data.set(hud, data).get(hud);
+        } catch {
+            return undefined;
+        }
     }
 }
 
@@ -237,7 +254,7 @@ export default function (server: http.Server, app: express.Router) {
         socket.on('register', (name: string, isDev: boolean) => {
             if (!isDev) {
                 socket.join(name);
-                io.to(name).emit('hud_config', HUDState.get(name));
+                io.to(name).emit('hud_config', HUDState.get(name, true));
                 return;
             }
             runtimeConfig.devSocket = socket;
@@ -255,7 +272,7 @@ export default function (server: http.Server, app: express.Router) {
             io.to(data.hud).emit(`hud_action`, data.action);
         })
         socket.on('get_config', (hud: string) => {
-            socket.emit("hud_config", HUDState.get(hud));
+            socket.emit("hud_config", HUDState.get(hud, true));
         });
 
         socket.on("set_active_hlae", (hudUrl: string | null) => {
