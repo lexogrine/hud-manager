@@ -82,13 +82,14 @@ export default class Huds extends React.Component<IProps, IState> {
         let reader: any = new FileReader();
         reader.readAsDataURL(file);
         reader.onload = () => {
-            if(file.name.substr(-4) === '.rar'){
+            const name = file.name.substr(0, file.name.lastIndexOf('.')).replace(/\W/g, '');
+            if(file.name.substr(-4) === '.rar' || !name){
                 return;
             }
             //form[sectionName][name] = reader.result.replace(/^data:([a-z]+)\/([a-z0-9]+);base64,/, '');
             //this.setState({ form }, () => console.log(this.state.form))
             //console.log(reader.result)
-            api.huds.upload(reader.result);
+            api.huds.upload(reader.result, name);
         }
     }
     changeForm = (name: 'killfeed' | 'radar' | 'afx') => (e: any) => {
