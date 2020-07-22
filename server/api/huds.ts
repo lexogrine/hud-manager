@@ -179,11 +179,12 @@ export const renderAssets: express.RequestHandler = async (req, res, next) => {
     return express.static(path.join(app.getPath('home'), 'HUDs', req.params.dir))(req, res,next);
 }
 
-export const renderLegacy: express.RequestHandler = (req, res) => {
+export const renderLegacy: express.RequestHandler = async (req, res) => {
+    const cfg = await loadConfig();
     const dir = path.join(app.getPath('home'), 'HUDs', req.params.dir);
     return res.render(path.join(dir, 'template.pug'), {
         ip:'localhost',
-        port:1349,
+        port:cfg.port,
         avatars: false,
         hud: path.join('/legacy', req.params.dir, 'index.js'),
         css: path.join('/legacy', req.params.dir, 'style.css'),

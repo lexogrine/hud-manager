@@ -266,17 +266,25 @@ exports.renderAssets = function (req, res, next) { return __awaiter(void 0, void
         }
     });
 }); };
-exports.renderLegacy = function (req, res) {
-    var dir = path.join(electron_1.app.getPath('home'), 'HUDs', req.params.dir);
-    return res.render(path.join(dir, 'template.pug'), {
-        ip: 'localhost',
-        port: 1349,
-        avatars: false,
-        hud: path.join('/legacy', req.params.dir, 'index.js'),
-        css: path.join('/legacy', req.params.dir, 'style.css'),
-        delay: 0
+exports.renderLegacy = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var cfg, dir;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, config_1.loadConfig()];
+            case 1:
+                cfg = _a.sent();
+                dir = path.join(electron_1.app.getPath('home'), 'HUDs', req.params.dir);
+                return [2 /*return*/, res.render(path.join(dir, 'template.pug'), {
+                        ip: 'localhost',
+                        port: cfg.port,
+                        avatars: false,
+                        hud: path.join('/legacy', req.params.dir, 'index.js'),
+                        css: path.join('/legacy', req.params.dir, 'style.css'),
+                        delay: 0
+                    })];
+        }
     });
-};
+}); };
 exports.legacyJS = function (req, res) {
     var dir = path.join(electron_1.app.getPath('home'), 'HUDs', req.params.hudName, 'index.js');
     if (!fs.existsSync(dir)) {
