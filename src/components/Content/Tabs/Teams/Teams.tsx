@@ -152,7 +152,7 @@ export default class Teams extends React.Component<{ cxt: IContextData }, { opti
                     <Row>
                         <Col md="12">
                             <FormGroup>
-                                <DragFileInput image onChange={this.fileHandler} id="team_logo" label="UPLOAD LOGO" imgSrc={this.state.form.logo} />
+                                <DragFileInput image onChange={this.fileHandler} id="team_logo" label="UPLOAD LOGO" imgSrc={this.state.form.logo ? `data:image/jpeg;base64,${this.state.form.logo}` : undefined} />
                                 <FormText color="muted">
                                     Logo to be used for the team, if possible in the given HUD
                             </FormText>

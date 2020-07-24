@@ -6,6 +6,8 @@ import * as I from './../../../../api/interfaces';
 import { IContextData } from './../../../../components/Context';
 import DragFileInput from './../../../DragFileInput';
 
+const hashCode = (s: string) => s.split('').reduce((a, b) => { a = ((a << 5) - a) + b.charCodeAt(0); return a & a }, 0).toString();
+const hash = () => hashCode(String((new Date()).getTime()));
 
 export default class Players extends React.Component<{ cxt: IContextData, data: any }, { options: any[], value: string, form: I.Player, forceLoad: boolean }> {
     emptyPlayer: I.Player;
@@ -132,12 +134,21 @@ export default class Players extends React.Component<{ cxt: IContextData, data: 
     }
 
     render() {
+        const { form } = this.state;
+        let avatar = '';
+        if(form.avatar){
+            if(form.avatar.includes('api/players/avatar')){
+                avatar = `${form.avatar}?hash=${hash()}`;
+            } else {
+                avatar =  `data:image/jpeg;base64,${form.avatar}`;
+            }
+        }
         return (
             <Form>
                 <div className="tab-title-container">Players</div>
                 <div className="tab-content-container">
                     <FormGroup>
-                        <Input type="select" name="players" id="players" onChange={this.setPlayer} value={this.state.form._id}>
+                        <Input type="select" name="players" id="players" onChange={this.setPlayer} value={form._id}>
                             <option value={"empty"}>New player</option>
                             {this.props.cxt.players.map(player => <option key={player._id} value={player._id}>{player.firstName} {player.username} {player.lastName}</option>)}
                         </Input>
@@ -145,17 +156,17 @@ export default class Players extends React.Component<{ cxt: IContextData, data: 
                     <Row>
                         <Col md="4">
                             <FormGroup>
-                                <Input type="text" name="firstName" id="first_name" onChange={this.changeHandler} value={this.state.form.firstName} placeholder="First Name"/>
+                                <Input type="text" name="firstName" id="first_name" onChange={this.changeHandler} value={form.firstName} placeholder="First Name"/>
                             </FormGroup>
                         </Col>
                         <Col md="4">
                             <FormGroup>
-                                <Input type="text" name="username" id="nick" onChange={this.changeHandler} value={this.state.form.username} placeholder="Nickname"/>
+                                <Input type="text" name="username" id="nick" onChange={this.changeHandler} value={form.username} placeholder="Nickname"/>
                             </FormGroup>
                         </Col>
                         <Col md="4">
                             <FormGroup>
-                                <Input type="text" name="lastName" id="last_name" onChange={this.changeHandler} value={this.state.form.lastName} placeholder="Last Name"/>
+                                <Input type="text" name="lastName" id="last_name" onChange={this.changeHandler} value={form.lastName} placeholder="Last Name"/>
                             </FormGroup>
                         </Col>
                     </Row>
@@ -172,7 +183,7 @@ export default class Players extends React.Component<{ cxt: IContextData, data: 
                                     <option value=''>None</option>
                                     {this.state.options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
                                 </CustomInput>*/}
-                                <Input type="select" id="country" name="country" value={this.state.form.country} onChange={this.changeHandler}>
+                                <Input type="select" id="country" name="country" value={form.country} onChange={this.changeHandler}>
                                     <option value=''>Country</option>
                                     {this.state.options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
                                 </Input>
@@ -180,7 +191,7 @@ export default class Players extends React.Component<{ cxt: IContextData, data: 
                         </Col>
                         <Col md="6">
                             <FormGroup>
-                                <Input id="steamid" type="text" name="steamid" value={this.state.form.steamid} onChange={this.changeHandler} placeholder="SteamID64" />
+                                <Input id="steamid" type="text" name="steamid" value={form.steamid} onChange={this.changeHandler} placeholder="SteamID64" />
                             </FormGroup>
                         </Col>
                     </Row>
@@ -188,7 +199,7 @@ export default class Players extends React.Component<{ cxt: IContextData, data: 
 
                         <Col md="12">
                             <FormGroup>
-                                <DragFileInput image onChange={this.fileHandler} id="avatar" label="UPLOAD PROFILE PICTURE" imgSrc={this.state.form.avatar}/>
+                                <DragFileInput image onChange={this.fileHandler} id="avatar" label="UPLOAD PROFILE PICTURE" imgSrc={avatar}/>
                                 <FormText color="muted">
                                     Avatar to be used for player images instead of the default from Steam
                                 </FormText>
