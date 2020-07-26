@@ -39,7 +39,8 @@ export const getPlayersList = (query: any) => new Promise<Player[]>((res, rej) =
 
 export const getPlayers: express.RequestHandler = async (req, res) => {
     const players = await getPlayersList({});
-    return res.json(players);
+    const config = await loadConfig();
+    return res.json(players.map(player => ({ ...player, avatar: player.avatar && player.avatar.length ? `http://${ip.address()}:${config.port}/api/players/avatar/${player._id}` : null })));
 }
 export const getPlayer: express.RequestHandler = async (req, res) => {
     if(!req.params.id){
