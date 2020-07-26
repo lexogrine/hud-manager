@@ -31,7 +31,7 @@ const remove = (pathToRemove: string) => {
 export const listHUDs = async () => {
     const dir = path.join(app.getPath('home'), 'HUDs');
     const filtered = fs.readdirSync(dir, { withFileTypes: true })
-        .filter(dirent => dirent.isDirectory()).filter(dirent =>  /^[0-9a-zA-Z-]+$/g.test(dirent.name));
+        .filter(dirent => dirent.isDirectory()).filter(dirent =>  /^[0-9a-zA-Z-_]+$/g.test(dirent.name));
 
     const huds = (await Promise.all(filtered.map(async dirent => await getHUDData(dirent.name)))).filter(hud => hud !== null);
     if(HUDState.devHUD){
@@ -240,8 +240,8 @@ export const closeHUD: express.RequestHandler = (req, res) => {
 }
 
 export const uploadHUD: express.RequestHandler = async (req, res) => {
-    if(!req.body.hud) return res.sendStatus(422);
-    const response = await loadHUD(req.body.hud);
+    if(!req.body.hud || !req.body.name) return res.sendStatus(422);
+    const response = await loadHUD(req.body.hud, req.body.name);
     if(response){
         const notification = new Notification({
             title: "HUD Upload",
@@ -268,33 +268,43 @@ export const deleteHUD = (io: socketio.Server): express.RequestHandler => async 
     }
 }
 
-async function loadHUD(base64: string): Promise <I.HUD | null> {
+function removeArchives(){
+    const files = fs.readdirSync('./').filter(file => file.startsWith("hud_temp_") && file.endsWith(".zip"));
+    files.forEach(file => {
+        try {
+            if (fs.lstatSync(file).isDirectory()) { 
+                return;
+            }
+            if(fs.existsSync(file)) fs.unlinkSync(file);
+        } catch { }
+    });
+}
+
+async function loadHUD(base64: string, name: string): Promise <I.HUD | null> {
+    const getRandomString = () => (Math.random() * 1000 + 1).toString(36).replace(/[^a-z]+/g, '').substr(0, 15);
+    removeArchives();
     return new Promise((res, rej) => {
-        const tempBasePath = path.join(app.getPath('userData'), 'hud_temp');
+        let hudDirName = name.replace(/[^a-zA-Z0-9-_]/g, '');
+        let hudPath = path.join(app.getPath('home'), 'HUDs', hudDirName);
+        if(fs.existsSync(hudPath)){
+            hudDirName = `${hudDirName}-${getRandomString()}`;
+            hudPath = path.join(app.getPath('home'), 'HUDs', hudDirName);
+        }
         try {
             let fileString = base64.split(';base64,').pop();
-            fs.writeFileSync('hud_temp_archive.zip', fileString, {encoding: 'base64'});
-            if(fs.existsSync(tempBasePath)){
-                remove(tempBasePath);
-            }
-            fs.mkdirSync(tempBasePath);
-            const tempUnzipper: any = new DecompressZip('hud_temp_archive.zip');
+            const tempArchiveName = `./hud_temp_archive_${getRandomString()}.zip`;
+            fs.writeFileSync(tempArchiveName, fileString, {encoding: 'base64', mode: 777});
+
+            const tempUnzipper: any = new DecompressZip(tempArchiveName);
             tempUnzipper.on('extract', async () => {
-                if(fs.existsSync('hud_temp_archive.zip')){
-                    fs.unlinkSync('hud_temp_archive.zip');
-                }
-                if(fs.existsSync(path.join(tempBasePath, 'hud.json'))){
-                    const hudFile = fs.readFileSync(path.join(tempBasePath, 'hud.json'), {encoding:'utf8'});
+                if(fs.existsSync(path.join(hudPath, 'hud.json'))){
+                    const hudFile = fs.readFileSync(path.join(hudPath, 'hud.json'), {encoding:'utf8'});
                     const hud = JSON.parse(hudFile);
                     if(!hud.name){
                         throw new Error();
                     }
-                    let dir = path.join(app.getPath('home'), 'HUDs', hud.name.replace(/[^a-zA-Z0-9-_]/g, ''));
-                    if(fs.existsSync(dir)){
-                        dir += `-${(Math.random() * 1000 + 1).toString(36).replace(/[^a-z]+/g, '').substr(0, 15)}`;
-                    }
-                    fs.renameSync(tempBasePath, dir);
-                    const hudData = await getHUDData(path.basename(dir));
+                    const hudData = await getHUDData(path.basename(hudPath));
+                    removeArchives();
                     res(hudData);
 
                 } else {
@@ -302,20 +312,22 @@ async function loadHUD(base64: string): Promise <I.HUD | null> {
                 }
             });
             tempUnzipper.on('error', () => {
-                if(fs.existsSync(tempBasePath)){
-                    remove(tempBasePath);
+                if(fs.existsSync(hudPath)){
+                    remove(hudPath);
                 }
+                removeArchives();
                 res(null);
             })
             tempUnzipper.extract({
-                path: tempBasePath
+                path: hudPath
             });
             /**/
             
         } catch {
-            if(fs.existsSync(tempBasePath)){
-                remove(tempBasePath);
+            if(fs.existsSync(hudPath)){
+                remove(hudPath);
             }
+            removeArchives();
             res(null);
         }
     })

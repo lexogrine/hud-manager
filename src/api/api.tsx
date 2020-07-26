@@ -103,7 +103,7 @@ export default {
         start: async (hudDir: string) => await apiV2(`huds/${hudDir}/start`, 'POST'),
         close: async (hudDir: string) => await apiV2(`huds/${hudDir}/close`, 'POST'),
         openDirectory: async() => await apiV2(`huds`, 'POST'),
-        upload: async (hud: string) => await apiV2(`huds/add`, 'POST', { hud }),
+        upload: async (hud: string, name: string) => await apiV2(`huds/add`, 'POST', { hud, name }),
         delete: async (hudDir: string) => await apiV2(`huds?hudDir=${hudDir}`, "DELETE")
     },
     machine: {
