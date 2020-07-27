@@ -1,6 +1,8 @@
 import express from 'express';
 import db from './../../init/database';
 import { Team } from '../../types/interfaces';
+import { loadConfig } from './config';
+import ip from 'ip';
 
 const teams = db.teams;
 //const players = db.players;
@@ -27,7 +29,8 @@ export const getTeamsList = (query: any) => new Promise<Team[]>((res, rej) => {
 
 export const getTeams: express.RequestHandler = async (req, res) => {
     const teams = await getTeamsList({});
-    return res.json(teams);
+    const config = await loadConfig();
+    return res.json(teams.map(team => ({ ...team, logo: team.logo && team.logo.length ? `http://${ip.address()}:${config.port}/api/teams/logo/${team._id}` : null })));
 }
 
 export const getTeam: express.RequestHandler = async (req, res) => {

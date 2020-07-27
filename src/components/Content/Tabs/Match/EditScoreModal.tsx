@@ -23,7 +23,7 @@ class EditScoreModal extends React.Component<Props> {
                 <img src={WinnerCrown} />
             </div>
             <div className={`team-logo-container`} >
-                <img src={`data:image/jpeg;base64,${team.logo}`} alt="Team Logo"></img>
+                <img src={team.logo} alt="Team Logo"></img>
             </div>
             <div className="team-score-edit-container">
                 <div className="add">
