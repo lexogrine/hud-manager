@@ -192,3 +192,50 @@ exports.reverseSide = function (io) { return __awaiter(void 0, void 0, void 0, f
         }
     });
 }); };
+exports.updateRound = function (game) { return __awaiter(void 0, void 0, void 0, function () {
+    var round, roundData, _i, _a, player, matches, match, mapName, veto;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
+            case 0:
+                if (!game || !game.map || game.map.phase !== "live")
+                    return [2 /*return*/];
+                round = game.map.round;
+                if (game.round && game.round.phase !== "over") {
+                    round++;
+                }
+                roundData = {
+                    round: round,
+                    players: {}
+                };
+                for (_i = 0, _a = game.players; _i < _a.length; _i++) {
+                    player = _a[_i];
+                    roundData.players[player.steamid] = {
+                        kills: player.state.round_kills,
+                        killshs: player.state.round_killhs,
+                        damage: player.state.round_totaldmg
+                    };
+                }
+                return [4 /*yield*/, exports.getMatches()];
+            case 1:
+                matches = _b.sent();
+                match = matches.find(function (match) { return match.current; });
+                if (!match)
+                    return [2 /*return*/];
+                mapName = game.map.name.substring(game.map.name.lastIndexOf('/') + 1);
+                veto = match.vetos.find(function (veto) { return veto.mapName === mapName; });
+                if (!veto)
+                    return [2 /*return*/];
+                if (veto.rounds && veto.rounds[roundData.round - 1] && JSON.stringify(veto.rounds[roundData.round - 1]) === JSON.stringify(roundData))
+                    return [2 /*return*/];
+                match.vetos = match.vetos.map(function (veto) {
+                    if (veto.mapName !== mapName)
+                        return veto;
+                    if (!veto.rounds)
+                        veto.rounds = [];
+                    veto.rounds[roundData.round - 1] = roundData;
+                    return veto;
+                });
+                return [2 /*return*/, exports.updateMatch(matches)];
+        }
+    });
+}); };

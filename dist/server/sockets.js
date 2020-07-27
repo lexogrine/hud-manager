@@ -380,6 +380,7 @@ function default_1(server, app) {
     mirv(function (data) {
         io.emit("update_mirv", data);
     });
+    exports.GSI.on("data", match_1.updateRound);
     exports.GSI.on("roundEnd", function (score) { return __awaiter(_this, void 0, void 0, function () {
         var matches, match, vetos, mapName;
         return __generator(this, function (_a) {

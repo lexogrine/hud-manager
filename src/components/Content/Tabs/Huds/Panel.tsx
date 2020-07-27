@@ -3,7 +3,7 @@ import { IContextData } from './../../../../components/Context';
 import api from './../../../../api/api';
 import * as I from './../../../../api/interfaces';
 import { socket } from './../Live/Live';
-import { Row, Col, FormGroup, Input, Form, Button } from 'reactstrap';
+import { Row, Col, FormGroup, Input, Form, Button, Label } from 'reactstrap';
 import FileInput from './../../../DragFileInput';
 
 interface IProps {
@@ -20,10 +20,14 @@ export default class ActionPanel extends React.Component<IProps, IState> {
             form: {}
         }
     }
-    changeForm = (section: string, name: string) => (e: any) => {
+    changeForm = (section: string, name: string, isCheckbox = false) => (e: any) => {
         const { form } = this.state;
         if (!form[section]) form[section] = {};
         form[section][name] = e.target.value;
+        if(isCheckbox) {
+            form[section][name] = e.target.checked;
+            console.log(e.target.checked)
+        }
         this.setState({ form });
     }
     componentDidMount() {
@@ -90,21 +94,20 @@ export default class ActionPanel extends React.Component<IProps, IState> {
 
         return layout;
     }
-    getImageInputs = (panel: I.PanelTemplate) => {
-        return this.filterInputs(panel, "image");
-    }
-    getTeamSelect = (panel: I.PanelTemplate) => {
-        return this.filterInputs(panel, "team");
-    }
-    getMatchSelect = (panel: I.PanelTemplate) => {
-        return this.filterInputs(panel, "match");
-    }
-    getPlayerSelect = (panel: I.PanelTemplate) => {
-        return this.filterInputs(panel, "player");
-    }
-    getActions = (panel: I.PanelTemplate) => {
-        return this.filterInputs(panel, "action");
-    }
+    getImageInputs = (panel: I.PanelTemplate) => this.filterInputs(panel, "image");
+
+    getTeamSelect = (panel: I.PanelTemplate) => this.filterInputs(panel, "team");
+
+    getMatchSelect = (panel: I.PanelTemplate) => this.filterInputs(panel, "match");
+
+    getPlayerSelect = (panel: I.PanelTemplate) => this.filterInputs(panel, "player");
+
+    getActions = (panel: I.PanelTemplate) => this.filterInputs(panel, "action");
+
+    getSelects = (panel: I.PanelTemplate) => this.filterInputs(panel, "select");
+
+    getCheckboxes = (panel: I.PanelTemplate) => this.filterInputs(panel, "checkbox");
+
     render() {
         const { hud, cxt } = this.props;
         const { teams, matches, players } = cxt;
@@ -131,6 +134,7 @@ export default class ActionPanel extends React.Component<IProps, IState> {
                         {this.getTeamSelect(section).map(input => <Row key={input.name}>
                             <Col s={12}>
                                 <FormGroup>
+                                    <Label for={input.name.toLowerCase()}>{input.label}</Label>
                                     <Input
                                         type="select"
                                         id={input.name.toLowerCase()}
@@ -148,6 +152,7 @@ export default class ActionPanel extends React.Component<IProps, IState> {
                         {this.getPlayerSelect(section).map(input => <Row key={input.name}>
                             <Col s={12}>
                                 <FormGroup>
+                                    <Label for={input.name.toLowerCase()}>{input.label}</Label>
                                     <Input
                                         type="select"
                                         id={input.name.toLowerCase()}
@@ -165,6 +170,7 @@ export default class ActionPanel extends React.Component<IProps, IState> {
                         {this.getMatchSelect(section).map(input => <Row key={input.name}>
                             <Col s={12}>
                                 <FormGroup>
+                                    <Label for={input.name.toLowerCase()}>{input.label}</Label>
                                     <Input
                                         type="select"
                                         id={input.name.toLowerCase()}
@@ -181,7 +187,39 @@ export default class ActionPanel extends React.Component<IProps, IState> {
                             </Col>
                         </Row>
                         )}
-
+                        {this.getSelects(section).map(input => input.type === "select" ? <Row key={input.name}>
+                            <Col s={12}>
+                                <FormGroup>
+                                    <Label for={input.name.toLowerCase()}>{input.label}</Label>
+                                    <Input
+                                        type="select"
+                                        id={input.name.toLowerCase()}
+                                        name={input.name.toLowerCase()}
+                                        value={(form[section.name] && form[section.name][input.name]) || ''}
+                                        onChange={this.changeForm(section.name, input.name)}
+                                    >
+                                        <option value="">No value</option>
+                                        {input.values.map(value => <option value={value.name}>{value.label}</option>)}
+                                    </Input>
+                                </FormGroup>
+                            </Col>
+                        </Row> : null
+                        )}
+                        {this.getCheckboxes(section).map(input => input.type === "checkbox" ? <Row key={input.name}>
+                            <Col s={12}>
+                                <FormGroup check>
+                                    <Input
+                                        type="checkbox"
+                                        id={input.name.toLowerCase()}
+                                        name={input.name.toLowerCase()}
+                                        checked={Boolean(form[section.name] && form[section.name][input.name])}
+                                        onChange={this.changeForm(section.name, input.name, true)}
+                                    />
+                                    <Label for={input.name.toLowerCase()} check>{input.label}</Label>
+                                </FormGroup>
+                            </Col>
+                        </Row> : null
+                        )}
                         {this.getImageInputs(section).map(input => <Row>
                             <Col s={12}>
                                 <FileInput image

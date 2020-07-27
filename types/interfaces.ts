@@ -26,6 +26,7 @@ export interface Veto {
     score?: {
         [key: string]: number
     },
+    rounds?: RoundData[],
     reverseSide?:boolean,
     winner?: string,
     mapEnd: boolean
@@ -52,14 +53,16 @@ export interface Config {
     hlaePath: string,
     afxCEFHudInteropPath: string,
 }
-export type PanelInputType = 'text' | 'number' | 'team' | 'image' | 'match' | 'player';
+export type PanelInputType = 'text' | 'number' | 'team' | 'image' | 'match' | 'player' | 'select' | 'action' | 'checkbox';
 
-export type PanelInput = {
-    type: PanelInputType,
+export interface GeneralInput {
+    type: Exclude<PanelInputType, "select" | "action" | 'checkbox'>,
     name: string,
     label: string,
-} | {
-    type: 'action'
+}
+
+export interface SelectActionInput {
+    type: "select" | "action",
     name: string,
     label: string,
     values: {
@@ -67,6 +70,15 @@ export type PanelInput = {
         name: string
     }[]
 }
+
+export interface CheckboxInput {
+    type: "checkbox",
+    name: string,
+    label: string
+}
+
+export type PanelInput = GeneralInput | SelectActionInput | CheckboxInput;
+
 export type KeyBind = {
     bind:string,
     action: string
@@ -76,6 +88,19 @@ export type PanelTemplate = {
     label: string,
     name: string,
     inputs: PanelInput[]
+}
+
+export interface RoundData {
+    round: number,
+    players: {
+        [steamid: string]: PlayerRoundData
+    }
+}
+
+export interface PlayerRoundData {
+    kills: number,
+    killshs: number,
+    damage: number,
 }
 
 export interface HUD {
