@@ -99,12 +99,15 @@ export default class ActionPanel extends React.Component<IProps, IState> {
     getMatchSelect = (panel: I.PanelTemplate) => {
         return this.filterInputs(panel, "match");
     }
+    getPlayerSelect = (panel: I.PanelTemplate) => {
+        return this.filterInputs(panel, "player");
+    }
     getActions = (panel: I.PanelTemplate) => {
         return this.filterInputs(panel, "action");
     }
     render() {
         const { hud, cxt } = this.props;
-        const { teams, matches } = cxt;
+        const { teams, matches, players } = cxt;
         if (!hud.panel) return '';
         const { form } = this.state;
         return (
@@ -137,6 +140,23 @@ export default class ActionPanel extends React.Component<IProps, IState> {
                                     >
                                         <option value="">No team</option>
                                         {teams.map(team => <option value={team._id}>{team.name}</option>)}
+                                    </Input>
+                                </FormGroup>
+                            </Col>
+                        </Row>
+                        )}
+                        {this.getPlayerSelect(section).map(input => <Row key={input.name}>
+                            <Col s={12}>
+                                <FormGroup>
+                                    <Input
+                                        type="select"
+                                        id={input.name.toLowerCase()}
+                                        name={input.name.toLowerCase()}
+                                        value={(form[section.name] && form[section.name][input.name]) || ''}
+                                        onChange={this.changeForm(section.name, input.name)}
+                                    >
+                                        <option value="">No player</option>
+                                        {players.map(player => <option value={player._id}>{player.username}</option>)}
                                     </Input>
                                 </FormGroup>
                             </Col>

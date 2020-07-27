@@ -52,7 +52,7 @@ export interface Config {
     hlaePath: string,
     afxCEFHudInteropPath: string,
 }
-export type PanelInputType = 'text' | 'number' | 'team' | 'image' | 'match';
+export type PanelInputType = 'text' | 'number' | 'team' | 'image' | 'match' | 'player';
 
 export type PanelInput = {
     type: PanelInputType,
