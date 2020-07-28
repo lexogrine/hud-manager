@@ -94,7 +94,9 @@ export interface RoundData {
     round: number,
     players: {
         [steamid: string]: PlayerRoundData
-    }
+    },
+    winner: 'CT' | 'T' | null,
+    win_type: 'bomb' | 'elimination' | 'defuse' | 'time',
 }
 
 export interface PlayerRoundData {
