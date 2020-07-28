@@ -32,12 +32,13 @@ export default class Layout extends React.Component<IProps, IState> {
                 teams: [],
                 players: [],
                 matches: [],
-                reload: async () => new Promise(async (res, rej) => {
-                     await this.loadPlayers();
-                     await this.loadTeams();
-                     await this.loadMatch();
-                     res();
-                })
+                reload: () => {
+                    return Promise.all([
+                        this.loadPlayers(),
+                        this.loadTeams(),
+                        this.loadMatch(),
+                    ])
+                }
             },
             loginError: '',
             loadingLogin: false,
@@ -94,11 +95,11 @@ export default class Layout extends React.Component<IProps, IState> {
     }
     loadPlayers = async () => {
         const players = await api.players.get();
+        if(!players) return;
         const { data } = this.state;
         data.players = players;
-        if(players){
-            this.setState({data});
-        }
+        this.setState({data});
+        
     }
     loadMatch = async () => {
         const matches = await api.match.get();

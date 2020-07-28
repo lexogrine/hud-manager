@@ -5,7 +5,7 @@ import * as Tabs from './TabIcons';
 interface IProps {
     activeTab: string,
     toggle: Function,
-    gsi: boolean,
+    files: boolean,
 }
 export default class Navbar extends React.Component<IProps> {
     render() {
@@ -60,7 +60,7 @@ export default class Navbar extends React.Component<IProps> {
                     <NavLink
                         active={ this.props.activeTab === 'config' }
                         onClick={() => { this.props.toggle('config'); }}
-                    >Settings {!this.props.gsi ? <i className='material-icons'>warning</i> : null}
+                    >Settings {!this.props.files ? <i className='material-icons'>warning</i> : null}
                     </NavLink>
                 </NavItem>
                 {/*<NavItem className="hover-pointer">
