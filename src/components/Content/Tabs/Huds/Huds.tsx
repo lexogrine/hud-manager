@@ -39,10 +39,10 @@ function createCFG(customRadar: boolean, customKillfeed: boolean, afx: boolean, 
         cfg += `exec ${createCFG(customRadar, customKillfeed, false)}`;
         
     }
+    file += '.cfg';
     if(!autoexec){
         file = '';
     }
-    file += '.cfg';
     return { cfg, file };
 }
 
@@ -89,7 +89,7 @@ export default class Huds extends React.Component<IProps, IState> {
     }
 
     runGame = (afx: boolean) => () => {
-        const config = createCFG(this.state.form.radar, this.state.form.killfeed, this.state.form.afx).file;
+        const config = createCFG(this.state.form.radar, this.state.form.killfeed, this.state.form.afx, this.state.form.autoexec).file;
         if(afx){
             return api.game.runExperimental(config);
         }

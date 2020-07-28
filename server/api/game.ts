@@ -192,7 +192,10 @@ export const run: express.RequestHandler = async (req, res) => {
     const args = [];
 
     if(!isHLAE){
-        args.push('-applaunch 730', `+exec ${req.query.config}`);
+        args.push('-applaunch 730');
+        if(exec) {
+            args.push(exec);
+        }
     } else {
         args.push('-csgoLauncher','-noGui', '-autoStart', `-csgoExe "${GameExePath}"`);
         if(exec) {

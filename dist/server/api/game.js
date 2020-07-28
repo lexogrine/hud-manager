@@ -232,7 +232,10 @@ exports.run = function (req, res) { return __awaiter(void 0, void 0, void 0, fun
                 }
                 args = [];
                 if (!isHLAE) {
-                    args.push('-applaunch 730', "+exec " + req.query.config);
+                    args.push('-applaunch 730');
+                    if (exec) {
+                        args.push(exec);
+                    }
                 }
                 else {
                     args.push('-csgoLauncher', '-noGui', '-autoStart', "-csgoExe \"" + GameExePath + "\"");
