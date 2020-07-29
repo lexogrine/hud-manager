@@ -6,6 +6,7 @@ import { Row, Col, Button } from 'reactstrap';
 import Panel from './Panel';
 import { socket } from '../Live/Live';
 import Switch from './../../../../components/Switch/Switch';
+import ElectronOnly from './../../../../components/ElectronOnly';
 import DragInput from './../../../DragFileInput';
 import HudEntry from './HudEntry';
 import goBack from "./../../../../styles/goBack.png";
@@ -16,18 +17,31 @@ interface CFG {
     cfg: string,
     file: string
 }
-function createCFG(customRadar: boolean, customKillfeed: boolean): CFG {
+function createCFG(customRadar: boolean, customKillfeed: boolean, afx: boolean, autoexec = true): CFG {
     let cfg = `cl_draw_only_deathnotices 1`;
     let file = 'hud';
 
     if (!customRadar) {
         cfg += `\ncl_drawhud_force_radar 1`;
     } else {
+        cfg += `\ncl_drawhud_force_radar 0`;
         file += '_radar';
     }
     if (customKillfeed) {
         file += '_killfeed';
         cfg += `\ncl_drawhud_force_deathnotices -1`;
+        cfg += `\nmirv_pgl url "ws://localhost:31337/mirv"`;
+        cfg += `\nmirv_pgl start`;
+    }
+    if(afx){
+        file += '_interop';
+        cfg = 'afx_interop connect 1';
+        cfg += `exec ${createCFG(customRadar, customKillfeed, false)}`;
+        
+    }
+    file += '.cfg';
+    if(!autoexec){
+        file = '';
     }
     return { cfg, file };
 }
@@ -35,14 +49,18 @@ function createCFG(customRadar: boolean, customKillfeed: boolean): CFG {
 interface IProps {
     cxt: IContextData
 }
+
+interface IForm {
+    killfeed: boolean,
+    radar: boolean,
+    afx: boolean,
+    autoexec: boolean,
+}
+
 interface IState {
     config: I.Config,
     huds: I.HUD[],
-    form: {
-        killfeed: boolean,
-        radar: boolean,
-        afx: boolean
-    },
+    form: IForm,
     active: I.HUD | null,
     currentHUD: string | null
 }
@@ -57,24 +75,25 @@ export default class Huds extends React.Component<IProps, IState> {
                 hlaePath: '',
                 port: 1349,
                 token: '',
-                afxCEFHudInteropPath:''
+                afxCEFHudInteropPath: ''
             },
             form: {
                 killfeed: false,
                 radar: false,
-                afx: false
+                afx: false,
+                autoexec: true
             },
             active: null,
             currentHUD: null
         }
     }
 
-    runGame = () => {
-        const config = createCFG(this.state.form.radar, this.state.form.killfeed).file;
-        api.game.run(config);
-    }
-    runGameExperimental = () => {
-        api.game.runExperimental();
+    runGame = (afx: boolean) => () => {
+        const config = createCFG(this.state.form.radar, this.state.form.killfeed, this.state.form.afx, this.state.form.autoexec).file;
+        if(afx){
+            return api.game.runExperimental(config);
+        }
+        return api.game.run(config);
     }
 
     handleZIPs = (files: FileList) => {
@@ -83,7 +102,7 @@ export default class Huds extends React.Component<IProps, IState> {
         reader.readAsDataURL(file);
         reader.onload = () => {
             const name = file.name.substr(0, file.name.lastIndexOf('.')).replace(/\W/g, '');
-            if(file.name.substr(-4) === '.rar' || !name){
+            if (file.name.substr(-4) === '.rar' || !name) {
                 return;
             }
             //form[sectionName][name] = reader.result.replace(/^data:([a-z]+)\/([a-z0-9]+);base64,/, '');
@@ -92,7 +111,7 @@ export default class Huds extends React.Component<IProps, IState> {
             api.huds.upload(reader.result, name);
         }
     }
-    changeForm = (name: 'killfeed' | 'radar' | 'afx') => (e: any) => {
+    changeForm = (name: keyof IForm) => (e: any) => {
         const { form } = this.state;
         form[name] = !form[name];
         this.setState({ form });
@@ -108,7 +127,7 @@ export default class Huds extends React.Component<IProps, IState> {
     async componentDidMount() {
         socket.on('reloadHUDs', this.loadHUDs);
         socket.on('active_hlae', (hud: string | null) => {
-            this.setState({currentHUD: hud});
+            this.setState({ currentHUD: hud });
         });
         socket.emit("get_active_hlae");
         this.loadHUDs();
@@ -126,7 +145,7 @@ export default class Huds extends React.Component<IProps, IState> {
         if (active) {
             return <React.Fragment>
                 <div className="tab-title-container">
-                    <img src={goBack} onClick={this.toggleConfig()} className="go-back-button" alt="Go back"/>
+                    <img src={goBack} onClick={this.toggleConfig()} className="go-back-button" alt="Go back" />
                     HUD Settings
                 </div>
                 <div className="tab-content-container full-scroll">
@@ -137,11 +156,11 @@ export default class Huds extends React.Component<IProps, IState> {
         return (
             <React.Fragment>
                 <div className="tab-title-container">HUDs</div>
-                <div className={`tab-content-container no-padding ${!isElectron ? 'full-scroll':''}`}>
+                <div className={`tab-content-container no-padding ${!isElectron ? 'full-scroll' : ''}`}>
                     <Row className="config-container">
                         <Col md="12" className="config-entry">
                             <div className="config-description">
-                                Use Boltgolt's radar
+                                Use custom radar
                             </div>
                             <Switch isOn={this.state.form.radar} id="radar-toggle" handleToggle={this.changeForm('radar')} />
                         </Col>
@@ -151,33 +170,38 @@ export default class Huds extends React.Component<IProps, IState> {
                             </div>
                             <Switch isOn={this.state.form.killfeed} id="killfeed-toggle" handleToggle={this.changeForm('killfeed')} />
                         </Col>
-                        {<Col md="12" className="config-entry">
+                        <Col md="12" className="config-entry">
                             <div className="config-description">
                                 Use built-in HUD (Experimental mode, uses AFX Interop)
                             </div>
                             <Switch isOn={this.state.form.afx} id="afx-toggle" handleToggle={this.changeForm('afx')} />
-                        </Col>}
+                        </Col>
+                        <Col md="12" className="config-entry">
+                            <div className="config-description">
+                                Auto-execute
+                            </div>
+                            <Switch isOn={this.state.form.autoexec} id="autoexec-toggle" handleToggle={this.changeForm('autoexec')} />
+                        </Col>
                         <Col md="12" className="config-entry">
                             <div className="running-game-container">
                                 <div>
                                     <div className="config-description">
-                                        Type in the console:
+                                        Console:
                                     </div>
-                                    <code className="exec-code">exec {createCFG(radar, killfeed).file}</code>
-                                    {isElectron ? <React.Fragment>
+                                    <code className="exec-code">exec {createCFG(radar, killfeed, afx).file}</code>
+                                    <ElectronOnly>
                                         <div className="config-description">
                                             OR
                                          </div>
-                                         <Button className="round-btn run-game" disabled={(killfeed && !config.hlaePath) || (afx && (!config.hlaePath || !config.afxCEFHudInteropPath))} onClick={!afx ? this.runGame : this.runGameExperimental}>RUN GAME</Button>
-                                    </React.Fragment> : ''}
+                                        <Button className="round-btn run-game" disabled={(killfeed && !config.hlaePath) || (afx && (!config.hlaePath || !config.afxCEFHudInteropPath))} onClick={this.runGame(afx)}>RUN GAME</Button>
+                                    </ElectronOnly>
                                 </div>
                                 <div className="warning">
-                                        {(killfeed || afx) && !config.hlaePath && isElectron ? <div>Specify HLAE path in Settings in order to use custom killfeeds</div> : null}
-                                        { afx && !config.afxCEFHudInteropPath && isElectron ? <div>Specify AFX Interop path in Settings in order to use AFX mode</div> :null }
-                                        { afx && config.afxCEFHudInteropPath && config.hlaePath && isElectron ? <>
-                                            <div>When using AFX mode, after joining the match click on the SET button - no need to start the overlay.</div>
-                                            <div>Note: You need to execute the commands above manually in this mode</div>
-                                        </> :null }
+                                    <ElectronOnly>
+                                        {(killfeed || afx) && !config.hlaePath ? <div>Specify HLAE path in Settings in order to use custom killfeeds</div> : null}
+                                        {afx && !config.afxCEFHudInteropPath ? <div>Specify AFX Interop path in Settings in order to use AFX mode</div> : null}
+                                        {afx && config.afxCEFHudInteropPath && config.hlaePath ? <div>When using AFX mode, after joining the match click on the SET button - no need to start the overlay.</div>: null}
+                                    </ElectronOnly>
                                 </div>
                             </div>
 
@@ -189,7 +213,7 @@ export default class Huds extends React.Component<IProps, IState> {
                             <Col s={12}>
                                 <DragInput id={`hud_zip`} onChange={this.handleZIPs} label="ADD HUD" accept=".zip" />
                             </Col>
-                            {this.state.huds.map(hud => <HudEntry key={hud.dir} hud={hud} toggleConfig={this.toggleConfig} isActive={hud.url === this.state.currentHUD}/>)}
+                            {this.state.huds.map(hud => <HudEntry key={hud.dir} hud={hud} toggleConfig={this.toggleConfig} isActive={hud.url === this.state.currentHUD} />)}
                         </Col>
                     </Row>
 

@@ -57,7 +57,8 @@ exports.AFXInterop = {
     process: null
 };
 exports.isDev = process.env.DEV === "true";
-function createMainWindow(server) {
+function createMainWindow(server, forceDev) {
+    if (forceDev === void 0) { forceDev = false; }
     return __awaiter(this, void 0, void 0, function () {
         var win, cookieFile, cookie, cookies, _i, cookies_1, cookie_1, e_1, config, startUrl;
         var _this = this;
@@ -119,7 +120,7 @@ function createMainWindow(server) {
                         webPreferences: {
                             nodeIntegration: true,
                             backgroundThrottling: false,
-                            devTools: exports.isDev
+                            devTools: exports.isDev || forceDev
                         },
                         minWidth: 775,
                         minHeight: 700,
@@ -166,7 +167,7 @@ function startManager() {
                     server = _a.sent();
                     argv = args_1["default"](process.argv);
                     if (!argv.noGui) {
-                        createMainWindow(server);
+                        createMainWindow(server, argv.dev);
                     }
                     return [2 /*return*/];
             }

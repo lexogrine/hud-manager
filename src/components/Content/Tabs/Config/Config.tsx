@@ -144,6 +144,7 @@ export default class Config extends React.Component<IProps, IState> {
     this.setState({ cfg });
     await api.cfgs.create();
     this.checkCFG();
+    this.props.gsiCheck();
   };
   checkGSI = async () => {
     const { gsi } = this.state;

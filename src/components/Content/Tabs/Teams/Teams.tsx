@@ -34,7 +34,7 @@ export default class Teams extends React.Component<{ cxt: IContextData }, { opti
     }
 
     componentDidMount = async () => {
-        this.loadTeams();
+        //this.loadTeams();
     }
 
     loadTeams = async (id?: string) => {

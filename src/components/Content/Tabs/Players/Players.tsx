@@ -38,7 +38,7 @@ export default class Players extends React.Component<{ cxt: IContextData, data: 
     }
 
     componentDidMount() {
-        this.loadPlayers();
+        //this.loadPlayers();
     }
 
 

@@ -46,7 +46,7 @@ var config_1 = require("./config");
 var sockets_1 = require("../sockets");
 var child_process_1 = require("child_process");
 var electron_1 = require("../../electron");
-function createCFG(customRadar, customKillfeed) {
+function createCFG(customRadar, customKillfeed, afx) {
     var cfg = "cl_draw_only_deathnotices 1";
     var file = 'hud';
     if (!customRadar) {
@@ -62,17 +62,17 @@ function createCFG(customRadar, customKillfeed) {
         cfg += "\nmirv_pgl url \"ws://localhost:31337/mirv\"";
         cfg += "\nmirv_pgl start";
     }
+    if (afx) {
+        file += '_interop';
+        cfg = 'afx_interop connect 1';
+        cfg += "\nexec " + createCFG(customRadar, customKillfeed, false).file;
+    }
     file += '.cfg';
     return { cfg: cfg, file: file };
 }
 function exists(file) {
     try {
-        var GamePath = steam_game_path_1.getGamePath(730);
-        if (!GamePath || !GamePath.game || !GamePath.game.path) {
-            return false;
-        }
-        var cfgDir = path_1["default"].join(GamePath.game.path, 'csgo', 'cfg');
-        return fs_1["default"].existsSync(path_1["default"].join(cfgDir, file));
+        return fs_1["default"].existsSync(file);
     }
     catch (_a) {
         return false;
@@ -93,7 +93,7 @@ function isCorrect(cfg) {
     }
 }
 exports.checkCFGs = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var config, GamePath, _a, switcher, cfgs, afx_interop_cfg, files;
+    var config, GamePath, _a, switcher, cfgs, files;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
@@ -112,18 +112,20 @@ exports.checkCFGs = function (req, res) { return __awaiter(void 0, void 0, void 
                 }
                 switcher = [true, false];
                 cfgs = [];
-                afx_interop_cfg = {
+                /*const afx_interop_cfg: CFG = {
                     cfg: 'afx_interop connect 1',
                     file: 'hud_interop.cfg'
-                };
-                cfgs.push(afx_interop_cfg);
-                switcher.forEach(function (radar) {
-                    switcher.forEach(function (killfeed) {
-                        cfgs.push(createCFG(radar, killfeed));
+                }
+                cfgs.push(afx_interop_cfg);*/
+                switcher.forEach(function (interop) {
+                    switcher.forEach(function (radar) {
+                        switcher.forEach(function (killfeed) {
+                            cfgs.push(createCFG(radar, killfeed, interop));
+                        });
                     });
                 });
                 files = cfgs.map(function (cfg) { return cfg.file; });
-                if (!files.every(exists)) {
+                if (!files.map(function (file) { return path_1["default"].join(GamePath.game.path, 'csgo', 'cfg', file); }).every(exists)) {
                     return [2 /*return*/, res.json({ success: false, message: 'Files are missing', accessible: true })];
                 }
                 if (!cfgs.every(isCorrect)) {
@@ -134,7 +136,7 @@ exports.checkCFGs = function (req, res) { return __awaiter(void 0, void 0, void 
     });
 }); };
 exports.createCFGs = function (_req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var GamePath, cfgDir, switcher_1, cfgs_2, afx_interop_cfg, _i, cfgs_1, cfg, cfgPath;
+    var GamePath, cfgDir, switcher_1, cfgs_2, _i, cfgs_1, cfg, cfgPath;
     return __generator(this, function (_a) {
         try {
             GamePath = steam_game_path_1.getGamePath(730);
@@ -149,15 +151,16 @@ exports.createCFGs = function (_req, res) { return __awaiter(void 0, void 0, voi
         try {
             switcher_1 = [true, false];
             cfgs_2 = [];
-            afx_interop_cfg = {
+            /*const afx_interop_cfg: CFG = {
                 cfg: 'afx_interop connect 1',
                 file: 'hud_interop.cfg'
-            };
-            cfgs_2.push(afx_interop_cfg);
-            switcher_1.forEach(function (radar) {
-                switcher_1.forEach(function (killfeed) {
-                    var cfg = createCFG(radar, killfeed);
-                    cfgs_2.push(cfg);
+            }
+            cfgs.push(afx_interop_cfg);*/
+            switcher_1.forEach(function (interop) {
+                switcher_1.forEach(function (radar) {
+                    switcher_1.forEach(function (killfeed) {
+                        cfgs_2.push(createCFG(radar, killfeed, interop));
+                    });
                 });
             });
             for (_i = 0, cfgs_1 = cfgs_2; _i < cfgs_1.length; _i++) {
@@ -198,14 +201,18 @@ exports.getSteamPath = function (_req, res) { return __awaiter(void 0, void 0, v
     });
 }); };
 exports.run = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var config, GamePath, HLAEPath, GameExePath, isHLAE, exePath, args, steam;
+    var config, exec, GamePath, HLAEPath, GameExePath, isHLAE, exePath, args, steam;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0: return [4 /*yield*/, config_1.loadConfig()];
             case 1:
                 config = _a.sent();
-                if (!config || !req.query.config || typeof req.query.config !== "string") {
+                if (!config) {
                     return [2 /*return*/, res.sendStatus(422)];
+                }
+                exec = '';
+                if (req.query.config && typeof req.query.config === "string") {
+                    exec = "+exec " + req.query.config;
                 }
                 try {
                     GamePath = steam_game_path_1.getGamePath(730);
@@ -218,17 +225,23 @@ exports.run = function (req, res) { return __awaiter(void 0, void 0, void 0, fun
                 }
                 HLAEPath = config.hlaePath;
                 GameExePath = path_1["default"].join(GamePath.game.path, 'csgo.exe');
-                isHLAE = req.query.config.includes("killfeed");
+                isHLAE = exec.includes("killfeed");
                 exePath = isHLAE ? HLAEPath : path_1["default"].join(GamePath.steam.path, "Steam.exe");
                 if (isHLAE && (!HLAEPath || !fs_1["default"].existsSync(HLAEPath))) {
                     return [2 /*return*/, res.sendStatus(404)];
                 }
                 args = [];
                 if (!isHLAE) {
-                    args.push('-applaunch 730', "+exec " + req.query.config);
+                    args.push('-applaunch 730');
+                    if (exec) {
+                        args.push(exec);
+                    }
                 }
                 else {
-                    args.push('-csgoLauncher', '-noGui', '-autoStart', "-csgoExe \"" + GameExePath + "\"", "-customLaunchOptions \"+exec " + req.query.config + "\"");
+                    args.push('-csgoLauncher', '-noGui', '-autoStart', "-csgoExe \"" + GameExePath + "\"");
+                    if (exec) {
+                        args.push("-customLaunchOptions \"" + exec + "\"");
+                    }
                 }
                 try {
                     steam = child_process_1.spawn("\"" + exePath + "\"", args, { detached: true, shell: true, stdio: 'ignore' });
@@ -242,7 +255,7 @@ exports.run = function (req, res) { return __awaiter(void 0, void 0, void 0, fun
     });
 }); };
 exports.runExperimental = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var config, GamePath, HLAEPath, GameExePath, exePath, args, url, steam, process_1;
+    var config, GamePath, HLAEPath, GameExePath, exePath, args, url, exec, steam, process_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0: return [4 /*yield*/, config_1.loadConfig()];
@@ -268,7 +281,17 @@ exports.runExperimental = function (req, res) { return __awaiter(void 0, void 0,
                 }
                 args = [];
                 url = "http://localhost:" + config.port + "/hlae.html";
-                args.push('-csgoLauncher', '-noGui', '-autoStart', "-csgoExe \"" + GameExePath + "\"", '-gfxFull false', "-customLaunchOptions \"-afxInteropLight +exec hud_interop\"");
+                exec = '';
+                if (req.query.config && typeof req.query.config === "string") {
+                    exec = "+exec " + req.query.config;
+                }
+                args.push('-csgoLauncher', '-noGui', '-autoStart', "-csgoExe \"" + GameExePath + "\"", '-gfxFull false');
+                if (exec) {
+                    args.push("-customLaunchOptions \"-afxInteropLight " + exec + "\"");
+                }
+                else {
+                    args.push("-customLaunchOptions \"-afxInteropLight\"");
+                }
                 try {
                     steam = child_process_1.spawn("\"" + exePath + "\"", args, { detached: true, shell: true, stdio: 'ignore' });
                     steam.unref();
