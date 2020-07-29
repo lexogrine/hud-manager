@@ -1,5 +1,5 @@
 import express from 'express';
-import { Match } from '../../types/interfaces';
+import { Match, RoundData } from '../../types/interfaces';
 import { GSI } from './../sockets';
 import db from "./../../init/database";
 import socketio from 'socket.io';
@@ -8,6 +8,7 @@ import { app } from 'electron';
 import uuidv4 from 'uuid/v4';
 import path from 'path';
 import fs from 'fs';
+import { CSGO, RoundOutcome } from 'csgogsi';
 
 const matchesDb = db.matches;
 
@@ -64,7 +65,8 @@ export const updateMatch = async (updateMatches: Match[]) => {
         if (match.id.length) return match;
         match.id = uuidv4();
         return match;
-    })
+    });
+
     await setMatches(matchesFixed);
 
 }
@@ -109,4 +111,69 @@ export const reverseSide = async (io: socketio.Server) => {
     await updateMatch([current]);
 
     io.emit("match", true);
+}
+
+export const updateRound = async (game: CSGO) => {
+    const getWinType = (round_win: RoundOutcome) => {
+        switch(round_win){
+            case "ct_win_defuse":
+                return "defuse";
+            case "ct_win_elimination":
+            case "t_win_elimination":
+                return "elimination";
+            case "ct_win_time":
+                return "time";
+            case "t_win_bomb":
+                return "bomb";
+            default:
+                return "time";
+        }
+    }
+    if(!game || !game.map || game.map.phase !== "live") return;
+
+    let round = game.map.round;
+
+    if(game.round && game.round.phase !== "over"){
+        round++;
+    }
+
+    const roundData: RoundData = {
+        round,
+        players: {},
+        winner: null,
+        win_type: null
+    };
+
+    if(game.round && game.round.win_team && game.map.round_wins && game.map.round_wins[round]){
+        roundData.winner = game.round.win_team;
+        roundData.win_type = getWinType(game.map.round_wins[round]);
+    }
+    for(const player of game.players){
+        roundData.players[player.steamid] = {
+            kills: player.state.round_kills,
+            killshs: player.state.round_killhs,
+            damage: player.state.round_totaldmg
+        }
+    }
+
+    const matches = await getMatches();
+    const match = matches.find(match => match.current);
+
+    if(!match) return;
+
+    const mapName = game.map.name.substring(game.map.name.lastIndexOf('/')+1);
+    const veto = match.vetos.find(veto => veto.mapName === mapName);
+
+    if(!veto || veto.mapEnd) return;
+    if(veto.rounds && veto.rounds[roundData.round - 1] && JSON.stringify(veto.rounds[roundData.round - 1]) === JSON.stringify(roundData)) return;
+
+    match.vetos = match.vetos.map(veto => {
+        if(veto.mapName !== mapName) return veto;
+        if(!veto.rounds) veto.rounds = [];
+        veto.rounds[roundData.round - 1] = roundData;
+        veto.rounds = veto.rounds.splice(0, roundData.round);
+        return veto;
+    });
+
+    return updateMatch(matches);
 }

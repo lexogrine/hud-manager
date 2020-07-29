@@ -6,6 +6,8 @@ import * as I from './../../../../api/interfaces';
 import { IContextData } from './../../../../components/Context';
 import DragFileInput from './../../../DragFileInput';
 
+const hashCode = (s: string) => s.split('').reduce((a, b) => { a = ((a << 5) - a) + b.charCodeAt(0); return a & a }, 0).toString();
+const hash = () => hashCode(String((new Date()).getTime()));
 export default class Teams extends React.Component<{ cxt: IContextData }, { options: any[], value: string, form: I.Team }> {
     emptyTeam: I.Team;
     constructor(props: { cxt: IContextData }) {
@@ -106,6 +108,15 @@ export default class Teams extends React.Component<{ cxt: IContextData }, { opti
     }
 
     render() {
+        const { form } = this.state;
+        let logo = '';
+        if(form.logo){
+            if(form.logo.includes('api/teams/logo')){
+                logo = `${form.logo}?hash=${hash()}`;
+            } else {
+                logo =  `data:image/jpeg;base64,${form.logo}`;
+            }
+        }
         return (
             <Form>
                 <div className="tab-title-container">Teams</div>
@@ -152,7 +163,7 @@ export default class Teams extends React.Component<{ cxt: IContextData }, { opti
                     <Row>
                         <Col md="12">
                             <FormGroup>
-                                <DragFileInput image onChange={this.fileHandler} id="team_logo" label="UPLOAD LOGO" imgSrc={this.state.form.logo ? `data:image/jpeg;base64,${this.state.form.logo}` : undefined} />
+                                <DragFileInput image onChange={this.fileHandler} id="team_logo" label="UPLOAD LOGO" imgSrc={logo || undefined} />
                                 <FormText color="muted">
                                     Logo to be used for the team, if possible in the given HUD
                             </FormText>

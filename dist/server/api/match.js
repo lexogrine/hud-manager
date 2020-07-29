@@ -192,3 +192,72 @@ exports.reverseSide = function (io) { return __awaiter(void 0, void 0, void 0, f
         }
     });
 }); };
+exports.updateRound = function (game) { return __awaiter(void 0, void 0, void 0, function () {
+    var getWinType, round, roundData, _i, _a, player, matches, match, mapName, veto;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
+            case 0:
+                getWinType = function (round_win) {
+                    switch (round_win) {
+                        case "ct_win_defuse":
+                            return "defuse";
+                        case "ct_win_elimination":
+                        case "t_win_elimination":
+                            return "elimination";
+                        case "ct_win_time":
+                            return "time";
+                        case "t_win_bomb":
+                            return "bomb";
+                        default:
+                            return "time";
+                    }
+                };
+                if (!game || !game.map || game.map.phase !== "live")
+                    return [2 /*return*/];
+                round = game.map.round;
+                if (game.round && game.round.phase !== "over") {
+                    round++;
+                }
+                roundData = {
+                    round: round,
+                    players: {},
+                    winner: null,
+                    win_type: null
+                };
+                if (game.round && game.round.win_team && game.map.round_wins && game.map.round_wins[round]) {
+                    roundData.winner = game.round.win_team;
+                    roundData.win_type = getWinType(game.map.round_wins[round]);
+                }
+                for (_i = 0, _a = game.players; _i < _a.length; _i++) {
+                    player = _a[_i];
+                    roundData.players[player.steamid] = {
+                        kills: player.state.round_kills,
+                        killshs: player.state.round_killhs,
+                        damage: player.state.round_totaldmg
+                    };
+                }
+                return [4 /*yield*/, exports.getMatches()];
+            case 1:
+                matches = _b.sent();
+                match = matches.find(function (match) { return match.current; });
+                if (!match)
+                    return [2 /*return*/];
+                mapName = game.map.name.substring(game.map.name.lastIndexOf('/') + 1);
+                veto = match.vetos.find(function (veto) { return veto.mapName === mapName; });
+                if (!veto || veto.mapEnd)
+                    return [2 /*return*/];
+                if (veto.rounds && veto.rounds[roundData.round - 1] && JSON.stringify(veto.rounds[roundData.round - 1]) === JSON.stringify(roundData))
+                    return [2 /*return*/];
+                match.vetos = match.vetos.map(function (veto) {
+                    if (veto.mapName !== mapName)
+                        return veto;
+                    if (!veto.rounds)
+                        veto.rounds = [];
+                    veto.rounds[roundData.round - 1] = roundData;
+                    veto.rounds = veto.rounds.splice(0, roundData.round);
+                    return veto;
+                });
+                return [2 /*return*/, exports.updateMatch(matches)];
+        }
+    });
+}); };

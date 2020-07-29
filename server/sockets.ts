@@ -8,7 +8,7 @@ import fetch from 'node-fetch';
 import * as I from './../types/interfaces';
 import request from 'request';
 import { getHUDData } from './../server/api/huds';
-import { getMatches, updateMatch } from './api/match';
+import { getMatches, updateMatch, updateRound } from './api/match';
 import fs from 'fs';
 import portscanner from 'portscanner';
 import { loadConfig } from './api/config';
@@ -292,6 +292,8 @@ export default function (server: http.Server, app: express.Router) {
     mirv(data => {
         io.emit("update_mirv", data);
     });
+
+    GSI.on("data", updateRound);
 
     GSI.on("roundEnd", async score => {
         if(score.loser && score.loser.logo){

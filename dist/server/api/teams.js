@@ -1,4 +1,15 @@
 "use strict";
+var __assign = (this && this.__assign) || function () {
+    __assign = Object.assign || function(t) {
+        for (var s, i = 1, n = arguments.length; i < n; i++) {
+            s = arguments[i];
+            for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p))
+                t[p] = s[p];
+        }
+        return t;
+    };
+    return __assign.apply(this, arguments);
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -40,6 +51,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 exports.__esModule = true;
 var database_1 = __importDefault(require("./../../init/database"));
+var config_1 = require("./config");
+var ip_1 = __importDefault(require("ip"));
 var teams = database_1["default"].teams;
 //const players = db.players;
 function getTeamById(id) {
@@ -66,13 +79,16 @@ exports.getTeamsList = function (query) { return new Promise(function (res, rej)
     });
 }); };
 exports.getTeams = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var teams;
+    var teams, config;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0: return [4 /*yield*/, exports.getTeamsList({})];
             case 1:
                 teams = _a.sent();
-                return [2 /*return*/, res.json(teams)];
+                return [4 /*yield*/, config_1.loadConfig()];
+            case 2:
+                config = _a.sent();
+                return [2 /*return*/, res.json(teams.map(function (team) { return (__assign(__assign({}, team), { logo: team.logo && team.logo.length ? "http://" + ip_1["default"].address() + ":" + config.port + "/api/teams/logo/" + team._id : null })); }))];
         }
     });
 }); };
