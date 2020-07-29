@@ -241,6 +241,13 @@ export default function (server: http.Server, app: express.Router) {
 
     app.post('/', (req, res) => {
         runtimeConfig.last = req.body;
+
+        if(intervalId){
+            clearInterval(intervalId);
+            intervalId = null;
+            io.emit('enableTest', true);
+        }
+
         io.emit('update', req.body);
         GSI.digest(req.body);
         radar.digestRadar(req.body);
@@ -249,8 +256,12 @@ export default function (server: http.Server, app: express.Router) {
 
     app.post('/api/test', (_req, res) => {
         res.sendStatus(200);
+
         if(intervalId) return;
+        if(runtimeConfig.last?.provider?.timestamp && (new Date()).getTime() - runtimeConfig.last.provider.timestamp*1000 <= 5000) return;
+        
         io.emit('enableTest', false);
+        
         let i = 0;
         intervalId = setInterval(() => {
             if(!testData[i]) {

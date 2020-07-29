@@ -332,14 +332,22 @@ function default_1(server, app) {
     radar.startRadar(app, io);
     app.post('/', function (req, res) {
         runtimeConfig.last = req.body;
+        if (intervalId) {
+            clearInterval(intervalId);
+            intervalId = null;
+            io.emit('enableTest', true);
+        }
         io.emit('update', req.body);
         exports.GSI.digest(req.body);
         radar.digestRadar(req.body);
         res.sendStatus(200);
     });
     app.post('/api/test', function (_req, res) {
+        var _a, _b;
         res.sendStatus(200);
         if (intervalId)
+            return;
+        if (((_b = (_a = runtimeConfig.last) === null || _a === void 0 ? void 0 : _a.provider) === null || _b === void 0 ? void 0 : _b.timestamp) && (new Date()).getTime() - runtimeConfig.last.provider.timestamp * 1000 <= 5000)
             return;
         io.emit('enableTest', false);
         var i = 0;
