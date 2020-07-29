@@ -61,6 +61,7 @@ var match_1 = require("./api/match");
 var fs_1 = __importDefault(require("fs"));
 var portscanner_1 = __importDefault(require("portscanner"));
 var config_1 = require("./api/config");
+var testing_1 = require("./api/testing");
 var radar = require("./../boltobserv/index.js");
 var mirv = require("./server")["default"];
 var DevHUDListener = /** @class */ (function () {
@@ -184,6 +185,7 @@ function default_1(server, app) {
         currentHUD: null
     };
     var io = socket_io_1["default"](server);
+    var intervalId = null;
     exports.Sockets.set(io);
     var portListener = new DevHUDListener(3500);
     portListener.onChange(function (status) {
@@ -334,6 +336,23 @@ function default_1(server, app) {
         exports.GSI.digest(req.body);
         radar.digestRadar(req.body);
         res.sendStatus(200);
+    });
+    app.post('/api/test', function (_req, res) {
+        res.sendStatus(200);
+        if (intervalId)
+            return;
+        io.emit('enableTest', false);
+        var i = 0;
+        intervalId = setInterval(function () {
+            if (!testing_1.testData[i]) {
+                clearInterval(intervalId);
+                intervalId = null;
+                io.emit('enableTest', true);
+                return;
+            }
+            io.emit('update', testing_1.testData[i]);
+            i++;
+        }, 16);
     });
     io.on('connection', function (socket) {
         socket.on('started', function () {

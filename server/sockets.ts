@@ -12,6 +12,7 @@ import { getMatches, updateMatch, updateRound } from './api/match';
 import fs from 'fs';
 import portscanner from 'portscanner';
 import { loadConfig } from './api/config';
+import { testData } from './api/testing';
 
 const radar = require("./../boltobserv/index.js");
 const mirv = require("./server").default;
@@ -135,6 +136,8 @@ export default function (server: http.Server, app: express.Router) {
 
     const io = socketio(server);
 
+    let intervalId: NodeJS.Timeout | null = null;
+
     Sockets.set(io);
 
     const portListener = new DevHUDListener(3500);
@@ -244,12 +247,29 @@ export default function (server: http.Server, app: express.Router) {
         res.sendStatus(200);
     });
 
+    app.post('/api/test', (_req, res) => {
+        res.sendStatus(200);
+        if(intervalId) return;
+        io.emit('enableTest', false);
+        let i = 0;
+        intervalId = setInterval(() => {
+            if(!testData[i]) {
+                clearInterval(intervalId);
+                intervalId = null;
+                io.emit('enableTest', true);
+                return;
+            }
+            io.emit('update', testData[i]);
+            i++;
+        }, 16);
+    });
+    
     io.on('connection', socket => {
         socket.on('started', () => {
             if (runtimeConfig.last) {
                 socket.emit("update", runtimeConfig.last);
             }
-        })
+        });
         socket.emit('readyToRegister');
         socket.on('register', (name: string, isDev: boolean) => {
             if (!isDev) {
