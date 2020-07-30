@@ -7,12 +7,13 @@ import ip from 'ip';
 
 const players = db.players;
 
-async function getPlayerById(id: string): Promise<Player | null>{
+export async function getPlayerById(id: string, avatar = false): Promise<Player | null>{
     return new Promise((res, rej) => {
         players.findOne({_id:id}, (err, player) => {
             if(err){
                 return res(null);
             }
+            if(!avatar && player && player.avatar) delete player.avatar;
             return res(player);
         });
     })
@@ -23,6 +24,7 @@ async function getPlayerBySteamId(steamid: string): Promise<Player | null>{
             if(err){
                 return res(null);
             }
+            if(player && player.avatar) delete player.avatar;
             return res(player);
         });
     })
@@ -118,8 +120,8 @@ export const getAvatarFile: express.RequestHandler = async (req, res) => {
     if(!req.params.id){
         return res.sendStatus(422);
     }
-    const team = await getPlayerById(req.params.id);
-    if(!team || !team.avatar.length){
+    const team = await getPlayerById(req.params.id, true);
+    if(!team || !team.avatar || !team.avatar.length){
         return res.sendStatus(404);
     }
     const imgBuffer = Buffer.from(team.avatar, 'base64');

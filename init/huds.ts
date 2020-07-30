@@ -1,4 +1,4 @@
-import { BrowserWindow, Tray, Menu, globalShortcut } from "electron";
+import { BrowserWindow, Tray, Menu, globalShortcut, app } from "electron";
 import { getHUDData } from './../server/api/huds';
 import * as match from './../server/api/match';
 import * as path from 'path';

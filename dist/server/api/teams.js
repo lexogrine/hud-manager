@@ -55,7 +55,8 @@ var config_1 = require("./config");
 var ip_1 = __importDefault(require("ip"));
 var teams = database_1["default"].teams;
 //const players = db.players;
-function getTeamById(id) {
+function getTeamById(id, logo) {
+    if (logo === void 0) { logo = false; }
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             return [2 /*return*/, new Promise(function (res, rej) {
@@ -63,6 +64,8 @@ function getTeamById(id) {
                         if (err) {
                             return res(null);
                         }
+                        if (!logo && team && team.logo)
+                            delete team.logo;
                         return res(team);
                     });
                 })];
@@ -196,10 +199,10 @@ exports.getLogoFile = function (req, res) { return __awaiter(void 0, void 0, voi
                 if (!req.params.id) {
                     return [2 /*return*/, res.sendStatus(422)];
                 }
-                return [4 /*yield*/, getTeamById(req.params.id)];
+                return [4 /*yield*/, getTeamById(req.params.id, true)];
             case 1:
                 team = _a.sent();
-                if (!team || !team.logo.length) {
+                if (!team || !team.logo || !team.logo.length) {
                     return [2 /*return*/, res.sendStatus(404)];
                 }
                 imgBuffer = Buffer.from(team.logo, 'base64');

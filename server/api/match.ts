@@ -17,6 +17,18 @@ export const getMatchesRoute: express.RequestHandler = async (req, res) => {
     return res.json(matches);
 }
 
+
+export async function getMatchById(id: string): Promise<Match | null>{
+    return new Promise((res, rej) => {
+        matchesDb.findOne({id}, (err, match) => {
+            if(err){
+                return res(null);
+            }
+            return res(match);
+        });
+    })
+}
+
 export const getMatches = (): Promise<Match[]> => {
     return new Promise((res, rej) => {
         matchesDb.find({}, (err, matches) => {

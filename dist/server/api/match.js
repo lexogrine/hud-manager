@@ -69,6 +69,21 @@ exports.getMatchesRoute = function (req, res) { return __awaiter(void 0, void 0,
         }
     });
 }); };
+function getMatchById(id) {
+    return __awaiter(this, void 0, void 0, function () {
+        return __generator(this, function (_a) {
+            return [2 /*return*/, new Promise(function (res, rej) {
+                    matchesDb.findOne({ id: id }, function (err, match) {
+                        if (err) {
+                            return res(null);
+                        }
+                        return res(match);
+                    });
+                })];
+        });
+    });
+}
+exports.getMatchById = getMatchById;
 exports.getMatches = function () {
     return new Promise(function (res, rej) {
         matchesDb.find({}, function (err, matches) {
