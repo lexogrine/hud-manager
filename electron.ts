@@ -18,7 +18,7 @@ export const AFXInterop: HLAEChild = {
 
 export const isDev = process.env.DEV === "true";
 
-async function createMainWindow(server: Server) {
+async function createMainWindow(server: Server, forceDev = false) {
     let win: BrowserWindow | null;
 
     const cookieFile = path.join(app.getPath('userData'), 'databases', 'cookie');
@@ -62,7 +62,7 @@ async function createMainWindow(server: Server) {
         webPreferences: {
             nodeIntegration: true,
             backgroundThrottling: false,
-            devTools: isDev
+            devTools: isDev || forceDev
         },
         minWidth: 775,
         minHeight:700,
@@ -104,7 +104,7 @@ async function startManager() {
     const server = await init();
     const argv = args(process.argv);
     if(!argv.noGui){
-        createMainWindow(server);
+        createMainWindow(server, argv.dev);
     }
 }
 app.on("ready", startManager);

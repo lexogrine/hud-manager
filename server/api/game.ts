@@ -13,7 +13,7 @@ interface CFG {
     file: string
 }
 
-function createCFG(customRadar: boolean, customKillfeed: boolean): CFG {
+function createCFG(customRadar: boolean, customKillfeed: boolean, afx: boolean): CFG {
     let cfg = `cl_draw_only_deathnotices 1`;
     let file = 'hud';
 
@@ -29,19 +29,19 @@ function createCFG(customRadar: boolean, customKillfeed: boolean): CFG {
         cfg += `\nmirv_pgl url "ws://localhost:31337/mirv"`;
         cfg += `\nmirv_pgl start`;
     }
+    if(afx){
+        file += '_interop';
+        cfg = 'afx_interop connect 1';
+        cfg += `\nexec ${createCFG(customRadar, customKillfeed, false).file}`;
+        
+    }
     file += '.cfg';
     return { cfg, file };
 }
 
 function exists(file: string) {
     try {
-        const GamePath = getGamePath(730);
-        if (!GamePath || !GamePath.game || !GamePath.game.path) {
-            return false;
-        }
-        const cfgDir = path.join(GamePath.game.path, 'csgo', 'cfg');
-    
-        return fs.existsSync(path.join(cfgDir, file));
+        return fs.existsSync(file);
     } catch {
         return false;
     }
@@ -76,19 +76,21 @@ export const checkCFGs: express.RequestHandler = async (req, res) => {
 
     const switcher = [true, false];
     const cfgs: CFG[] = [];
-    const afx_interop_cfg: CFG = {
+    /*const afx_interop_cfg: CFG = {
         cfg: 'afx_interop connect 1',
         file: 'hud_interop.cfg'
     }
-    cfgs.push(afx_interop_cfg);
-    switcher.forEach(radar => {
-        switcher.forEach(killfeed => {
-            cfgs.push(createCFG(radar, killfeed));
+    cfgs.push(afx_interop_cfg);*/
+    switcher.forEach(interop => {
+        switcher.forEach(radar => {
+            switcher.forEach(killfeed => {
+                cfgs.push(createCFG(radar, killfeed, interop));
+            });
         });
     });
     const files = cfgs.map(cfg => cfg.file);
 
-    if (!files.every(exists)) {
+    if (!files.map(file => path.join(GamePath.game.path, 'csgo', 'cfg', file)).every(exists)) {
         return res.json({ success: false, message: 'Files are missing', accessible: true });
     }
     if (!cfgs.every(isCorrect)) {
@@ -113,16 +115,17 @@ export const createCFGs: express.RequestHandler = async (_req, res) => {
         const switcher = [true, false];
 
         const cfgs: CFG[] = [];
-        const afx_interop_cfg: CFG = {
+        /*const afx_interop_cfg: CFG = {
             cfg: 'afx_interop connect 1',
             file: 'hud_interop.cfg'
         }
-        cfgs.push(afx_interop_cfg);
+        cfgs.push(afx_interop_cfg);*/
 
-        switcher.forEach(radar => {
-            switcher.forEach(killfeed => {
-                const cfg = createCFG(radar, killfeed);
-                cfgs.push(cfg);
+        switcher.forEach(interop => {
+            switcher.forEach(radar => {
+                switcher.forEach(killfeed => {
+                    cfgs.push(createCFG(radar, killfeed, interop));
+                });
             });
         });
         for(const cfg of cfgs){
@@ -157,9 +160,15 @@ export const getSteamPath: express.RequestHandler = async (_req, res) => {
 
 export const run: express.RequestHandler = async (req, res) => {
     const config = await loadConfig();
-    if(!config ||!req.query.config || typeof req.query.config !== "string"){
+    if(!config){
         return res.sendStatus(422);
     }
+    let exec = '';
+    
+    if(req.query.config && typeof req.query.config === "string") {
+        exec = `+exec ${req.query.config}`;
+    }
+
     let GamePath;
     try {
         GamePath = getGamePath(730);
@@ -173,7 +182,7 @@ export const run: express.RequestHandler = async (req, res) => {
     const HLAEPath = config.hlaePath;
     const GameExePath = path.join(GamePath.game.path, 'csgo.exe');
 
-    const isHLAE = req.query.config.includes("killfeed");
+    const isHLAE = exec.includes("killfeed");
     const exePath = isHLAE ? HLAEPath : path.join(GamePath.steam.path, "Steam.exe");
 
     if(isHLAE && (!HLAEPath || !fs.existsSync(HLAEPath))){
@@ -183,9 +192,15 @@ export const run: express.RequestHandler = async (req, res) => {
     const args = [];
 
     if(!isHLAE){
-        args.push('-applaunch 730', `+exec ${req.query.config}`);
+        args.push('-applaunch 730');
+        if(exec) {
+            args.push(exec);
+        }
     } else {
-        args.push('-csgoLauncher','-noGui', '-autoStart', `-csgoExe "${GameExePath}"`, `-customLaunchOptions "+exec ${req.query.config}"`);
+        args.push('-csgoLauncher','-noGui', '-autoStart', `-csgoExe "${GameExePath}"`);
+        if(exec) {
+            args.push(`-customLaunchOptions "${exec}"`);
+        }
     }
 
     try {
@@ -224,8 +239,19 @@ export const runExperimental: express.RequestHandler = async (req, res) => {
 
     const url = `http://localhost:${config.port}/hlae.html`;
 
-    args.push('-csgoLauncher','-noGui', '-autoStart', `-csgoExe "${GameExePath}"`, '-gfxFull false', `-customLaunchOptions "-afxInteropLight +exec hud_interop"`);
+    let exec = '';
+
+    if(req.query.config && typeof req.query.config === "string") {
+        exec = `+exec ${req.query.config}`;
+    }
+
+    args.push('-csgoLauncher','-noGui', '-autoStart', `-csgoExe "${GameExePath}"`, '-gfxFull false');
     
+    if(exec) {
+        args.push(`-customLaunchOptions "-afxInteropLight ${exec}"`);
+    } else {
+        args.push(`-customLaunchOptions "-afxInteropLight"`)
+    }
 
     try {
         const steam = spawn(`"${exePath}"`, args, { detached: true, shell: true, stdio: 'ignore' });

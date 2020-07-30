@@ -461,7 +461,9 @@ img.smallLogo {
 .config-entry {
     padding:0;
     background-color: #2f3238;
-    height: 82px;
+    /*min-height: 82px;*/
+    padding-top: 29px;
+    padding-bottom: 29px;
     display: flex;
     align-items: center;
     flex-direction: row;
