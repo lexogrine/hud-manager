@@ -68,6 +68,7 @@ var HUD = /** @class */ (function () {
                         hud = _a.sent();
                         if (hud === null)
                             return [2 /*return*/, null];
+                        console.log(path.join(electron_1.app.getPath('home'), 'HUDs', hud.dir, "thumb.png"));
                         hudWindow = new electron_1.BrowserWindow({
                             fullscreen: true,
                             show: false,
@@ -79,7 +80,8 @@ var HUD = /** @class */ (function () {
                             focusable: true,
                             webPreferences: {
                                 backgroundThrottling: false
-                            }
+                            },
+                            icon: path.join(electron_1.app.getPath('home'), 'HUDs', hud.dir, "thumb.png")
                         });
                         hudWindow.on("show", function () {
                             hudWindow.setAlwaysOnTop(true);

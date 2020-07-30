@@ -20,13 +20,21 @@ export default class ActionPanel extends React.Component<IProps, IState> {
             form: {}
         }
     }
-    changeForm = (section: string, name: string, isCheckbox = false) => (e: any) => {
+    changeForm = (section: string, name: string, type: I.PanelInputType) => (e: any) => {
         const { form } = this.state;
         if (!form[section]) form[section] = {};
-        form[section][name] = e.target.value;
-        if(isCheckbox) {
-            form[section][name] = e.target.checked;
-            console.log(e.target.checked)
+        switch(type){
+            case "player":
+            case "team":
+            case "match":
+                form[section][name] = { type, id: e.target.value };
+                break;
+            case "checkbox":
+                form[section][name] = e.target.checked;
+                break;
+            default:
+                form[section][name] = e.target.value;
+                break;
         }
         this.setState({ form });
     }
@@ -39,6 +47,8 @@ export default class ActionPanel extends React.Component<IProps, IState> {
             form[section.name] = {};
             for (let input of section.inputs) {
                 if (input.type !== 'action') form[section.name][input.name] = '';
+                if(input.type === "player" || input.type === "team" || input.type === "match") form[section.name][input.name] = {};
+                if(input.type === "checkbox") form[section.name][input.name] = false;
             }
         }
         this.setState({ form });
@@ -125,7 +135,7 @@ export default class ActionPanel extends React.Component<IProps, IState> {
                                         placeholder={input.label}
                                         name={input.name.toLowerCase()}
                                         id={input.name.toLowerCase()}
-                                        onChange={this.changeForm(section.name, input.name)}
+                                        onChange={this.changeForm(section.name, input.name, input.type)}
                                         value={(form[section.name] && form[section.name][input.name]) || ''}
                                     />
                                 </FormGroup>
@@ -139,8 +149,8 @@ export default class ActionPanel extends React.Component<IProps, IState> {
                                         type="select"
                                         id={input.name.toLowerCase()}
                                         name={input.name.toLowerCase()}
-                                        value={(form[section.name] && form[section.name][input.name]) || ''}
-                                        onChange={this.changeForm(section.name, input.name)}
+                                        value={(form[section.name] && form[section.name][input.name] && form[section.name][input.name].id) || ''}
+                                        onChange={this.changeForm(section.name, input.name, input.type)}
                                     >
                                         <option value="">No team</option>
                                         {teams.map(team => <option value={team._id}>{team.name}</option>)}
@@ -157,8 +167,8 @@ export default class ActionPanel extends React.Component<IProps, IState> {
                                         type="select"
                                         id={input.name.toLowerCase()}
                                         name={input.name.toLowerCase()}
-                                        value={(form[section.name] && form[section.name][input.name]) || ''}
-                                        onChange={this.changeForm(section.name, input.name)}
+                                        value={(form[section.name] && form[section.name][input.name] && form[section.name][input.name].id) || ''}
+                                        onChange={this.changeForm(section.name, input.name, input.type)}
                                     >
                                         <option value="">No player</option>
                                         {players.map(player => <option value={player._id}>{player.username}</option>)}
@@ -175,8 +185,8 @@ export default class ActionPanel extends React.Component<IProps, IState> {
                                         type="select"
                                         id={input.name.toLowerCase()}
                                         name={input.name.toLowerCase()}
-                                        value={(form[section.name] && form[section.name][input.name]) || ''}
-                                        onChange={this.changeForm(section.name, input.name)}
+                                        value={(form[section.name] && form[section.name][input.name] && form[section.name][input.name].id) || ''}
+                                        onChange={this.changeForm(section.name, input.name, input.type)}
                                     >
                                         <option value="">No match</option>
                                         {matches.map(match => <option value={match.id}>
@@ -196,7 +206,7 @@ export default class ActionPanel extends React.Component<IProps, IState> {
                                         id={input.name.toLowerCase()}
                                         name={input.name.toLowerCase()}
                                         value={(form[section.name] && form[section.name][input.name]) || ''}
-                                        onChange={this.changeForm(section.name, input.name)}
+                                        onChange={this.changeForm(section.name, input.name, input.type)}
                                     >
                                         <option value="">No value</option>
                                         {input.values.map(value => <option value={value.name}>{value.label}</option>)}
@@ -213,7 +223,7 @@ export default class ActionPanel extends React.Component<IProps, IState> {
                                         id={input.name.toLowerCase()}
                                         name={input.name.toLowerCase()}
                                         checked={Boolean(form[section.name] && form[section.name][input.name])}
-                                        onChange={this.changeForm(section.name, input.name, true)}
+                                        onChange={this.changeForm(section.name, input.name, input.type)}
                                     />
                                     <Label for={input.name.toLowerCase()} check>{input.label}</Label>
                                 </FormGroup>

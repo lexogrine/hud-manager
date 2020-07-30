@@ -62,8 +62,9 @@ function createRenderer(server, forceDev) {
         var closeManager, args, renderer;
         return __generator(this, function (_a) {
             closeManager = function () {
-                if (server)
+                if (server) {
                     server.close();
+                }
                 if (exports.AFXInterop.process) {
                     exports.AFXInterop.process.kill();
                 }
@@ -76,7 +77,8 @@ function createRenderer(server, forceDev) {
                 stdio: ['ignore']
             });
             electron_1.app.on("window-all-closed", function () { });
-            renderer.stdout.on("data", function (data) { return console.log(data.toString()); });
+            if (forceDev)
+                renderer.stdout.on("data", function (data) { return console.log(data.toString()); });
             renderer.on("exit", closeManager);
             renderer.on("close", closeManager);
             electron_1.app.on("quit", function () {

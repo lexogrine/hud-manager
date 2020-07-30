@@ -62,6 +62,8 @@ var fs_1 = __importDefault(require("fs"));
 var portscanner_1 = __importDefault(require("portscanner"));
 var config_1 = require("./api/config");
 var testing_1 = require("./api/testing");
+var teams_1 = require("./api/teams");
+var players_1 = require("./api/players");
 var radar = require("./../boltobserv/index.js");
 var mirv = require("./server")["default"];
 var DevHUDListener = /** @class */ (function () {
@@ -136,6 +138,64 @@ var HUDStateManager = /** @class */ (function () {
             return undefined;
         }
     };
+    HUDStateManager.extend = function (hudData) { return __awaiter(void 0, void 0, void 0, function () {
+        var _i, _a, data, entries, _b, entries_1, entry, extraData, _c;
+        return __generator(this, function (_d) {
+            switch (_d.label) {
+                case 0:
+                    if (!hudData || typeof hudData !== "object")
+                        return [2 /*return*/, hudData];
+                    _i = 0, _a = Object.values(hudData);
+                    _d.label = 1;
+                case 1:
+                    if (!(_i < _a.length)) return [3 /*break*/, 13];
+                    data = _a[_i];
+                    if (!data || typeof data !== "object")
+                        return [2 /*return*/, hudData];
+                    entries = Object.values(data);
+                    _b = 0, entries_1 = entries;
+                    _d.label = 2;
+                case 2:
+                    if (!(_b < entries_1.length)) return [3 /*break*/, 12];
+                    entry = entries_1[_b];
+                    if (!entry || typeof entry !== "object")
+                        return [3 /*break*/, 11];
+                    if (!("type" in entry) || !("id" in entry))
+                        return [3 /*break*/, 11];
+                    extraData = void 0;
+                    _c = entry.type;
+                    switch (_c) {
+                        case "match": return [3 /*break*/, 3];
+                        case "player": return [3 /*break*/, 5];
+                        case "team": return [3 /*break*/, 7];
+                    }
+                    return [3 /*break*/, 9];
+                case 3: return [4 /*yield*/, match_1.getMatchById(entry.id)];
+                case 4:
+                    extraData = _d.sent();
+                    return [3 /*break*/, 10];
+                case 5: return [4 /*yield*/, players_1.getPlayerById(entry.id)];
+                case 6:
+                    extraData = _d.sent();
+                    return [3 /*break*/, 10];
+                case 7: return [4 /*yield*/, teams_1.getTeamById(entry.id)];
+                case 8:
+                    extraData = _d.sent();
+                    return [3 /*break*/, 10];
+                case 9: return [3 /*break*/, 11];
+                case 10:
+                    entry[entry.type] = extraData;
+                    _d.label = 11;
+                case 11:
+                    _b++;
+                    return [3 /*break*/, 2];
+                case 12:
+                    _i++;
+                    return [3 /*break*/, 1];
+                case 13: return [2 /*return*/, hudData];
+            }
+        });
+    }); };
     return HUDStateManager;
 }());
 var SocketManager = /** @class */ (function () {
@@ -196,7 +256,7 @@ function default_1(server, app) {
         if (exports.HUDState.devHUD)
             return;
         request_1["default"].get('http://localhost:3500/hud.json', function (err, res) { return __awaiter(_this, void 0, void 0, function () {
-            var hud, _a, _b, cfg, _c;
+            var hud, _a, _b, cfg, hudData, extended, _c;
             return __generator(this, function (_d) {
                 switch (_d.label) {
                     case 0:
@@ -204,7 +264,7 @@ function default_1(server, app) {
                             return [2 /*return*/, io.emit('reloadHUDs', false)];
                         _d.label = 1;
                     case 1:
-                        _d.trys.push([1, 5, , 6]);
+                        _d.trys.push([1, 7, , 8]);
                         hud = JSON.parse(res.body);
                         if (!hud)
                             return [2 /*return*/];
@@ -225,16 +285,21 @@ function default_1(server, app) {
                         cfg = _d.sent();
                         hud.url = "http://localhost:3500/?port=" + cfg.port;
                         exports.HUDState.devHUD = hud;
-                        if (runtimeConfig.devSocket) {
-                            io.to(hud.dir).emit('hud_config', exports.HUDState.get(hud.dir));
-                        }
-                        io.emit('reloadHUDs');
-                        return [3 /*break*/, 6];
+                        if (!runtimeConfig.devSocket) return [3 /*break*/, 6];
+                        hudData = exports.HUDState.get(hud.dir);
+                        return [4 /*yield*/, HUDStateManager.extend(hudData)];
                     case 5:
+                        extended = _d.sent();
+                        io.to(hud.dir).emit('hud_config', extended);
+                        _d.label = 6;
+                    case 6:
+                        io.emit('reloadHUDs');
+                        return [3 /*break*/, 8];
+                    case 7:
                         _c = _d.sent();
                         io.emit('reloadHUDs');
-                        return [3 /*break*/, 6];
-                    case 6: return [2 /*return*/];
+                        return [3 /*break*/, 8];
+                    case 8: return [2 /*return*/];
                 }
             });
         }); });
@@ -369,22 +434,48 @@ function default_1(server, app) {
             }
         });
         socket.emit('readyToRegister');
-        socket.on('register', function (name, isDev) {
-            if (!isDev) {
-                socket.join(name);
-                io.to(name).emit('hud_config', exports.HUDState.get(name, true));
-                return;
-            }
-            runtimeConfig.devSocket = socket;
-            if (exports.HUDState.devHUD) {
-                socket.join(exports.HUDState.devHUD.dir);
-                io.to(exports.HUDState.devHUD.dir).emit('hud_config', exports.HUDState.get(exports.HUDState.devHUD.dir));
-            }
-        });
-        socket.on('hud_config', function (data) {
-            exports.HUDState.set(data.hud, data.section, data.config);
-            io.to(data.hud).emit('hud_config', exports.HUDState.get(data.hud));
-        });
+        socket.on('register', function (name, isDev) { return __awaiter(_this, void 0, void 0, function () {
+            var hudData, extended, hudData, extended;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (!!isDev) return [3 /*break*/, 2];
+                        socket.join(name);
+                        hudData = exports.HUDState.get(name, true);
+                        return [4 /*yield*/, HUDStateManager.extend(hudData)];
+                    case 1:
+                        extended = _a.sent();
+                        io.to(name).emit('hud_config', extended);
+                        return [2 /*return*/];
+                    case 2:
+                        runtimeConfig.devSocket = socket;
+                        if (!exports.HUDState.devHUD) return [3 /*break*/, 4];
+                        socket.join(exports.HUDState.devHUD.dir);
+                        hudData = exports.HUDState.get(exports.HUDState.devHUD.dir);
+                        return [4 /*yield*/, HUDStateManager.extend(hudData)];
+                    case 3:
+                        extended = _a.sent();
+                        io.to(exports.HUDState.devHUD.dir).emit('hud_config', extended);
+                        _a.label = 4;
+                    case 4: return [2 /*return*/];
+                }
+            });
+        }); });
+        socket.on('hud_config', function (data) { return __awaiter(_this, void 0, void 0, function () {
+            var hudData, extended;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        exports.HUDState.set(data.hud, data.section, data.config);
+                        hudData = exports.HUDState.get(data.hud);
+                        return [4 /*yield*/, HUDStateManager.extend(hudData)];
+                    case 1:
+                        extended = _a.sent();
+                        io.to(data.hud).emit('hud_config', extended);
+                        return [2 /*return*/];
+                }
+            });
+        }); });
         socket.on('hud_action', function (data) {
             io.to(data.hud).emit("hud_action", data.action);
         });

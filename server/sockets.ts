@@ -8,11 +8,13 @@ import fetch from 'node-fetch';
 import * as I from './../types/interfaces';
 import request from 'request';
 import { getHUDData } from './../server/api/huds';
-import { getMatches, updateMatch, updateRound } from './api/match';
+import { getMatches, updateMatch, updateRound, getMatchById } from './api/match';
 import fs from 'fs';
 import portscanner from 'portscanner';
 import { loadConfig } from './api/config';
 import { testData } from './api/testing';
+import { getTeamById } from './api/teams';
+import { getPlayerById } from './api/players';
 
 const radar = require("./../boltobserv/index.js");
 const mirv = require("./server").default;
@@ -83,6 +85,35 @@ class HUDStateManager {
         } catch {
             return undefined;
         }
+    }
+
+    static extend = async (hudData: any) => {
+        if(!hudData || typeof hudData !== "object") return hudData;
+        for(const data of Object.values(hudData)){
+            if(!data || typeof data !== "object") return hudData;
+            const entries: any[] = Object.values(data);
+            for(const entry of entries){
+                if(!entry || typeof entry !== "object") continue;
+    
+                if(!("type" in entry) || !("id" in entry)) continue;
+                let extraData;
+                switch(entry.type){
+                    case "match":
+                        extraData = await getMatchById(entry.id);
+                    break;
+                    case "player":
+                        extraData = await getPlayerById(entry.id);
+                    break;
+                    case "team":
+                        extraData = await getTeamById(entry.id);
+                    break;
+                    default:
+                        continue;
+                }
+                entry[entry.type] = extraData;
+            }
+        }
+        return hudData;
     }
 }
 
@@ -162,7 +193,9 @@ export default function (server: http.Server, app: express.Router) {
                 hud.url = `http://localhost:3500/?port=${cfg.port}`;
                 HUDState.devHUD = hud;
                 if (runtimeConfig.devSocket) {
-                    io.to(hud.dir).emit('hud_config', HUDState.get(hud.dir));
+                    const hudData = HUDState.get(hud.dir);
+                    const extended = await HUDStateManager.extend(hudData);
+                    io.to(hud.dir).emit('hud_config', extended);
                 }
                 io.emit('reloadHUDs');
             } catch {
@@ -282,22 +315,28 @@ export default function (server: http.Server, app: express.Router) {
             }
         });
         socket.emit('readyToRegister');
-        socket.on('register', (name: string, isDev: boolean) => {
+        socket.on('register', async (name: string, isDev: boolean) => {
             if (!isDev) {
                 socket.join(name);
-                io.to(name).emit('hud_config', HUDState.get(name, true));
+                const hudData = HUDState.get(name, true);
+                const extended = await HUDStateManager.extend(hudData);
+                io.to(name).emit('hud_config', extended);
                 return;
             }
             runtimeConfig.devSocket = socket;
             if (HUDState.devHUD) {
                 socket.join(HUDState.devHUD.dir);
-                io.to(HUDState.devHUD.dir).emit('hud_config', HUDState.get(HUDState.devHUD.dir));
+                const hudData = HUDState.get(HUDState.devHUD.dir);
+                const extended = await HUDStateManager.extend(hudData);
+                io.to(HUDState.devHUD.dir).emit('hud_config', extended);
             }
 
         });
-        socket.on('hud_config', (data: { hud: string, section: string, config: any }) => {
+        socket.on('hud_config', async (data: { hud: string, section: string, config: any }) => {
             HUDState.set(data.hud, data.section, data.config);
-            io.to(data.hud).emit('hud_config', HUDState.get(data.hud))
+            const hudData = HUDState.get(data.hud);
+            const extended = await HUDStateManager.extend(hudData);
+            io.to(data.hud).emit('hud_config', extended);
         });
         socket.on('hud_action', (data: { hud: string, action: any }) => {
             io.to(data.hud).emit(`hud_action`, data.action);
