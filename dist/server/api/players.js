@@ -55,7 +55,8 @@ var config_1 = require("./config");
 var node_fetch_1 = __importDefault(require("node-fetch"));
 var ip_1 = __importDefault(require("ip"));
 var players = database_1["default"].players;
-function getPlayerById(id) {
+function getPlayerById(id, avatar) {
+    if (avatar === void 0) { avatar = false; }
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             return [2 /*return*/, new Promise(function (res, rej) {
@@ -63,12 +64,15 @@ function getPlayerById(id) {
                         if (err) {
                             return res(null);
                         }
+                        if (!avatar && player && player.avatar)
+                            delete player.avatar;
                         return res(player);
                     });
                 })];
         });
     });
 }
+exports.getPlayerById = getPlayerById;
 function getPlayerBySteamId(steamid) {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
@@ -77,6 +81,8 @@ function getPlayerBySteamId(steamid) {
                         if (err) {
                             return res(null);
                         }
+                        if (player && player.avatar)
+                            delete player.avatar;
                         return res(player);
                     });
                 })];
@@ -212,10 +218,10 @@ exports.getAvatarFile = function (req, res) { return __awaiter(void 0, void 0, v
                 if (!req.params.id) {
                     return [2 /*return*/, res.sendStatus(422)];
                 }
-                return [4 /*yield*/, getPlayerById(req.params.id)];
+                return [4 /*yield*/, getPlayerById(req.params.id, true)];
             case 1:
                 team = _a.sent();
-                if (!team || !team.avatar.length) {
+                if (!team || !team.avatar || !team.avatar.length) {
                     return [2 /*return*/, res.sendStatus(404)];
                 }
                 imgBuffer = Buffer.from(team.avatar, 'base64');

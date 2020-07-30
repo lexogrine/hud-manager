@@ -46,111 +46,43 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 exports.__esModule = true;
-var electron_1 = require("electron");
-var path_1 = __importDefault(require("path"));
-var fs_1 = __importDefault(require("fs"));
-var args_1 = __importDefault(require("./init/args"));
 var server_1 = __importDefault(require("./server"));
 var directories = __importStar(require("./init/directories"));
-var config_1 = require("./server/api/config");
+var args_1 = __importDefault(require("./init/args"));
+var child_process_1 = require("child_process");
+var electron_1 = require("electron");
+var renderer_1 = require("./renderer");
 exports.AFXInterop = {
     process: null
 };
 exports.isDev = process.env.DEV === "true";
-function createMainWindow(server, forceDev) {
+function createRenderer(server, forceDev) {
     if (forceDev === void 0) { forceDev = false; }
     return __awaiter(this, void 0, void 0, function () {
-        var win, cookieFile, cookie, cookies, _i, cookies_1, cookie_1, e_1, config, startUrl;
-        var _this = this;
+        var closeManager, args, renderer;
         return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    cookieFile = path_1["default"].join(electron_1.app.getPath('userData'), 'databases', 'cookie');
-                    cookie = fs_1["default"].readFileSync(cookieFile, 'utf8');
-                    _a.label = 1;
-                case 1:
-                    _a.trys.push([1, 6, , 7]);
-                    cookies = JSON.parse(cookie);
-                    if (!Array.isArray(cookies)) return [3 /*break*/, 5];
-                    _i = 0, cookies_1 = cookies;
-                    _a.label = 2;
-                case 2:
-                    if (!(_i < cookies_1.length)) return [3 /*break*/, 5];
-                    cookie_1 = cookies_1[_i];
-                    cookie_1.url = 'https://hmapi.lexogrine.com/';
-                    return [4 /*yield*/, electron_1.session.defaultSession.cookies.set(cookie_1)];
-                case 3:
-                    _a.sent();
-                    _a.label = 4;
-                case 4:
-                    _i++;
-                    return [3 /*break*/, 2];
-                case 5: return [3 /*break*/, 7];
-                case 6:
-                    e_1 = _a.sent();
-                    return [3 /*break*/, 7];
-                case 7:
-                    if (electron_1.app) {
-                        electron_1.app.on("window-all-closed", electron_1.app.quit);
-                        electron_1.app.on("before-quit", function () { return __awaiter(_this, void 0, void 0, function () {
-                            var cookies;
-                            return __generator(this, function (_a) {
-                                switch (_a.label) {
-                                    case 0: return [4 /*yield*/, electron_1.session.defaultSession.cookies.get({ url: 'https://hmapi.lexogrine.com/' })];
-                                    case 1:
-                                        cookies = _a.sent();
-                                        fs_1["default"].writeFileSync(cookieFile, JSON.stringify(cookies), 'utf8');
-                                        if (!win)
-                                            return [2 /*return*/];
-                                        win.removeAllListeners("close");
-                                        win.close();
-                                        return [2 /*return*/];
-                                }
-                            });
-                        }); });
-                    }
-                    win = new electron_1.BrowserWindow({
-                        height: 700,
-                        show: false,
-                        frame: false,
-                        titleBarStyle: "hidden",
-                        //resizable: isDev,
-                        title: "HUD Manager",
-                        icon: path_1["default"].join(__dirname, 'assets/icon.png'),
-                        webPreferences: {
-                            nodeIntegration: true,
-                            backgroundThrottling: false,
-                            devTools: exports.isDev || forceDev
-                        },
-                        minWidth: 775,
-                        minHeight: 700,
-                        width: 1010
-                    });
-                    win.once("ready-to-show", function () {
-                        if (win) {
-                            win.show();
-                        }
-                    });
-                    return [4 /*yield*/, config_1.loadConfig()];
-                case 8:
-                    config = _a.sent();
-                    win.setMenuBarVisibility(false);
-                    startUrl = "http://localhost:" + config.port + "/";
-                    win.webContents.on('new-window', function (e, url) {
-                        e.preventDefault();
-                        electron_1.shell.openExternal(url);
-                    });
-                    win.loadURL("" + (exports.isDev ? "http://localhost:3000/?port=" + config.port : startUrl));
-                    win.on("close", function () {
-                        server.close();
-                        win = null;
-                        if (exports.AFXInterop.process) {
-                            exports.AFXInterop.process.kill();
-                        }
-                        electron_1.app.quit();
-                    });
-                    return [2 /*return*/];
-            }
+            closeManager = function () {
+                if (server)
+                    server.close();
+                if (exports.AFXInterop.process) {
+                    exports.AFXInterop.process.kill();
+                }
+                electron_1.app.quit();
+            };
+            args = ["./", "--renderer"];
+            if (forceDev)
+                args.push("--dev");
+            renderer = child_process_1.spawn(process.execPath, ["./", "--renderer", "--dev"], {
+                stdio: ['ignore']
+            });
+            electron_1.app.on("window-all-closed", function () { });
+            renderer.stdout.on("data", function (data) { return console.log(data.toString()); });
+            renderer.on("exit", closeManager);
+            renderer.on("close", closeManager);
+            electron_1.app.on("quit", function () {
+                renderer.kill();
+            });
+            return [2 /*return*/];
         });
     });
 }
@@ -160,6 +92,10 @@ function startManager() {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
+                    if (process.argv.includes("--renderer")) {
+                        renderer_1.createMainWindow(process.argv.includes("--dev"));
+                        return [2 /*return*/];
+                    }
                     electron_1.app.setAppUserModelId("com.lexogrine.hudmanager");
                     directories.checkDirectories();
                     return [4 /*yield*/, server_1["default"]()];
@@ -167,7 +103,7 @@ function startManager() {
                     server = _a.sent();
                     argv = args_1["default"](process.argv);
                     if (!argv.noGui) {
-                        createMainWindow(server, argv.dev);
+                        createRenderer(server, argv.dev);
                     }
                     return [2 /*return*/];
             }

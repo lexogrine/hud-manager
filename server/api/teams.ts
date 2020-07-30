@@ -7,12 +7,13 @@ import ip from 'ip';
 const teams = db.teams;
 //const players = db.players;
 
-export async function getTeamById(id: string): Promise<Team | null>{
+export async function getTeamById(id: string, logo = false): Promise<Team | null>{
     return new Promise((res, rej) => {
         teams.findOne({_id:id}, (err, team) => {
             if(err){
                 return res(null);
             }
+            if(!logo && team && team.logo) delete team.logo;
             return res(team);
         });
     })
@@ -106,8 +107,8 @@ export const getLogoFile: express.RequestHandler = async (req, res) => {
     if(!req.params.id){
         return res.sendStatus(422);
     }
-    const team = await getTeamById(req.params.id);
-    if(!team || !team.logo.length){
+    const team = await getTeamById(req.params.id, true);
+    if(!team || !team.logo || !team.logo.length){
         return res.sendStatus(404);
     }
     const imgBuffer = Buffer.from(team.logo, 'base64');
