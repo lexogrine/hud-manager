@@ -62,7 +62,8 @@ interface IState {
     huds: I.HUD[],
     form: IForm,
     active: I.HUD | null,
-    currentHUD: string | null
+    currentHUD: string | null,
+    enableTest: boolean
 }
 
 export default class Huds extends React.Component<IProps, IState> {
@@ -84,7 +85,8 @@ export default class Huds extends React.Component<IProps, IState> {
                 autoexec: true
             },
             active: null,
-            currentHUD: null
+            currentHUD: null,
+            enableTest: true
         }
     }
 
@@ -128,6 +130,9 @@ export default class Huds extends React.Component<IProps, IState> {
         socket.on('reloadHUDs', this.loadHUDs);
         socket.on('active_hlae', (hud: string | null) => {
             this.setState({ currentHUD: hud });
+        });
+        socket.on('enableTest', (status: boolean) => {
+            this.setState({ enableTest: status });
         });
         socket.emit("get_active_hlae");
         this.loadHUDs();
@@ -194,6 +199,7 @@ export default class Huds extends React.Component<IProps, IState> {
                                             OR
                                          </div>
                                         <Button className="round-btn run-game" disabled={(killfeed && !config.hlaePath) || (afx && (!config.hlaePath || !config.afxCEFHudInteropPath))} onClick={this.runGame(afx)}>RUN GAME</Button>
+                                        <Button className="round-btn run-game" disabled={!this.state.enableTest} onClick={api.game.runTest}>RUN TEST DATA</Button>
                                     </ElectronOnly>
                                 </div>
                                 <div className="warning">

@@ -96,7 +96,8 @@ export default {
     },
     game: {
         run: async (config: string) => await apiV2(`game/run?config=${config}`),
-        runExperimental: async (config: string) => await apiV2(`game/experimental?config=${config}`)
+        runExperimental: async (config: string) => await apiV2(`game/experimental?config=${config}`),
+        runTest: () => apiV2('test', "POST")
     },
     huds: {
         get: async (): Promise<I.HUD[]> => await apiV2('huds'),
