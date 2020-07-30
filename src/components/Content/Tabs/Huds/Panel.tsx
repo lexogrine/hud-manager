@@ -153,7 +153,7 @@ export default class ActionPanel extends React.Component<IProps, IState> {
                                         onChange={this.changeForm(section.name, input.name, input.type)}
                                     >
                                         <option value="">No team</option>
-                                        {teams.map(team => <option value={team._id}>{team.name}</option>)}
+                                        {teams.concat().sort((a, b) => a.name < b.name ? -1 : 1).map(team => <option value={team._id}>{team.name}</option>)}
                                     </Input>
                                 </FormGroup>
                             </Col>
@@ -171,7 +171,7 @@ export default class ActionPanel extends React.Component<IProps, IState> {
                                         onChange={this.changeForm(section.name, input.name, input.type)}
                                     >
                                         <option value="">No player</option>
-                                        {players.map(player => <option value={player._id}>{player.username}</option>)}
+                                        {players.concat().sort((a, b) => a.username < b.username ? -1 : 1).map(player => <option value={player._id}>{player.username}</option>)}
                                     </Input>
                                 </FormGroup>
                             </Col>
@@ -209,7 +209,7 @@ export default class ActionPanel extends React.Component<IProps, IState> {
                                         onChange={this.changeForm(section.name, input.name, input.type)}
                                     >
                                         <option value="">No value</option>
-                                        {input.values.map(value => <option value={value.name}>{value.label}</option>)}
+                                        {input.values.concat().sort((a, b) => a.label < b.label ? -1 : 1).map(value => <option value={value.name}>{value.label}</option>)}
                                     </Input>
                                 </FormGroup>
                             </Col>

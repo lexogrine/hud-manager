@@ -124,7 +124,7 @@ export default class Teams extends React.Component<{ cxt: IContextData }, { opti
                     <FormGroup>
                         <Input type="select" name="teams" id="teams" onChange={this.setTeam} value={this.state.form._id}>
                             <option value={"empty"}>New team</option>
-                            {this.props.cxt.teams.map(team => <option key={team._id} value={team._id}>{team.name}</option>)}
+                            {this.props.cxt.teams.concat().sort((a, b) => a.name < b.name ? -1 : 1).map(team => <option key={team._id} value={team._id}>{team.name}</option>)}
                         </Input>
                     </FormGroup>
                     <Row>

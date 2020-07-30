@@ -150,7 +150,7 @@ export default class Players extends React.Component<{ cxt: IContextData, data: 
                     <FormGroup>
                         <Input type="select" name="players" id="players" onChange={this.setPlayer} value={form._id}>
                             <option value={"empty"}>New player</option>
-                            {this.props.cxt.players.map(player => <option key={player._id} value={player._id}>{player.firstName} {player.username} {player.lastName}</option>)}
+                            {this.props.cxt.players.concat().sort((a, b) => a.username < b.username ? -1 : 1).map(player => <option key={player._id} value={player._id}>{player.firstName} {player.username} {player.lastName}</option>)}
                         </Input>
                     </FormGroup>
                     <Row>

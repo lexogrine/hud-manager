@@ -73,7 +73,8 @@ function getPlayerById(id, avatar) {
     });
 }
 exports.getPlayerById = getPlayerById;
-function getPlayerBySteamId(steamid) {
+function getPlayerBySteamId(steamid, avatar) {
+    if (avatar === void 0) { avatar = false; }
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             return [2 /*return*/, new Promise(function (res, rej) {
@@ -81,7 +82,7 @@ function getPlayerBySteamId(steamid) {
                         if (err) {
                             return res(null);
                         }
-                        if (player && player.avatar)
+                        if (!avatar && player && player.avatar)
                             delete player.avatar;
                         return res(player);
                     });
@@ -249,10 +250,10 @@ exports.getAvatarURLBySteamID = function (req, res) { return __awaiter(void 0, v
                     custom: '',
                     steam: ''
                 };
-                return [4 /*yield*/, getPlayerBySteamId(req.params.steamid)];
+                return [4 /*yield*/, getPlayerBySteamId(req.params.steamid, true)];
             case 2:
                 player = _b.sent();
-                if (player && player.avatar.length && player._id) {
+                if (player && player.avatar && player.avatar.length && player._id) {
                     response.custom = "http://" + ip_1["default"].address() + ":" + config.port + "/api/players/avatar/" + player._id;
                 }
                 _b.label = 3;

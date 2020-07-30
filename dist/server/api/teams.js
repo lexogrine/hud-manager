@@ -103,7 +103,7 @@ exports.getTeam = function (req, res) { return __awaiter(void 0, void 0, void 0,
                 if (!req.params.id) {
                     return [2 /*return*/, res.sendStatus(422)];
                 }
-                return [4 /*yield*/, getTeamById(req.params.id)];
+                return [4 /*yield*/, getTeamById(req.params.id, true)];
             case 1:
                 team = _a.sent();
                 if (!team) {

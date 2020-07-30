@@ -18,13 +18,13 @@ export async function getPlayerById(id: string, avatar = false): Promise<Player 
         });
     })
 }
-async function getPlayerBySteamId(steamid: string): Promise<Player | null>{
+async function getPlayerBySteamId(steamid: string, avatar = false): Promise<Player | null>{
     return new Promise((res, rej) => {
         players.findOne({steamid}, (err, player) => {
             if(err){
                 return res(null);
             }
-            if(player && player.avatar) delete player.avatar;
+            if(!avatar && player && player.avatar) delete player.avatar;
             return res(player);
         });
     })
@@ -140,8 +140,8 @@ export const getAvatarURLBySteamID: express.RequestHandler = async (req, res) =>
         custom: '',
         steam: ''
     }
-    const player = await getPlayerBySteamId(req.params.steamid);
-    if(player && player.avatar.length && player._id){
+    const player = await getPlayerBySteamId(req.params.steamid, true);
+    if(player && player.avatar && player.avatar.length && player._id){
         response.custom = `http://${ip.address()}:${config.port}/api/players/avatar/${player._id}`;
     }
     try {
