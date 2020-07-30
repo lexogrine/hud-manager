@@ -243,7 +243,7 @@ exports.updateRound = function (game) { return __awaiter(void 0, void 0, void 0,
                 if (!match)
                     return [2 /*return*/];
                 mapName = game.map.name.substring(game.map.name.lastIndexOf('/') + 1);
-                veto = match.vetos.find(function (veto) { return veto.mapName === mapName; });
+                veto = match.vetos.find(function (veto) { return veto.mapName === mapName && !veto.mapEnd; });
                 if (!veto || veto.mapEnd)
                     return [2 /*return*/];
                 if (veto.rounds && veto.rounds[roundData.round - 1] && JSON.stringify(veto.rounds[roundData.round - 1]) === JSON.stringify(roundData))

@@ -162,7 +162,7 @@ export const updateRound = async (game: CSGO) => {
     if(!match) return;
 
     const mapName = game.map.name.substring(game.map.name.lastIndexOf('/')+1);
-    const veto = match.vetos.find(veto => veto.mapName === mapName);
+    const veto = match.vetos.find(veto => veto.mapName === mapName && !veto.mapEnd);
 
     if(!veto || veto.mapEnd) return;
     if(veto.rounds && veto.rounds[roundData.round - 1] && JSON.stringify(veto.rounds[roundData.round - 1]) === JSON.stringify(roundData)) return;
