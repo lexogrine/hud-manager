@@ -8,11 +8,11 @@ import fetch from 'node-fetch';
 import * as I from './../types/interfaces';
 import request from 'request';
 import { getHUDData } from './../server/api/huds';
-import { getMatches, updateMatch, updateRound, getMatchById } from './api/match';
+import { getMatches, updateMatches, updateRound, getMatchById } from './api/match';
 import fs from 'fs';
 import portscanner from 'portscanner';
 import { loadConfig } from './api/config';
-import { testData } from './api/testing';
+//import { testData } from './api/testing';
 import { getTeamById } from './api/teams';
 import { getPlayerById } from './api/players';
 
@@ -292,7 +292,7 @@ export default function (server: http.Server, app: express.Router) {
 
         if(intervalId) return;
         if(runtimeConfig.last?.provider?.timestamp && (new Date()).getTime() - runtimeConfig.last.provider.timestamp*1000 <= 5000) return;
-        
+        /*
         io.emit('enableTest', false);
         
         let i = 0;
@@ -305,7 +305,7 @@ export default function (server: http.Server, app: express.Router) {
             }
             io.emit('update', testData[i]);
             i++;
-        }, 16);
+        }, 16);*/
     });
     
     io.on('connection', socket => {
@@ -393,7 +393,7 @@ export default function (server: http.Server, app: express.Router) {
             return veto;
         });
         match.vetos = vetos;
-        await updateMatch(matches);
+        await updateMatches(matches);
 
         io.emit('match', true);
 
@@ -435,7 +435,7 @@ export default function (server: http.Server, app: express.Router) {
                 }
             }
             match.vetos = vetos;
-            await updateMatch(matches);
+            await updateMatches(matches);
             io.emit('match', true);
         }
     });

@@ -109,7 +109,7 @@ exports.setMatches = function (matches) {
         });
     });
 };
-exports.updateMatch = function (updateMatches) { return __awaiter(void 0, void 0, void 0, function () {
+exports.updateMatches = function (updateMatches) { return __awaiter(void 0, void 0, void 0, function () {
     var currents, left, right, matchesFixed;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -146,11 +146,88 @@ exports.updateMatch = function (updateMatches) { return __awaiter(void 0, void 0
         }
     });
 }); };
-exports.setMatch = function (io) { return function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var matches;
+exports.addMatch = function (match) { return new Promise(function (res, rej) {
+    if (!match.id) {
+        match.id = v4_1["default"]();
+    }
+    match.current = false;
+    matchesDb.insert(match, function (err, doc) {
+        if (err)
+            return res(null);
+        return res(doc);
+    });
+}); };
+exports.deleteMatch = function (id) { return new Promise(function (res, rej) {
+    matchesDb.remove({ id: id }, function (err, doc) {
+        if (err)
+            return res(false);
+        return res(true);
+    });
+}); };
+exports.setCurrent = function (id) { return new Promise(function (res, rej) {
+    matchesDb.update({}, { current: false }, { multi: true }, function (err, n) {
+        if (err)
+            return res(null);
+        matchesDb.update({ id: id }, { current: true }, {}, function (err, n) {
+            if (err)
+                return res(null);
+            return res();
+        });
+    });
+}); };
+exports.updateMatch = function (match) { return new Promise(function (res, rej) {
+    matchesDb.update({ id: match.id }, match, {}, function (err, n) {
+        if (err)
+            return res(false);
+        if (!match.current)
+            return res(true);
+        matchesDb.update({ $where: function () { return this.current && this.id !== match.id; } }, { $set: { current: false } }, { multi: true }, function (err, n) {
+            console.log(n);
+            if (err)
+                return res(false);
+            return res(true);
+        });
+    });
+}); };
+exports.addMatchRoute = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var match;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, exports.addMatch(req.body)];
+            case 1:
+                match = _a.sent();
+                return [2 /*return*/, res.sendStatus(match ? 200 : 500)];
+        }
+    });
+}); };
+exports.deleteMatchRoute = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var match;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, exports.deleteMatch(req.params.id)];
+            case 1:
+                match = _a.sent();
+                return [2 /*return*/, res.sendStatus(match ? 200 : 500)];
+        }
+    });
+}); };
+exports.updateMatchRoute = function (io) { return function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var match;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0: return [4 /*yield*/, exports.updateMatch(req.body)];
+            case 1:
+                match = _a.sent();
+                io.emit('match');
+                return [2 /*return*/, res.sendStatus(match ? 200 : 500)];
+        }
+    });
+}); }; };
+exports.updateMatchesRoute = function (io) { return function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var matches;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, exports.updateMatches(req.body)];
             case 1:
                 _a.sent();
                 io.emit('match');
@@ -190,7 +267,7 @@ exports.reverseSide = function (io) { return __awaiter(void 0, void 0, void 0, f
                 }
                 if (!(current.vetos.filter(function (veto) { return veto.teamId; }).length === 0)) return [3 /*break*/, 3];
                 current.left = [current.right, current.right = current.left][0];
-                return [4 /*yield*/, exports.updateMatch([current])];
+                return [4 /*yield*/, exports.updateMatches([current])];
             case 2:
                 _a.sent();
                 return [2 /*return*/, io.emit("match", true)];
@@ -199,7 +276,7 @@ exports.reverseSide = function (io) { return __awaiter(void 0, void 0, void 0, f
                 if (!currentVetoMap)
                     return [2 /*return*/];
                 currentVetoMap.reverseSide = !currentVetoMap.reverseSide;
-                return [4 /*yield*/, exports.updateMatch([current])];
+                return [4 /*yield*/, exports.updateMatches([current])];
             case 4:
                 _a.sent();
                 io.emit("match", true);
@@ -272,7 +349,7 @@ exports.updateRound = function (game) { return __awaiter(void 0, void 0, void 0,
                     veto.rounds = veto.rounds.splice(0, roundData.round);
                     return veto;
                 });
-                return [2 /*return*/, exports.updateMatch(matches)];
+                return [2 /*return*/, exports.updateMatches(matches)];
         }
     });
 }); };

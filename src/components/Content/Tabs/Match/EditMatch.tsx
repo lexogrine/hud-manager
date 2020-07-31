@@ -53,7 +53,7 @@ export default class MatchEdit extends Component<IProps, I.Match> {
         for (let i = 0; i < 7; i++) {
             vetos.push({ teamId: '', mapName: '', side: 'NO', type: 'pick', mapEnd: false });
         }
-        this.setState({ matchType: event.target.value, vetos });
+        this.setState({ matchType: event.target.value, vetos }, this.save);
     }
     getData = (side: 'right' | 'left', id: string, wins: number) => {
         const { state } = this;
@@ -72,18 +72,15 @@ export default class MatchEdit extends Component<IProps, I.Match> {
     }
     async componentDidMount() {
         if (!this.state.id.length) return;
-        socket.on('match', async () => {
+        socket.on('match', async (force?: boolean) => {
+            if(!force) return;
             const matches = await api.match.get();
             const current = matches.filter(match => match.id === this.state.id)[0];
             if (!current) return;
             this.setState({ vetos: current.vetos });
         });
     }
-    delete = async () => {
-        const matches = this.props.cxt.matches.filter(match => match.id !== this.props.match.id);
-        await api.match.set(matches);
-        this.props.cxt.reload();
-    }
+
     render() {
         const { match, teams } = this.props;
         const left = teams.filter(team => team._id === match.left.id)[0];

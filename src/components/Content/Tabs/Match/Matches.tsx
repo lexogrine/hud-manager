@@ -13,8 +13,7 @@ import { socket } from '../Live/Live';
 
 class MatchRow extends Component<{ match: I.Match, teams: I.Team[], cxt: IContextData, edit: Function, setCurrent: Function }> {
     delete = async () => {
-        const matches = this.props.cxt.matches.filter(match => match.id !== this.props.match.id);
-        await api.match.set(matches);
+        await api.match.delete(this.props.match.id);
         this.props.cxt.reload();
     }
     render() {
@@ -46,18 +45,9 @@ class MatchRow extends Component<{ match: I.Match, teams: I.Team[], cxt: IContex
                 <div className="vetos"></div>
                 <div className="options">
                     <Button className="round-btn " onClick={this.delete}>Delete</Button>
-                    <Button className="round-btn lightblue-btn" id={`match_id_${this.props.match.id}`} onClick={() => this.props.edit(this.props.match)}>Edit</Button>
+                    <Button className="round-btn lightblue-btn" id={`match_id_${match.id}`} onClick={() => this.props.edit(match)}>Edit</Button>
                     <Button className="purple-btn round-btn" onClick={ () => this.props.setCurrent()}>Set as current</Button>
                 </div>
-                {/*<div className="match_data">
-                    <UncontrolledCollapse toggler={`#match_id_${this.props.match.id}`}>
-                        <Card>
-                            <CardBody>
-                                <Match match={this.props.match} cxt={this.props.cxt} edit={this.props.edit}/>
-                            </CardBody>
-                        </Card>
-                    </UncontrolledCollapse>
-                </div>*/}
             </div>
         )
     }
@@ -72,7 +62,6 @@ export default class Matches extends Component<{ cxt: IContextData }, { match: I
         }
     }
     add = async () => {
-        const { matches } = this.props.cxt;
         const newMatch: I.Match = {
             id: uuidv4(),
             current: false,
@@ -86,18 +75,14 @@ export default class Matches extends Component<{ cxt: IContextData }, { match: I
             newMatch.vetos.push({teamId: '', mapName: '', side: 'NO', type:'pick', mapEnd: false, reverseSide:false});
             
         }
-        matches.push(newMatch);
-        await api.match.set(matches);
+        await api.match.add(newMatch);
+        //await api.match.set(matches);
         this.props.cxt.reload();
     }
 
     edit = async (id: string, match: I.Match) => {
-        const { matches } = this.props.cxt;
-        const newMatches = matches.map(oldMatch => {
-            if(oldMatch.id !== id) return oldMatch;
-            return match;
-        })
-        await api.match.set(newMatches);
+        await api.match.update(id, match);
+        //lawait api.match.set(newMatches);
         this.props.cxt.reload();
         
     }
@@ -108,11 +93,11 @@ export default class Matches extends Component<{ cxt: IContextData }, { match: I
 
     setCurrent = (id: string) => async () => {
         const { matches } = this.props.cxt;
-        const newMatches = matches.map(match => {
-            match.current = match.id === id;
-            return match;
-        });
-        await api.match.set(newMatches);
+        const match = matches.find(match => match.id === id);
+        if(!match) return;
+        match.current = true;
+        await api.match.update(id, match);
+        // await api.match.set(newMatches);
         this.props.cxt.reload();
 
     }

@@ -61,7 +61,7 @@ var match_1 = require("./api/match");
 var fs_1 = __importDefault(require("fs"));
 var portscanner_1 = __importDefault(require("portscanner"));
 var config_1 = require("./api/config");
-var testing_1 = require("./api/testing");
+//import { testData } from './api/testing';
 var teams_1 = require("./api/teams");
 var players_1 = require("./api/players");
 var radar = require("./../boltobserv/index.js");
@@ -414,18 +414,20 @@ function default_1(server, app) {
             return;
         if (((_b = (_a = runtimeConfig.last) === null || _a === void 0 ? void 0 : _a.provider) === null || _b === void 0 ? void 0 : _b.timestamp) && (new Date()).getTime() - runtimeConfig.last.provider.timestamp * 1000 <= 5000)
             return;
+        /*
         io.emit('enableTest', false);
-        var i = 0;
-        intervalId = setInterval(function () {
-            if (!testing_1.testData[i]) {
+        
+        let i = 0;
+        intervalId = setInterval(() => {
+            if(!testData[i]) {
                 clearInterval(intervalId);
                 intervalId = null;
                 io.emit('enableTest', true);
                 return;
             }
-            io.emit('update', testing_1.testData[i]);
+            io.emit('update', testData[i]);
             i++;
-        }, 16);
+        }, 16);*/
     });
     io.on('connection', function (socket) {
         socket.on('started', function () {
@@ -534,7 +536,7 @@ function default_1(server, app) {
                         return veto;
                     });
                     match.vetos = vetos;
-                    return [4 /*yield*/, match_1.updateMatch(matches)];
+                    return [4 /*yield*/, match_1.updateMatches(matches)];
                 case 2:
                     _a.sent();
                     io.emit('match', true);
@@ -585,7 +587,7 @@ function default_1(server, app) {
                         }
                     }
                     match.vetos = vetos;
-                    return [4 /*yield*/, match_1.updateMatch(matches)];
+                    return [4 /*yield*/, match_1.updateMatches(matches)];
                 case 2:
                     _a.sent();
                     io.emit('match', true);

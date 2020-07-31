@@ -113,6 +113,9 @@ export default {
     match: {
         get: async (): Promise<I.Match[]> => await apiV2('match'),
         set: async (match: I.Match[]): Promise<I.Match[]> => apiV2('match', 'PATCH', match),
+        add: async (match: I.Match) => apiV2('match', 'POST', match),
+        update: async (id: string, match: any) => await apiV2(`match/${id}`, 'PATCH', match),
+        delete: async (id: string) => await apiV2(`match/${id}`, 'DELETE'),
         getMaps: async (): Promise<string[]> => await apiV2('maps')
     },
     user: {

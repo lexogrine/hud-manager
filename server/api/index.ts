@@ -58,7 +58,14 @@ export default function (router: express.Router, io: socketio.Server) {
 
     router.route('/api/match')
         .get(match.getMatchesRoute)
-        .patch(match.setMatch(io));
+        .post(match.addMatchRoute)
+        .patch(match.updateMatchesRoute(io));
+
+    router.route('/api/match/:id')
+        //.get(teams.getTeam)
+        .patch(match.updateMatchRoute(io))
+        .delete(match.deleteMatchRoute);
+
 
     router.route('/api/huds')
         .get(huds.getHUDs)

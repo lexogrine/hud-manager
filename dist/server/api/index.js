@@ -52,7 +52,11 @@ function default_1(router, io) {
         .patch(config.updateConfig);
     router.route('/api/match')
         .get(match.getMatchesRoute)
-        .patch(match.setMatch(io));
+        .post(match.addMatchRoute)
+        .patch(match.updateMatchesRoute(io));
+    router.route('/api/match/:id')
+        //.get(teams.getTeam)
+        .patch(match.updateMatchRoute(io))["delete"](match.deleteMatchRoute);
     router.route('/api/huds')
         .get(huds.getHUDs)
         .post(huds.openHUDsDirectory)["delete"](huds.deleteHUD(io));
