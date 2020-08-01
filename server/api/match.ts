@@ -82,7 +82,7 @@ export const updateMatches = async (updateMatches: Match[]) => {
     await setMatches(matchesFixed);
 }
 
-export const addMatch = (match: Match) => new Promise((res, rej) => {
+export const addMatch = (match: Match): Promise<Match> => new Promise((res, rej) => {
     if (!match.id) {
         match.id = uuidv4();
     }
