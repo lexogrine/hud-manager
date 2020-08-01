@@ -31,6 +31,9 @@ export interface Veto {
     winner?: string,
     mapEnd: boolean
 }
+
+export type BOTypes = 'bo1' | 'bo2' | 'bo3' | 'bo5';
+
 export interface Match {
     id: string,
     current: boolean,
@@ -42,8 +45,24 @@ export interface Match {
         id: string | null,
         wins: number
     },
-    matchType: 'bo1' | 'bo2' | 'bo3' | 'bo5',
+    matchType: BOTypes,
     vetos: Veto[]
+}
+
+export interface TournamentMatchup {
+    _id: string,
+    loser_to: string | null, // IDs of Matchups, not Matches
+    winner_to: string | null,
+    label: string,
+    matchId: string | null,
+}
+
+export interface Tournament {
+    _id: string,
+    name: string,
+    logo: string,
+    matchups: TournamentMatchup[],
+    autoCreate: boolean,
 }
 
 export interface Config {
