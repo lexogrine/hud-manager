@@ -6,17 +6,17 @@ import db from './../../../init/database';
 
 const { tournaments } = db;
 
-const getTournaments = (): Promise<I.Tournament[]> => new Promise((res, rej) => {
+export const getTournaments = (): Promise<I.Tournament[]> => new Promise((res, rej) => {
     tournaments.find({}, (err, docs) => {
         if(err) return res([]);
         return res(docs);
     });
 });
 
-const createTournament = (type: string, teams: number): Omit<I.Tournament, "_id"> => {
+export const createTournament = (type: string, teams: number): I.Tournament => {
     const tournament = {
+        _id: '',
         name: '',
-        label: '',
         logo: '',
         matchups: [],
         autoCreate: true,
@@ -32,7 +32,14 @@ const createTournament = (type: string, teams: number): Omit<I.Tournament, "_id"
     return tournament;
 }
 
-const getTournament = (tournamentId: string): Promise<I.Tournament | null> => new Promise((res, rej) => {
+export const addTournament = (tournament: I.Tournament): Promise<I.Tournament> => new Promise((res, rej) => {
+    tournaments.insert(tournament, (err, newTournament) => {
+        if(err) return res(null);
+        return newTournament;
+    });
+});
+
+export const getTournament = (tournamentId: string): Promise<I.Tournament | null> => new Promise((res, rej) => {
     tournaments.findOne({ _id: tournamentId }, (err, tournament) => {
         if (err || !tournament) return res(null);
         return res(tournament);
@@ -49,7 +56,7 @@ export const bindMatch = (matchId: string, matchupId: string, tournamentId: stri
     return await updateTournament(tournament);
 });
 
-export const updateTournament = (tournament: I.Tournament) => new Promise((res, rej) => {
+export const updateTournament = (tournament: I.Tournament): Promise<I.Tournament | null> => new Promise((res, rej) => {
     tournaments.update({ _id: tournament._id }, tournament, {}, (err, up) => {
         if(err) return res(null);
         return res(tournament);

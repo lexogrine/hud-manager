@@ -10,6 +10,7 @@ const createMatchup = (): I.TournamentMatchup => ({
 });
 
 export const createSEBracket = (teams: number) => {
+    if (!Number.isInteger(Math.log2(teams))) return [];
     const amountOfMatches = teams - 1;
     const phases = Math.log2(teams);
 
