@@ -6,6 +6,13 @@ import db from './../../../init/database';
 
 const { tournaments } = db;
 
+const getTournaments = (): Promise<I.Tournament[]> => new Promise((res, rej) => {
+    tournaments.find({}, (err, docs) => {
+        if(err) return res([]);
+        return res(docs);
+    });
+});
+
 const createTournament = (type: string, teams: number): Omit<I.Tournament, "_id"> => {
     const tournament = {
         name: '',
@@ -32,16 +39,24 @@ const getTournament = (tournamentId: string): Promise<I.Tournament | null> => ne
     });
 });
 
-const bindMatch = async (matchId: string, matchupId: string, tournamentId: string) => {
+export const bindMatch = (matchId: string, matchupId: string, tournamentId: string): Promise<I.Tournament | null> => new Promise(async (res, rej) => {
     const tournament = await getTournament(tournamentId);
-    if (!tournament) return;
-    tournament.matchups.forEach(matchup => {
-        if (!matchup || matchup._id !== matchupId) return;
-        matchup.matchId = matchId;
-    });
-}
+    if (!tournament) return res(null);
+    const matchup = tournament.matchups.find(matchup => matchup._id === matchupId);
+    if(!matchup) return res(null);
+    matchup.matchId = matchId;
+    
+    return await updateTournament(tournament);
+});
 
-const createNextMatch = async (matchId: string) => new Promise((res, rej) => {
+export const updateTournament = (tournament: I.Tournament) => new Promise((res, rej) => {
+    tournaments.update({ _id: tournament._id }, tournament, {}, (err, up) => {
+        if(err) return res(null);
+        return res(tournament);
+    });
+});
+
+export const createNextMatch = async (matchId: string) => new Promise((res, rej) => {
     const maxWins = (type: I.BOTypes) => {
         switch (type) {
             case "bo1":
@@ -91,6 +106,7 @@ const createNextMatch = async (matchId: string) => new Promise((res, rej) => {
             if(!resp) return res(null);
 
             nextMatchup.matchId = newMatch.id;
+            await updateTournament(tournament);
         }
 
         const nextMatch = await M.getMatchById(nextMatchup.matchId);
@@ -105,5 +121,12 @@ const createNextMatch = async (matchId: string) => new Promise((res, rej) => {
         }
         await M.updateMatch(nextMatch);
         return res(nextMatch);
+    });
+});
+
+export const deleteTournament = (tournamentId: string) => new Promise((res, rej) => {
+    tournaments.remove({ _id: tournamentId }, (err, n) => {
+        if(!err) return res(null);
+        return res(true);
     });
 });
