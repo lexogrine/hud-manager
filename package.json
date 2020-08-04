@@ -4,6 +4,9 @@
   "homepage": "./",
   "description": "Lexogrine HUD Manager",
   "author": "Lexogrine",
+  "contributors": [
+    "Noel Bank <info@nbank.dev> (https://nbank.dev)"
+  ],
   "private": true,
   "dependencies": {
     "@node-steam/vdf": "^2.1.0",
