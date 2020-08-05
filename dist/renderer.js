@@ -96,7 +96,7 @@ exports.createMainWindow = function (forceDev) {
                         }); });
                     }
                     win = new electron_1.BrowserWindow({
-                        height: 700,
+                        height: 835,
                         show: false,
                         frame: false,
                         titleBarStyle: "hidden",
@@ -109,7 +109,7 @@ exports.createMainWindow = function (forceDev) {
                             devTools: isDev || forceDev
                         },
                         minWidth: 775,
-                        minHeight: 700,
+                        minHeight: 835,
                         width: 1010
                     });
                     win.once("ready-to-show", function () {

@@ -32,11 +32,13 @@ export default class Layout extends React.Component<IProps, IState> {
                 teams: [],
                 players: [],
                 matches: [],
+                tournaments: [],
                 reload: () => {
                     return Promise.all([
                         this.loadPlayers(),
                         this.loadTeams(),
                         this.loadMatch(),
+                        this.loadTournaments()
                     ])
                 }
             },
@@ -51,7 +53,6 @@ export default class Layout extends React.Component<IProps, IState> {
         socket.on('match', (fromVeto?: boolean) => {
             if(fromVeto) this.loadMatch();
         });
-        socket.on('devHUD', (status: boolean) => {console.log(status)})
     }
     loadUser = async () => {
 
@@ -106,6 +107,14 @@ export default class Layout extends React.Component<IProps, IState> {
         const { data } = this.state;
         data.matches = matches;
         if(matches){
+            this.setState({data});
+        }
+    }
+    loadTournaments = async () => {
+        const tournaments = await api.tournaments.get();
+        const { data } = this.state;
+        data.tournaments = tournaments;
+        if(tournaments){
             this.setState({data});
         }
     }

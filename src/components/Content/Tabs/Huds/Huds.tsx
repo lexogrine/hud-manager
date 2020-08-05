@@ -107,9 +107,7 @@ export default class Huds extends React.Component<IProps, IState> {
             if (file.name.substr(-4) === '.rar' || !name) {
                 return;
             }
-            //form[sectionName][name] = reader.result.replace(/^data:([a-z]+)\/([a-z0-9]+);base64,/, '');
-            //this.setState({ form }, () => console.log(this.state.form))
-            //console.log(reader.result)
+
             api.huds.upload(reader.result, name);
         }
     }

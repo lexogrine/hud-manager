@@ -8,7 +8,7 @@ import fetch from 'node-fetch';
 import * as I from './../types/interfaces';
 import request from 'request';
 import { getHUDData } from './../server/api/huds';
-import { getMatches, updateMatches, updateRound, getMatchById } from './api/match';
+import { getMatches, updateRound, getMatchById, updateMatch } from './api/match';
 import fs from 'fs';
 import portscanner from 'portscanner';
 import { loadConfig } from './api/config';
@@ -393,7 +393,7 @@ export default function (server: http.Server, app: express.Router) {
             return veto;
         });
         match.vetos = vetos;
-        await updateMatches(matches);
+        await updateMatch(match);
 
         io.emit('match', true);
 
@@ -435,7 +435,7 @@ export default function (server: http.Server, app: express.Router) {
                 }
             }
             match.vetos = vetos;
-            await updateMatches(matches);
+            await updateMatch(match);
             io.emit('match', true);
         }
     });

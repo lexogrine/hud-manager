@@ -181,12 +181,28 @@ exports.updateMatch = function (match) { return new Promise(function (res, rej) 
             return res(false);
         if (!match.current)
             return res(true);
-        matchesDb.update({ $where: function () { return this.current && this.id !== match.id; } }, { $set: { current: false } }, { multi: true }, function (err, n) {
-            console.log(n);
-            if (err)
-                return res(false);
-            return res(true);
-        });
+        matchesDb.update({ $where: function () { return this.current && this.id !== match.id; } }, { $set: { current: false } }, { multi: true }, function (err, n) { return __awaiter(void 0, void 0, void 0, function () {
+            var left, right;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, teams_1.getTeamById(match.left.id)];
+                    case 1:
+                        left = _a.sent();
+                        return [4 /*yield*/, teams_1.getTeamById(match.right.id)];
+                    case 2:
+                        right = _a.sent();
+                        if (left && left._id) {
+                            sockets_1.GSI.setTeamOne({ id: left._id, name: left.name, country: left.country, logo: left.logo, map_score: match.left.wins });
+                        }
+                        if (right && right._id) {
+                            sockets_1.GSI.setTeamTwo({ id: right._id, name: right.name, country: right.country, logo: right.logo, map_score: match.right.wins });
+                        }
+                        if (err)
+                            return [2 /*return*/, res(false)];
+                        return [2 /*return*/, res(true)];
+                }
+            });
+        }); });
     });
 }); };
 exports.addMatchRoute = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
@@ -223,21 +239,6 @@ exports.updateMatchRoute = function (io) { return function (req, res) { return _
         }
     });
 }); }; };
-exports.updateMatchesRoute = function (io) { return function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var matches;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4 /*yield*/, exports.updateMatches(req.body)];
-            case 1:
-                _a.sent();
-                io.emit('match');
-                return [4 /*yield*/, exports.getMatches()];
-            case 2:
-                matches = _a.sent();
-                return [2 /*return*/, res.json(matches)];
-        }
-    });
-}); }; };
 exports.getMaps = function (req, res) {
     var defaultMaps = ["de_mirage", "de_dust2", "de_inferno", "de_nuke", "de_train", "de_overpass", "de_vertigo"];
     var mapFilePath = path_1["default"].join(electron_1.app.getPath('userData'), 'maps.json');
@@ -267,7 +268,7 @@ exports.reverseSide = function (io) { return __awaiter(void 0, void 0, void 0, f
                 }
                 if (!(current.vetos.filter(function (veto) { return veto.teamId; }).length === 0)) return [3 /*break*/, 3];
                 current.left = [current.right, current.right = current.left][0];
-                return [4 /*yield*/, exports.updateMatches([current])];
+                return [4 /*yield*/, exports.updateMatch(current)];
             case 2:
                 _a.sent();
                 return [2 /*return*/, io.emit("match", true)];
@@ -276,7 +277,7 @@ exports.reverseSide = function (io) { return __awaiter(void 0, void 0, void 0, f
                 if (!currentVetoMap)
                     return [2 /*return*/];
                 currentVetoMap.reverseSide = !currentVetoMap.reverseSide;
-                return [4 /*yield*/, exports.updateMatches([current])];
+                return [4 /*yield*/, exports.updateMatch(current)];
             case 4:
                 _a.sent();
                 io.emit("match", true);
@@ -349,7 +350,7 @@ exports.updateRound = function (game) { return __awaiter(void 0, void 0, void 0,
                     veto.rounds = veto.rounds.splice(0, roundData.round);
                     return veto;
                 });
-                return [2 /*return*/, exports.updateMatches(matches)];
+                return [2 /*return*/, exports.updateMatch(match)];
         }
     });
 }); };

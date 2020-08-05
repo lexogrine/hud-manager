@@ -82,7 +82,7 @@ export const updateMatches = async (updateMatches: Match[]) => {
     await setMatches(matchesFixed);
 }
 
-export const addMatch = (match: Match): Promise<Match> => new Promise((res, rej) => {
+export const addMatch = (match: Match) => new Promise((res, rej) => {
     if (!match.id) {
         match.id = uuidv4();
     }
@@ -114,8 +114,16 @@ export const updateMatch = (match: Match) => new Promise((res, rej) => {
     matchesDb.update({ id: match.id }, match, {}, (err, n) => {
         if(err) return res(false);
         if(!match.current) return res(true);
-        matchesDb.update({ $where: function () { return this.current && this.id !== match.id } }, { $set: { current: false } }, { multi: true }, (err, n) => {
-            console.log(n);
+        matchesDb.update({ $where: function () { return this.current && this.id !== match.id } }, { $set: { current: false } }, { multi: true }, async (err, n) => {
+            const left = await getTeamById(match.left.id);
+            const right = await getTeamById(match.right.id);
+    
+            if (left && left._id) {
+                GSI.setTeamOne({ id: left._id, name: left.name, country: left.country, logo: left.logo, map_score: match.left.wins });
+            }
+            if (right && right._id) {
+                GSI.setTeamTwo({ id: right._id, name: right.name, country: right.country, logo: right.logo, map_score: match.right.wins });
+            }
             if(err) return res(false);
             return res(true);
         });
@@ -137,14 +145,6 @@ export const updateMatchRoute = (io: socketio.Server): RequestHandler => async (
     io.emit('match');
     return res.sendStatus(match ? 200 : 500);
 }
-
-export const updateMatchesRoute = (io: socketio.Server) => async (req, res) => {
-    await updateMatches(req.body);
-    io.emit('match');
-    const matches = await getMatches();
-    return res.json(matches);
-}
-
 
 export const getMaps: express.RequestHandler = (req, res) => {
     const defaultMaps = ["de_mirage", "de_dust2", "de_inferno", "de_nuke", "de_train", "de_overpass", "de_vertigo"];
@@ -169,13 +169,13 @@ export const reverseSide = async (io: socketio.Server) => {
     }
     if (current.vetos.filter(veto => veto.teamId).length === 0) {
         current.left = [current.right, current.right = current.left][0];
-        await updateMatches([current]);
+        await updateMatch(current);
         return io.emit("match", true);
     }
     const currentVetoMap = current.vetos.find(veto => GSI.last.map.name.includes(veto.mapName));
     if (!currentVetoMap) return;
     currentVetoMap.reverseSide = !currentVetoMap.reverseSide;
-    await updateMatches([current]);
+    await updateMatch(current);
 
     io.emit("match", true);
 }
@@ -241,6 +241,6 @@ export const updateRound = async (game: CSGO) => {
         veto.rounds = veto.rounds.splice(0, roundData.round);
         return veto;
     });
-
-    return updateMatches(matches);
+    
+    return updateMatch(match);
 }

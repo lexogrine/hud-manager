@@ -16,12 +16,12 @@ body {
 }
 .navbar-container > li {
     width:100%;
-    height: calc(calc(100vh - 64px)/5);
+    height: calc(calc(100vh - 64px)/6);
     max-height: 135px;
 }
 .navbar-container > li > a{
     width:100%;
-    height: calc(calc(100vh - 64px)/5 - 1px);
+    height: calc(calc(100vh - 64px)/6 - 1px);
     max-height: 134px;
     background-color: #2b2e34; 
     display: flex;
@@ -238,7 +238,7 @@ img.smallLogo {
 .modal-content {
     color: white;
 }
-.team-data, .card-subtitle {
+.card-subtitle {
     display: flex;
     flex-direction: column;
     align-items: center;

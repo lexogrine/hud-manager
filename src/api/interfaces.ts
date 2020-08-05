@@ -1,4 +1,4 @@
-import { PanelInput, SelectActionInput, GeneralInput, PanelInputType, KeyBind, PanelTemplate, HUD, Match, Veto, VetoType } from './../../types/interfaces';
+export type { PanelInput, SelectActionInput, GeneralInput, PanelInputType, KeyBind, PanelTemplate, HUD, Match, Veto, VetoType, Tournament } from './../../types/interfaces';
 
 export interface Player {
     _id: string,
@@ -53,5 +53,3 @@ export interface Customer {
     iat: number,
     exp: number
 }
-
-export type { PanelInput, PanelInputType, SelectActionInput, GeneralInput, KeyBind, PanelTemplate, HUD, Match, Veto, VetoType };

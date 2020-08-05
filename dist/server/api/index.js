@@ -23,6 +23,7 @@ var game = __importStar(require("./game"));
 var sync = __importStar(require("./sync"));
 var machine = __importStar(require("./machine"));
 var user = __importStar(require("./user"));
+var routes_1 = __importDefault(require("./tournaments/routes"));
 exports.customer = {
     customer: null
 };
@@ -52,11 +53,11 @@ function default_1(router, io) {
         .patch(config.updateConfig);
     router.route('/api/match')
         .get(match.getMatchesRoute)
-        .post(match.addMatchRoute)
-        .patch(match.updateMatchesRoute(io));
+        .post(match.addMatchRoute);
     router.route('/api/match/:id')
         //.get(teams.getTeam)
         .patch(match.updateMatchRoute(io))["delete"](match.deleteMatchRoute);
+    routes_1["default"](router);
     router.route('/api/huds')
         .get(huds.getHUDs)
         .post(huds.openHUDsDirectory)["delete"](huds.deleteHUD(io));

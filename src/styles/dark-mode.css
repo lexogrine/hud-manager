@@ -118,3 +118,52 @@ button.btn-primary {
 .winner-crown:not(.winner){
     opacity:0;
 }
+.ladder-view {
+    height:500px;
+}
+.ladder-view > .bracket {
+    
+    height: 100%;
+    width: 100%;
+}
+.bracket {
+    display: flex;
+}
+.parent-brackets {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.bracket-details {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.bracket-details .match-details{
+    display: flex;
+    flex-direction: column;
+    width: 200px;
+    margin: 10px 20px;
+    background: rgba(0,0,0,0.5);
+    border-radius: 2px;
+    padding: 5px;
+}
+.bracket-details .match-details .team-data {
+    display: flex;
+}
+.bracket-details .match-details .team-data .team-name {
+    flex:1;
+}
+.bracket-details .match-details .team-data .team-score {
+    width: 10px;
+}
+.bracket-details .match-details .team-data .team-logo {
+    width:30px;
+    height:100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.bracket-details .match-details .team-data .team-logo img {
+    height: 20px;
+}

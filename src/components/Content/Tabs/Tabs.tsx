@@ -4,6 +4,7 @@ import Teams from "./Teams/Teams";
 import Players from "./Players/Players";
 import Matches from "./Match/Matches";
 import Huds from "./Huds/Huds";
+import Tournaments from "./Tournaments/Tournaments";
 import Config from "./Config/Config";
 import Credits from "./Credits/Credits";
 import Live from "./Live/Live";
@@ -34,6 +35,9 @@ export default class Tabs extends React.Component<IProps> {
                                 </TabPane>
                                 <TabPane tabId="huds" >
                                     <Huds cxt={data}></Huds>
+                                </TabPane>
+                                <TabPane tabId="tournaments" >
+                                    <Tournaments cxt={data}></Tournaments>
                                 </TabPane>
                                 <TabPane tabId="live" >
                                     <Live toggle={this.props.toggle} cxt={data}></Live>

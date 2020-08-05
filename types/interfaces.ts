@@ -55,6 +55,7 @@ export interface TournamentMatchup {
     winner_to: string | null,
     label: string,
     matchId: string | null,
+    parents: TournamentMatchup[]
 }
 
 export interface Tournament {

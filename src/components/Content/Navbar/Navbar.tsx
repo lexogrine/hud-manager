@@ -40,6 +40,15 @@ export default class Navbar extends React.Component<IProps> {
                 </NavItem>
                 <NavItem className="hover-pointer">
                     <NavLink
+                        active={ this.props.activeTab === 'tournaments' }
+                        onClick={() => { this.props.toggle('tournaments'); }}
+                    >
+                        <img src={Tabs.Matches} alt="Tournaments"/>
+                        <div>Tournaments</div>
+                    </NavLink>
+                </NavItem>
+                <NavItem className="hover-pointer">
+                    <NavLink
                         active={ this.props.activeTab === 'huds' }
                         onClick={() => { this.props.toggle('huds'); }}
                     >
@@ -63,20 +72,6 @@ export default class Navbar extends React.Component<IProps> {
                     >Settings {!this.props.files ? <i className='material-icons'>warning</i> : null}
                     </NavLink>
                 </NavItem>
-                {/*<NavItem className="hover-pointer">
-                    <NavLink
-                        active={ this.props.activeTab === 'config' }
-                        onClick={() => { this.props.toggle('config'); }}
-                    >Config
-                    </NavLink>
-                </NavItem>
-                <NavItem className="hover-pointer">
-                    <NavLink
-                        active={ this.props.activeTab === 'credits' }
-                        onClick={() => { this.props.toggle('credits'); }}
-                    >Credits
-                    </NavLink>
-        </NavItem>*/}
             </Nav>
         );
     }

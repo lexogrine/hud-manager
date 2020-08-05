@@ -13,6 +13,7 @@ import * as sync from './sync';
 import * as machine from './machine';
 import * as user from './user';
 import * as I from './../../types/interfaces';
+import T from './tournaments/routes';
 
 
 export const customer: I.CustomerData = {
@@ -59,13 +60,13 @@ export default function (router: express.Router, io: socketio.Server) {
     router.route('/api/match')
         .get(match.getMatchesRoute)
         .post(match.addMatchRoute)
-        .patch(match.updateMatchesRoute(io));
 
     router.route('/api/match/:id')
         //.get(teams.getTeam)
         .patch(match.updateMatchRoute(io))
         .delete(match.deleteMatchRoute);
 
+    T(router);
 
     router.route('/api/huds')
         .get(huds.getHUDs)

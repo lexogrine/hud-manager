@@ -118,6 +118,11 @@ export default {
         delete: async (id: string) => await apiV2(`match/${id}`, 'DELETE'),
         getMaps: async (): Promise<string[]> => await apiV2('maps')
     },
+    tournaments: {
+        get: async (): Promise<I.Tournament[]> => await apiV2('tournaments'),
+        add: (tournament: { name: string, logo: string, teams: number, type: string}): Promise<I.Tournament> => apiV2('tournaments', 'POST', tournament),
+        bind: (tournamentId: string, matchId: string, matchupId: string) => apiV2(`tournaments/${tournamentId}`, 'POST', { matchId, matchupId })
+    },
     user: {
         get: async(machineId: string): Promise<{token: string} | {error:string} | false> => await sessionAPI(`auth/${machineId}`),
         login: async(username: string, password: string): Promise<any> => await sessionAPI("auth", "POST", {username, password}),

@@ -6,7 +6,8 @@ const createMatchup = (): I.TournamentMatchup => ({
     winner_to: null,
     loser_to: null,
     label: '',
-    matchId: null
+    matchId: null,
+    parents: []
 });
 
 export const createSEBracket = (teams: number) => {
@@ -21,7 +22,10 @@ export const createSEBracket = (teams: number) => {
         for(let j = 0; j < matchesInPhase; j++){
             const match = createMatchup();
             const index = matchups.length;
-            if(i === 0) continue;
+            if(i === 0) {
+                matchups.push(match);
+                continue;
+            }
             const parentIndex = Math.floor((index - 1)/2);
             match.winner_to = matchups[parentIndex]._id;
             matchups.push(match);

@@ -536,7 +536,7 @@ function default_1(server, app) {
                         return veto;
                     });
                     match.vetos = vetos;
-                    return [4 /*yield*/, match_1.updateMatches(matches)];
+                    return [4 /*yield*/, match_1.updateMatch(match)];
                 case 2:
                     _a.sent();
                     io.emit('match', true);
@@ -587,7 +587,7 @@ function default_1(server, app) {
                         }
                     }
                     match.vetos = vetos;
-                    return [4 /*yield*/, match_1.updateMatches(matches)];
+                    return [4 /*yield*/, match_1.updateMatch(match)];
                 case 2:
                     _a.sent();
                     io.emit('match', true);

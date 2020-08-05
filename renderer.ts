@@ -39,7 +39,7 @@ export const createMainWindow = async (forceDev = false) => {
 
 
     win = new BrowserWindow({
-        height: 700,
+        height: 835,
         show: false,
         frame:false,
         titleBarStyle:"hidden",
@@ -52,7 +52,7 @@ export const createMainWindow = async (forceDev = false) => {
             devTools: isDev || forceDev
         },
         minWidth: 775,
-        minHeight:700,
+        minHeight:835,
         width: 1010,
     });
 
