@@ -130,6 +130,32 @@ body {
     margin-bottom: 10px;
 
 }
+.section_menu {
+    display: flex;
+    height: 50px;
+}
+.section_menu_button {
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border-right:1px solid #80808029;
+    background: #2f3238;
+    cursor:pointer;
+}
+.section_menu_button.active {
+    background: #6b1cff;
+    font-weight: 600;
+}
+.section_menu_button:last-child{
+    border-right: none;
+}
+.section_panel_container {
+    padding: 53px;
+    padding-bottom: 0px;
+}
 .event-container .logo-container {
     display: flex;
     align-items: center;

@@ -151,7 +151,7 @@ export default class Huds extends React.Component<IProps, IState> {
                     <img src={goBack} onClick={this.toggleConfig()} className="go-back-button" alt="Go back" />
                     HUD Settings
                 </div>
-                <div className="tab-content-container full-scroll">
+                <div className="tab-content-container full-scroll no-padding">
                     <Panel hud={active} cxt={this.props.cxt} />
                 </div>
             </React.Fragment>

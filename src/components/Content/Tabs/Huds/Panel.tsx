@@ -11,19 +11,21 @@ interface IProps {
     hud: I.HUD
 }
 interface IState {
-    form: any
+    form: any,
+    active: string
 }
 export default class ActionPanel extends React.Component<IProps, IState> {
     constructor(props: IProps) {
         super(props);
         this.state = {
-            form: {}
+            form: {},
+            active: (props.hud.panel && props.hud.panel[0].name) || ''
         }
     }
     changeForm = (section: string, name: string, type: I.PanelInputType) => (e: any) => {
         const { form } = this.state;
         if (!form[section]) form[section] = {};
-        switch(type){
+        switch (type) {
             case "player":
             case "team":
             case "match":
@@ -38,6 +40,9 @@ export default class ActionPanel extends React.Component<IProps, IState> {
         }
         this.setState({ form });
     }
+    componentWillUnmount = () => {
+
+    }
     componentDidMount() {
         const { hud }: { hud: I.HUD } = this.props;
         if (!hud.panel) return;
@@ -47,8 +52,8 @@ export default class ActionPanel extends React.Component<IProps, IState> {
             form[section.name] = {};
             for (let input of section.inputs) {
                 if (input.type !== 'action') form[section.name][input.name] = '';
-                if(input.type === "player" || input.type === "team" || input.type === "match") form[section.name][input.name] = {};
-                if(input.type === "checkbox") form[section.name][input.name] = false;
+                if (input.type === "player" || input.type === "team" || input.type === "match") form[section.name][input.name] = {};
+                if (input.type === "checkbox") form[section.name][input.name] = false;
             }
         }
         this.setState({ form });
@@ -118,148 +123,164 @@ export default class ActionPanel extends React.Component<IProps, IState> {
 
     getCheckboxes = (panel: I.PanelTemplate) => this.filterInputs(panel, "checkbox");
 
-    render() {
-        const { hud, cxt } = this.props;
-        const { teams, matches, players } = cxt;
-        if (!hud.panel) return '';
-        const { form } = this.state;
-        return (
-            <div>
-                {hud.panel.map(section => <div key={section.label} className="custom_form">
-                    <div className="section_name">{section.label}</div>
-                    <Form>
-                        {this.getTextInputs(section).map(inputs => <Row>
-                            {inputs.map(input => <Col s={6} key={input.name}>
-                                <FormGroup>
-                                    <Input type="text"
-                                        placeholder={input.label}
-                                        name={input.name.toLowerCase()}
-                                        id={input.name.toLowerCase()}
-                                        onChange={this.changeForm(section.name, input.name, input.type)}
-                                        value={(form[section.name] && form[section.name][input.name]) || ''}
-                                    />
-                                </FormGroup>
-                            </Col>)}
-                        </Row>)}
-                        {this.getTeamSelect(section).map(input => <Row key={input.name}>
-                            <Col s={12}>
-                                <FormGroup>
-                                    <Label for={input.name.toLowerCase()}>{input.label}</Label>
-                                    <Input
-                                        type="select"
-                                        id={input.name.toLowerCase()}
-                                        name={input.name.toLowerCase()}
-                                        value={(form[section.name] && form[section.name][input.name] && form[section.name][input.name].id) || ''}
-                                        onChange={this.changeForm(section.name, input.name, input.type)}
-                                    >
-                                        <option value="">No team</option>
-                                        {teams.concat().sort((a, b) => a.name < b.name ? -1 : 1).map(team => <option value={team._id}>{team.name}</option>)}
-                                    </Input>
-                                </FormGroup>
-                            </Col>
-                        </Row>
-                        )}
-                        {this.getPlayerSelect(section).map(input => <Row key={input.name}>
-                            <Col s={12}>
-                                <FormGroup>
-                                    <Label for={input.name.toLowerCase()}>{input.label}</Label>
-                                    <Input
-                                        type="select"
-                                        id={input.name.toLowerCase()}
-                                        name={input.name.toLowerCase()}
-                                        value={(form[section.name] && form[section.name][input.name] && form[section.name][input.name].id) || ''}
-                                        onChange={this.changeForm(section.name, input.name, input.type)}
-                                    >
-                                        <option value="">No player</option>
-                                        {players.concat().sort((a, b) => a.username < b.username ? -1 : 1).map(player => <option value={player._id}>{player.username}</option>)}
-                                    </Input>
-                                </FormGroup>
-                            </Col>
-                        </Row>
-                        )}
-                        {this.getMatchSelect(section).map(input => <Row key={input.name}>
-                            <Col s={12}>
-                                <FormGroup>
-                                    <Label for={input.name.toLowerCase()}>{input.label}</Label>
-                                    <Input
-                                        type="select"
-                                        id={input.name.toLowerCase()}
-                                        name={input.name.toLowerCase()}
-                                        value={(form[section.name] && form[section.name][input.name] && form[section.name][input.name].id) || ''}
-                                        onChange={this.changeForm(section.name, input.name, input.type)}
-                                    >
-                                        <option value="">No match</option>
-                                        {matches.map(match => <option value={match.id}>
-                                            {(teams.find(team => team._id === match.left.id) || {}).name || '-'} vs {(teams.find(team => team._id === match.right.id) || {}).name || '-'}
-                                        </option>)}
-                                    </Input>
-                                </FormGroup>
-                            </Col>
-                        </Row>
-                        )}
-                        {this.getSelects(section).map(input => input.type === "select" ? <Row key={input.name}>
-                            <Col s={12}>
-                                <FormGroup>
-                                    <Label for={input.name.toLowerCase()}>{input.label}</Label>
-                                    <Input
-                                        type="select"
-                                        id={input.name.toLowerCase()}
-                                        name={input.name.toLowerCase()}
-                                        value={(form[section.name] && form[section.name][input.name]) || ''}
-                                        onChange={this.changeForm(section.name, input.name, input.type)}
-                                    >
-                                        <option value="">No value</option>
-                                        {input.values.concat().sort((a, b) => a.label < b.label ? -1 : 1).map(value => <option value={value.name}>{value.label}</option>)}
-                                    </Input>
-                                </FormGroup>
-                            </Col>
-                        </Row> : null
-                        )}
-                        {this.getCheckboxes(section).map(input => input.type === "checkbox" ? <Row key={input.name}>
-                            <Col s={12}>
-                                <FormGroup check>
-                                    <Input
-                                        type="checkbox"
-                                        id={input.name.toLowerCase()}
-                                        name={input.name.toLowerCase()}
-                                        checked={Boolean(form[section.name] && form[section.name][input.name])}
-                                        onChange={this.changeForm(section.name, input.name, input.type)}
-                                    />
-                                    <Label for={input.name.toLowerCase()} check>{input.label}</Label>
-                                </FormGroup>
-                            </Col>
-                        </Row> : null
-                        )}
-                        {this.getImageInputs(section).map(input => <Row>
-                            <Col s={12}>
-                                <FileInput image
-                                    id={`file_${input.name}`}
-                                    onChange={this.handleImages(input.name, section.name)}
-                                    label={(input && input.label && input.label.toUpperCase()) || ''}
-                                    imgSrc={form[section.name] && form[section.name][input.name]}
-                                />
-                            </Col>
-                        </Row>
-                        )}
-                        <Row>
-                            {this.getActions(section).map(input => <Col s={12} key={input.name} className="action_containers">
-                                {input.type === "action" ?
-                                    input.values.map(value =>
-                                        <Button key={value.name} className="round-btn" onClick={() => this.sendAction({ action: input.name, data: value.name })}>
-                                            {value.label}
-                                        </Button>)
-                                    : ""}
-                            </Col>)}
-                        </Row>
+    setTab = (name: string) => () => this.setState({ active: name });
 
-                        <Row className="section-save">
-                            <Col s={12}>
-                                <Button onClick={() => this.sendSection(section.name)} className="round-btn purple-btn">Save and send</Button>
-                            </Col>
-                        </Row>
-                    </Form>
-                </div>)}
+    renderSection = (section: I.PanelTemplate) => {
+        const {  cxt } = this.props;
+        const { teams, matches, players } = cxt;
+        const { form, active } = this.state;
+        if (!active || active !== section.name) return null;
+        return (
+            <div key={section.label} className="custom_form">
+                <div className="section_name">{section.label}</div>
+                <Form>
+                    {this.getTextInputs(section).map(inputs => <Row>
+                        {inputs.map(input => <Col s={6} key={input.name}>
+                            <FormGroup>
+                                <Input type="text"
+                                    placeholder={input.label}
+                                    name={input.name.toLowerCase()}
+                                    id={input.name.toLowerCase()}
+                                    onChange={this.changeForm(section.name, input.name, input.type)}
+                                    value={(form[section.name] && form[section.name][input.name]) || ''}
+                                />
+                            </FormGroup>
+                        </Col>)}
+                    </Row>)}
+                    {this.getTeamSelect(section).map(input => <Row key={input.name}>
+                        <Col s={12}>
+                            <FormGroup>
+                                <Label for={input.name.toLowerCase()}>{input.label}</Label>
+                                <Input
+                                    type="select"
+                                    id={input.name.toLowerCase()}
+                                    name={input.name.toLowerCase()}
+                                    value={(form[section.name] && form[section.name][input.name] && form[section.name][input.name].id) || ''}
+                                    onChange={this.changeForm(section.name, input.name, input.type)}
+                                >
+                                    <option value="">No team</option>
+                                    {teams.concat().sort((a, b) => a.name < b.name ? -1 : 1).map(team => <option value={team._id}>{team.name}</option>)}
+                                </Input>
+                            </FormGroup>
+                        </Col>
+                    </Row>
+                    )}
+                    {this.getPlayerSelect(section).map(input => <Row key={input.name}>
+                        <Col s={12}>
+                            <FormGroup>
+                                <Label for={input.name.toLowerCase()}>{input.label}</Label>
+                                <Input
+                                    type="select"
+                                    id={input.name.toLowerCase()}
+                                    name={input.name.toLowerCase()}
+                                    value={(form[section.name] && form[section.name][input.name] && form[section.name][input.name].id) || ''}
+                                    onChange={this.changeForm(section.name, input.name, input.type)}
+                                >
+                                    <option value="">No player</option>
+                                    {players.concat().sort((a, b) => a.username < b.username ? -1 : 1).map(player => <option value={player._id}>{player.username}</option>)}
+                                </Input>
+                            </FormGroup>
+                        </Col>
+                    </Row>
+                    )}
+                    {this.getMatchSelect(section).map(input => <Row key={input.name}>
+                        <Col s={12}>
+                            <FormGroup>
+                                <Label for={input.name.toLowerCase()}>{input.label}</Label>
+                                <Input
+                                    type="select"
+                                    id={input.name.toLowerCase()}
+                                    name={input.name.toLowerCase()}
+                                    value={(form[section.name] && form[section.name][input.name] && form[section.name][input.name].id) || ''}
+                                    onChange={this.changeForm(section.name, input.name, input.type)}
+                                >
+                                    <option value="">No match</option>
+                                    {matches.map(match => <option value={match.id}>
+                                        {(teams.find(team => team._id === match.left.id) || {}).name || '-'} vs {(teams.find(team => team._id === match.right.id) || {}).name || '-'}
+                                    </option>)}
+                                </Input>
+                            </FormGroup>
+                        </Col>
+                    </Row>
+                    )}
+                    {this.getSelects(section).map(input => input.type === "select" ? <Row key={input.name}>
+                        <Col s={12}>
+                            <FormGroup>
+                                <Label for={input.name.toLowerCase()}>{input.label}</Label>
+                                <Input
+                                    type="select"
+                                    id={input.name.toLowerCase()}
+                                    name={input.name.toLowerCase()}
+                                    value={(form[section.name] && form[section.name][input.name]) || ''}
+                                    onChange={this.changeForm(section.name, input.name, input.type)}
+                                >
+                                    <option value="">No value</option>
+                                    {input.values.concat().sort((a, b) => a.label < b.label ? -1 : 1).map(value => <option value={value.name}>{value.label}</option>)}
+                                </Input>
+                            </FormGroup>
+                        </Col>
+                    </Row> : null
+                    )}
+                    {this.getCheckboxes(section).map(input => input.type === "checkbox" ? <Row key={input.name}>
+                        <Col s={12}>
+                            <FormGroup check>
+                                <Input
+                                    type="checkbox"
+                                    id={input.name.toLowerCase()}
+                                    name={input.name.toLowerCase()}
+                                    checked={Boolean(form[section.name] && form[section.name][input.name])}
+                                    onChange={this.changeForm(section.name, input.name, input.type)}
+                                />
+                                <Label for={input.name.toLowerCase()} check>{input.label}</Label>
+                            </FormGroup>
+                        </Col>
+                    </Row> : null
+                    )}
+                    {this.getImageInputs(section).map(input => <Row>
+                        <Col s={12}>
+                            <FileInput image
+                                id={`file_${input.name}`}
+                                onChange={this.handleImages(input.name, section.name)}
+                                label={(input && input.label && input.label.toUpperCase()) || ''}
+                                imgSrc={form[section.name] && form[section.name][input.name]}
+                            />
+                        </Col>
+                    </Row>
+                    )}
+                    <Row>
+                        {this.getActions(section).map(input => <Col s={12} key={input.name} className="action_containers">
+                            {input.type === "action" ?
+                                input.values.map(value =>
+                                    <Button key={value.name} className="round-btn" onClick={() => this.sendAction({ action: input.name, data: value.name })}>
+                                        {value.label}
+                                    </Button>)
+                                : ""}
+                        </Col>)}
+                    </Row>
+
+                    <Row className="section-save">
+                        <Col s={12}>
+                            <Button onClick={() => this.sendSection(section.name)} className="round-btn purple-btn">Save and send</Button>
+                        </Col>
+                    </Row>
+                </Form>
             </div>
+        );
+    }
+
+    render() {
+        const { hud } = this.props;
+        if (!hud.panel) return '';
+        const { active } = this.state;
+        return (
+            <>
+                <div className="section_menu">
+                    {hud.panel.map(section => <div className={`section_menu_button ${active === section.name ? 'active' : ''}`} onClick={this.setTab(section.name)}>{section.label}</div>)}
+                </div>
+                <div className="section_panel_container">
+                    {hud.panel.map(this.renderSection)}
+                </div>
+            </>
         )
     }
 }

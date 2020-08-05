@@ -127,7 +127,7 @@ export default class Teams extends React.Component<{ cxt: IContextData }, { tour
         return matchData;
     }
 
-    renderBracket = (matchup?: TournamentMatchup | null) => {
+    renderBracket = (matchup?: TournamentMatchup | null, isLast = false) => {
         if(!matchup) return null;
         const match = this.getMatch(matchup);
         return (
@@ -135,8 +135,10 @@ export default class Teams extends React.Component<{ cxt: IContextData }, { tour
                 <div className="parent-brackets">
                     {this.renderBracket(matchup.parents[0])}
                     {this.renderBracket(matchup.parents[1])}
+                    { matchup.parents.length === 2 ? <div className="connector"></div> : null}
                 </div>
                 <div className="bracket-details">
+                    <div className={`match-connector ${!matchup.parents.length ? 'first-match' : ''} ${isLast ? 'last-match' : ''}`}></div>
                     <div className="match-details">
                         <div className="team-data">
                             <div className="team-logo">{ match.left.logo ? <img src={match.left.logo} /> : null}</div>
@@ -160,7 +162,7 @@ export default class Teams extends React.Component<{ cxt: IContextData }, { tour
         const matchups = this.copyMatchups();
         const gf = matchups.find(matchup => matchup.winner_to === null);
         if(!gf) return null;
-        return this.renderBracket(this.joinParents(gf));
+        return this.renderBracket(this.joinParents(gf), true);
     }
 
     render() {

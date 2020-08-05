@@ -122,9 +122,7 @@ button.btn-primary {
     height:500px;
 }
 .ladder-view > .bracket {
-    
-    height: 100%;
-    width: 100%;
+
 }
 .bracket {
     display: flex;
@@ -133,11 +131,37 @@ button.btn-primary {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    position: relative;
+}
+.connector {
+    position: absolute;
+    right: 0;
+    height: 50%;
+    background-color: #ffd70026;
+    width: 1px;
+}
+.bracket-details .match-details .team-data:first-child {
+    border-bottom: 1px solid transparent;
+}
+.match-connector {
+    width: 100%;
+    position: absolute;
+    height: 1px;
+    background: #ffd70026;
+}
+.match-connector.last-match {
+    width: 220px;
+    left:0;
+}
+.match-connector.first-match {
+    width: 220px;
+    right: 0;
 }
 .bracket-details {
     display: flex;
     justify-content: center;
     align-items: center;
+    position: relative;
 }
 .bracket-details .match-details{
     display: flex;
@@ -147,6 +171,7 @@ button.btn-primary {
     background: rgba(0,0,0,0.5);
     border-radius: 2px;
     padding: 5px;
+    z-index: 1;
 }
 .bracket-details .match-details .team-data {
     display: flex;
