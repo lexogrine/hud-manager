@@ -25,6 +25,9 @@ export const createTournament = (type: string, teams: number): I.Tournament => {
         case "se":
             tournament.matchups = Formats.createSEBracket(teams);
             break;
+        case "de":
+            tournament.matchups = Formats.createDEBracket(teams);
+            break;
         default:
 
             break;
@@ -63,7 +66,15 @@ export const updateTournament = (tournament: I.Tournament): Promise<I.Tournament
     });
 });
 
-export const createNextMatch = async (matchId: string) => new Promise((res, rej) => {
+export const createNextMatch = async (matchId: string) => {
+    try {
+        await Promise.all([fillNextMatch(matchId, 'winner'), fillNextMatch(matchId, 'loser')]);
+    } catch {
+        return;
+    }
+};
+
+export const fillNextMatch = (matchId: string, type: 'winner' | 'loser') => new Promise((res, rej) => {
     const maxWins = (type: I.BOTypes) => {
         switch (type) {
             case "bo1":
@@ -80,9 +91,9 @@ export const createNextMatch = async (matchId: string) => new Promise((res, rej)
     tournaments.findOne({ $where: function () { return !!this.matchups.find(matchup => matchup.matchId === matchId) } }, async (err, tournament) => {
         if (err || !tournament) return res(null);
         const matchup = tournament.matchups.find(matchup => matchup.matchId === matchId);
-        if (!matchup || !matchup.winner_to) return res(null);
+        if (!matchup || (!matchup.winner_to && type === 'winner') || (!matchup.loser_to && type === 'loser')) return res(null);
 
-        const nextMatchup = tournament.matchups.find(next => next._id === matchup.winner_to);
+        const nextMatchup = tournament.matchups.find(next => (next._id === matchup.winner_to && type === 'winner') || (next._id === matchup.loser_to && type === 'loser'));
         if (!nextMatchup) return res(null);
 
         const match = await M.getMatchById(matchId);
@@ -93,13 +104,14 @@ export const createNextMatch = async (matchId: string) => new Promise((res, rej)
         if (match.left.wins !== winsRequired && match.right.wins !== winsRequired) return res(null);
 
         const winnerId = match.left.wins > match.right.wins ? match.left.id : match.right.id;
+        const loserId = match.left.wins > match.right.wins ? match.right.id : match.left.id;
 
         if (!nextMatchup.matchId) {
 
             const newMatch: I.Match = {
                 id: uuidv4(),
                 current: false,
-                left: { id: winnerId, wins: 0 },
+                left: { id: type === 'winner' ? winnerId : loserId, wins: 0 },
                 right: { id: null, wins: 0 },
                 matchType: 'bo1',
                 vetos: []
@@ -118,11 +130,15 @@ export const createNextMatch = async (matchId: string) => new Promise((res, rej)
 
         const nextMatch = await M.getMatchById(nextMatchup.matchId);
         if(!nextMatch) return res(null);
-        if(nextMatch.left.id === winnerId || nextMatch.right.id === winnerId) return res(nextMatch);
+
+        const teamIds = [nextMatch.left.id, nextMatch.right.id];
+
+        if([nextMatch.left.id, ])
+        if((teamIds.includes(winnerId) && type === 'winner') || (teamIds.includes(loserId) && type === 'loser')) return res(nextMatch);
         if(!nextMatch.left.id){
-            nextMatch.left.id = winnerId;
+            nextMatch.left.id = type === 'winner' ? winnerId : loserId;
         } else if(!nextMatch.right.id){
-            nextMatch.right.id = winnerId;
+            nextMatch.right.id = type === 'winner' ? winnerId : loserId;
         } else {
             return res(null);
         }

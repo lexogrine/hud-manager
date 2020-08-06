@@ -58,6 +58,11 @@ export interface TournamentMatchup {
     parents: TournamentMatchup[]
 }
 
+export interface DepthTournamentMatchup extends TournamentMatchup {
+    depth: number;
+    parents: DepthTournamentMatchup[]
+}
+
 export interface Tournament {
     _id: string,
     name: string,

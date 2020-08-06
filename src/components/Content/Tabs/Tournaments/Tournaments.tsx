@@ -1,14 +1,9 @@
 import React from 'react';
-import { Button, Form, FormGroup, Input, Row, Col, FormText } from 'reactstrap';
-import countryList from 'react-select-country-list';
+import { Button, Form, FormGroup, Input, } from 'reactstrap';
 import api from './../../../../api/api';
 import * as I from './../../../../api/interfaces';
 import { IContextData } from './../../../../components/Context';
-import DragFileInput from './../../../DragFileInput';
-import { TournamentMatchup } from '../../../../../types/interfaces';
-
-const hashCode = (s: string) => s.split('').reduce((a, b) => { a = ((a << 5) - a) + b.charCodeAt(0); return a & a }, 0).toString();
-const hash = () => hashCode(String((new Date()).getTime()));
+import { TournamentMatchup, DepthTournamentMatchup } from '../../../../../types/interfaces';
 
 interface MatchData {
     left: { name: string, score: string | number, logo: string },
@@ -87,22 +82,39 @@ export default class Teams extends React.Component<{ cxt: IContextData }, { tour
         }*/
     }
 
-    joinParents = (matchup: TournamentMatchup) => {
+    joinParents = (matchup: TournamentMatchup, matchups: TournamentMatchup[]) => {
         const { tournament } = this.state;
         if(!tournament || !matchup) return matchup;
         
         if(matchup.parents.length) return matchup;
 
-        const parents = tournament.matchups.filter(m => m.winner_to === matchup._id || m.loser_to === matchup._id);
+        const parents = matchups.filter(m => m.winner_to === matchup._id || m.loser_to === matchup._id);
         if(!parents.length) return matchup;
-        matchup.parents.push(...parents.map(this.joinParents));
+        matchup.parents.push(...parents.map(parent => this.joinParents(parent, matchups)));
 
         return matchup;
     }
 
-    copyMatchups = (): TournamentMatchup[] => {
+    copyMatchups = (): DepthTournamentMatchup[] => {
         if(!this.state.tournament) return [];
-        return JSON.parse(JSON.stringify(this.state.tournament.matchups));
+        const matchups = JSON.parse(JSON.stringify(this.state.tournament.matchups)) as DepthTournamentMatchup[];
+        return matchups;
+    }
+
+    setDepth = (matchups: DepthTournamentMatchup[], matchup: DepthTournamentMatchup, depth: number, force = false) => {
+        const getParents = (matchup: DepthTournamentMatchup) => {
+            return matchups.filter(parent => parent.loser_to === matchup._id || parent.winner_to === matchup._id);
+        }
+
+        if(!matchup.depth || force){
+            matchup.depth = depth;
+            getParents(matchup).forEach(matchup => this.setDepth(matchups, matchup, depth + 1));
+
+        }
+        if(matchup.depth <= (depth-1)){
+            this.setDepth(matchups, matchup, depth-1, true);
+        }
+        return matchup;
     }
 
     getMatch = (matchup: TournamentMatchup) => {
@@ -127,31 +139,45 @@ export default class Teams extends React.Component<{ cxt: IContextData }, { tour
         return matchData;
     }
 
-    renderBracket = (matchup?: TournamentMatchup | null, isLast = false) => {
-        if(!matchup) return null;
+    renderBracket = (matchup: DepthTournamentMatchup | null | undefined, depth: number, fromChildId:string | undefined, childVisibleParents: number, isLast = false) => {
+        const { tournament } = this.state;
+        if(!matchup || !tournament) return null;
         const match = this.getMatch(matchup);
+
+        if(fromChildId === matchup.loser_to) return null;
+        const parentsToRender = matchup.parents.filter(matchupParent => matchupParent.loser_to !== matchup._id);
+        if(matchup.depth > depth) {
+            console.log(depth, matchup.depth)
+            return <div className="empty-bracket">
+                { this.renderBracket(matchup, depth + 1, fromChildId, parentsToRender.length) }
+                <div className="connector"></div>
+            </div>
+        }
         return (
             <div className="bracket">
                 <div className="parent-brackets">
-                    {this.renderBracket(matchup.parents[0])}
-                    {this.renderBracket(matchup.parents[1])}
-                    { matchup.parents.length === 2 ? <div className="connector"></div> : null}
+                    {this.renderBracket(matchup.parents[0], depth + 1, matchup._id, parentsToRender.length)}
+                    {this.renderBracket(matchup.parents[1], depth + 1, matchup._id, parentsToRender.length)}
                 </div>
                 <div className="bracket-details">
-                    <div className={`match-connector ${!matchup.parents.length ? 'first-match' : ''} ${isLast ? 'last-match' : ''}`}></div>
+                    <div className={`match-connector ${!matchup.parents.length || parentsToRender.length === 0 ? 'first-match' : ''} ${isLast ? 'last-match' : ''}`}></div>
+                    { parentsToRender.length === 1 ? <div className="loser-parent-indicator"></div> : null}
                     <div className="match-details">
                         <div className="team-data">
-                            <div className="team-logo">{ match.left.logo ? <img src={match.left.logo} /> : null}</div>
+                            <div className="team-logo">{ match.left.logo ? <img src={match.left.logo} alt="Logo" /> : null}</div>
                             <div className="team-name">{match.left.name}</div>
                             <div className="team-score">{match.left.score}</div>
                         </div>
                         <div className="team-data">
-                            <div className="team-logo">{ match.right.logo ? <img src={match.right.logo} /> : null}</div>
+                            <div className="team-logo">{ match.right.logo ? <img src={match.right.logo} alt="Logo" /> : null}</div>
                             <div className="team-name">{match.right.name}</div>
                             <div className="team-score">{match.right.score}</div>
                         </div>
                     </div>
                 </div>
+                
+                { childVisibleParents === 2 ? <div className={`connector amount-${parentsToRender.length}`}></div> : null}
+                
             </div>
         )
     }
@@ -162,16 +188,18 @@ export default class Teams extends React.Component<{ cxt: IContextData }, { tour
         const matchups = this.copyMatchups();
         const gf = matchups.find(matchup => matchup.winner_to === null);
         if(!gf) return null;
-        return this.renderBracket(this.joinParents(gf), true);
+        const joinedParents = this.joinParents(gf, matchups);
+        const matchupWithDepth = this.setDepth(matchups, joinedParents as DepthTournamentMatchup, 0);
+        console.log(matchupWithDepth)
+        return this.renderBracket(matchupWithDepth, 0, undefined, 2, true);
     }
 
     render() {
-        const { tournament } = this.state;
         return (
             <Form>
                 <div className="tab-title-container">Tournaments</div>
                 <div className="tab-content-container">
-                    <Button onClick={() => this.addTournament("Test", "", "se", 8)}>Add test tournament</Button>
+                    <Button onClick={() => this.addTournament("Test DE", "", "de", 8)}>Add test tournament</Button>
                     <FormGroup>
                         <Input type="select" name="tournaments" id="tournaments" onChange={this.setTournament} value={this.state.tournament?._id}>
                             <option>No tournament</option>

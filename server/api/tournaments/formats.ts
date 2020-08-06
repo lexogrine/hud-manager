@@ -12,7 +12,7 @@ const createMatchup = (): I.TournamentMatchup => ({
 
 export const createSEBracket = (teams: number) => {
     if (!Number.isInteger(Math.log2(teams))) return [];
-    const amountOfMatches = teams - 1;
+    
     const phases = Math.log2(teams);
 
     const matchups: I.TournamentMatchup[] = [];
@@ -35,3 +35,43 @@ export const createSEBracket = (teams: number) => {
     return matchups;
 };
 
+export const createDEBracket = (teams: number) => {
+    if (!Number.isInteger(Math.log2(teams))) return [];
+    const upperBracket = createSEBracket(teams);
+
+    if(!upperBracket.length) return [];
+
+    const grandFinal = createMatchup();
+    upperBracket.push(grandFinal);
+    upperBracket[0].winner_to = grandFinal._id;
+
+    const grandFinalIndex = upperBracket.length - 1;
+
+    const phases = Math.log2(teams/2);
+    for(let i = 0; i < phases; i++){
+        const lineMatches = 2**i;
+        for(let j = 0; j < lineMatches; j++){
+            const loserAndWinner = createMatchup();
+            const winnersOnly = createMatchup();
+
+            const lAWI = lineMatches+j;
+            loserAndWinner.winner_to = upperBracket[upperBracket.length-Math.ceil(lAWI/2)]._id
+            upperBracket.push(loserAndWinner);
+
+            winnersOnly.winner_to = upperBracket[upperBracket.length-lineMatches]._id
+            upperBracket.push(winnersOnly);
+        }
+    }
+    for(let i = 0; i < grandFinalIndex; i++){
+        const upperHalf = teams/2-1;
+        if(i >= upperHalf) {
+            const newI = Math.floor((i - upperHalf)/2) + upperBracket.length - teams/4;
+            upperBracket[i].loser_to = upperBracket[newI]._id;
+        } else {
+            const phase = Math.floor(Math.log2(i+1));
+            const difference = 2**phase+grandFinalIndex;
+            upperBracket[i].loser_to = upperBracket[i+difference]._id;
+        }
+    }
+    return upperBracket;
+}

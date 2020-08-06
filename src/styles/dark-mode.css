@@ -121,11 +121,10 @@ button.btn-primary {
 .ladder-view {
     height:500px;
 }
-.ladder-view > .bracket {
-
-}
 .bracket {
     display: flex;
+    justify-content: flex-end;
+    position: relative;
 }
 .parent-brackets {
     display: flex;
@@ -133,12 +132,43 @@ button.btn-primary {
     justify-content: center;
     position: relative;
 }
+.empty-bracket {
+    position: relative;
+}
+.empty-bracket > .bracket {
+    padding-right: 240px;
+}
+.empty-bracket > .connector {
+    width: 240px;
+    height: 1px;
+    top: 50%;
+}
+.loser-parent-indicator {
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    left: 5px;
+
+    top: calc(50% - 20px);
+    background-image: url('./loser-indicator.png');
+    background-size:contain;
+    opacity:0.2;
+}
 .connector {
     position: absolute;
     right: 0;
     height: 50%;
     background-color: #ffd70026;
     width: 1px;
+}
+.bracket:first-child > .connector {
+    top: 50%;
+}
+.bracket:nth-child(2) > .connector, .empty-bracket:nth-child(2) > .bracket > .connector {
+    top: 0%;
+}
+.ladder-view > .bracket > .connector {
+    display: none;
 }
 .bracket-details .match-details .team-data:first-child {
     border-bottom: 1px solid transparent;
