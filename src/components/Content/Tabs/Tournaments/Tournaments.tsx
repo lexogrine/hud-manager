@@ -198,7 +198,7 @@ export default class Teams extends React.Component<{ cxt: IContextData }, { tour
         return (
             <Form>
                 <div className="tab-title-container">Tournaments</div>
-                <div className="tab-content-container">
+                <div className="tab-content-container full-scroll">
                     <Button onClick={() => this.addTournament("Test DE", "", "de", 8)}>Add test tournament</Button>
                     <FormGroup>
                         <Input type="select" name="tournaments" id="tournaments" onChange={this.setTournament} value={this.state.tournament?._id}>
