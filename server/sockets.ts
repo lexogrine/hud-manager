@@ -140,7 +140,7 @@ export const GSI = new CSGOGSI();
 
 export default function (server: http.Server, app: express.Router) {
 	async function getJSONArray<T>(url: string) {
-		return new Promise<T[]>((resolve) => {
+		return new Promise<T[]>(resolve => {
 			request.get(url, (err, res) => {
 				try {
 					if (err) {

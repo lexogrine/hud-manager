@@ -51,8 +51,11 @@ export const getTournament = (tournamentId: string): Promise<I.Tournament | null
 		});
 	});
 
-export const bindMatch = async (matchId: string, matchupId: string, tournamentId: string): Promise<I.Tournament | null> => {
-
+export const bindMatch = async (
+	matchId: string,
+	matchupId: string,
+	tournamentId: string
+): Promise<I.Tournament | null> => {
 	const tournament = await getTournament(tournamentId);
 	if (!tournament) return null;
 	const matchup = tournament.matchups.find(matchup => matchup._id === matchupId);
@@ -60,7 +63,7 @@ export const bindMatch = async (matchId: string, matchupId: string, tournamentId
 	matchup.matchId = matchId;
 
 	return await updateTournament(tournament);
-}
+};
 
 export const updateTournament = (tournament: I.Tournament): Promise<I.Tournament | null> =>
 	new Promise(res => {
@@ -155,11 +158,11 @@ export const fillNextMatch = (matchId: string, type: 'winner' | 'loser') =>
 
 				const teamIds = [nextMatch.left.id, nextMatch.right.id];
 
-					if (
-						(teamIds.includes(winnerId) && type === 'winner') ||
-						(teamIds.includes(loserId) && type === 'loser')
-					)
-						return res(nextMatch);
+				if (
+					(teamIds.includes(winnerId) && type === 'winner') ||
+					(teamIds.includes(loserId) && type === 'loser')
+				)
+					return res(nextMatch);
 				if (!nextMatch.left.id) {
 					nextMatch.left.id = type === 'winner' ? winnerId : loserId;
 				} else if (!nextMatch.right.id) {

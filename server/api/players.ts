@@ -8,7 +8,7 @@ import ip from 'ip';
 const players = db.players;
 
 export async function getPlayerById(id: string, avatar = false): Promise<Player | null> {
-	return new Promise((res) => {
+	return new Promise(res => {
 		players.findOne({ _id: id }, (err, player) => {
 			if (err) {
 				return res(null);
@@ -19,7 +19,7 @@ export async function getPlayerById(id: string, avatar = false): Promise<Player 
 	});
 }
 async function getPlayerBySteamId(steamid: string, avatar = false): Promise<Player | null> {
-	return new Promise((res) => {
+	return new Promise(res => {
 		players.findOne({ steamid }, (err, player) => {
 			if (err) {
 				return res(null);
@@ -31,7 +31,7 @@ async function getPlayerBySteamId(steamid: string, avatar = false): Promise<Play
 }
 
 export const getPlayersList = (query: any) =>
-	new Promise<Player[]>((res) => {
+	new Promise<Player[]>(res => {
 		players.find(query, (err, players) => {
 			if (err) {
 				return res([]);

@@ -6,7 +6,7 @@ import { Config } from '../../types/interfaces';
 const configs = db.config;
 
 export const loadConfig = async (): Promise<Config | null> => {
-	return new Promise((res) => {
+	return new Promise(res => {
 		configs.find({}, async (err, config) => {
 			if (err) {
 				return res(null);
@@ -65,7 +65,7 @@ export const updateConfig: express.RequestHandler = async (req, res) => {
 };
 
 export const setConfig = async (config: Config) =>
-	new Promise<Config | null>((res) => {
+	new Promise<Config | null>(res => {
 		configs.update({}, { $set: config }, {}, async err => {
 			if (err) {
 				return res(null);

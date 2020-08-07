@@ -8,7 +8,7 @@ const teams = db.teams;
 //const players = db.players;
 
 export async function getTeamById(id: string, logo = false): Promise<Team | null> {
-	return new Promise((res) => {
+	return new Promise(res => {
 		teams.findOne({ _id: id }, (err, team) => {
 			if (err) {
 				return res(null);
@@ -20,7 +20,7 @@ export async function getTeamById(id: string, logo = false): Promise<Team | null
 }
 
 export const getTeamsList = (query: any) =>
-	new Promise<Team[]>((res) => {
+	new Promise<Team[]>(res => {
 		teams.find(query, (err, teams) => {
 			if (err) {
 				return res([]);

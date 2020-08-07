@@ -10,9 +10,9 @@ interface DB {
 	players: I.Player[];
 }
 async function importPlayers(players: I.Player[]) {
-	return new Promise<I.Player[]>((res) => {
+	return new Promise<I.Player[]>(res => {
 		const playerIdList = players.map(player => ({ _id: player._id }));
-		playersDb.remove({ $or: playerIdList }, { multi: true }, (err) => {
+		playersDb.remove({ $or: playerIdList }, { multi: true }, err => {
 			if (err) return res([]);
 			playersDb.insert(players, (err, newDocs) => {
 				if (err) return res([]);
@@ -22,9 +22,9 @@ async function importPlayers(players: I.Player[]) {
 	});
 }
 async function importTeams(teams: I.Team[]) {
-	return new Promise<I.Team[]>((res) => {
+	return new Promise<I.Team[]>(res => {
 		const teamIdList = teams.map(team => ({ _id: team._id }));
-		teamsDb.remove({ $or: teamIdList }, { multi: true }, (err) => {
+		teamsDb.remove({ $or: teamIdList }, { multi: true }, err => {
 			if (err) return res([]);
 			teamsDb.insert(teams, (err, newDocs) => {
 				if (err) return res([]);
@@ -35,7 +35,7 @@ async function importTeams(teams: I.Team[]) {
 }
 
 export async function exportDatabase() {
-	const pl = new Promise<I.Player[]>((res) => {
+	const pl = new Promise<I.Player[]>(res => {
 		playersDb.find({}, (err, players) => {
 			if (err) {
 				return res([]);
@@ -43,7 +43,7 @@ export async function exportDatabase() {
 			return res(players);
 		});
 	});
-	const tm = new Promise<I.Team[]>((res) => {
+	const tm = new Promise<I.Team[]>(res => {
 		teamsDb.find({}, (err, teams) => {
 			if (err) {
 				return res([]);

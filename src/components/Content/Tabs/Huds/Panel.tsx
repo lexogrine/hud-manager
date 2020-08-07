@@ -172,7 +172,9 @@ export default class ActionPanel extends React.Component<IProps, IState> {
 											.concat()
 											.sort((a, b) => (a.name < b.name ? -1 : 1))
 											.map(team => (
-												<option value={team._id} key={team._id}>{team.name}</option>
+												<option value={team._id} key={team._id}>
+													{team.name}
+												</option>
 											))}
 									</Input>
 								</FormGroup>
@@ -201,7 +203,9 @@ export default class ActionPanel extends React.Component<IProps, IState> {
 											.concat()
 											.sort((a, b) => (a.username < b.username ? -1 : 1))
 											.map(player => (
-												<option value={player._id} key={player._id}>{player.username}</option>
+												<option value={player._id} key={player._id}>
+													{player.username}
+												</option>
 											))}
 									</Input>
 								</FormGroup>
@@ -255,7 +259,9 @@ export default class ActionPanel extends React.Component<IProps, IState> {
 												.concat()
 												.sort((a, b) => (a.label < b.label ? -1 : 1))
 												.map(value => (
-													<option value={value.name} key={value.name}>{value.label}</option>
+													<option value={value.name} key={value.name}>
+														{value.label}
+													</option>
 												))}
 										</Input>
 									</FormGroup>
@@ -310,7 +316,7 @@ export default class ActionPanel extends React.Component<IProps, IState> {
 											>
 												{value.label}
 											</Button>
-									))
+									  ))
 									: ''}
 							</Col>
 						))}

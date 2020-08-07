@@ -18,7 +18,7 @@ export const getMatchesRoute: express.RequestHandler = async (req, res) => {
 };
 
 export async function getMatchById(id: string): Promise<Match | null> {
-	return new Promise((res) => {
+	return new Promise(res => {
 		matchesDb.findOne({ id }, (err, match) => {
 			if (err) {
 				return res(null);
@@ -29,7 +29,7 @@ export async function getMatchById(id: string): Promise<Match | null> {
 }
 
 export const getMatches = (): Promise<Match[]> => {
-	return new Promise((res) => {
+	return new Promise(res => {
 		matchesDb.find({}, (err, matches) => {
 			if (err) {
 				return res([]);
@@ -40,8 +40,8 @@ export const getMatches = (): Promise<Match[]> => {
 };
 
 export const setMatches = (matches: Match[]): Promise<Match[] | null> => {
-	return new Promise((res) => {
-		matchesDb.remove({}, { multi: true }, (err) => {
+	return new Promise(res => {
+		matchesDb.remove({}, { multi: true }, err => {
 			if (err) {
 				return res(null);
 			}
@@ -94,7 +94,7 @@ export const updateMatches = async (updateMatches: Match[]) => {
 };
 
 export const addMatch = (match: Match) =>
-	new Promise((res) => {
+	new Promise(res => {
 		if (!match.id) {
 			match.id = uuidv4();
 		}
@@ -106,18 +106,18 @@ export const addMatch = (match: Match) =>
 	});
 
 export const deleteMatch = (id: string) =>
-	new Promise((res) => {
-		matchesDb.remove({ id }, (err) => {
+	new Promise(res => {
+		matchesDb.remove({ id }, err => {
 			if (err) return res(false);
 			return res(true);
 		});
 	});
 
 export const setCurrent = (id: string) =>
-	new Promise((res,) => {
-		matchesDb.update({}, { current: false }, { multi: true }, (err) => {
+	new Promise(res => {
+		matchesDb.update({}, { current: false }, { multi: true }, err => {
 			if (err) return res(null);
-			matchesDb.update({ id }, { current: true }, {}, (err) => {
+			matchesDb.update({ id }, { current: true }, {}, err => {
 				if (err) return res(null);
 				return res();
 			});
@@ -125,8 +125,8 @@ export const setCurrent = (id: string) =>
 	});
 
 export const updateMatch = (match: Match) =>
-	new Promise((res) => {
-		matchesDb.update({ id: match.id }, match, {}, (err) => {
+	new Promise(res => {
+		matchesDb.update({ id: match.id }, match, {}, err => {
 			if (err) return res(false);
 			if (!match.current) return res(true);
 			matchesDb.update(
@@ -137,7 +137,7 @@ export const updateMatch = (match: Match) =>
 				},
 				{ $set: { current: false } },
 				{ multi: true },
-				async (err) => {
+				async err => {
 					const left = await getTeamById(match.left.id);
 					const right = await getTeamById(match.right.id);
 

@@ -284,7 +284,7 @@ async function loadHUD(base64: string, name: string): Promise<I.HUD | null> {
 			.replace(/[^a-z]+/g, '')
 			.substr(0, 15);
 	removeArchives();
-	return new Promise((res) => {
+	return new Promise(res => {
 		let hudDirName = name.replace(/[^a-zA-Z0-9-_]/g, '');
 		let hudPath = path.join(app.getPath('home'), 'HUDs', hudDirName);
 		if (fs.existsSync(hudPath)) {
