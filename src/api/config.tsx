@@ -1,17 +1,16 @@
 import queryString from 'query-string';
 
-
 const query = queryString.parseUrl(window.location.href).query;
 const port = (query && Number(query.port)) || 1349;
 
-var userAgent = navigator.userAgent.toLowerCase();
+const userAgent = navigator.userAgent.toLowerCase();
 let isElectron = false;
 
 if (userAgent.indexOf(' electron/') > -1) {
-    isElectron = true;
+	isElectron = true;
 }
 export default {
-    apiAddress: `http://localhost:${port}/`,
-    isDev: process && process.env && process.env.NODE_ENV === "development",
-    isElectron
+	apiAddress: `http://localhost:${port}/`,
+	isDev: process && process.env && process.env.NODE_ENV === 'development',
+	isElectron
 };
