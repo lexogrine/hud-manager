@@ -43,7 +43,7 @@ var electron_1 = require("electron");
 var path_1 = __importDefault(require("path"));
 var fs_1 = __importDefault(require("fs"));
 var config_1 = require("./server/api/config");
-var isDev = process.env.DEV === "true";
+var isDev = process.env.DEV === 'true';
 exports.createMainWindow = function (forceDev) {
     if (forceDev === void 0) { forceDev = false; }
     return __awaiter(void 0, void 0, void 0, function () {
@@ -77,8 +77,8 @@ exports.createMainWindow = function (forceDev) {
                     return [3 /*break*/, 7];
                 case 7:
                     if (electron_1.app) {
-                        electron_1.app.on("window-all-closed", electron_1.app.quit);
-                        electron_1.app.on("before-quit", function () { return __awaiter(void 0, void 0, void 0, function () {
+                        electron_1.app.on('window-all-closed', electron_1.app.quit);
+                        electron_1.app.on('before-quit', function () { return __awaiter(void 0, void 0, void 0, function () {
                             var cookies;
                             return __generator(this, function (_a) {
                                 switch (_a.label) {
@@ -88,7 +88,7 @@ exports.createMainWindow = function (forceDev) {
                                         fs_1["default"].writeFileSync(cookieFile, JSON.stringify(cookies), 'utf8');
                                         if (!win)
                                             return [2 /*return*/];
-                                        win.removeAllListeners("close");
+                                        win.removeAllListeners('close');
                                         win.close();
                                         return [2 /*return*/];
                                 }
@@ -99,9 +99,9 @@ exports.createMainWindow = function (forceDev) {
                         height: 835,
                         show: false,
                         frame: false,
-                        titleBarStyle: "hidden",
+                        titleBarStyle: 'hidden',
                         //resizable: isDev,
-                        title: "HUD Manager",
+                        title: 'HUD Manager',
                         icon: path_1["default"].join(__dirname, 'assets/icon.png'),
                         webPreferences: {
                             nodeIntegration: true,
@@ -112,7 +112,7 @@ exports.createMainWindow = function (forceDev) {
                         minHeight: 835,
                         width: 1010
                     });
-                    win.once("ready-to-show", function () {
+                    win.once('ready-to-show', function () {
                         if (win) {
                             win.show();
                         }
@@ -127,7 +127,7 @@ exports.createMainWindow = function (forceDev) {
                         electron_1.shell.openExternal(url);
                     });
                     win.loadURL("" + (isDev ? "http://localhost:3000/?port=" + config.port : startUrl));
-                    win.on("close", function () {
+                    win.on('close', function () {
                         win = null;
                         electron_1.app.quit();
                     });

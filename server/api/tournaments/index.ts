@@ -51,6 +51,14 @@ export const getTournament = (tournamentId: string): Promise<I.Tournament | null
 		});
 	});
 
+export const updateTournament = (tournament: I.Tournament): Promise<I.Tournament | null> =>
+	new Promise(res => {
+		tournaments.update({ _id: tournament._id }, tournament, {}, err => {
+			if (err) return res(null);
+			return res(tournament);
+		});
+	});
+
 export const bindMatch = async (
 	matchId: string,
 	matchupId: string,
@@ -63,22 +71,6 @@ export const bindMatch = async (
 	matchup.matchId = matchId;
 
 	return await updateTournament(tournament);
-};
-
-export const updateTournament = (tournament: I.Tournament): Promise<I.Tournament | null> =>
-	new Promise(res => {
-		tournaments.update({ _id: tournament._id }, tournament, {}, err => {
-			if (err) return res(null);
-			return res(tournament);
-		});
-	});
-
-export const createNextMatch = async (matchId: string) => {
-	try {
-		await Promise.all([fillNextMatch(matchId, 'winner'), fillNextMatch(matchId, 'loser')]);
-	} catch {
-		return;
-	}
 };
 
 export const fillNextMatch = (matchId: string, type: 'winner' | 'loser') =>
@@ -175,6 +167,14 @@ export const fillNextMatch = (matchId: string, type: 'winner' | 'loser') =>
 			}
 		);
 	});
+
+export const createNextMatch = async (matchId: string) => {
+	try {
+		await Promise.all([fillNextMatch(matchId, 'winner'), fillNextMatch(matchId, 'loser')]);
+	} catch {
+		return;
+	}
+};
 
 export const deleteTournament = (tournamentId: string) =>
 	new Promise(res => {

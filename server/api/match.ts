@@ -12,6 +12,17 @@ import { CSGO, RoundOutcome } from 'csgogsi';
 
 const matchesDb = db.matches;
 
+export const getMatches = (): Promise<Match[]> => {
+	return new Promise(res => {
+		matchesDb.find({}, (err, matches) => {
+			if (err) {
+				return res([]);
+			}
+			return res(matches);
+		});
+	});
+};
+
 export const getMatchesRoute: express.RequestHandler = async (req, res) => {
 	const matches = await getMatches();
 	return res.json(matches);
@@ -27,17 +38,6 @@ export async function getMatchById(id: string): Promise<Match | null> {
 		});
 	});
 }
-
-export const getMatches = (): Promise<Match[]> => {
-	return new Promise(res => {
-		matchesDb.find({}, (err, matches) => {
-			if (err) {
-				return res([]);
-			}
-			return res(matches);
-		});
-	});
-};
 
 export const setMatches = (matches: Match[]): Promise<Match[] | null> => {
 	return new Promise(res => {

@@ -1,7 +1,7 @@
 import socketio from 'socket.io';
 import http from 'http';
 import express from 'express';
-import CSGOGSI, { CSGORaw } from 'csgogsi';
+import CSGOGSI, { CSGORaw, Score, CSGO } from 'csgogsi';
 import { app as Application } from 'electron';
 import path from 'path';
 import fetch from 'node-fetch';
@@ -15,6 +15,7 @@ import { loadConfig } from './api/config';
 //import { testData } from './api/testing';
 import { getTeamById } from './api/teams';
 import { getPlayerById } from './api/players';
+import { createNextMatch } from './api/tournaments';
 
 const radar = require('./../boltobserv/index.js');
 const mirv = require('./server').default;
@@ -368,9 +369,9 @@ export default function (server: http.Server, app: express.Router) {
 		io.emit('update_mirv', data);
 	});
 
-	GSI.on('data', updateRound);
+	//GSI.on('data', updateRound);
 
-	GSI.on('roundEnd', async score => {
+	const onRoundEnd = async (score: Score) => {
 		if (score.loser && score.loser.logo) {
 			delete score.loser.logo;
 		}
@@ -401,9 +402,9 @@ export default function (server: http.Server, app: express.Router) {
 		await updateMatch(match);
 
 		io.emit('match', true);
-	});
+	}
 
-	GSI.on('matchEnd', async score => {
+	const onMatchEnd = async (score: Score) => {
 		const matches = await getMatches();
 		const match = matches.filter(match => match.current)[0];
 		const mapName = score.map.name.substring(score.map.name.lastIndexOf('/') + 1);
@@ -441,9 +442,56 @@ export default function (server: http.Server, app: express.Router) {
 			}
 			match.vetos = vetos;
 			await updateMatch(match);
+			await createNextMatch(match.id);
 			io.emit('match', true);
 		}
+	}
+
+	let last: CSGO;
+
+	GSI.on('data', async data => {
+		await updateRound(data);
+		let round: Score;
+        if ((last?.map.team_ct.score !== data.map.team_ct.score) !== (last?.map.team_t.score !== data.map.team_t.score)) {
+            if (last?.map.team_ct.score !== data.map.team_ct.score) {
+                round = {
+                    winner: data.map.team_ct,
+                    loser: data.map.team_t,
+                    map: data.map,
+                    mapEnd: false
+                };
+            }
+            else {
+                round = {
+                    winner: data.map.team_t,
+                    loser: data.map.team_ct,
+                    map: data.map,
+                    mapEnd: false
+                };
+            }
+		}
+		if(round){
+			await onRoundEnd(round);
+		}
+        if(data.map.phase === "gameover" && last.map.phase !== "gameover"){
+            const winner = data.map.team_ct.score > data.map.team_t.score ? data.map.team_ct : data.map.team_t;
+            const loser = data.map.team_ct.score > data.map.team_t.score ? data.map.team_t : data.map.team_ct;
+
+            const final: Score = {
+                winner,
+                loser,
+                map: data.map,
+                mapEnd: true
+            };
+
+            await onMatchEnd(final);
+		}
+		last = GSI.last;
 	});
+
+	//GSI.on('roundEnd', onRoundEnd);
+
+	//GSI.on('matchEnd', onMatchEnd);
 
 	return io;
 }

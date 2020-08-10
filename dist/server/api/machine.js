@@ -46,7 +46,10 @@ exports.getMachineId = function (req, res) { return __awaiter(void 0, void 0, vo
     var machinePath, id;
     return __generator(this, function (_a) {
         machinePath = path_1["default"].join(electron_1.app.getPath('userData'), 'machine.hm');
-        id = (Math.random() * 1000 + 1).toString(36).replace(/[^a-z]+/g, '').substr(0, 15);
+        id = (Math.random() * 1000 + 1)
+            .toString(36)
+            .replace(/[^a-z]+/g, '')
+            .substr(0, 15);
         if (!fs_1["default"].existsSync(machinePath)) {
             fs_1["default"].writeFileSync(machinePath, id, 'UTF-8');
         }

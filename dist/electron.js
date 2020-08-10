@@ -46,6 +46,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 exports.__esModule = true;
+/* eslint-disable no-console */
 var server_1 = __importDefault(require("./server"));
 var directories = __importStar(require("./init/directories"));
 var args_1 = __importDefault(require("./init/args"));
@@ -55,7 +56,7 @@ var renderer_1 = require("./renderer");
 exports.AFXInterop = {
     process: null
 };
-exports.isDev = process.env.DEV === "true";
+exports.isDev = process.env.DEV === 'true';
 function createRenderer(server, forceDev) {
     if (forceDev === void 0) { forceDev = false; }
     return __awaiter(this, void 0, void 0, function () {
@@ -70,18 +71,18 @@ function createRenderer(server, forceDev) {
                 }
                 electron_1.app.quit();
             };
-            args = ["./", "--renderer"];
+            args = ['./', '--renderer'];
             if (forceDev)
-                args.push("--dev");
-            renderer = child_process_1.spawn(process.execPath, ["./", "--renderer", "--dev"], {
+                args.push('--dev');
+            renderer = child_process_1.spawn(process.execPath, ['./', '--renderer', '--dev'], {
                 stdio: ['ignore']
             });
-            electron_1.app.on("window-all-closed", function () { });
+            electron_1.app.on('window-all-closed', function () { });
             if (forceDev)
-                renderer.stdout.on("data", function (data) { return console.log(data.toString()); });
-            renderer.on("exit", closeManager);
-            renderer.on("close", closeManager);
-            electron_1.app.on("quit", function () {
+                renderer.stdout.on('data', function (data) { return console.log(data.toString()); });
+            renderer.on('exit', closeManager);
+            renderer.on('close', closeManager);
+            electron_1.app.on('quit', function () {
                 renderer.kill();
             });
             return [2 /*return*/];
@@ -94,11 +95,11 @@ function startManager() {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    if (process.argv.includes("--renderer")) {
-                        renderer_1.createMainWindow(process.argv.includes("--dev"));
+                    if (process.argv.includes('--renderer')) {
+                        renderer_1.createMainWindow(process.argv.includes('--dev'));
                         return [2 /*return*/];
                     }
-                    electron_1.app.setAppUserModelId("com.lexogrine.hudmanager");
+                    electron_1.app.setAppUserModelId('com.lexogrine.hudmanager');
                     directories.checkDirectories();
                     return [4 /*yield*/, server_1["default"]()];
                 case 1:
@@ -112,4 +113,4 @@ function startManager() {
         });
     });
 }
-electron_1.app.on("ready", startManager);
+electron_1.app.on('ready', startManager);

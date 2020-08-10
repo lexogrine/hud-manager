@@ -59,7 +59,7 @@ function getTeamById(id, logo) {
     if (logo === void 0) { logo = false; }
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
-            return [2 /*return*/, new Promise(function (res, rej) {
+            return [2 /*return*/, new Promise(function (res) {
                     teams.findOne({ _id: id }, function (err, team) {
                         if (err) {
                             return res(null);
@@ -73,14 +73,16 @@ function getTeamById(id, logo) {
     });
 }
 exports.getTeamById = getTeamById;
-exports.getTeamsList = function (query) { return new Promise(function (res, rej) {
-    teams.find(query, function (err, teams) {
-        if (err) {
-            return res([]);
-        }
-        return res(teams);
+exports.getTeamsList = function (query) {
+    return new Promise(function (res) {
+        teams.find(query, function (err, teams) {
+            if (err) {
+                return res([]);
+            }
+            return res(teams);
+        });
     });
-}); };
+};
 exports.getTeams = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var teams, config;
     return __generator(this, function (_a) {
@@ -91,7 +93,9 @@ exports.getTeams = function (req, res) { return __awaiter(void 0, void 0, void 0
                 return [4 /*yield*/, config_1.loadConfig()];
             case 2:
                 config = _a.sent();
-                return [2 /*return*/, res.json(teams.map(function (team) { return (__assign(__assign({}, team), { logo: team.logo && team.logo.length ? "http://" + ip_1["default"].address() + ":" + config.port + "/api/teams/logo/" + team._id : null })); }))];
+                return [2 /*return*/, res.json(teams.map(function (team) { return (__assign(__assign({}, team), { logo: team.logo && team.logo.length
+                            ? "http://" + ip_1["default"].address() + ":" + config.port + "/api/teams/logo/" + team._id
+                            : null })); }))];
         }
     });
 }); };

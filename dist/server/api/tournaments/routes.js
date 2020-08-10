@@ -9,10 +9,9 @@ var __importStar = (this && this.__importStar) || function (mod) {
 exports.__esModule = true;
 var T = __importStar(require("./middlewares"));
 var initRoute = function (router) {
-    router.route('/api/tournaments')
-        .get(T.getTournaments)
-        .post(T.addTournament);
-    router.route('/api/tournaments/:id')
+    router.route('/api/tournaments').get(T.getTournaments).post(T.addTournament);
+    router
+        .route('/api/tournaments/:id')
         .post(T.bindMatchToMatchup)
         .patch(T.updateTournament)["delete"](T.deleteTournament);
 };

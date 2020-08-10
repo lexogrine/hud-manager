@@ -63,12 +63,14 @@ var remove = function (pathToRemove) {
     var files = fs.readdirSync(pathToRemove);
     files.forEach(function (file) {
         var current = path.join(pathToRemove, file);
-        if (fs.lstatSync(current).isDirectory()) { // recurse
+        if (fs.lstatSync(current).isDirectory()) {
+            // recurse
             remove(current);
             if (fs.existsSync(current))
                 fs.rmdirSync(current);
         }
-        else { // delete file
+        else {
+            // delete file
             if (fs.existsSync(current))
                 fs.unlinkSync(current);
         }
@@ -81,8 +83,10 @@ exports.listHUDs = function () { return __awaiter(void 0, void 0, void 0, functi
         switch (_a.label) {
             case 0:
                 dir = path.join(electron_1.app.getPath('home'), 'HUDs');
-                filtered = fs.readdirSync(dir, { withFileTypes: true })
-                    .filter(function (dirent) { return dirent.isDirectory(); }).filter(function (dirent) { return /^[0-9a-zA-Z-_]+$/g.test(dirent.name); });
+                filtered = fs
+                    .readdirSync(dir, { withFileTypes: true })
+                    .filter(function (dirent) { return dirent.isDirectory(); })
+                    .filter(function (dirent) { return /^[0-9a-zA-Z-_]+$/g.test(dirent.name); });
                 return [4 /*yield*/, Promise.all(filtered.map(function (dirent) { return __awaiter(void 0, void 0, void 0, function () { return __generator(this, function (_a) {
                         switch (_a.label) {
                             case 0: return [4 /*yield*/, exports.getHUDData(dirent.name)];
@@ -242,7 +246,7 @@ exports.renderThumbnail = function (req, res) {
     return res.sendFile(path.join(__dirname, '../../assets/icon.png'));*/
 };
 exports.getThumbPath = function (dir) {
-    var thumbPath = path.join(electron_1.app.getPath('home'), 'HUDs', dir, "thumb.png");
+    var thumbPath = path.join(electron_1.app.getPath('home'), 'HUDs', dir, 'thumb.png');
     if (fs.existsSync(thumbPath)) {
         return thumbPath;
     }
@@ -346,7 +350,7 @@ exports.uploadHUD = function (req, res) { return __awaiter(void 0, void 0, void 
                 response = _a.sent();
                 if (response) {
                     notification = new electron_1.Notification({
-                        title: "HUD Upload",
+                        title: 'HUD Upload',
                         body: response.name + " uploaded successfully",
                         icon: exports.getThumbPath(response.dir)
                     });
@@ -359,7 +363,7 @@ exports.uploadHUD = function (req, res) { return __awaiter(void 0, void 0, void 
 exports.deleteHUD = function (io) { return function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var hudPath;
     return __generator(this, function (_a) {
-        if (!req.query.hudDir || typeof req.query.hudDir !== "string" || huds_1["default"].current)
+        if (!req.query.hudDir || typeof req.query.hudDir !== 'string' || huds_1["default"].current)
             return [2 /*return*/, res.sendStatus(422)];
         hudPath = path.join(electron_1.app.getPath('home'), 'HUDs', req.query.hudDir);
         if (!fs.existsSync(hudPath)) {
@@ -377,7 +381,7 @@ exports.deleteHUD = function (io) { return function (req, res) { return __awaite
     });
 }); }; };
 function removeArchives() {
-    var files = fs.readdirSync('./').filter(function (file) { return file.startsWith("hud_temp_") && file.endsWith(".zip"); });
+    var files = fs.readdirSync('./').filter(function (file) { return file.startsWith('hud_temp_') && file.endsWith('.zip'); });
     files.forEach(function (file) {
         try {
             if (fs.lstatSync(file).isDirectory()) {
@@ -394,9 +398,14 @@ function loadHUD(base64, name) {
         var getRandomString;
         var _this = this;
         return __generator(this, function (_a) {
-            getRandomString = function () { return (Math.random() * 1000 + 1).toString(36).replace(/[^a-z]+/g, '').substr(0, 15); };
+            getRandomString = function () {
+                return (Math.random() * 1000 + 1)
+                    .toString(36)
+                    .replace(/[^a-z]+/g, '')
+                    .substr(0, 15);
+            };
             removeArchives();
-            return [2 /*return*/, new Promise(function (res, rej) {
+            return [2 /*return*/, new Promise(function (res) {
                     var hudDirName = name.replace(/[^a-zA-Z0-9-_]/g, '');
                     var hudPath = path.join(electron_1.app.getPath('home'), 'HUDs', hudDirName);
                     if (fs.existsSync(hudPath)) {

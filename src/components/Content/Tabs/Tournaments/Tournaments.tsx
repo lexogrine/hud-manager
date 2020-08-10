@@ -4,17 +4,27 @@ import api from './../../../../api/api';
 import * as I from './../../../../api/interfaces';
 import { IContextData } from './../../../../components/Context';
 import { TournamentMatchup, DepthTournamentMatchup } from '../../../../../types/interfaces';
+import BindModal from './BindModal';
 
 interface MatchData {
 	left: { name: string; score: string | number; logo: string };
 	right: { name: string; score: string | number; logo: string };
 }
+interface State {
+	match: string;
+	tournament: I.Tournament | null;
+	matchup: string;
+	isOpen: boolean;
+}
 
-export default class Teams extends React.Component<{ cxt: IContextData }, { tournament: I.Tournament | null }> {
+export default class Teams extends React.Component<{ cxt: IContextData }, State> {
 	constructor(props: { cxt: IContextData }) {
 		super(props);
 		this.state = {
-			tournament: null
+			tournament: null,
+			match: '',
+			matchup: '',
+			isOpen: false
 		};
 	}
 
@@ -57,26 +67,12 @@ export default class Teams extends React.Component<{ cxt: IContextData }, { tour
 		};
 	};
 
-	/*changeHandler = (event: any) => {
-        const name: 'name' | 'shortName' | 'logo' | 'country' = event.target.name;
-        const { form }: any = this.state;
-        if (!event.target.files) {
-            form[name] = event.target.value;
-            return this.setState({ form });
-        }
-
-        return this.fileHandler(event.target.files);
-
-        // this.setState({ value })
-    }*/
+	bindHandler = (event: any) => {
+		this.setState({ match: event.target.value });
+	}
 	delete = async () => {
 		const { tournament } = this.state;
 		if (!tournament || tournament._id === 'empty') return;
-		/*const response = await api.teams.delete(this.state.form._id);
-        if (response) {
-            await this.loadTeams();
-            this.setState({ form: { ...this.emptyTeam } });
-        }*/
 	};
 
 	joinParents = (matchup: TournamentMatchup, matchups: TournamentMatchup[]) => {
@@ -138,6 +134,15 @@ export default class Teams extends React.Component<{ cxt: IContextData }, { tour
 		return matchData;
 	};
 
+	save = async () => {
+		const { tournament, matchup, match } = this.state;
+		if(!tournament) return;
+        await api.tournaments.bind(tournament._id, match, matchup);
+		await this.props.cxt.reload();
+		this.loadTournament(tournament._id);
+		this.setState({isOpen:false})
+	}
+
 	renderBracket = (
 		matchup: DepthTournamentMatchup | null | undefined,
 		depth: number,
@@ -160,7 +165,7 @@ export default class Teams extends React.Component<{ cxt: IContextData }, { tour
 			);
 		}
 		return (
-			<div className="bracket">
+			<div className={`bracket depth-${depth}`}>
 				<div className="parent-brackets">
 					{this.renderBracket(matchup.parents[0], depth + 1, matchup._id, parentsToRender.length)}
 					{this.renderBracket(matchup.parents[1], depth + 1, matchup._id, parentsToRender.length)}
@@ -169,10 +174,10 @@ export default class Teams extends React.Component<{ cxt: IContextData }, { tour
 					<div
 						className={`match-connector ${
 							!matchup.parents.length || parentsToRender.length === 0 ? 'first-match' : ''
-						} ${isLast ? 'last-match' : ''}`}
+							} ${isLast ? 'last-match' : ''}`}
 					></div>
 					{parentsToRender.length === 1 ? <div className="loser-parent-indicator"></div> : null}
-					<div className="match-details">
+					<div className="match-details" onClick={this.openModal(matchup._id, matchup.matchId || '')}>
 						<div className="team-data">
 							<div className="team-logo">
 								{match.left.logo ? <img src={match.left.logo} alt="Logo" /> : null}
@@ -208,12 +213,23 @@ export default class Teams extends React.Component<{ cxt: IContextData }, { tour
 		return this.renderBracket(matchupWithDepth, 0, undefined, 2, true);
 	};
 
+	toggleModal = () => {
+		this.setState({isOpen: !this.state.isOpen});
+	}
+
+	openModal = (matchup: string, match: string) => () => {
+		this.setState({matchup, match, isOpen: true})
+	}
+
 	render() {
+		const { match, isOpen, tournament } = this.state;
+		const { cxt } = this.props;
 		return (
 			<Form>
 				<div className="tab-title-container">Tournaments</div>
 				<div className="tab-content-container full-scroll">
-					<Button onClick={() => this.addTournament('Test DE', '', 'de', 8)}>Add test tournament</Button>
+					{tournament ? <BindModal save={this.save} teams={cxt.teams} matches={cxt.matches} isOpen={isOpen} tournamentId={tournament._id} matchId={match} bindHandler={this.bindHandler} toggle={this.toggleModal}/> : null}
+					<Button onClick={() => this.addTournament('Test XSD', '', 'se', 4)}>Add test tournament</Button>
 					<FormGroup>
 						<Input
 							type="select"

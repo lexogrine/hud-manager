@@ -51,13 +51,15 @@ var M = __importStar(require("./../match"));
 var v4_1 = __importDefault(require("uuid/v4"));
 var database_1 = __importDefault(require("./../../../init/database"));
 var tournaments = database_1["default"].tournaments;
-exports.getTournaments = function () { return new Promise(function (res, rej) {
-    tournaments.find({}, function (err, docs) {
-        if (err)
-            return res([]);
-        return res(docs);
+exports.getTournaments = function () {
+    return new Promise(function (res) {
+        tournaments.find({}, function (err, docs) {
+            if (err)
+                return res([]);
+            return res(docs);
+        });
     });
-}); };
+};
 exports.createTournament = function (type, teams) {
     var tournament = {
         _id: '',
@@ -67,10 +69,10 @@ exports.createTournament = function (type, teams) {
         autoCreate: true
     };
     switch (type) {
-        case "se":
+        case 'se':
             tournament.matchups = Formats.createSEBracket(teams);
             break;
-        case "de":
+        case 'de':
             tournament.matchups = Formats.createDEBracket(teams);
             break;
         default:
@@ -78,21 +80,34 @@ exports.createTournament = function (type, teams) {
     }
     return tournament;
 };
-exports.addTournament = function (tournament) { return new Promise(function (res, rej) {
-    tournaments.insert(tournament, function (err, newTournament) {
-        if (err)
-            return res(null);
-        return newTournament;
+exports.addTournament = function (tournament) {
+    return new Promise(function (res) {
+        tournaments.insert(tournament, function (err, newTournament) {
+            if (err)
+                return res(null);
+            return newTournament;
+        });
     });
-}); };
-exports.getTournament = function (tournamentId) { return new Promise(function (res, rej) {
-    tournaments.findOne({ _id: tournamentId }, function (err, tournament) {
-        if (err || !tournament)
-            return res(null);
-        return res(tournament);
+};
+exports.getTournament = function (tournamentId) {
+    return new Promise(function (res) {
+        tournaments.findOne({ _id: tournamentId }, function (err, tournament) {
+            if (err || !tournament)
+                return res(null);
+            return res(tournament);
+        });
     });
-}); };
-exports.bindMatch = function (matchId, matchupId, tournamentId) { return new Promise(function (res, rej) { return __awaiter(void 0, void 0, void 0, function () {
+};
+exports.updateTournament = function (tournament) {
+    return new Promise(function (res) {
+        tournaments.update({ _id: tournament._id }, tournament, {}, function (err) {
+            if (err)
+                return res(null);
+            return res(tournament);
+        });
+    });
+};
+exports.bindMatch = function (matchId, matchupId, tournamentId) { return __awaiter(void 0, void 0, void 0, function () {
     var tournament, matchup;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -100,23 +115,116 @@ exports.bindMatch = function (matchId, matchupId, tournamentId) { return new Pro
             case 1:
                 tournament = _a.sent();
                 if (!tournament)
-                    return [2 /*return*/, res(null)];
+                    return [2 /*return*/, null];
                 matchup = tournament.matchups.find(function (matchup) { return matchup._id === matchupId; });
                 if (!matchup)
-                    return [2 /*return*/, res(null)];
+                    return [2 /*return*/, null];
                 matchup.matchId = matchId;
                 return [4 /*yield*/, exports.updateTournament(tournament)];
             case 2: return [2 /*return*/, _a.sent()];
         }
     });
-}); }); };
-exports.updateTournament = function (tournament) { return new Promise(function (res, rej) {
-    tournaments.update({ _id: tournament._id }, tournament, {}, function (err, up) {
-        if (err)
-            return res(null);
-        return res(tournament);
-    });
 }); };
+exports.fillNextMatch = function (matchId, type) {
+    return new Promise(function (res) {
+        var maxWins = function (type) {
+            switch (type) {
+                case 'bo1':
+                    return 1;
+                case 'bo3':
+                    return 2;
+                case 'bo5':
+                    return 3;
+                default:
+                    return 2;
+            }
+        };
+        tournaments.findOne({
+            $where: function () {
+                return !!this.matchups.find(function (matchup) { return matchup.matchId === matchId; });
+            }
+        }, function (err, tournament) { return __awaiter(void 0, void 0, void 0, function () {
+            var matchup, nextMatchup, match, winsRequired, winnerId, loserId, newMatch, i, resp, nextMatch, teamIds;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0:
+                        if (err || !tournament)
+                            return [2 /*return*/, res(null)];
+                        matchup = tournament.matchups.find(function (matchup) { return matchup.matchId === matchId; });
+                        if (!matchup || (!matchup.winner_to && type === 'winner') || (!matchup.loser_to && type === 'loser'))
+                            return [2 /*return*/, res(null)];
+                        nextMatchup = tournament.matchups.find(function (next) {
+                            return (next._id === matchup.winner_to && type === 'winner') ||
+                                (next._id === matchup.loser_to && type === 'loser');
+                        });
+                        if (!nextMatchup)
+                            return [2 /*return*/, res(null)];
+                        return [4 /*yield*/, M.getMatchById(matchId)];
+                    case 1:
+                        match = _a.sent();
+                        if (!match)
+                            return [2 /*return*/, res(null)];
+                        winsRequired = maxWins(match.matchType);
+                        if (match.left.wins !== winsRequired && match.right.wins !== winsRequired)
+                            return [2 /*return*/, res(null)];
+                        winnerId = match.left.wins > match.right.wins ? match.left.id : match.right.id;
+                        loserId = match.left.wins > match.right.wins ? match.right.id : match.left.id;
+                        if (!!nextMatchup.matchId) return [3 /*break*/, 4];
+                        newMatch = {
+                            id: v4_1["default"](),
+                            current: false,
+                            left: { id: type === 'winner' ? winnerId : loserId, wins: 0 },
+                            right: { id: null, wins: 0 },
+                            matchType: 'bo1',
+                            vetos: []
+                        };
+                        for (i = 0; i < 7; i++) {
+                            newMatch.vetos.push({
+                                teamId: '',
+                                mapName: '',
+                                side: 'NO',
+                                type: 'pick',
+                                mapEnd: false,
+                                reverseSide: false
+                            });
+                        }
+                        return [4 /*yield*/, M.addMatch(newMatch)];
+                    case 2:
+                        resp = _a.sent();
+                        if (!resp)
+                            return [2 /*return*/, res(null)];
+                        nextMatchup.matchId = newMatch.id;
+                        return [4 /*yield*/, exports.updateTournament(tournament)];
+                    case 3:
+                        _a.sent();
+                        _a.label = 4;
+                    case 4: return [4 /*yield*/, M.getMatchById(nextMatchup.matchId)];
+                    case 5:
+                        nextMatch = _a.sent();
+                        if (!nextMatch)
+                            return [2 /*return*/, res(null)];
+                        teamIds = [nextMatch.left.id, nextMatch.right.id];
+                        if ((teamIds.includes(winnerId) && type === 'winner') ||
+                            (teamIds.includes(loserId) && type === 'loser'))
+                            return [2 /*return*/, res(nextMatch)];
+                        if (!nextMatch.left.id) {
+                            nextMatch.left.id = type === 'winner' ? winnerId : loserId;
+                        }
+                        else if (!nextMatch.right.id) {
+                            nextMatch.right.id = type === 'winner' ? winnerId : loserId;
+                        }
+                        else {
+                            return [2 /*return*/, res(null)];
+                        }
+                        return [4 /*yield*/, M.updateMatch(nextMatch)];
+                    case 6:
+                        _a.sent();
+                        return [2 /*return*/, res(nextMatch)];
+                }
+            });
+        }); });
+    });
+};
 exports.createNextMatch = function (matchId) { return __awaiter(void 0, void 0, void 0, function () {
     var _a;
     return __generator(this, function (_b) {
@@ -134,94 +242,12 @@ exports.createNextMatch = function (matchId) { return __awaiter(void 0, void 0, 
         }
     });
 }); };
-exports.fillNextMatch = function (matchId, type) { return new Promise(function (res, rej) {
-    var maxWins = function (type) {
-        switch (type) {
-            case "bo1":
-                return 1;
-            case "bo3":
-                return 2;
-            case "bo5":
-                return 3;
-            default:
-                return 2;
-        }
-    };
-    tournaments.findOne({ $where: function () { return !!this.matchups.find(function (matchup) { return matchup.matchId === matchId; }); } }, function (err, tournament) { return __awaiter(void 0, void 0, void 0, function () {
-        var matchup, nextMatchup, match, winsRequired, winnerId, loserId, newMatch, i, resp, nextMatch, teamIds;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
-                case 0:
-                    if (err || !tournament)
-                        return [2 /*return*/, res(null)];
-                    matchup = tournament.matchups.find(function (matchup) { return matchup.matchId === matchId; });
-                    if (!matchup || (!matchup.winner_to && type === 'winner') || (!matchup.loser_to && type === 'loser'))
-                        return [2 /*return*/, res(null)];
-                    nextMatchup = tournament.matchups.find(function (next) { return (next._id === matchup.winner_to && type === 'winner') || (next._id === matchup.loser_to && type === 'loser'); });
-                    if (!nextMatchup)
-                        return [2 /*return*/, res(null)];
-                    return [4 /*yield*/, M.getMatchById(matchId)];
-                case 1:
-                    match = _a.sent();
-                    if (!match)
-                        return [2 /*return*/, res(null)];
-                    winsRequired = maxWins(match.matchType);
-                    if (match.left.wins !== winsRequired && match.right.wins !== winsRequired)
-                        return [2 /*return*/, res(null)];
-                    winnerId = match.left.wins > match.right.wins ? match.left.id : match.right.id;
-                    loserId = match.left.wins > match.right.wins ? match.right.id : match.left.id;
-                    if (!!nextMatchup.matchId) return [3 /*break*/, 4];
-                    newMatch = {
-                        id: v4_1["default"](),
-                        current: false,
-                        left: { id: type === 'winner' ? winnerId : loserId, wins: 0 },
-                        right: { id: null, wins: 0 },
-                        matchType: 'bo1',
-                        vetos: []
-                    };
-                    for (i = 0; i < 7; i++) {
-                        newMatch.vetos.push({ teamId: '', mapName: '', side: 'NO', type: 'pick', mapEnd: false, reverseSide: false });
-                    }
-                    return [4 /*yield*/, M.addMatch(newMatch)];
-                case 2:
-                    resp = _a.sent();
-                    if (!resp)
-                        return [2 /*return*/, res(null)];
-                    nextMatchup.matchId = newMatch.id;
-                    return [4 /*yield*/, exports.updateTournament(tournament)];
-                case 3:
-                    _a.sent();
-                    _a.label = 4;
-                case 4: return [4 /*yield*/, M.getMatchById(nextMatchup.matchId)];
-                case 5:
-                    nextMatch = _a.sent();
-                    if (!nextMatch)
-                        return [2 /*return*/, res(null)];
-                    teamIds = [nextMatch.left.id, nextMatch.right.id];
-                    if ([nextMatch.left.id,])
-                        if ((teamIds.includes(winnerId) && type === 'winner') || (teamIds.includes(loserId) && type === 'loser'))
-                            return [2 /*return*/, res(nextMatch)];
-                    if (!nextMatch.left.id) {
-                        nextMatch.left.id = type === 'winner' ? winnerId : loserId;
-                    }
-                    else if (!nextMatch.right.id) {
-                        nextMatch.right.id = type === 'winner' ? winnerId : loserId;
-                    }
-                    else {
-                        return [2 /*return*/, res(null)];
-                    }
-                    return [4 /*yield*/, M.updateMatch(nextMatch)];
-                case 6:
-                    _a.sent();
-                    return [2 /*return*/, res(nextMatch)];
-            }
+exports.deleteTournament = function (tournamentId) {
+    return new Promise(function (res) {
+        tournaments.remove({ _id: tournamentId }, function (err) {
+            if (!err)
+                return res(null);
+            return res(true);
         });
-    }); });
-}); };
-exports.deleteTournament = function (tournamentId) { return new Promise(function (res, rej) {
-    tournaments.remove({ _id: tournamentId }, function (err, n) {
-        if (!err)
-            return res(null);
-        return res(true);
     });
-}); };
+};

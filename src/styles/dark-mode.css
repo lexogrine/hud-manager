@@ -202,6 +202,7 @@ button.btn-primary {
     border-radius: 2px;
     padding: 5px;
     z-index: 1;
+    cursor: pointer;
 }
 .bracket-details .match-details .team-data {
     display: flex;
@@ -214,7 +215,7 @@ button.btn-primary {
 }
 .bracket-details .match-details .team-data .team-logo {
     width:30px;
-    height:100%;
+    height:24px;
     display: flex;
     align-items: center;
     justify-content: center;

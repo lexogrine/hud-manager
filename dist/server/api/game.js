@@ -211,7 +211,7 @@ exports.run = function (req, res) { return __awaiter(void 0, void 0, void 0, fun
                     return [2 /*return*/, res.sendStatus(422)];
                 }
                 exec = '';
-                if (req.query.config && typeof req.query.config === "string") {
+                if (req.query.config && typeof req.query.config === 'string') {
                     exec = "+exec " + req.query.config;
                 }
                 try {
@@ -225,8 +225,8 @@ exports.run = function (req, res) { return __awaiter(void 0, void 0, void 0, fun
                 }
                 HLAEPath = config.hlaePath;
                 GameExePath = path_1["default"].join(GamePath.game.path, 'csgo.exe');
-                isHLAE = exec.includes("killfeed");
-                exePath = isHLAE ? HLAEPath : path_1["default"].join(GamePath.steam.path, "Steam.exe");
+                isHLAE = exec.includes('killfeed');
+                exePath = isHLAE ? HLAEPath : path_1["default"].join(GamePath.steam.path, 'Steam.exe');
                 if (isHLAE && (!HLAEPath || !fs_1["default"].existsSync(HLAEPath))) {
                     return [2 /*return*/, res.sendStatus(404)];
                 }
@@ -276,13 +276,16 @@ exports.runExperimental = function (req, res) { return __awaiter(void 0, void 0,
                 HLAEPath = config.hlaePath;
                 GameExePath = path_1["default"].join(GamePath.game.path, 'csgo.exe');
                 exePath = HLAEPath;
-                if (!HLAEPath || !fs_1["default"].existsSync(HLAEPath) || !config.afxCEFHudInteropPath || !fs_1["default"].existsSync(config.afxCEFHudInteropPath)) {
+                if (!HLAEPath ||
+                    !fs_1["default"].existsSync(HLAEPath) ||
+                    !config.afxCEFHudInteropPath ||
+                    !fs_1["default"].existsSync(config.afxCEFHudInteropPath)) {
                     return [2 /*return*/, res.sendStatus(404)];
                 }
                 args = [];
                 url = "http://localhost:" + config.port + "/hlae.html";
                 exec = '';
-                if (req.query.config && typeof req.query.config === "string") {
+                if (req.query.config && typeof req.query.config === 'string') {
                     exec = "+exec " + req.query.config;
                 }
                 args.push('-csgoLauncher', '-noGui', '-autoStart', "-csgoExe \"" + GameExePath + "\"", '-gfxFull false');

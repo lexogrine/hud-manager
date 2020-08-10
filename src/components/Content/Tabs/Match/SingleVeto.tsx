@@ -21,17 +21,21 @@ function generateDescription(veto: I.Veto, team?: I.Team, secTeam?: I.Team) {
 		return '';
 	}
 	if (veto.type === 'decider') {
-		return `${veto.mapName} decider`;
+		//return `${veto.mapName} decider`;
 	}
 	if (!team || !team.name || !secTeam) {
 		return <strong>Wrong team selected</strong>;
 	}
-	const text = `${team.name} ${veto.type}s ${veto.mapName}`;
+	let text: string | null = `${team.name} ${veto.type}s ${veto.mapName}`;
 	let sidePick = '';
 	let scoreDescription = '';
 	let winnerDescription = '';
 	if (secTeam && secTeam.name && veto.side !== 'NO') {
 		sidePick = `, ${secTeam.name} chooses ${veto.side} side`;
+	}
+	if (veto.type === 'decider') {
+		text = null;
+		sidePick = `${veto.mapName} decider`;
 	}
 	if (veto.score && Number.isInteger(veto.score[team._id]) && Number.isInteger(veto.score[secTeam._id])) {
 		scoreDescription = `${team.shortName} ${veto.score[team._id]}:${veto.score[secTeam._id]} ${secTeam.shortName}`;
@@ -94,8 +98,12 @@ class SingleVeto extends React.Component<Props, State> {
 	componentDidMount() {}
 	render() {
 		const { vetoTeams, veto, map, maps, onSave } = this.props;
-		const team = vetoTeams.filter(team => team._id === veto.teamId)[0];
-		const secTeam = vetoTeams.filter(team => team._id !== veto.teamId)[0];
+		let team = vetoTeams.filter(team => team._id === veto.teamId)[0];
+		let secTeam = vetoTeams.filter(team => team._id !== veto.teamId)[0];
+		if(!veto.teamId){
+			team = vetoTeams[0];
+			secTeam = vetoTeams[1];
+		}
 		return (
 			<div className={`veto-container ${veto.teamId === '' ? 'empty' : ''} ${veto.teamId ? veto.type : ''}`}>
 				{vetoTeams.length !== 2 ? (

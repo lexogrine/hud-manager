@@ -44,7 +44,7 @@ var fs_1 = __importDefault(require("fs"));
 var configs = database_1["default"].config;
 exports.loadConfig = function () { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
-        return [2 /*return*/, new Promise(function (res, rej) {
+        return [2 /*return*/, new Promise(function (res) {
                 configs.find({}, function (err, config) { return __awaiter(void 0, void 0, void 0, function () {
                     var _a;
                     return __generator(this, function (_b) {
@@ -54,7 +54,8 @@ exports.loadConfig = function () { return __awaiter(void 0, void 0, void 0, func
                                     return [2 /*return*/, res(null)];
                                 }
                                 if (!config.length) return [3 /*break*/, 2];
-                                if ((!config[0].hlaePath || fs_1["default"].existsSync(config[0].hlaePath)) && (!config[0].afxCEFHudInteropPath || fs_1["default"].existsSync(config[0].afxCEFHudInteropPath))) {
+                                if ((!config[0].hlaePath || fs_1["default"].existsSync(config[0].hlaePath)) &&
+                                    (!config[0].afxCEFHudInteropPath || fs_1["default"].existsSync(config[0].afxCEFHudInteropPath))) {
                                     return [2 /*return*/, res(config[0])];
                                 }
                                 if (config[0].hlaePath && !fs_1["default"].existsSync(config[0].hlaePath)) {
@@ -118,7 +119,7 @@ exports.updateConfig = function (req, res) { return __awaiter(void 0, void 0, vo
 }); };
 exports.setConfig = function (config) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
-        return [2 /*return*/, new Promise(function (res, rej) {
+        return [2 /*return*/, new Promise(function (res) {
                 configs.update({}, { $set: config }, {}, function (err) { return __awaiter(void 0, void 0, void 0, function () {
                     var newConfig;
                     return __generator(this, function (_a) {

@@ -81,7 +81,7 @@ var HUD = /** @class */ (function () {
                                 backgroundThrottling: false
                             }
                         });
-                        hudWindow.on("show", function () {
+                        hudWindow.on('show', function () {
                             hudWindow.setAlwaysOnTop(true);
                         });
                         hudWindow.setIgnoreMouseEvents(true);
@@ -90,8 +90,8 @@ var HUD = /** @class */ (function () {
                         tray.on('right-click', function () {
                             var contextMenu = electron_1.Menu.buildFromTemplate([
                                 { label: hud.name, enabled: false },
-                                { type: "separator" },
-                                { label: 'Show', type: "checkbox", click: function () { return _this.toggleVisibility(); }, checked: _this.show },
+                                { type: 'separator' },
+                                { label: 'Show', type: 'checkbox', click: function () { return _this.toggleVisibility(); }, checked: _this.show },
                                 { label: 'Close HUD', click: function () { return _this.close(); } }
                             ]);
                             tray.popUpContextMenu(contextMenu);
@@ -108,8 +108,8 @@ var HUD = /** @class */ (function () {
                                     electron_1.globalShortcut.unregister(keybind.bind);
                                 }
                             }
-                            electron_1.globalShortcut.unregister("Alt+r");
-                            electron_1.globalShortcut.unregister("Alt+F");
+                            electron_1.globalShortcut.unregister('Alt+r');
+                            electron_1.globalShortcut.unregister('Alt+F');
                             _this.hud = null;
                             _this.current = null;
                             if (_this.tray !== null) {
@@ -127,10 +127,10 @@ var HUD = /** @class */ (function () {
             return;
         this.current.setOpacity(1);
         this.current.show();
-        electron_1.globalShortcut.register("Alt+r", function () {
+        electron_1.globalShortcut.register('Alt+r', function () {
             match.reverseSide(io);
         });
-        electron_1.globalShortcut.register("Alt+F", function () {
+        electron_1.globalShortcut.register('Alt+F', function () {
             if (!_this.current || !hud || !hud.url)
                 return;
             _this.current.loadURL(hud.url);
@@ -138,7 +138,7 @@ var HUD = /** @class */ (function () {
         if (hud.keybinds) {
             var _loop_1 = function (bind) {
                 electron_1.globalShortcut.register(bind.bind, function () {
-                    io.to(hud.dir).emit("keybindAction", bind.action);
+                    io.to(hud.dir).emit('keybindAction', bind.action);
                 });
             };
             for (var _i = 0, _a = hud.keybinds; _i < _a.length; _i++) {

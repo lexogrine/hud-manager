@@ -57,6 +57,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 exports.__esModule = true;
+/* eslint-disable no-console */
 var express_1 = __importDefault(require("express"));
 var sockets_1 = __importDefault(require("./sockets"));
 var http_1 = __importDefault(require("http"));
@@ -106,7 +107,9 @@ function init() {
                                         return res.sendStatus(200);
                                     }
                                 }
-                                var text = payload.replace(/"(player|owner)":([ ]*)([0-9]+)/gm, '"$1": "$3"').replace(/(player|owner):([ ]*)([0-9]+)/gm, '"$1": "$3"');
+                                var text = payload
+                                    .replace(/"(player|owner)":([ ]*)([0-9]+)/gm, '"$1": "$3"')
+                                    .replace(/(player|owner):([ ]*)([0-9]+)/gm, '"$1": "$3"');
                                 req.body = JSON.parse(text);
                             }
                             next();
@@ -115,7 +118,7 @@ function init() {
                             next();
                         }
                     });
-                    app.use(cors_1["default"]({ origin: "*", credentials: true }));
+                    app.use(cors_1["default"]({ origin: '*', credentials: true }));
                     io = sockets_1["default"](server, app);
                     api_1["default"](app, io);
                     fs_1["default"].watch(path_1["default"].join(electron_1.app.getPath('home'), 'HUDs'), function () {
