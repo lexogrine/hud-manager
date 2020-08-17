@@ -12,7 +12,7 @@ import { getMatches, updateRound, getMatchById, updateMatch } from './api/match'
 import fs from 'fs';
 import portscanner from 'portscanner';
 import { loadConfig } from './api/config';
-//import { testData } from './api/testing';
+import { testData } from './api/testing';
 import { getTeamById } from './api/teams';
 import { getPlayerById } from './api/players';
 import { createNextMatch } from './api/tournaments';
@@ -299,7 +299,7 @@ export default function (server: http.Server, app: express.Router) {
 			new Date().getTime() - runtimeConfig.last.provider.timestamp * 1000 <= 5000
 		)
 			return;
-		/*
+		
         io.emit('enableTest', false);
         
         let i = 0;
@@ -312,7 +312,7 @@ export default function (server: http.Server, app: express.Router) {
             }
             io.emit('update', testData[i]);
             i++;
-        }, 16);*/
+        }, 16);
 	});
 
 	io.on('connection', socket => {
@@ -402,7 +402,7 @@ export default function (server: http.Server, app: express.Router) {
 		await updateMatch(match);
 
 		io.emit('match', true);
-	}
+	};
 
 	const onMatchEnd = async (score: Score) => {
 		const matches = await getMatches();
@@ -445,46 +445,48 @@ export default function (server: http.Server, app: express.Router) {
 			await createNextMatch(match.id);
 			io.emit('match', true);
 		}
-	}
+	};
 
 	let last: CSGO;
 
 	GSI.on('data', async data => {
 		await updateRound(data);
 		let round: Score;
-        if ((last?.map.team_ct.score !== data.map.team_ct.score) !== (last?.map.team_t.score !== data.map.team_t.score)) {
-            if (last?.map.team_ct.score !== data.map.team_ct.score) {
-                round = {
-                    winner: data.map.team_ct,
-                    loser: data.map.team_t,
-                    map: data.map,
-                    mapEnd: false
-                };
-            }
-            else {
-                round = {
-                    winner: data.map.team_t,
-                    loser: data.map.team_ct,
-                    map: data.map,
-                    mapEnd: false
-                };
-            }
+		if (
+			(last?.map.team_ct.score !== data.map.team_ct.score) !==
+			(last?.map.team_t.score !== data.map.team_t.score)
+		) {
+			if (last?.map.team_ct.score !== data.map.team_ct.score) {
+				round = {
+					winner: data.map.team_ct,
+					loser: data.map.team_t,
+					map: data.map,
+					mapEnd: false
+				};
+			} else {
+				round = {
+					winner: data.map.team_t,
+					loser: data.map.team_ct,
+					map: data.map,
+					mapEnd: false
+				};
+			}
 		}
-		if(round){
+		if (round) {
 			await onRoundEnd(round);
 		}
-        if(data.map.phase === "gameover" && last.map.phase !== "gameover"){
-            const winner = data.map.team_ct.score > data.map.team_t.score ? data.map.team_ct : data.map.team_t;
-            const loser = data.map.team_ct.score > data.map.team_t.score ? data.map.team_t : data.map.team_ct;
+		if (data.map.phase === 'gameover' && last.map.phase !== 'gameover') {
+			const winner = data.map.team_ct.score > data.map.team_t.score ? data.map.team_ct : data.map.team_t;
+			const loser = data.map.team_ct.score > data.map.team_t.score ? data.map.team_t : data.map.team_ct;
 
-            const final: Score = {
-                winner,
-                loser,
-                map: data.map,
-                mapEnd: true
-            };
+			const final: Score = {
+				winner,
+				loser,
+				map: data.map,
+				mapEnd: true
+			};
 
-            await onMatchEnd(final);
+			await onMatchEnd(final);
 		}
 		last = GSI.last;
 	});

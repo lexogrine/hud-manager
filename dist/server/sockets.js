@@ -61,7 +61,7 @@ var match_1 = require("./api/match");
 var fs_1 = __importDefault(require("fs"));
 var portscanner_1 = __importDefault(require("portscanner"));
 var config_1 = require("./api/config");
-//import { testData } from './api/testing';
+var testing_1 = require("./api/testing");
 var teams_1 = require("./api/teams");
 var players_1 = require("./api/players");
 var tournaments_1 = require("./api/tournaments");
@@ -421,20 +421,18 @@ function default_1(server, app) {
         if (((_b = (_a = runtimeConfig.last) === null || _a === void 0 ? void 0 : _a.provider) === null || _b === void 0 ? void 0 : _b.timestamp) &&
             new Date().getTime() - runtimeConfig.last.provider.timestamp * 1000 <= 5000)
             return;
-        /*
         io.emit('enableTest', false);
-        
-        let i = 0;
-        intervalId = setInterval(() => {
-            if(!testData[i]) {
+        var i = 0;
+        intervalId = setInterval(function () {
+            if (!testing_1.testData[i]) {
                 clearInterval(intervalId);
                 intervalId = null;
                 io.emit('enableTest', true);
                 return;
             }
-            io.emit('update', testData[i]);
+            io.emit('update', testing_1.testData[i]);
             i++;
-        }, 16);*/
+        }, 16);
     });
     io.on('connection', function (socket) {
         socket.on('started', function () {
@@ -616,7 +614,8 @@ function default_1(server, app) {
                 case 0: return [4 /*yield*/, match_1.updateRound(data)];
                 case 1:
                     _a.sent();
-                    if (((last === null || last === void 0 ? void 0 : last.map.team_ct.score) !== data.map.team_ct.score) !== ((last === null || last === void 0 ? void 0 : last.map.team_t.score) !== data.map.team_t.score)) {
+                    if (((last === null || last === void 0 ? void 0 : last.map.team_ct.score) !== data.map.team_ct.score) !==
+                        ((last === null || last === void 0 ? void 0 : last.map.team_t.score) !== data.map.team_t.score)) {
                         if ((last === null || last === void 0 ? void 0 : last.map.team_ct.score) !== data.map.team_ct.score) {
                             round = {
                                 winner: data.map.team_ct,
@@ -640,7 +639,7 @@ function default_1(server, app) {
                     _a.sent();
                     _a.label = 3;
                 case 3:
-                    if (!(data.map.phase === "gameover" && last.map.phase !== "gameover")) return [3 /*break*/, 5];
+                    if (!(data.map.phase === 'gameover' && last.map.phase !== 'gameover')) return [3 /*break*/, 5];
                     winner = data.map.team_ct.score > data.map.team_t.score ? data.map.team_ct : data.map.team_t;
                     loser = data.map.team_ct.score > data.map.team_t.score ? data.map.team_t : data.map.team_ct;
                     final = {

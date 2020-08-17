@@ -80,12 +80,24 @@ exports.createTournament = function (type, teams) {
     }
     return tournament;
 };
+exports.getTournamentByMatchId = function (matchId) { return __awaiter(void 0, void 0, void 0, function () {
+    var tournaments, tournament;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, exports.getTournaments()];
+            case 1:
+                tournaments = _a.sent();
+                tournament = tournaments.find(function (trnm) { return !!trnm.matchups.find(function (matchup) { return matchup.matchId === matchId; }); });
+                return [2 /*return*/, tournament || null];
+        }
+    });
+}); };
 exports.addTournament = function (tournament) {
     return new Promise(function (res) {
         tournaments.insert(tournament, function (err, newTournament) {
             if (err)
                 return res(null);
-            return newTournament;
+            return res(newTournament);
         });
     });
 };
@@ -245,7 +257,7 @@ exports.createNextMatch = function (matchId) { return __awaiter(void 0, void 0, 
 exports.deleteTournament = function (tournamentId) {
     return new Promise(function (res) {
         tournaments.remove({ _id: tournamentId }, function (err) {
-            if (!err)
+            if (err)
                 return res(null);
             return res(true);
         });

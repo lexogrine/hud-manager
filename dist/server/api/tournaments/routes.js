@@ -10,6 +10,7 @@ exports.__esModule = true;
 var T = __importStar(require("./middlewares"));
 var initRoute = function (router) {
     router.route('/api/tournaments').get(T.getTournaments).post(T.addTournament);
+    router.route('/api/tournament').get(T.getCurrentTournament);
     router
         .route('/api/tournaments/:id')
         .post(T.bindMatchToMatchup)

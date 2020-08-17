@@ -121,7 +121,10 @@ export default {
 		add: (tournament: { name: string; logo: string; teams: number; type: string }): Promise<I.Tournament> =>
 			apiV2('tournaments', 'POST', tournament),
 		bind: (tournamentId: string, matchId: string, matchupId: string) =>
-			apiV2(`tournaments/${tournamentId}`, 'POST', { matchId, matchupId })
+			apiV2(`tournaments/${tournamentId}`, 'POST', { matchId, matchupId }),
+		delete: (tournamentId: string) => apiV2(`tournaments/${tournamentId}`, 'DELETE'),
+		update: (tournamentId: string, data: { name: string; logo: string }) =>
+			apiV2(`tournaments/${tournamentId}`, 'PATCH', data)
 	},
 	user: {
 		get: async (machineId: string): Promise<{ token: string } | { error: string } | false> =>

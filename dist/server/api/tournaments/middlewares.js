@@ -44,6 +44,25 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 exports.__esModule = true;
 var T = __importStar(require("./"));
+var match_1 = require("../match");
+exports.getCurrentTournament = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var matches, current, tournament;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, match_1.getMatches()];
+            case 1:
+                matches = _a.sent();
+                current = matches.find(function (match) { return match.current; });
+                if (!current) {
+                    return [2 /*return*/, res.json({ tournament: null })];
+                }
+                return [4 /*yield*/, T.getTournamentByMatchId(current.id)];
+            case 2:
+                tournament = _a.sent();
+                return [2 /*return*/, res.json({ tournament: tournament || null })];
+        }
+    });
+}); };
 exports.getTournaments = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var tournaments;
     return __generator(this, function (_a) {

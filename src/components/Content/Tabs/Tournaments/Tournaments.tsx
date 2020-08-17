@@ -1,10 +1,11 @@
 import React from 'react';
-import { Button, Form, FormGroup, Input } from 'reactstrap';
+import { Button, Form, FormGroup, Input, Row, Col } from 'reactstrap';
 import api from './../../../../api/api';
 import * as I from './../../../../api/interfaces';
 import { IContextData } from './../../../../components/Context';
 import { TournamentMatchup, DepthTournamentMatchup } from '../../../../../types/interfaces';
 import BindModal from './BindModal';
+import AddTournamentModal from './AddTournament';
 
 interface MatchData {
 	left: { name: string; score: string | number; logo: string };
@@ -15,16 +16,32 @@ interface State {
 	tournament: I.Tournament | null;
 	matchup: string;
 	isOpen: boolean;
+	isAdding: boolean;
+	form: {
+		name: string;
+		type: 'se' | 'de';
+		teams: number;
+		logo: string;
+		_id: string;
+	};
 }
 
 export default class Teams extends React.Component<{ cxt: IContextData }, State> {
 	constructor(props: { cxt: IContextData }) {
 		super(props);
 		this.state = {
+			form: {
+				name: '',
+				type: 'se',
+				teams: 2,
+				_id: '',
+				logo: ''
+			},
 			tournament: null,
 			match: '',
 			matchup: '',
-			isOpen: false
+			isOpen: false,
+			isAdding: false
 		};
 	}
 
@@ -47,32 +64,33 @@ export default class Teams extends React.Component<{ cxt: IContextData }, State>
 		this.loadTournament(event.target.value);
 	};
 
-	addTournament = (name: string, logo: string, type: string, teams: number) => {
-		api.tournaments.add({ name, logo, teams, type });
-		this.props.cxt.reload();
+	toggleAdding = () => {
+		this.setState({ isAdding: !this.state.isAdding });
 	};
-
-	fileHandler = (files: FileList) => {
-		if (!files || !files[0]) return;
-		const file = files[0];
-		//const { form } = this.state;
-		if (!file.type.startsWith('image')) {
-			return;
+	openModalAdding = () => {
+		this.toggleAdding();
+		let { tournament } = this.state;
+		if (!tournament) {
+			return this.setState({ form: { name: '', teams: 2, logo: '', type: 'se', _id: '' } });
 		}
-		const reader: any = new FileReader();
-		reader.readAsDataURL(file);
-		reader.onload = () => {
-			//form.logo = reader.result.replace(/^data:([a-z]+)\/([a-z0-9]+);base64,/, '');
-			//this.setState({ form })
-		};
+		tournament = this.props.cxt.tournaments.find(trnm => trnm._id === tournament?._id) || null;
+		if (!tournament) return this.setState({ form: { name: '', teams: 2, logo: '', type: 'se', _id: '' } });
+		return this.setState({
+			form: { name: tournament.name, teams: 2, logo: tournament.logo, type: 'se', _id: tournament._id }
+		});
 	};
 
 	bindHandler = (event: any) => {
 		this.setState({ match: event.target.value });
-	}
+	};
 	delete = async () => {
 		const { tournament } = this.state;
 		if (!tournament || tournament._id === 'empty') return;
+		await api.tournaments.delete(tournament._id);
+		await this.props.cxt.reload();
+		if (!this.props.cxt.tournaments.find(trnm => trnm._id === tournament._id)) {
+			this.setState({ tournament: null });
+		}
 	};
 
 	joinParents = (matchup: TournamentMatchup, matchups: TournamentMatchup[]) => {
@@ -136,12 +154,41 @@ export default class Teams extends React.Component<{ cxt: IContextData }, State>
 
 	save = async () => {
 		const { tournament, matchup, match } = this.state;
-		if(!tournament) return;
-        await api.tournaments.bind(tournament._id, match, matchup);
+		if (!tournament) return;
+		await api.tournaments.bind(tournament._id, match, matchup);
 		await this.props.cxt.reload();
 		this.loadTournament(tournament._id);
-		this.setState({isOpen:false})
-	}
+		this.setState({ isOpen: false });
+	};
+	fileHandler = (files: FileList) => {
+		if (!files || !files[0]) return;
+		const file = files[0];
+
+		if (!file.type.startsWith('image')) {
+			return;
+		}
+		const reader: any = new FileReader();
+		reader.readAsDataURL(file);
+		reader.onload = () => {
+			const logo = reader.result.replace(/^data:([a-z]+)\/([a-z0-9]+);base64,/, '');
+			this.setState(state => {
+				state.form.logo = logo;
+				return state;
+			});
+		};
+	};
+
+	changeHandler = (name: string) => (event: any) => {
+		if (!event.target.files) {
+			const val = event.target.value;
+			return this.setState((state: any) => {
+				state.form[name] = val;
+				return state;
+			});
+		}
+
+		return this.fileHandler(event.target.files);
+	};
 
 	renderBracket = (
 		matchup: DepthTournamentMatchup | null | undefined,
@@ -174,7 +221,7 @@ export default class Teams extends React.Component<{ cxt: IContextData }, State>
 					<div
 						className={`match-connector ${
 							!matchup.parents.length || parentsToRender.length === 0 ? 'first-match' : ''
-							} ${isLast ? 'last-match' : ''}`}
+						} ${isLast ? 'last-match' : ''}`}
 					></div>
 					{parentsToRender.length === 1 ? <div className="loser-parent-indicator"></div> : null}
 					<div className="match-details" onClick={this.openModal(matchup._id, matchup.matchId || '')}>
@@ -214,22 +261,40 @@ export default class Teams extends React.Component<{ cxt: IContextData }, State>
 	};
 
 	toggleModal = () => {
-		this.setState({isOpen: !this.state.isOpen});
-	}
+		this.setState({ isOpen: !this.state.isOpen });
+	};
 
 	openModal = (matchup: string, match: string) => () => {
-		this.setState({matchup, match, isOpen: true})
-	}
+		this.setState({ matchup, match, isOpen: true });
+	};
 
 	render() {
-		const { match, isOpen, tournament } = this.state;
+		const { match, isOpen, tournament, isAdding } = this.state;
 		const { cxt } = this.props;
 		return (
 			<Form>
 				<div className="tab-title-container">Tournaments</div>
-				<div className="tab-content-container full-scroll">
-					{tournament ? <BindModal save={this.save} teams={cxt.teams} matches={cxt.matches} isOpen={isOpen} tournamentId={tournament._id} matchId={match} bindHandler={this.bindHandler} toggle={this.toggleModal}/> : null}
-					<Button onClick={() => this.addTournament('Test XSD', '', 'se', 4)}>Add test tournament</Button>
+				<div className="tab-content-container">
+					{tournament ? (
+						<BindModal
+							save={this.save}
+							teams={cxt.teams}
+							matches={cxt.matches}
+							isOpen={isOpen}
+							tournamentId={tournament._id}
+							matchId={match}
+							bindHandler={this.bindHandler}
+							toggle={this.toggleModal}
+						/>
+					) : null}
+					<AddTournamentModal
+						isOpen={isAdding}
+						toggle={this.toggleAdding}
+						reload={cxt.reload}
+						changeHandler={this.changeHandler}
+						fileHandler={this.fileHandler}
+						form={this.state.form}
+					/>
 					<FormGroup>
 						<Input
 							type="select"
@@ -238,7 +303,7 @@ export default class Teams extends React.Component<{ cxt: IContextData }, State>
 							onChange={this.setTournament}
 							value={this.state.tournament?._id}
 						>
-							<option>No tournament</option>
+							<option value="empty">No tournament</option>
 							{this.props.cxt.tournaments
 								.concat()
 								.sort((a, b) => (a.name < b.name ? -1 : 1))
@@ -252,6 +317,16 @@ export default class Teams extends React.Component<{ cxt: IContextData }, State>
 					<div className="ladder-view" style={{ height: '500px' }}>
 						{this.renderLadder()}
 					</div>
+					<Row>
+						<Col className="main-buttons-container">
+							<Button color="secondary" onClick={this.delete} disabled={this.state.tournament === null}>
+								Delete
+							</Button>
+							<Button color="primary" onClick={this.openModalAdding}>
+								{this.state.tournament ? 'Edit' : 'Create New'}
+							</Button>
+						</Col>
+					</Row>
 				</div>
 			</Form>
 		);

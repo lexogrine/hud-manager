@@ -1,5 +1,18 @@
 import express from 'express';
 import * as T from './';
+import { getMatches } from '../match';
+
+export const getCurrentTournament: express.RequestHandler = async (req, res) => {
+	const matches = await getMatches();
+	const current = matches.find(match => match.current);
+	if (!current) {
+		return res.json({ tournament: null });
+	}
+
+	const tournament = await T.getTournamentByMatchId(current.id);
+
+	return res.json({ tournament: tournament || null });
+};
 
 export const getTournaments: express.RequestHandler = async (req, res) => {
 	const tournaments = await T.getTournaments();

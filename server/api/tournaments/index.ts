@@ -35,11 +35,18 @@ export const createTournament = (type: string, teams: number): I.Tournament => {
 	return tournament;
 };
 
+export const getTournamentByMatchId = async (matchId: string) => {
+	const tournaments = await getTournaments();
+	const tournament = tournaments.find(trnm => !!trnm.matchups.find(matchup => matchup.matchId === matchId));
+
+	return tournament || null;
+};
+
 export const addTournament = (tournament: I.Tournament): Promise<I.Tournament> =>
 	new Promise(res => {
 		tournaments.insert(tournament, (err, newTournament) => {
 			if (err) return res(null);
-			return newTournament;
+			return res(newTournament);
 		});
 	});
 
@@ -179,7 +186,7 @@ export const createNextMatch = async (matchId: string) => {
 export const deleteTournament = (tournamentId: string) =>
 	new Promise(res => {
 		tournaments.remove({ _id: tournamentId }, err => {
-			if (!err) return res(null);
+			if (err) return res(null);
 			return res(true);
 		});
 	});

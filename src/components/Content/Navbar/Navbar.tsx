@@ -51,7 +51,7 @@ export default class Navbar extends React.Component<IProps> {
 							this.props.toggle('tournaments');
 						}}
 					>
-						<img src={Tabs.Matches} alt="Tournaments" />
+						<img src={Tabs.Tournaments} alt="Tournaments" />
 						<div>Tournaments</div>
 					</NavLink>
 				</NavItem>

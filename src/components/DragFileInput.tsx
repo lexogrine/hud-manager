@@ -1,7 +1,7 @@
 import React from 'react';
 import DragIcon from './../styles/upload.png';
 
-interface IProps {
+interface Props {
 	onChange: (files: FileList) => void;
 	id: string;
 	label: string;
@@ -10,12 +10,12 @@ interface IProps {
 	imgSrc?: string;
 	accept?: string;
 }
-interface IState {
+interface State {
 	highlight: boolean;
 }
 
-export default class DragFileInput extends React.Component<IProps, IState> {
-	constructor(props: IProps) {
+export default class DragFileInput extends React.Component<Props, State> {
+	constructor(props: Props) {
 		super(props);
 		this.state = {
 			highlight: false
@@ -35,12 +35,16 @@ export default class DragFileInput extends React.Component<IProps, IState> {
 		}
 	};
 	drop = (evt: React.DragEvent<HTMLDivElement>) => {
-		if (evt.dataTransfer) this.props.onChange(evt.dataTransfer.files);
+		if (evt.dataTransfer) {
+			this.props.onChange(evt.dataTransfer.files);
+		}
 
 		this.setState({ highlight: false });
 	};
 	uploadHandler = (e: any) => {
-		if (e.target.files) this.props.onChange(e.target.files);
+		if (e.target.files) {
+			this.props.onChange(e.target.files);
+		}
 	};
 
 	render() {

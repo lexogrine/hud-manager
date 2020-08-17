@@ -100,7 +100,7 @@ class SingleVeto extends React.Component<Props, State> {
 		const { vetoTeams, veto, map, maps, onSave } = this.props;
 		let team = vetoTeams.filter(team => team._id === veto.teamId)[0];
 		let secTeam = vetoTeams.filter(team => team._id !== veto.teamId)[0];
-		if(!veto.teamId){
+		if (!veto.teamId) {
 			team = vetoTeams[0];
 			secTeam = vetoTeams[1];
 		}

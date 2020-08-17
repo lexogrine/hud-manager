@@ -4,6 +4,8 @@ import * as T from './middlewares';
 const initRoute = (router: express.Router) => {
 	router.route('/api/tournaments').get(T.getTournaments).post(T.addTournament);
 
+	router.route('/api/tournament').get(T.getCurrentTournament);
+
 	router
 		.route('/api/tournaments/:id')
 		.post(T.bindMatchToMatchup)
