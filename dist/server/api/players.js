@@ -59,7 +59,7 @@ function getPlayerById(id, avatar) {
     if (avatar === void 0) { avatar = false; }
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
-            return [2 /*return*/, new Promise(function (res, rej) {
+            return [2 /*return*/, new Promise(function (res) {
                     players.findOne({ _id: id }, function (err, player) {
                         if (err) {
                             return res(null);
@@ -77,7 +77,7 @@ function getPlayerBySteamId(steamid, avatar) {
     if (avatar === void 0) { avatar = false; }
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
-            return [2 /*return*/, new Promise(function (res, rej) {
+            return [2 /*return*/, new Promise(function (res) {
                     players.findOne({ steamid: steamid }, function (err, player) {
                         if (err) {
                             return res(null);
@@ -90,14 +90,16 @@ function getPlayerBySteamId(steamid, avatar) {
         });
     });
 }
-exports.getPlayersList = function (query) { return new Promise(function (res, rej) {
-    players.find(query, function (err, players) {
-        if (err) {
-            return res([]);
-        }
-        return res(players);
+exports.getPlayersList = function (query) {
+    return new Promise(function (res) {
+        players.find(query, function (err, players) {
+            if (err) {
+                return res([]);
+            }
+            return res(players);
+        });
     });
-}); };
+};
 exports.getPlayers = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var players, config;
     return __generator(this, function (_a) {
@@ -108,7 +110,9 @@ exports.getPlayers = function (req, res) { return __awaiter(void 0, void 0, void
                 return [4 /*yield*/, config_1.loadConfig()];
             case 2:
                 config = _a.sent();
-                return [2 /*return*/, res.json(players.map(function (player) { return (__assign(__assign({}, player), { avatar: player.avatar && player.avatar.length ? "http://" + ip_1["default"].address() + ":" + config.port + "/api/players/avatar/" + player._id : null })); }))];
+                return [2 /*return*/, res.json(players.map(function (player) { return (__assign(__assign({}, player), { avatar: player.avatar && player.avatar.length
+                            ? "http://" + ip_1["default"].address() + ":" + config.port + "/api/players/avatar/" + player._id
+                            : null })); }))];
         }
     });
 }); };

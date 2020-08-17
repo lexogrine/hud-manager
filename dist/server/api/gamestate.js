@@ -96,7 +96,7 @@ exports.checkGSIFile = function (req, res) { return __awaiter(void 0, void 0, vo
                 }
                 cfgPath = path_1["default"].join(GamePath.game.path, 'csgo', 'cfg', 'gamestate_integration_hudmanager.cfg');
                 if (!fs_1["default"].existsSync(cfgPath)) {
-                    return [2 /*return*/, res.json({ success: false, message: 'File couldn\'t be found', accessible: true })];
+                    return [2 /*return*/, res.json({ success: false, message: "File couldn't be found", accessible: true })];
                 }
                 try {
                     rawContent = fs_1["default"].readFileSync(cfgPath, 'UTF-8');
@@ -194,7 +194,7 @@ exports.saveFile = function (name, content, base64) {
                     return [4 /*yield*/, electron_1.dialog.showSaveDialog({ defaultPath: name })];
                 case 1:
                     result = _b.sent();
-                    if (!(typeof content === "string")) return [3 /*break*/, 2];
+                    if (!(typeof content === 'string')) return [3 /*break*/, 2];
                     _a = content;
                     return [3 /*break*/, 4];
                 case 2: return [4 /*yield*/, content];

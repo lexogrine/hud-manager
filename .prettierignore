@@ -1,0 +1,6 @@
+/dist
+/node_modules
+/app
+/boltobserv
+/server/server.js
+/server/api/testing.ts

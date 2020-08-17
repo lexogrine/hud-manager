@@ -3,63 +3,109 @@ import { Modal, ModalHeader, ModalBody, FormGroup, Label, Input } from 'reactstr
 import * as I from './../../../../api/interfaces';
 
 interface Props {
-	map: number,
-	veto: I.Veto,
-	teams: I.Team[],
-	isOpen: boolean,
-	toggle: () => void,
-	onChange: (name: string, map: number) => any,
-	maps: string[]
+	map: number;
+	veto: I.Veto;
+	teams: I.Team[];
+	isOpen: boolean;
+	toggle: () => void;
+	onChange: (name: string, map: number) => any;
+	maps: string[];
 }
 export default class VetoModal extends React.Component<Props, { isOpen: boolean }> {
 	state = {
 		isOpen: false
-	}
-	save = () => {
-
-	}
+	};
+	save = () => {};
 	changeTypeHandler = (type: I.VetoType) => () => {
-		this.props.onChange('type', this.props.map)({target:{value:type}});
-	}
+		this.props.onChange('type', this.props.map)({ target: { value: type } });
+	};
 	render() {
-
 		return (
-			<Modal isOpen={this.props.isOpen} toggle={this.props.toggle} className="veto_modal" >
+			<Modal isOpen={this.props.isOpen} toggle={this.props.toggle} className="veto_modal">
 				<ModalHeader toggle={this.props.toggle}>Edit Veto {this.props.map + 1}</ModalHeader>
 				<div className="veto_type">
-					<div className={`type pick ${this.props.veto.type === "pick" ? "active" : ""}`} onClick={this.changeTypeHandler('pick')}>PICK</div>
-					<div className={`type ban ${this.props.veto.type === "ban" ? "active" : ""}`} onClick={this.changeTypeHandler('ban')}>BAN</div>
-					<div className={`type decider ${this.props.veto.type === "decider" ? "active" : ""}`} onClick={this.changeTypeHandler('decider')}>DECIDER</div>
+					<div
+						className={`type pick ${this.props.veto.type === 'pick' ? 'active' : ''}`}
+						onClick={this.changeTypeHandler('pick')}
+					>
+						PICK
+					</div>
+					<div
+						className={`type ban ${this.props.veto.type === 'ban' ? 'active' : ''}`}
+						onClick={this.changeTypeHandler('ban')}
+					>
+						BAN
+					</div>
+					<div
+						className={`type decider ${this.props.veto.type === 'decider' ? 'active' : ''}`}
+						onClick={this.changeTypeHandler('decider')}
+					>
+						DECIDER
+					</div>
 				</div>
 				<ModalBody>
-					
-				{
-					this.props.veto.type !== "decider" ? <>
-						<FormGroup>
-							<Input type="select" name="teams" id="teams" value={this.props.veto.teamId} onChange={this.props.onChange('teamId', this.props.map)}>
-								<option value="">No team</option>
-								{this.props.teams.map(teams => <option key={teams._id} value={teams._id}>{teams.name}</option>)}
-							</Input>
-						</FormGroup>
-						<FormGroup>
-							<Input type="select" name="side" id="side" value={this.props.veto.side} onChange={this.props.onChange('side', this.props.map)}>
-								<option value={"NO"} disabled defaultChecked>Does the opponent pick a side?</option>
-								<option value={"NO"}>No</option>
-								<option value={"CT"}>CT</option>
-								<option value={"T"}>T</option>
-							</Input>
-						</FormGroup>
-					</> : null
-				}
+					{this.props.veto.type !== 'decider' ? (
+						<>
+							<FormGroup>
+								<Input
+									type="select"
+									name="teams"
+									id="teams"
+									value={this.props.veto.teamId}
+									onChange={this.props.onChange('teamId', this.props.map)}
+								>
+									<option value="">No team</option>
+									{this.props.teams.map(teams => (
+										<option key={teams._id} value={teams._id}>
+											{teams.name}
+										</option>
+									))}
+								</Input>
+							</FormGroup>
+							<FormGroup>
+								<Input
+									type="select"
+									name="side"
+									id="side"
+									value={this.props.veto.side}
+									onChange={this.props.onChange('side', this.props.map)}
+								>
+									<option value={'NO'} disabled defaultChecked>
+										Does the opponent pick a side?
+									</option>
+									<option value={'NO'}>No</option>
+									<option value={'CT'}>CT</option>
+									<option value={'T'}>T</option>
+								</Input>
+							</FormGroup>
+						</>
+					) : null}
 					<FormGroup>
-						<Input type="select" name="type" id="type" value={this.props.veto.mapName} onChange={this.props.onChange('mapName', this.props.map)}>
-							<option value="" disabled defaultChecked>Map</option>
-							{this.props.maps.map(map => <option value={map} key={map}>{map.replace("de_", "")[0].toUpperCase()}{map.replace("de_", "").substr(1)}</option>)}
+						<Input
+							type="select"
+							name="type"
+							id="type"
+							value={this.props.veto.mapName}
+							onChange={this.props.onChange('mapName', this.props.map)}
+						>
+							<option value="" disabled defaultChecked>
+								Map
+							</option>
+							{this.props.maps.map(map => (
+								<option value={map} key={map}>
+									{map.replace('de_', '')[0].toUpperCase()}
+									{map.replace('de_', '').substr(1)}
+								</option>
+							))}
 						</Input>
 					</FormGroup>
 					<FormGroup check>
 						<Label check>
-							<Input type="checkbox" onChange={this.props.onChange('reverseSide', this.props.map)} checked={this.props.veto.reverseSide || false} />{' '}
+							<Input
+								type="checkbox"
+								onChange={this.props.onChange('reverseSide', this.props.map)}
+								checked={this.props.veto.reverseSide || false}
+							/>{' '}
 							<div className="customCheckbox"></div>
 							Reversed sides
 						</Label>

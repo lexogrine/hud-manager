@@ -64,8 +64,9 @@ var config_1 = require("./api/config");
 var testing_1 = require("./api/testing");
 var teams_1 = require("./api/teams");
 var players_1 = require("./api/players");
-var radar = require("./../boltobserv/index.js");
-var mirv = require("./server")["default"];
+var tournaments_1 = require("./api/tournaments");
+var radar = require('./../boltobserv/index.js');
+var mirv = require('./server')["default"];
 var DevHUDListener = /** @class */ (function () {
     function DevHUDListener(port) {
         var _this = this;
@@ -110,7 +111,7 @@ var HUDStateManager = /** @class */ (function () {
                 hudPath = path_1["default"].join(electron_1.app.getPath('home'), 'HUDs', hud);
                 if (!fs_1["default"].existsSync(hudPath))
                     return [2 /*return*/];
-                fs_1["default"].writeFileSync(path_1["default"].join(hudPath, "config.hm"), JSON.stringify(data));
+                fs_1["default"].writeFileSync(path_1["default"].join(hudPath, 'config.hm'), JSON.stringify(data));
                 return [2 /*return*/];
             });
         });
@@ -126,10 +127,10 @@ var HUDStateManager = /** @class */ (function () {
         if (force === void 0) { force = false; }
         var hudData = this.data.get(hud);
         var hudPath = path_1["default"].join(electron_1.app.getPath('home'), 'HUDs', hud);
-        var hudConfig = path_1["default"].join(hudPath, "config.hm");
+        var hudConfig = path_1["default"].join(hudPath, 'config.hm');
         if (hudData || !force || !fs_1["default"].existsSync(hudPath) || !fs_1["default"].existsSync(hudConfig))
             return hudData;
-        var rawData = fs_1["default"].readFileSync(hudConfig, "utf8");
+        var rawData = fs_1["default"].readFileSync(hudConfig, 'utf8');
         try {
             var data = JSON.parse(rawData);
             return this.data.set(hud, data).get(hud);
@@ -143,14 +144,14 @@ var HUDStateManager = /** @class */ (function () {
         return __generator(this, function (_d) {
             switch (_d.label) {
                 case 0:
-                    if (!hudData || typeof hudData !== "object")
+                    if (!hudData || typeof hudData !== 'object')
                         return [2 /*return*/, hudData];
                     _i = 0, _a = Object.values(hudData);
                     _d.label = 1;
                 case 1:
                     if (!(_i < _a.length)) return [3 /*break*/, 13];
                     data = _a[_i];
-                    if (!data || typeof data !== "object")
+                    if (!data || typeof data !== 'object')
                         return [2 /*return*/, hudData];
                     entries = Object.values(data);
                     _b = 0, entries_1 = entries;
@@ -158,16 +159,16 @@ var HUDStateManager = /** @class */ (function () {
                 case 2:
                     if (!(_b < entries_1.length)) return [3 /*break*/, 12];
                     entry = entries_1[_b];
-                    if (!entry || typeof entry !== "object")
+                    if (!entry || typeof entry !== 'object')
                         return [3 /*break*/, 11];
-                    if (!("type" in entry) || !("id" in entry))
+                    if (!('type' in entry) || !('id' in entry))
                         return [3 /*break*/, 11];
                     extraData = void 0;
                     _c = entry.type;
                     switch (_c) {
-                        case "match": return [3 /*break*/, 3];
-                        case "player": return [3 /*break*/, 5];
-                        case "team": return [3 /*break*/, 7];
+                        case 'match': return [3 /*break*/, 3];
+                        case 'player': return [3 /*break*/, 5];
+                        case 'team': return [3 /*break*/, 7];
                     }
                     return [3 /*break*/, 9];
                 case 3: return [4 /*yield*/, match_1.getMatchById(entry.id)];
@@ -207,7 +208,6 @@ var SocketManager = /** @class */ (function () {
     };
     return SocketManager;
 }());
-;
 exports.Sockets = new SocketManager();
 exports.HUDState = new HUDStateManager();
 exports.GSI = new csgogsi_1["default"]();
@@ -216,7 +216,7 @@ function default_1(server, app) {
     function getJSONArray(url) {
         return __awaiter(this, void 0, void 0, function () {
             return __generator(this, function (_a) {
-                return [2 /*return*/, new Promise(function (resolve, rej) {
+                return [2 /*return*/, new Promise(function (resolve) {
                         request_1["default"].get(url, function (err, res) {
                             try {
                                 if (err) {
@@ -238,7 +238,6 @@ function default_1(server, app) {
             });
         });
     }
-    ;
     var runtimeConfig = {
         last: null,
         devSocket: null,
@@ -279,7 +278,10 @@ function default_1(server, app) {
                     case 3:
                         _b.panel = _d.sent();
                         hud.isDev = true;
-                        hud.dir = (Math.random() * 1000 + 1).toString(36).replace(/[^a-z]+/g, '').substr(0, 15);
+                        hud.dir = (Math.random() * 1000 + 1)
+                            .toString(36)
+                            .replace(/[^a-z]+/g, '')
+                            .substr(0, 15);
                         return [4 /*yield*/, config_1.loadConfig()];
                     case 4:
                         cfg = _d.sent();
@@ -311,8 +313,8 @@ function default_1(server, app) {
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
-                    sendDefault = function () { return res.sendFile(path_1["default"].join(__dirname, "../boltobserv", "css", "custom.css")); };
-                    if (!req.query.hud || typeof req.query.hud !== "string") {
+                    sendDefault = function () { return res.sendFile(path_1["default"].join(__dirname, '../boltobserv', 'css', "custom.css")); };
+                    if (!req.query.hud || typeof req.query.hud !== 'string') {
                         return [2 /*return*/, sendDefault()];
                     }
                     return [4 /*yield*/, huds_1.getHUDData(req.query.hud)];
@@ -321,7 +323,7 @@ function default_1(server, app) {
                     if (!((_a = hud === null || hud === void 0 ? void 0 : hud.boltobserv) === null || _a === void 0 ? void 0 : _a.css))
                         return [2 /*return*/, sendDefault()];
                     dir = path_1["default"].join(electron_1.app.getPath('home'), 'HUDs', req.query.hud);
-                    return [2 /*return*/, res.sendFile(path_1["default"].join(dir, "radar.css"))];
+                    return [2 /*return*/, res.sendFile(path_1["default"].join(dir, 'radar.css'))];
             }
         });
     }); };
@@ -336,11 +338,13 @@ function default_1(server, app) {
         return __generator(this, function (_e) {
             switch (_e.label) {
                 case 0:
-                    sendDefault = function () { return res.sendFile(path_1["default"].join(__dirname, "../boltobserv", "maps", req.params.mapName, "meta.json5")); };
+                    sendDefault = function () {
+                        return res.sendFile(path_1["default"].join(__dirname, '../boltobserv', 'maps', req.params.mapName, 'meta.json5'));
+                    };
                     if (!req.params.mapName) {
                         return [2 /*return*/, res.sendStatus(404)];
                     }
-                    if (!(req.query.dev === "true")) return [3 /*break*/, 5];
+                    if (!(req.query.dev === 'true')) return [3 /*break*/, 5];
                     _e.label = 1;
                 case 1:
                     _e.trys.push([1, 4, , 5]);
@@ -354,7 +358,7 @@ function default_1(server, app) {
                     _c = _e.sent();
                     return [2 /*return*/, sendDefault()];
                 case 5:
-                    if (!req.query.hud || typeof req.query.hud !== "string")
+                    if (!req.query.hud || typeof req.query.hud !== 'string')
                         return [2 /*return*/, sendDefault()];
                     return [4 /*yield*/, huds_1.getHUDData(req.query.hud)];
                 case 6:
@@ -362,7 +366,7 @@ function default_1(server, app) {
                     if (!((_d = hud === null || hud === void 0 ? void 0 : hud.boltobserv) === null || _d === void 0 ? void 0 : _d.maps))
                         return [2 /*return*/, sendDefault()];
                     dir = path_1["default"].join(electron_1.app.getPath('home'), 'HUDs', req.query.hud);
-                    pathFile = path_1["default"].join(dir, "maps", req.params.mapName, "meta.json5");
+                    pathFile = path_1["default"].join(dir, 'maps', req.params.mapName, 'meta.json5');
                     if (!fs_1["default"].existsSync(pathFile))
                         return [2 /*return*/, sendDefault()];
                     return [2 /*return*/, res.sendFile(pathFile)];
@@ -375,11 +379,13 @@ function default_1(server, app) {
         return __generator(this, function (_b) {
             switch (_b.label) {
                 case 0:
-                    sendDefault = function () { return res.sendFile(path_1["default"].join(__dirname, "../boltobserv", "maps", req.params.mapName, "radar.png")); };
+                    sendDefault = function () {
+                        return res.sendFile(path_1["default"].join(__dirname, '../boltobserv', 'maps', req.params.mapName, 'radar.png'));
+                    };
                     if (!req.params.mapName) {
                         return [2 /*return*/, res.sendStatus(404)];
                     }
-                    if (!req.query.hud || typeof req.query.hud !== "string")
+                    if (!req.query.hud || typeof req.query.hud !== 'string')
                         return [2 /*return*/, sendDefault()];
                     return [4 /*yield*/, huds_1.getHUDData(req.query.hud)];
                 case 1:
@@ -387,7 +393,7 @@ function default_1(server, app) {
                     if (!((_a = hud === null || hud === void 0 ? void 0 : hud.boltobserv) === null || _a === void 0 ? void 0 : _a.maps))
                         return [2 /*return*/, sendDefault()];
                     dir = path_1["default"].join(electron_1.app.getPath('home'), 'HUDs', req.query.hud);
-                    pathFile = path_1["default"].join(dir, "maps", req.params.mapName, "radar.png");
+                    pathFile = path_1["default"].join(dir, 'maps', req.params.mapName, 'radar.png');
                     if (!fs_1["default"].existsSync(pathFile))
                         return [2 /*return*/, sendDefault()];
                     return [2 /*return*/, res.sendFile(pathFile)];
@@ -412,7 +418,8 @@ function default_1(server, app) {
         res.sendStatus(200);
         if (intervalId)
             return;
-        if (((_b = (_a = runtimeConfig.last) === null || _a === void 0 ? void 0 : _a.provider) === null || _b === void 0 ? void 0 : _b.timestamp) && (new Date()).getTime() - runtimeConfig.last.provider.timestamp * 1000 <= 5000)
+        if (((_b = (_a = runtimeConfig.last) === null || _a === void 0 ? void 0 : _a.provider) === null || _b === void 0 ? void 0 : _b.timestamp) &&
+            new Date().getTime() - runtimeConfig.last.provider.timestamp * 1000 <= 5000)
             return;
         io.emit('enableTest', false);
         var i = 0;
@@ -430,7 +437,7 @@ function default_1(server, app) {
     io.on('connection', function (socket) {
         socket.on('started', function () {
             if (runtimeConfig.last) {
-                socket.emit("update", runtimeConfig.last);
+                socket.emit('update', runtimeConfig.last);
             }
         });
         socket.emit('readyToRegister');
@@ -480,9 +487,9 @@ function default_1(server, app) {
             io.to(data.hud).emit("hud_action", data.action);
         });
         socket.on('get_config', function (hud) {
-            socket.emit("hud_config", exports.HUDState.get(hud, true));
+            socket.emit('hud_config', exports.HUDState.get(hud, true));
         });
-        socket.on("set_active_hlae", function (hudUrl) {
+        socket.on('set_active_hlae', function (hudUrl) {
             if (runtimeConfig.currentHUD === hudUrl) {
                 runtimeConfig.currentHUD = null;
             }
@@ -491,15 +498,15 @@ function default_1(server, app) {
             }
             io.emit('active_hlae', runtimeConfig.currentHUD);
         });
-        socket.on("get_active_hlae", function () {
+        socket.on('get_active_hlae', function () {
             io.emit('active_hlae', runtimeConfig.currentHUD);
         });
     });
     mirv(function (data) {
-        io.emit("update_mirv", data);
+        io.emit('update_mirv', data);
     });
-    exports.GSI.on("data", match_1.updateRound);
-    exports.GSI.on("roundEnd", function (score) { return __awaiter(_this, void 0, void 0, function () {
+    //GSI.on('data', updateRound);
+    var onRoundEnd = function (score) { return __awaiter(_this, void 0, void 0, function () {
         var matches, match, vetos, mapName;
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -534,15 +541,15 @@ function default_1(server, app) {
                         return veto;
                     });
                     match.vetos = vetos;
-                    return [4 /*yield*/, match_1.updateMatch(matches)];
+                    return [4 /*yield*/, match_1.updateMatch(match)];
                 case 2:
                     _a.sent();
                     io.emit('match', true);
                     return [2 /*return*/];
             }
         });
-    }); });
-    exports.GSI.on("matchEnd", function (score) { return __awaiter(_this, void 0, void 0, function () {
+    }); };
+    var onMatchEnd = function (score) { return __awaiter(_this, void 0, void 0, function () {
         var matches, match, mapName, vetos, isReversed_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
@@ -551,16 +558,18 @@ function default_1(server, app) {
                     matches = _a.sent();
                     match = matches.filter(function (match) { return match.current; })[0];
                     mapName = score.map.name.substring(score.map.name.lastIndexOf('/') + 1);
-                    if (!match) return [3 /*break*/, 3];
+                    if (!match) return [3 /*break*/, 4];
                     vetos = match.vetos;
                     isReversed_1 = vetos.filter(function (veto) { return veto.mapName === mapName && veto.reverseSide; })[0];
                     vetos.map(function (veto) {
                         if (veto.mapName !== mapName || !score.map.team_ct.id || !score.map.team_t.id) {
                             return veto;
                         }
-                        veto.winner = score.map.team_ct.score > score.map.team_t.score ? score.map.team_ct.id : score.map.team_t.id;
+                        veto.winner =
+                            score.map.team_ct.score > score.map.team_t.score ? score.map.team_ct.id : score.map.team_t.id;
                         if (isReversed_1) {
-                            veto.winner = score.map.team_ct.score > score.map.team_t.score ? score.map.team_t.id : score.map.team_ct.id;
+                            veto.winner =
+                                score.map.team_ct.score > score.map.team_t.score ? score.map.team_t.id : score.map.team_ct.id;
                         }
                         if (veto.score && veto.score[veto.winner]) {
                             veto.score[veto.winner]++;
@@ -585,15 +594,72 @@ function default_1(server, app) {
                         }
                     }
                     match.vetos = vetos;
-                    return [4 /*yield*/, match_1.updateMatch(matches)];
+                    return [4 /*yield*/, match_1.updateMatch(match)];
                 case 2:
                     _a.sent();
+                    return [4 /*yield*/, tournaments_1.createNextMatch(match.id)];
+                case 3:
+                    _a.sent();
                     io.emit('match', true);
+                    _a.label = 4;
+                case 4: return [2 /*return*/];
+            }
+        });
+    }); };
+    var last;
+    exports.GSI.on('data', function (data) { return __awaiter(_this, void 0, void 0, function () {
+        var round, winner, loser, final;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, match_1.updateRound(data)];
+                case 1:
+                    _a.sent();
+                    if (((last === null || last === void 0 ? void 0 : last.map.team_ct.score) !== data.map.team_ct.score) !==
+                        ((last === null || last === void 0 ? void 0 : last.map.team_t.score) !== data.map.team_t.score)) {
+                        if ((last === null || last === void 0 ? void 0 : last.map.team_ct.score) !== data.map.team_ct.score) {
+                            round = {
+                                winner: data.map.team_ct,
+                                loser: data.map.team_t,
+                                map: data.map,
+                                mapEnd: false
+                            };
+                        }
+                        else {
+                            round = {
+                                winner: data.map.team_t,
+                                loser: data.map.team_ct,
+                                map: data.map,
+                                mapEnd: false
+                            };
+                        }
+                    }
+                    if (!round) return [3 /*break*/, 3];
+                    return [4 /*yield*/, onRoundEnd(round)];
+                case 2:
+                    _a.sent();
                     _a.label = 3;
-                case 3: return [2 /*return*/];
+                case 3:
+                    if (!(data.map.phase === 'gameover' && last.map.phase !== 'gameover')) return [3 /*break*/, 5];
+                    winner = data.map.team_ct.score > data.map.team_t.score ? data.map.team_ct : data.map.team_t;
+                    loser = data.map.team_ct.score > data.map.team_t.score ? data.map.team_t : data.map.team_ct;
+                    final = {
+                        winner: winner,
+                        loser: loser,
+                        map: data.map,
+                        mapEnd: true
+                    };
+                    return [4 /*yield*/, onMatchEnd(final)];
+                case 4:
+                    _a.sent();
+                    _a.label = 5;
+                case 5:
+                    last = exports.GSI.last;
+                    return [2 /*return*/];
             }
         });
     }); });
+    //GSI.on('roundEnd', onRoundEnd);
+    //GSI.on('matchEnd', onMatchEnd);
     return io;
 }
 exports["default"] = default_1;

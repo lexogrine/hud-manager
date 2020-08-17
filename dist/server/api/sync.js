@@ -53,9 +53,9 @@ var teamsDb = database_1["default"].teams, playersDb = database_1["default"].pla
 function importPlayers(players) {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
-            return [2 /*return*/, new Promise(function (res, rej) {
+            return [2 /*return*/, new Promise(function (res) {
                     var playerIdList = players.map(function (player) { return ({ _id: player._id }); });
-                    playersDb.remove({ $or: playerIdList }, { multi: true }, function (err, n) {
+                    playersDb.remove({ $or: playerIdList }, { multi: true }, function (err) {
                         if (err)
                             return res([]);
                         playersDb.insert(players, function (err, newDocs) {
@@ -71,9 +71,9 @@ function importPlayers(players) {
 function importTeams(teams) {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
-            return [2 /*return*/, new Promise(function (res, rej) {
+            return [2 /*return*/, new Promise(function (res) {
                     var teamIdList = teams.map(function (team) { return ({ _id: team._id }); });
-                    teamsDb.remove({ $or: teamIdList }, { multi: true }, function (err, n) {
+                    teamsDb.remove({ $or: teamIdList }, { multi: true }, function (err) {
                         if (err)
                             return res([]);
                         teamsDb.insert(teams, function (err, newDocs) {
@@ -92,7 +92,7 @@ function exportDatabase() {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    pl = new Promise(function (res, rej) {
+                    pl = new Promise(function (res) {
                         playersDb.find({}, function (err, players) {
                             if (err) {
                                 return res([]);
@@ -100,7 +100,7 @@ function exportDatabase() {
                             return res(players);
                         });
                     });
-                    tm = new Promise(function (res, rej) {
+                    tm = new Promise(function (res) {
                         teamsDb.find({}, function (err, teams) {
                             if (err) {
                                 return res([]);
@@ -156,7 +156,10 @@ exports.checkForConflicts = function (req, res) { return __awaiter(void 0, void 
                 _b.label = 1;
             case 1:
                 _b.trys.push([1, 3, , 4]);
-                return [4 /*yield*/, Promise.all([players.getPlayersList({ $or: playerIdList }), teams.getTeamsList({ $or: teamIdList })])];
+                return [4 /*yield*/, Promise.all([
+                        players.getPlayersList({ $or: playerIdList }),
+                        teams.getTeamsList({ $or: teamIdList })
+                    ])];
             case 2:
                 result = _b.sent();
                 return [2 /*return*/, res.json({
