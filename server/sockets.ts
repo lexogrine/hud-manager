@@ -299,20 +299,20 @@ export default function (server: http.Server, app: express.Router) {
 			new Date().getTime() - runtimeConfig.last.provider.timestamp * 1000 <= 5000
 		)
 			return;
-		
-        io.emit('enableTest', false);
-        
-        let i = 0;
-        intervalId = setInterval(() => {
-            if(!testData[i]) {
-                clearInterval(intervalId);
-                intervalId = null;
-                io.emit('enableTest', true);
-                return;
-            }
-            io.emit('update', testData[i]);
-            i++;
-        }, 16);
+
+		io.emit('enableTest', false);
+
+		let i = 0;
+		intervalId = setInterval(() => {
+			if (!testData[i]) {
+				clearInterval(intervalId);
+				intervalId = null;
+				io.emit('enableTest', true);
+				return;
+			}
+			io.emit('update', testData[i]);
+			i++;
+		}, 16);
 	});
 
 	io.on('connection', socket => {
