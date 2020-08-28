@@ -113,4 +113,10 @@ function startManager() {
         });
     });
 }
-electron_1.app.on('ready', startManager);
+var lock = electron_1.app.requestSingleInstanceLock();
+if (!lock && !process.argv.includes('--renderer')) {
+    electron_1.app.quit();
+}
+else {
+    electron_1.app.on('ready', startManager);
+}

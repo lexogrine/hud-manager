@@ -19,6 +19,7 @@ export const AFXInterop: HLAEChild = {
 export const isDev = process.env.DEV === 'true';
 
 async function createRenderer(server: Server, forceDev = false) {
+
 	const closeManager = () => {
 		if (server) {
 			server.close();
@@ -34,7 +35,7 @@ async function createRenderer(server: Server, forceDev = false) {
 		stdio: ['ignore']
 	});
 
-	app.on('window-all-closed', () => {});
+	app.on('window-all-closed', () => { });
 
 	if (forceDev) renderer.stdout.on('data', data => console.log(data.toString()));
 
@@ -59,4 +60,10 @@ async function startManager() {
 		createRenderer(server, argv.dev);
 	}
 }
-app.on('ready', startManager);
+
+const lock = app.requestSingleInstanceLock();
+if (!lock && !process.argv.includes('--renderer')) {
+	app.quit();
+} else {
+	app.on('ready', startManager);
+}
