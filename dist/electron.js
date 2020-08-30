@@ -74,10 +74,14 @@ function createRenderer(server, forceDev) {
             args = ['./', '--renderer'];
             if (forceDev)
                 args.push('--dev');
-            renderer = child_process_1.spawn(process.execPath, ['./', '--renderer', '--dev'], {
+            renderer = child_process_1.spawn(process.execPath, ['./', '--renderer', '--dev'] /*, {
                 stdio: ['ignore']
-            });
+            }*/);
             electron_1.app.on('window-all-closed', function () { });
+            electron_1.app.on("second-instance", function () {
+                if (renderer)
+                    renderer.send("refocus");
+            });
             if (forceDev)
                 renderer.stdout.on('data', function (data) { return console.log(data.toString()); });
             renderer.on('exit', closeManager);

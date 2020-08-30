@@ -20,6 +20,14 @@ export const createMainWindow = async (forceDev = false) => {
 			}
 		}
 	} catch (e) {}
+
+	process.on("message", msg => {
+		if(msg === "refocus" && win){
+			if (win.isMinimized()) win.restore()
+			win.focus();
+		}
+	});
+
 	if (app) {
 		app.on('window-all-closed', app.quit);
 

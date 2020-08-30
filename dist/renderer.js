@@ -76,6 +76,13 @@ exports.createMainWindow = function (forceDev) {
                     e_1 = _a.sent();
                     return [3 /*break*/, 7];
                 case 7:
+                    process.on("message", function (msg) {
+                        if (msg === "refocus" && win) {
+                            if (win.isMinimized())
+                                win.restore();
+                            win.focus();
+                        }
+                    });
                     if (electron_1.app) {
                         electron_1.app.on('window-all-closed', electron_1.app.quit);
                         electron_1.app.on('before-quit', function () { return __awaiter(void 0, void 0, void 0, function () {

@@ -30,11 +30,16 @@ async function createRenderer(server: Server, forceDev = false) {
 	};
 	const args = ['./', '--renderer'];
 	if (forceDev) args.push('--dev');
-	const renderer = spawn(process.execPath, ['./', '--renderer', '--dev'], {
+	const renderer = spawn(process.execPath, ['./', '--renderer', '--dev']/*, {
 		stdio: ['ignore']
-	});
+	}*/);
 
 	app.on('window-all-closed', () => {});
+	
+	app.on("second-instance", () => {
+		
+		if(renderer) renderer.send("refocus");
+	});
 
 	if (forceDev) renderer.stdout.on('data', data => console.log(data.toString()));
 
