@@ -297,7 +297,11 @@ export default class ActionPanel extends React.Component<IProps, IState> {
 									id={`file_${input.name}`}
 									onChange={this.handleImages(input.name, section.name)}
 									label={(input && input.label && input.label.toUpperCase()) || ''}
-									imgSrc={form[section.name] && form[section.name][input.name] ? `data:image/jpeg;base64,${form[section.name][input.name]}` : undefined }
+									imgSrc={
+										form[section.name] && form[section.name][input.name]
+											? `data:image/jpeg;base64,${form[section.name][input.name]}`
+											: undefined
+									}
 								/>
 							</Col>
 						</Row>
