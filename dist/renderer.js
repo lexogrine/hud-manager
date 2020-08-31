@@ -76,8 +76,8 @@ exports.createMainWindow = function (forceDev) {
                     e_1 = _a.sent();
                     return [3 /*break*/, 7];
                 case 7:
-                    process.on("message", function (msg) {
-                        if (msg === "refocus" && win) {
+                    process.on('message', function (msg) {
+                        if (msg === 'refocus' && win) {
                             if (win.isMinimized())
                                 win.restore();
                             win.focus();

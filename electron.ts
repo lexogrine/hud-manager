@@ -2,9 +2,8 @@
 import init from './server';
 import { Server } from 'http';
 import * as directories from './init/directories';
-import { ChildProcess } from 'child_process';
+import { ChildProcess, spawn } from 'child_process';
 import args from './init/args';
-import { spawn } from 'child_process';
 import { app } from 'electron';
 import { createMainWindow } from './renderer';
 
@@ -30,15 +29,16 @@ async function createRenderer(server: Server, forceDev = false) {
 	};
 	const args = ['./', '--renderer'];
 	if (forceDev) args.push('--dev');
-	const renderer = spawn(process.execPath, ['./', '--renderer', '--dev']/*, {
-		stdio: ['ignore']
-	}*/);
+	const renderer = spawn(process.execPath, ['./', '--renderer', '--dev'], {
+		stdio: ['ignore', 'ignore', 'ignore', 'ipc']
+	});
 
 	app.on('window-all-closed', () => {});
-	
-	app.on("second-instance", () => {
-		
-		if(renderer) renderer.send("refocus");
+
+	app.on('second-instance', () => {
+		if (renderer.send) {
+			renderer.send('refocus');
+		}
 	});
 
 	if (forceDev) renderer.stdout.on('data', data => console.log(data.toString()));

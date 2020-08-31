@@ -21,9 +21,9 @@ export const createMainWindow = async (forceDev = false) => {
 		}
 	} catch (e) {}
 
-	process.on("message", msg => {
-		if(msg === "refocus" && win){
-			if (win.isMinimized()) win.restore()
+	process.on('message', msg => {
+		if (msg === 'refocus' && win) {
+			if (win.isMinimized()) win.restore();
 			win.focus();
 		}
 	});

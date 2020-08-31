@@ -49,8 +49,8 @@ exports.__esModule = true;
 /* eslint-disable no-console */
 var server_1 = __importDefault(require("./server"));
 var directories = __importStar(require("./init/directories"));
-var args_1 = __importDefault(require("./init/args"));
 var child_process_1 = require("child_process");
+var args_1 = __importDefault(require("./init/args"));
 var electron_1 = require("electron");
 var renderer_1 = require("./renderer");
 exports.AFXInterop = {
@@ -74,13 +74,14 @@ function createRenderer(server, forceDev) {
             args = ['./', '--renderer'];
             if (forceDev)
                 args.push('--dev');
-            renderer = child_process_1.spawn(process.execPath, ['./', '--renderer', '--dev'] /*, {
-                stdio: ['ignore']
-            }*/);
+            renderer = child_process_1.spawn(process.execPath, ['./', '--renderer', '--dev'], {
+                stdio: ['ignore', 'ignore', 'ignore', 'ipc']
+            });
             electron_1.app.on('window-all-closed', function () { });
-            electron_1.app.on("second-instance", function () {
-                if (renderer)
+            electron_1.app.on('second-instance', function () {
+                if (renderer.send) {
                     renderer.send("refocus");
+                }
             });
             if (forceDev)
                 renderer.stdout.on('data', function (data) { return console.log(data.toString()); });
