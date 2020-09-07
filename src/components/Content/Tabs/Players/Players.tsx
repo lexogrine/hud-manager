@@ -127,7 +127,11 @@ export default class Players extends React.Component<
 		if (form._id === 'empty') {
 			response = await api.players.add(form);
 		} else {
-			response = await api.players.update(form._id, form);
+			let avatar = form.avatar;
+			if (form.avatar.includes('api/teams/logo')) {
+				avatar = undefined as any;
+			}
+			response = await api.players.update(form._id, {...form, avatar });
 		}
 		if (response && response._id) {
 			this.loadPlayers(response._id);

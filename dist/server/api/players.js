@@ -142,7 +142,7 @@ exports.updatePlayer = function (req, res) { return __awaiter(void 0, void 0, vo
                 if (!req.params.id) {
                     return [2 /*return*/, res.sendStatus(422)];
                 }
-                return [4 /*yield*/, getPlayerById(req.params.id)];
+                return [4 /*yield*/, getPlayerById(req.params.id, true)];
             case 1:
                 player = _a.sent();
                 if (!player) {
@@ -156,6 +156,9 @@ exports.updatePlayer = function (req, res) { return __awaiter(void 0, void 0, vo
                     country: req.body.country,
                     steamid: req.body.steamid
                 };
+                if (req.body.avatar === undefined) {
+                    updated.avatar = player.avatar;
+                }
                 players.update({ _id: req.params.id }, { $set: updated }, {}, function (err) { return __awaiter(void 0, void 0, void 0, function () {
                     var player;
                     return __generator(this, function (_a) {

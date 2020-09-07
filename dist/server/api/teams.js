@@ -139,7 +139,7 @@ exports.updateTeam = function (req, res) { return __awaiter(void 0, void 0, void
                 if (!req.params.id) {
                     return [2 /*return*/, res.sendStatus(422)];
                 }
-                return [4 /*yield*/, getTeamById(req.params.id)];
+                return [4 /*yield*/, getTeamById(req.params.id, true)];
             case 1:
                 team = _a.sent();
                 if (!team) {
@@ -151,6 +151,9 @@ exports.updateTeam = function (req, res) { return __awaiter(void 0, void 0, void
                     logo: req.body.logo,
                     country: req.body.country
                 };
+                if (req.body.logo === undefined) {
+                    updated.logo = team.logo;
+                }
                 teams.update({ _id: req.params.id }, { $set: updated }, {}, function (err) { return __awaiter(void 0, void 0, void 0, function () {
                     var team;
                     return __generator(this, function (_a) {
