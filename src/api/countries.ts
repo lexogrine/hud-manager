@@ -45,6 +45,7 @@ export const countries: any = {
 	CL: 'Chile',
 	CN: 'China',
 	CX: 'Christmas Island',
+	CIS: 'CIS',
 	CC: 'Cocos (Keeling) Islands',
 	CO: 'Colombia',
 	KM: 'Comoros',

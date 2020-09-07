@@ -70,7 +70,7 @@ export const updatePlayer: express.RequestHandler = async (req, res) => {
 	if (!req.params.id) {
 		return res.sendStatus(422);
 	}
-	const player = await getPlayerById(req.params.id);
+	const player = await getPlayerById(req.params.id, true);
 	if (!player) {
 		return res.sendStatus(404);
 	}
@@ -83,6 +83,10 @@ export const updatePlayer: express.RequestHandler = async (req, res) => {
 		country: req.body.country,
 		steamid: req.body.steamid
 	};
+
+	if (req.body.avatar === undefined) {
+		updated.avatar = player.avatar;
+	}
 
 	players.update({ _id: req.params.id }, { $set: updated }, {}, async err => {
 		if (err) {

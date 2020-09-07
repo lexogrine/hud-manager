@@ -74,7 +74,7 @@ export const updateTeam: express.RequestHandler = async (req, res) => {
 	if (!req.params.id) {
 		return res.sendStatus(422);
 	}
-	const team = await getTeamById(req.params.id);
+	const team = await getTeamById(req.params.id, true);
 	if (!team) {
 		return res.sendStatus(404);
 	}
@@ -85,6 +85,10 @@ export const updateTeam: express.RequestHandler = async (req, res) => {
 		logo: req.body.logo,
 		country: req.body.country
 	};
+
+	if (req.body.logo === undefined) {
+		updated.logo = team.logo;
+	}
 
 	teams.update({ _id: req.params.id }, { $set: updated }, {}, async err => {
 		if (err) {
