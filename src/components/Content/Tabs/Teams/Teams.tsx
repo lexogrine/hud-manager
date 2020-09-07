@@ -105,7 +105,7 @@ export default class Teams extends React.Component<
 			response = await api.teams.add(form);
 		} else {
 			let logo = form.logo;
-			if (form.logo.includes('api/teams/logo')) {
+			if (logo && logo.includes('api/teams/logo')) {
 				logo = undefined as any;
 			}
 			response = await api.teams.update(form._id, { ...form, logo });

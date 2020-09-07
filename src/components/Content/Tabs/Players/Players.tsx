@@ -19,7 +19,7 @@ const hash = () => hashCode(String(new Date().getTime()));
 export default class Players extends React.Component<
 	{ cxt: IContextData; data: any },
 	{ options: any[]; value: string; form: I.Player; forceLoad: boolean }
-> {
+	> {
 	emptyPlayer: I.Player;
 	constructor(props: { cxt: IContextData; data: any }) {
 		super(props);
@@ -33,7 +33,10 @@ export default class Players extends React.Component<
 			steamid: ''
 		};
 
-		const countries = [...countryList().getData(), { value: 'EU', label: 'European Union' }].sort((a, b) => {
+		const countries = [...countryList().getData(),
+			{ value: 'EU', label: 'European Union' },
+			{ value: 'CIS', label: 'CIS' }
+		].sort((a, b) => {
 			if (a.label < b.label) return -1;
 			if (a.label > b.label) return 1;
 			return 0;
@@ -128,7 +131,7 @@ export default class Players extends React.Component<
 			response = await api.players.add(form);
 		} else {
 			let avatar = form.avatar;
-			if (form.avatar.includes('api/teams/logo')) {
+			if (avatar && avatar.includes('api/teams/logo')) {
 				avatar = undefined as any;
 			}
 			response = await api.players.update(form._id, { ...form, avatar });
