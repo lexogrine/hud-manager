@@ -30,7 +30,11 @@ export default class Teams extends React.Component<
 			logo: ''
 		};
 
-		const countries = [...countryList().getData(), { value: 'EU', label: 'European Union' }, { value: 'CIS', label: 'CIS' }].sort((a, b) => {
+		const countries = [
+			...countryList().getData(),
+			{ value: 'EU', label: 'European Union' },
+			{ value: 'CIS', label: 'CIS' }
+		].sort((a, b) => {
 			if (a.label.toUpperCase() < b.label.toUpperCase()) return -1;
 			if (a.label.toUpperCase() > b.label.toUpperCase()) return 1;
 			return 0;
@@ -104,7 +108,7 @@ export default class Teams extends React.Component<
 			if (form.logo.includes('api/teams/logo')) {
 				logo = undefined as any;
 			}
-			response = await api.teams.update(form._id, {...form, logo});
+			response = await api.teams.update(form._id, { ...form, logo });
 		}
 		if (response && response._id) {
 			this.loadTeams(response._id);
