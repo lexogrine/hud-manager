@@ -34,7 +34,7 @@
     "react-scripts": "^3.4.3",
     "react-select-country-list": "^2.1.2",
     "reactstrap": "^8.4.1",
-    "registry-js": "^1.9.0",
+    "registry-js": "^1.11.0",
     "request": "^2.88.2",
     "socket.io": "^2.3.0",
     "socket.io-client": "^2.3.0",
