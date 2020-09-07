@@ -80,7 +80,7 @@ function createRenderer(server, forceDev) {
             electron_1.app.on('window-all-closed', function () { });
             electron_1.app.on('second-instance', function () {
                 if (renderer.send) {
-                    renderer.send("refocus");
+                    renderer.send('refocus');
                 }
             });
             if (forceDev)
