@@ -19,7 +19,7 @@ const hash = () => hashCode(String(new Date().getTime()));
 export default class Players extends React.Component<
 	{ cxt: IContextData; data: any },
 	{ options: any[]; value: string; form: I.Player; forceLoad: boolean }
-	> {
+> {
 	emptyPlayer: I.Player;
 	constructor(props: { cxt: IContextData; data: any }) {
 		super(props);
@@ -33,7 +33,8 @@ export default class Players extends React.Component<
 			steamid: ''
 		};
 
-		const countries = [...countryList().getData(),
+		const countries = [
+			...countryList().getData(),
 			{ value: 'EU', label: 'European Union' },
 			{ value: 'CIS', label: 'CIS' }
 		].sort((a, b) => {
