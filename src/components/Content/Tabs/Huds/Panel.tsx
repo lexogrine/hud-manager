@@ -74,7 +74,7 @@ export default class ActionPanel extends React.Component<IProps, IState> {
 		const reader: any = new FileReader();
 		reader.readAsDataURL(file);
 		reader.onload = () => {
-			form[sectionName][name] = reader.result;
+			form[sectionName][name] = reader.result.replace(/^data:([a-z]+)\/([a-z0-9]+);base64,/, '');
 			this.setState({ form });
 		};
 	};
