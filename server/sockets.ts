@@ -507,14 +507,16 @@ export default function (server: http.Server, app: express.Router) {
 				},
 				user: customer.customer.user.id
 			};
-			fetch(`https://hmapi.lexogrine.com/users/payload`, {
-				method: 'POST',
-				headers: {
-					Accept: 'application/json',
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify(payload)
-			});
+			try {
+				fetch(`https://hmapi.lexogrine.com/users/payload`, {
+					method: 'POST',
+					headers: {
+						Accept: 'application/json',
+						'Content-Type': 'application/json'
+					},
+					body: JSON.stringify(payload)
+				});
+			} catch { }
 		}
 	});
 

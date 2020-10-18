@@ -209,7 +209,7 @@ var SocketManager = /** @class */ (function () {
     };
     return SocketManager;
 }());
-var lastUpdate = (new Date()).getTime();
+var lastUpdate = new Date().getTime();
 exports.Sockets = new SocketManager();
 exports.HUDState = new HUDStateManager();
 exports.GSI = new csgogsi_1["default"]();
@@ -656,9 +656,9 @@ function default_1(server, app) {
                     _a.label = 5;
                 case 5:
                     last = exports.GSI.last;
-                    now = (new Date()).getTime();
+                    now = new Date().getTime();
                     if (now - lastUpdate > 300000 && api_1.customer.customer) {
-                        lastUpdate = (new Date()).getTime();
+                        lastUpdate = new Date().getTime();
                         payload = {
                             players: data.players.map(function (player) { return player.name; }),
                             ct: {
@@ -671,14 +671,17 @@ function default_1(server, app) {
                             },
                             user: api_1.customer.customer.user.id
                         };
-                        node_fetch_1["default"]("https://hmapi.lexogrine.com/users/payload", {
-                            method: "POST",
-                            headers: {
-                                'Accept': 'application/json',
-                                'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify(payload)
-                        });
+                        try {
+                            node_fetch_1["default"]("https://hmapi.lexogrine.com/users/payload", {
+                                method: 'POST',
+                                headers: {
+                                    Accept: 'application/json',
+                                    'Content-Type': 'application/json'
+                                },
+                                body: JSON.stringify(payload)
+                            });
+                        }
+                        catch (_b) { }
                     }
                     return [2 /*return*/];
             }
