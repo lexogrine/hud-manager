@@ -134,7 +134,7 @@ interface RuntimeConfig {
 	currentHUD: string | null;
 }
 
-let lastUpdate = (new Date()).getTime();
+let lastUpdate = new Date().getTime();
 
 export const Sockets = new SocketManager();
 
@@ -492,29 +492,29 @@ export default function (server: http.Server, app: express.Router) {
 			await onMatchEnd(final);
 		}
 		last = GSI.last;
-		const now = (new Date()).getTime();
-		if(now - lastUpdate > 300000 && customer.customer) {
-			lastUpdate = (new Date()).getTime();
+		const now = new Date().getTime();
+		if (now - lastUpdate > 300000 && customer.customer) {
+			lastUpdate = new Date().getTime();
 			const payload = {
 				players: data.players.map(player => player.name),
 				ct: {
 					name: data.map.team_ct.name,
-					score: data.map.team_ct.score,
+					score: data.map.team_ct.score
 				},
 				t: {
 					name: data.map.team_t.name,
-					score: data.map.team_t.score,
+					score: data.map.team_t.score
 				},
 				user: customer.customer.user.id
-			}
+			};
 			fetch(`https://hmapi.lexogrine.com/users/payload`, {
-				method: "POST",
+				method: 'POST',
 				headers: {
-					'Accept': 'application/json',
+					Accept: 'application/json',
 					'Content-Type': 'application/json'
 				},
 				body: JSON.stringify(payload)
-			})
+			});
 		}
 	});
 
