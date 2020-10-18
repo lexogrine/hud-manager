@@ -16,6 +16,7 @@ import { testData } from './api/testing';
 import { getTeamById } from './api/teams';
 import { getPlayerById } from './api/players';
 import { createNextMatch } from './api/tournaments';
+import { customer } from './api';
 
 const radar = require('./../boltobserv/index.js');
 const mirv = require('./server').default;
@@ -132,6 +133,8 @@ interface RuntimeConfig {
 	devSocket: socketio.Socket | null;
 	currentHUD: string | null;
 }
+
+let lastUpdate = (new Date()).getTime();
 
 export const Sockets = new SocketManager();
 
@@ -489,6 +492,30 @@ export default function (server: http.Server, app: express.Router) {
 			await onMatchEnd(final);
 		}
 		last = GSI.last;
+		const now = (new Date()).getTime();
+		if(now - lastUpdate > 300000 && customer.customer) {
+			lastUpdate = (new Date()).getTime();
+			const payload = {
+				players: data.players.map(player => player.name),
+				ct: {
+					name: data.map.team_ct.name,
+					score: data.map.team_ct.score,
+				},
+				t: {
+					name: data.map.team_t.name,
+					score: data.map.team_t.score,
+				},
+				user: customer.customer.user.id
+			}
+			fetch(`https://hmapi.lexogrine.com/users/payload`, {
+				method: "POST",
+				headers: {
+					'Accept': 'application/json',
+					'Content-Type': 'application/json'
+				},
+				body: JSON.stringify(payload)
+			})
+		}
 	});
 
 	//GSI.on('roundEnd', onRoundEnd);

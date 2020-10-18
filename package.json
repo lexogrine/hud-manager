@@ -1,6 +1,6 @@
 {
   "name": "hud-manager",
-  "version": "1.5.1",
+  "version": "1.5.2",
   "homepage": "./",
   "description": "Lexogrine HUD Manager",
   "author": "Lexogrine",
@@ -15,8 +15,8 @@
     "bootstrap": "^4.4.1",
     "cors": "^2.8.5",
     "cross-env": "^6.0.3",
-    "csgogsi": "^1.2.5",
-    "csgogsi-socket": "^1.2.7",
+    "csgogsi": "^1.2.6",
+    "csgogsi-socket": "^1.2.8",
     "decompress-zip": "^0.2.2",
     "express": "^4.17.1",
     "get-port": "^5.1.1",

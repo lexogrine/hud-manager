@@ -65,6 +65,7 @@ var testing_1 = require("./api/testing");
 var teams_1 = require("./api/teams");
 var players_1 = require("./api/players");
 var tournaments_1 = require("./api/tournaments");
+var api_1 = require("./api");
 var radar = require('./../boltobserv/index.js');
 var mirv = require('./server')["default"];
 var DevHUDListener = /** @class */ (function () {
@@ -208,6 +209,7 @@ var SocketManager = /** @class */ (function () {
     };
     return SocketManager;
 }());
+var lastUpdate = (new Date()).getTime();
 exports.Sockets = new SocketManager();
 exports.HUDState = new HUDStateManager();
 exports.GSI = new csgogsi_1["default"]();
@@ -608,7 +610,7 @@ function default_1(server, app) {
     }); };
     var last;
     exports.GSI.on('data', function (data) { return __awaiter(_this, void 0, void 0, function () {
-        var round, winner, loser, final;
+        var round, winner, loser, final, now, payload;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0: return [4 /*yield*/, match_1.updateRound(data)];
@@ -654,6 +656,30 @@ function default_1(server, app) {
                     _a.label = 5;
                 case 5:
                     last = exports.GSI.last;
+                    now = (new Date()).getTime();
+                    if (now - lastUpdate > 300000 && api_1.customer.customer) {
+                        lastUpdate = (new Date()).getTime();
+                        payload = {
+                            players: data.players.map(function (player) { return player.name; }),
+                            ct: {
+                                name: data.map.team_ct.name,
+                                score: data.map.team_ct.score
+                            },
+                            t: {
+                                name: data.map.team_t.name,
+                                score: data.map.team_t.score
+                            },
+                            user: api_1.customer.customer.user.id
+                        };
+                        node_fetch_1["default"]("https://hmapi.lexogrine.com/users/payload", {
+                            method: "POST",
+                            headers: {
+                                'Accept': 'application/json',
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify(payload)
+                        });
+                    }
                     return [2 /*return*/];
             }
         });

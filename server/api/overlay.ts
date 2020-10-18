@@ -17,12 +17,12 @@ export default function overlay(hud: string) {
             }
             #watermark {
                 position: fixed;
-                bottom: 0;
+                bottom: 20px;
                 right: 10px;
                 font-family: Arial;
                 font-weight: 600;
                 color: rgba(255,255,255,0.5);
-                font-size: 10pt;
+                font-size: 14pt;
                 z-index:2;
             }
         </style>

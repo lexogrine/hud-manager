@@ -166,7 +166,7 @@ export default class HudEntry extends Component<IProps, IState> {
 						<Col s={12}>
 							<div className="match_data">
 								<UncontrolledCollapse toggler={`#hud_link_${hashCode(hud.dir)}`}>
-									<code>{hud.url}</code>
+									<code onClick={() => navigator.clipboard.writeText(hud.url)}>{hud.url}</code>
 								</UncontrolledCollapse>
 							</div>
 						</Col>
