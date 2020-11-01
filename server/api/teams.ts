@@ -3,6 +3,7 @@ import db from './../../init/database';
 import { Team } from '../../types/interfaces';
 import { loadConfig } from './config';
 import ip from 'ip';
+import isSvg from './../../src/isSvg';
 
 const teams = db.teams;
 //const players = db.players;
@@ -125,7 +126,7 @@ export const getLogoFile: express.RequestHandler = async (req, res) => {
 	}
 	const imgBuffer = Buffer.from(team.logo, 'base64');
 	res.writeHead(200, {
-		'Content-Type': 'image/png',
+		'Content-Type': isSvg(imgBuffer) ? 'image/svg+xml' : 'image/png',
 		'Content-Length': imgBuffer.length
 	});
 	res.end(imgBuffer);

@@ -53,6 +53,7 @@ exports.__esModule = true;
 var database_1 = __importDefault(require("./../../init/database"));
 var config_1 = require("./config");
 var ip_1 = __importDefault(require("ip"));
+var isSvg_1 = __importDefault(require("./isSvg"));
 var teams = database_1["default"].teams;
 //const players = db.players;
 function getTeamById(id, logo) {
@@ -214,7 +215,7 @@ exports.getLogoFile = function (req, res) { return __awaiter(void 0, void 0, voi
                 }
                 imgBuffer = Buffer.from(team.logo, 'base64');
                 res.writeHead(200, {
-                    'Content-Type': 'image/png',
+                    'Content-Type': isSvg_1["default"](imgBuffer) ? 'image/svg+xml' : 'image/png',
                     'Content-Length': imgBuffer.length
                 });
                 res.end(imgBuffer);

@@ -5,6 +5,7 @@ import api from './../../../../api/api';
 import * as I from './../../../../api/interfaces';
 import { IContextData } from './../../../../components/Context';
 import DragFileInput from './../../../DragFileInput';
+import isSvg from '../../../../isSvg';
 
 const hashCode = (s: string) =>
 	s
@@ -163,7 +164,8 @@ export default class Players extends React.Component<
 			if (form.avatar.includes('api/players/avatar')) {
 				avatar = `${form.avatar}?hash=${hash()}`;
 			} else {
-				avatar = `data:image/jpeg;base64,${form.avatar}`;
+				const encoding = isSvg(Buffer.from(form.avatar, 'base64')) ? 'svg+xml' : 'png';
+				avatar = `data:image/${encoding};base64,${form.avatar}`;
 			}
 		}
 		return (

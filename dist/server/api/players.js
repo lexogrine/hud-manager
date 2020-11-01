@@ -54,6 +54,7 @@ var database_1 = __importDefault(require("./../../init/database"));
 var config_1 = require("./config");
 var node_fetch_1 = __importDefault(require("node-fetch"));
 var ip_1 = __importDefault(require("ip"));
+var isSvg_1 = __importDefault(require("./isSvg"));
 var players = database_1["default"].players;
 function getPlayerById(id, avatar) {
     if (avatar === void 0) { avatar = false; }
@@ -219,7 +220,7 @@ exports.deletePlayer = function (req, res) { return __awaiter(void 0, void 0, vo
     });
 }); };
 exports.getAvatarFile = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var team, imgBuffer, regex, isSvg;
+    var team, imgBuffer;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -233,10 +234,8 @@ exports.getAvatarFile = function (req, res) { return __awaiter(void 0, void 0, v
                     return [2 /*return*/, res.sendStatus(404)];
                 }
                 imgBuffer = Buffer.from(team.avatar, 'base64');
-                regex = /^\s*(?:<\?xml[^>]*>\s*)?(?:<!doctype svg[^>]*\s*(?:\[?(?:\s*<![^>]*>\s*)*\]?)*[^>]*>\s*)?(?:<svg[^>]*>[^]*<\/svg>|<svg[^/>]*\/\s*>)\s*$/i;
-                isSvg = regex.test(imgBuffer.toString().toString().replace(/\s*<!Entity\s+\S*\s*(?:"|')[^"]+(?:"|')\s*>/img, '').replace(/<!--([\s\S]*?)-->/g, ''));
                 res.writeHead(200, {
-                    'Content-Type': isSvg ? 'image/svg+xml' : 'image/png',
+                    'Content-Type': isSvg_1["default"](imgBuffer) ? 'image/svg+xml' : 'image/png',
                     'Content-Length': imgBuffer.length
                 });
                 res.end(imgBuffer);

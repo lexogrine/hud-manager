@@ -5,7 +5,7 @@ import api from './../../../../api/api';
 import * as I from './../../../../api/interfaces';
 import { IContextData } from './../../../../components/Context';
 import DragFileInput from './../../../DragFileInput';
-
+import isSvg from './../../../../isSvg';
 const hashCode = (s: string) =>
 	s
 		.split('')
@@ -133,7 +133,8 @@ export default class Teams extends React.Component<
 			if (form.logo.includes('api/teams/logo')) {
 				logo = `${form.logo}?hash=${hash()}`;
 			} else {
-				logo = `data:image/jpeg;base64,${form.logo}`;
+				const encoding = isSvg(Buffer.from(form.logo, 'base64')) ? 'svg+xml' : 'png';
+				logo = `data:image/${encoding};base64,${form.logo}`;
 			}
 		}
 		return (

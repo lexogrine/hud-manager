@@ -4,6 +4,7 @@ import { Player } from '../../types/interfaces';
 import { loadConfig } from './config';
 import fetch from 'node-fetch';
 import ip from 'ip';
+import isSvg from './../../src/isSvg';
 
 const players = db.players;
 
@@ -138,17 +139,9 @@ export const getAvatarFile: express.RequestHandler = async (req, res) => {
 	}
 
 	const imgBuffer = Buffer.from(team.avatar, 'base64');
-	const regex = /^\s*(?:<\?xml[^>]*>\s*)?(?:<!doctype svg[^>]*\s*(?:\[?(?:\s*<![^>]*>\s*)*\]?)*[^>]*>\s*)?(?:<svg[^>]*>[^]*<\/svg>|<svg[^/>]*\/\s*>)\s*$/i;
-
-	const isSvg = regex.test(
-		imgBuffer
-			.toString()
-			.replace(/\s*<!Entity\s+\S*\s*(?:"|')[^"]+(?:"|')\s*>/gim, '')
-			.replace(/<!--([\s\S]*?)-->/g, '')
-	);
 
 	res.writeHead(200, {
-		'Content-Type': isSvg ? 'image/svg+xml' : 'image/png',
+		'Content-Type': isSvg(imgBuffer) ? 'image/svg+xml' : 'image/png',
 		'Content-Length': imgBuffer.length
 	});
 	res.end(imgBuffer);

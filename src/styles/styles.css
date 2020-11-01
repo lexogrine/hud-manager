@@ -747,6 +747,7 @@ img.smallLogo {
 .match_row .main_data .team .score img {
     position: absolute;
     max-height: 40px;
+    max-width: 40px;
 }
 .match_row .main_data .left.team .score img {
     align-self: flex-start;
@@ -805,6 +806,7 @@ form .card > .card-body > button.btn {
     position: absolute;
     max-height: 50%;
     right: 7%;
+    max-width: 100px;
 }
 .live-indicator {
     background-image: url('./live.png');
