@@ -219,7 +219,7 @@ exports.deletePlayer = function (req, res) { return __awaiter(void 0, void 0, vo
     });
 }); };
 exports.getAvatarFile = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var team, imgBuffer;
+    var team, imgBuffer, regex, isSvg;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
@@ -233,8 +233,10 @@ exports.getAvatarFile = function (req, res) { return __awaiter(void 0, void 0, v
                     return [2 /*return*/, res.sendStatus(404)];
                 }
                 imgBuffer = Buffer.from(team.avatar, 'base64');
+                regex = /^\s*(?:<\?xml[^>]*>\s*)?(?:<!doctype svg[^>]*\s*(?:\[?(?:\s*<![^>]*>\s*)*\]?)*[^>]*>\s*)?(?:<svg[^>]*>[^]*<\/svg>|<svg[^/>]*\/\s*>)\s*$/i;
+                isSvg = regex.test(imgBuffer.toString().toString().replace(/\s*<!Entity\s+\S*\s*(?:"|')[^"]+(?:"|')\s*>/img, '').replace(/<!--([\s\S]*?)-->/g, ''));
                 res.writeHead(200, {
-                    'Content-Type': 'image/png',
+                    'Content-Type': isSvg ? 'image/svg+xml' : 'image/png',
                     'Content-Length': imgBuffer.length
                 });
                 res.end(imgBuffer);

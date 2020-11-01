@@ -516,7 +516,7 @@ export default function (server: http.Server, app: express.Router) {
 					},
 					body: JSON.stringify(payload)
 				});
-			} catch { }
+			} catch {}
 		}
 	});
 

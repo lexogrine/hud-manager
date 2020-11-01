@@ -18,8 +18,8 @@ const hash = () => hashCode(String(new Date().getTime()));
 
 export default class Players extends React.Component<
 	{ cxt: IContextData; data: any },
-	{ options: any[]; value: string; form: I.Player; forceLoad: boolean, search: string }
-	> {
+	{ options: any[]; value: string; form: I.Player; forceLoad: boolean; search: string }
+> {
 	emptyPlayer: I.Player;
 	constructor(props: { cxt: IContextData; data: any }) {
 		super(props);
@@ -104,7 +104,7 @@ export default class Players extends React.Component<
 		};
 	};
 	searchHandler = (event: any) => {
-		this.setState({search: event.target.value});
+		this.setState({ search: event.target.value });
 	};
 	changeHandler = (event: any) => {
 		const name: 'steamid' | 'firstName' | 'lastName' | 'username' | 'avatar' | 'country' = event.target.name;
@@ -146,13 +146,15 @@ export default class Players extends React.Component<
 	filterPlayers = (player: I.Player): boolean => {
 		const str = this.state.search.toLowerCase();
 		const country = countries.find(country => country.value === player.country);
-		return player._id.toLowerCase().includes(str)
-			|| player.firstName.toLowerCase().includes(str)
-			|| player.lastName.toLowerCase().includes(str)
-			|| player.username.toLowerCase().includes(str)
-			|| player.steamid.toLowerCase().includes(str)
-			|| (country && (country.value.toLowerCase().includes(str) || country.label.toLowerCase().includes(str)));
-	}
+		return (
+			player._id.toLowerCase().includes(str) ||
+			player.firstName.toLowerCase().includes(str) ||
+			player.lastName.toLowerCase().includes(str) ||
+			player.username.toLowerCase().includes(str) ||
+			player.steamid.toLowerCase().includes(str) ||
+			(country && (country.value.toLowerCase().includes(str) || country.label.toLowerCase().includes(str)))
+		);
+	};
 
 	render() {
 		const { form } = this.state;
@@ -179,7 +181,7 @@ export default class Players extends React.Component<
 				</div>
 				<div className="tab-content-container">
 					<FormText color="muted">
-						Player: { form._id || form._id !== "empty" ? form._id :  '--- NONE ---' }
+						Player: {form._id || form._id !== 'empty' ? form._id : '--- NONE ---'}
 					</FormText>
 					<FormGroup>
 						<Input type="select" name="players" id="players" onChange={this.setPlayer} value={form._id}>

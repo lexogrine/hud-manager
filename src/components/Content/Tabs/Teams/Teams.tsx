@@ -17,8 +17,8 @@ const hashCode = (s: string) =>
 const hash = () => hashCode(String(new Date().getTime()));
 export default class Teams extends React.Component<
 	{ cxt: IContextData },
-	{ options: any[]; value: string; form: I.Team, search: string }
-	> {
+	{ options: any[]; value: string; form: I.Team; search: string }
+> {
 	emptyTeam: I.Team;
 	constructor(props: { cxt: IContextData }) {
 		super(props);
@@ -71,7 +71,7 @@ export default class Teams extends React.Component<
 		const reader: any = new FileReader();
 		reader.readAsDataURL(file);
 		reader.onload = () => {
-			form.logo = reader.result.replace(/^data:([a-z]+)\/([a-z0-9]+);base64,/, '');
+			form.logo = reader.result.replace(/^data:([a-z]+)\/(.+);base64,/, '');
 			this.setState({ form });
 		};
 	};
@@ -87,7 +87,7 @@ export default class Teams extends React.Component<
 		return this.fileHandler(event.target.files);
 	};
 	searchHandler = (event: any) => {
-		this.setState({search: event.target.value});
+		this.setState({ search: event.target.value });
 	};
 
 	save = async () => {
@@ -118,11 +118,13 @@ export default class Teams extends React.Component<
 	filterTeams = (team: I.Team): boolean => {
 		const str = this.state.search.toLowerCase();
 		const country = countries.find(country => country.value === team.country);
-		return team._id.toLowerCase().includes(str)
-			|| team.name.toLowerCase().includes(str)
-			|| team.shortName.toLowerCase().includes(str)
-			|| (country && (country.value.toLowerCase().includes(str) || country.label.toLowerCase().includes(str)));
-	}
+		return (
+			team._id.toLowerCase().includes(str) ||
+			team.name.toLowerCase().includes(str) ||
+			team.shortName.toLowerCase().includes(str) ||
+			(country && (country.value.toLowerCase().includes(str) || country.label.toLowerCase().includes(str)))
+		);
+	};
 
 	render() {
 		const { form } = this.state;
@@ -148,9 +150,7 @@ export default class Teams extends React.Component<
 					/>
 				</div>
 				<div className="tab-content-container">
-					<FormText color="muted">
-						Team: {form._id || '--- NONE ---'}
-					</FormText>
+					<FormText color="muted">Team: {form._id || '--- NONE ---'}</FormText>
 					<FormGroup>
 						<Input
 							type="select"

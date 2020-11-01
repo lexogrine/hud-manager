@@ -136,9 +136,19 @@ export const getAvatarFile: express.RequestHandler = async (req, res) => {
 	if (!team || !team.avatar || !team.avatar.length) {
 		return res.sendStatus(404);
 	}
+
 	const imgBuffer = Buffer.from(team.avatar, 'base64');
+	const regex = /^\s*(?:<\?xml[^>]*>\s*)?(?:<!doctype svg[^>]*\s*(?:\[?(?:\s*<![^>]*>\s*)*\]?)*[^>]*>\s*)?(?:<svg[^>]*>[^]*<\/svg>|<svg[^/>]*\/\s*>)\s*$/i;
+
+	const isSvg = regex.test(
+		imgBuffer
+			.toString()
+			.replace(/\s*<!Entity\s+\S*\s*(?:"|')[^"]+(?:"|')\s*>/gim, '')
+			.replace(/<!--([\s\S]*?)-->/g, '')
+	);
+
 	res.writeHead(200, {
-		'Content-Type': 'image/png',
+		'Content-Type': isSvg ? 'image/svg+xml' : 'image/png',
 		'Content-Length': imgBuffer.length
 	});
 	res.end(imgBuffer);
