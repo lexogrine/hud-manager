@@ -874,7 +874,17 @@ form .card > .card-body > button.btn {
     display:none;
 }
 .text-muted {
-    color: white !important;
+    margin-bottom: 10px;
+}
+#team_search, #player_search {
+    border: none;
+    max-width: 270px;
+    margin-left: auto;
+    margin-right: 180px;
+    padding: 11px 0;
+    height: unset;
+    border-bottom: 1px solid grey;
+    border-radius: 0;
 }
 .nav-tabs .nav-link {
     user-select: none;

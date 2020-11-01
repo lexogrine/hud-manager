@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Form, FormGroup, Input, Row, Col, FormText } from 'reactstrap';
-import countryList from 'react-select-country-list';
+import countries from './../../countries';
 import api from './../../../../api/api';
 import * as I from './../../../../api/interfaces';
 import { IContextData } from './../../../../components/Context';
@@ -17,8 +17,8 @@ const hashCode = (s: string) =>
 const hash = () => hashCode(String(new Date().getTime()));
 export default class Teams extends React.Component<
 	{ cxt: IContextData },
-	{ options: any[]; value: string; form: I.Team }
-> {
+	{ options: any[]; value: string; form: I.Team, search: string }
+	> {
 	emptyTeam: I.Team;
 	constructor(props: { cxt: IContextData }) {
 		super(props);
@@ -30,19 +30,10 @@ export default class Teams extends React.Component<
 			logo: ''
 		};
 
-		const countries = [
-			...countryList().getData(),
-			{ value: 'EU', label: 'European Union' },
-			{ value: 'CIS', label: 'CIS' }
-		].sort((a, b) => {
-			if (a.label.toUpperCase() < b.label.toUpperCase()) return -1;
-			if (a.label.toUpperCase() > b.label.toUpperCase()) return 1;
-			return 0;
-		});
-
 		this.state = {
 			options: countries,
 			value: '',
+			search: '',
 			form: { ...this.emptyTeam }
 		};
 	}
@@ -94,8 +85,9 @@ export default class Teams extends React.Component<
 		}
 
 		return this.fileHandler(event.target.files);
-
-		// this.setState({ value })
+	};
+	searchHandler = (event: any) => {
+		this.setState({search: event.target.value});
 	};
 
 	save = async () => {
@@ -123,6 +115,15 @@ export default class Teams extends React.Component<
 		}
 	};
 
+	filterTeams = (team: I.Team): boolean => {
+		const str = this.state.search.toLowerCase();
+		const country = countries.find(country => country.value === team.country);
+		return team._id.toLowerCase().includes(str)
+			|| team.name.toLowerCase().includes(str)
+			|| team.shortName.toLowerCase().includes(str)
+			|| (country && (country.value.toLowerCase().includes(str) || country.label.toLowerCase().includes(str)));
+	}
+
 	render() {
 		const { form } = this.state;
 		let logo = '';
@@ -135,8 +136,21 @@ export default class Teams extends React.Component<
 		}
 		return (
 			<Form>
-				<div className="tab-title-container">Teams</div>
+				<div className="tab-title-container">
+					<div>Teams</div>
+					<Input
+						type="text"
+						name="name"
+						id="team_search"
+						value={this.state.search}
+						onChange={this.searchHandler}
+						placeholder="Search..."
+					/>
+				</div>
 				<div className="tab-content-container">
+					<FormText color="muted">
+						Team: {form._id || '--- NONE ---'}
+					</FormText>
 					<FormGroup>
 						<Input
 							type="select"
@@ -148,6 +162,7 @@ export default class Teams extends React.Component<
 							<option value={'empty'}>New team</option>
 							{this.props.cxt.teams
 								.concat()
+								.filter(this.filterTeams)
 								.sort((a, b) => (a.name < b.name ? -1 : 1))
 								.map(team => (
 									<option key={team._id} value={team._id}>

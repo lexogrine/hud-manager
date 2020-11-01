@@ -1,6 +1,6 @@
 import React from 'react';
 import { Button, Form, FormGroup, Input, Row, Col, FormText } from 'reactstrap';
-import countryList from 'react-select-country-list';
+import countries from './../../countries';
 import api from './../../../../api/api';
 import * as I from './../../../../api/interfaces';
 import { IContextData } from './../../../../components/Context';
@@ -18,8 +18,8 @@ const hash = () => hashCode(String(new Date().getTime()));
 
 export default class Players extends React.Component<
 	{ cxt: IContextData; data: any },
-	{ options: any[]; value: string; form: I.Player; forceLoad: boolean }
-> {
+	{ options: any[]; value: string; form: I.Player; forceLoad: boolean, search: string }
+	> {
 	emptyPlayer: I.Player;
 	constructor(props: { cxt: IContextData; data: any }) {
 		super(props);
@@ -33,21 +33,12 @@ export default class Players extends React.Component<
 			steamid: ''
 		};
 
-		const countries = [
-			...countryList().getData(),
-			{ value: 'EU', label: 'European Union' },
-			{ value: 'CIS', label: 'CIS' }
-		].sort((a, b) => {
-			if (a.label < b.label) return -1;
-			if (a.label > b.label) return 1;
-			return 0;
-		});
-
 		this.state = {
 			options: countries,
 			value: '',
 			form: { ...this.emptyPlayer },
-			forceLoad: false
+			forceLoad: false,
+			search: ''
 		};
 	}
 
@@ -108,11 +99,13 @@ export default class Players extends React.Component<
 		const reader: any = new FileReader();
 		reader.readAsDataURL(file);
 		reader.onload = () => {
-			form.avatar = reader.result.replace(/^data:([a-z]+)\/([a-z0-9]+);base64,/, '');
+			form.avatar = reader.result.replace(/^data:([a-z]+)\/(.+);base64,/, '');
 			this.setState({ form });
 		};
 	};
-
+	searchHandler = (event: any) => {
+		this.setState({search: event.target.value});
+	};
 	changeHandler = (event: any) => {
 		const name: 'steamid' | 'firstName' | 'lastName' | 'username' | 'avatar' | 'country' = event.target.name;
 		const { form } = this.state;
@@ -150,6 +143,17 @@ export default class Players extends React.Component<
 		}
 	};
 
+	filterPlayers = (player: I.Player): boolean => {
+		const str = this.state.search.toLowerCase();
+		const country = countries.find(country => country.value === player.country);
+		return player._id.toLowerCase().includes(str)
+			|| player.firstName.toLowerCase().includes(str)
+			|| player.lastName.toLowerCase().includes(str)
+			|| player.username.toLowerCase().includes(str)
+			|| player.steamid.toLowerCase().includes(str)
+			|| (country && (country.value.toLowerCase().includes(str) || country.label.toLowerCase().includes(str)));
+	}
+
 	render() {
 		const { form } = this.state;
 		let avatar = '';
@@ -162,13 +166,27 @@ export default class Players extends React.Component<
 		}
 		return (
 			<Form>
-				<div className="tab-title-container">Players</div>
+				<div className="tab-title-container">
+					<div>Players</div>
+					<Input
+						type="text"
+						name="name"
+						id="team_search"
+						value={this.state.search}
+						onChange={this.searchHandler}
+						placeholder="Search..."
+					/>
+				</div>
 				<div className="tab-content-container">
+					<FormText color="muted">
+						Player: { form._id || form._id !== "empty" ? form._id :  '--- NONE ---' }
+					</FormText>
 					<FormGroup>
 						<Input type="select" name="players" id="players" onChange={this.setPlayer} value={form._id}>
 							<option value={'empty'}>New player</option>
 							{this.props.cxt.players
 								.concat()
+								.filter(this.filterPlayers)
 								.sort((a, b) => (a.username < b.username ? -1 : 1))
 								.map(player => (
 									<option key={player._id} value={player._id}>
