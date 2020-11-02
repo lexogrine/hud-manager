@@ -112,7 +112,7 @@ export const deleteTeam: express.RequestHandler = async (req, res) => {
 		if (err) {
 			return res.sendStatus(500);
 		}
-		players.update({ team: req.params.id }, { $set: { team: '' } }, { multi: true }, (err) => {
+		players.update({ team: req.params.id }, { $set: { team: '' } }, { multi: true }, err => {
 			if (err) {
 				return res.sendStatus(500);
 			}
