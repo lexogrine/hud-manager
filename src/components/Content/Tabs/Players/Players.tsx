@@ -173,7 +173,6 @@ export default class Players extends React.Component<
 				avatar = `data:image/${encoding};base64,${form.avatar}`;
 			}
 		}
-		console.log(form);
 		return (
 			<Form>
 				<div className="tab-title-container">
