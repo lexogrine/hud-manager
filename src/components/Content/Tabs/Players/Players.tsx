@@ -159,7 +159,7 @@ export default class Players extends React.Component<
 			player.lastName.toLowerCase().includes(str) ||
 			player.username.toLowerCase().includes(str) ||
 			player.steamid.toLowerCase().includes(str) ||
-			(team && ( team.name.toLowerCase().includes(str) || team.shortName.toLowerCase().includes(str))) ||
+			(team && (team.name.toLowerCase().includes(str) || team.shortName.toLowerCase().includes(str))) ||
 			(country && (country.value.toLowerCase().includes(str) || country.label.toLowerCase().includes(str)))
 		);
 	};
