@@ -152,12 +152,14 @@ export default class Players extends React.Component<
 	filterPlayers = (player: I.Player): boolean => {
 		const str = this.state.search.toLowerCase();
 		const country = countries.find(country => country.value === player.country);
+		const team = this.props.cxt.teams.find(team => team._id === player.team);
 		return (
 			player._id.toLowerCase().includes(str) ||
 			player.firstName.toLowerCase().includes(str) ||
 			player.lastName.toLowerCase().includes(str) ||
 			player.username.toLowerCase().includes(str) ||
 			player.steamid.toLowerCase().includes(str) ||
+			(team && ( team.name.toLowerCase().includes(str) || team.shortName.toLowerCase().includes(str))) ||
 			(country && (country.value.toLowerCase().includes(str) || country.label.toLowerCase().includes(str)))
 		);
 	};
