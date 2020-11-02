@@ -20,7 +20,7 @@ const hash = () => hashCode(String(new Date().getTime()));
 export default class Players extends React.Component<
 	{ cxt: IContextData; data: any },
 	{ options: any[]; value: string; form: I.Player; forceLoad: boolean; search: string }
-	> {
+> {
 	emptyPlayer: I.Player;
 	constructor(props: { cxt: IContextData; data: any }) {
 		super(props);
@@ -109,7 +109,8 @@ export default class Players extends React.Component<
 		this.setState({ search: event.target.value });
 	};
 	changeHandler = (event: any) => {
-		const name: 'steamid' | 'firstName' | 'lastName' | 'username' | 'avatar' | 'country' | 'team' = event.target.name;
+		const name: 'steamid' | 'firstName' | 'lastName' | 'username' | 'avatar' | 'country' | 'team' =
+			event.target.name;
 		const { form } = this.state;
 
 		if (!event.target.files) {

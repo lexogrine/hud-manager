@@ -83,7 +83,7 @@ export const updatePlayer: express.RequestHandler = async (req, res) => {
 		avatar: req.body.avatar,
 		country: req.body.country,
 		steamid: req.body.steamid,
-		team: req.body.team,
+		team: req.body.team
 	};
 
 	if (req.body.avatar === undefined) {

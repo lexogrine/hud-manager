@@ -118,7 +118,6 @@ export const deleteTeam: express.RequestHandler = async (req, res) => {
 			}
 			return res.sendStatus(n ? 200 : 404);
 		});
-		
 	});
 };
 
