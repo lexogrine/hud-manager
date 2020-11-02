@@ -6,7 +6,7 @@ import ip from 'ip';
 import isSvg from './../../src/isSvg';
 
 const teams = db.teams;
-//const players = db.players;
+const players = db.players;
 
 export async function getTeamById(id: string, logo = false): Promise<Team | null> {
 	return new Promise(res => {
@@ -112,7 +112,13 @@ export const deleteTeam: express.RequestHandler = async (req, res) => {
 		if (err) {
 			return res.sendStatus(500);
 		}
-		return res.sendStatus(n ? 200 : 404);
+		players.update({ team: req.params.id }, { $set: { team: '' } }, { multi: true }, (err, _m) => {
+			if (err) {
+				return res.sendStatus(500);
+			}
+			return res.sendStatus(n ? 200 : 404);
+		});
+		
 	});
 };
 

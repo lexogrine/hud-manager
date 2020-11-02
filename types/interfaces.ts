@@ -6,6 +6,7 @@ export interface Player {
 	avatar: string;
 	country: string;
 	steamid: string;
+	team: string;
 }
 
 export interface Team {

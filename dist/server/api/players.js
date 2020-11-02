@@ -54,7 +54,7 @@ var database_1 = __importDefault(require("./../../init/database"));
 var config_1 = require("./config");
 var node_fetch_1 = __importDefault(require("node-fetch"));
 var ip_1 = __importDefault(require("ip"));
-var isSvg_1 = __importDefault(require("./isSvg"));
+var isSvg_1 = __importDefault(require("./../../src/isSvg"));
 var players = database_1["default"].players;
 function getPlayerById(id, avatar) {
     if (avatar === void 0) { avatar = false; }
@@ -155,7 +155,8 @@ exports.updatePlayer = function (req, res) { return __awaiter(void 0, void 0, vo
                     username: req.body.username,
                     avatar: req.body.avatar,
                     country: req.body.country,
-                    steamid: req.body.steamid
+                    steamid: req.body.steamid,
+                    team: req.body.team
                 };
                 if (req.body.avatar === undefined) {
                     updated.avatar = player.avatar;
@@ -186,7 +187,8 @@ exports.addPlayer = function (req, res) {
         username: req.body.username,
         avatar: req.body.avatar,
         country: req.body.country,
-        steamid: req.body.steamid
+        steamid: req.body.steamid,
+        team: req.body.team
     };
     players.insert(newPlayer, function (err, player) {
         if (err) {

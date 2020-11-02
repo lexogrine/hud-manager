@@ -82,7 +82,8 @@ export const updatePlayer: express.RequestHandler = async (req, res) => {
 		username: req.body.username,
 		avatar: req.body.avatar,
 		country: req.body.country,
-		steamid: req.body.steamid
+		steamid: req.body.steamid,
+		team: req.body.team,
 	};
 
 	if (req.body.avatar === undefined) {
@@ -104,7 +105,8 @@ export const addPlayer: express.RequestHandler = (req, res) => {
 		username: req.body.username,
 		avatar: req.body.avatar,
 		country: req.body.country,
-		steamid: req.body.steamid
+		steamid: req.body.steamid,
+		team: req.body.team
 	};
 	players.insert(newPlayer, (err, player) => {
 		if (err) {

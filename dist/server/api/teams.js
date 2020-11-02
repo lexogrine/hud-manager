@@ -53,9 +53,9 @@ exports.__esModule = true;
 var database_1 = __importDefault(require("./../../init/database"));
 var config_1 = require("./config");
 var ip_1 = __importDefault(require("ip"));
-var isSvg_1 = __importDefault(require("./isSvg"));
+var isSvg_1 = __importDefault(require("./../../src/isSvg"));
 var teams = database_1["default"].teams;
-//const players = db.players;
+var players = database_1["default"].players;
 function getTeamById(id, logo) {
     if (logo === void 0) { logo = false; }
     return __awaiter(this, void 0, void 0, function () {
@@ -193,7 +193,14 @@ exports.deleteTeam = function (req, res) { return __awaiter(void 0, void 0, void
                     if (err) {
                         return res.sendStatus(500);
                     }
-                    return res.sendStatus(n ? 200 : 404);
+                    if (n > 0) {
+                        players.update({ team: req.params.id }, { $set: { team: '' } }, { multi: true }, function (err, _m) {
+                            if (err) {
+                                return res.sendStatus(500);
+                            }
+                            return res.sendStatus(n ? 200 : 404);
+                        });
+                    }
                 });
                 return [2 /*return*/];
         }

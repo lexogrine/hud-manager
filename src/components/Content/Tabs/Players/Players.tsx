@@ -20,7 +20,7 @@ const hash = () => hashCode(String(new Date().getTime()));
 export default class Players extends React.Component<
 	{ cxt: IContextData; data: any },
 	{ options: any[]; value: string; form: I.Player; forceLoad: boolean; search: string }
-> {
+	> {
 	emptyPlayer: I.Player;
 	constructor(props: { cxt: IContextData; data: any }) {
 		super(props);
@@ -31,7 +31,8 @@ export default class Players extends React.Component<
 			username: '',
 			avatar: '',
 			country: '',
-			steamid: ''
+			steamid: '',
+			team: ''
 		};
 
 		this.state = {
@@ -70,7 +71,7 @@ export default class Players extends React.Component<
 
 	loadPlayer = (id: string) => {
 		const player = this.props.cxt.players.filter(player => player._id === id)[0];
-		if (player) this.setState({ form: { ...player } }, this.clearAvatar);
+		if (player) this.setState({ form: { ...this.emptyPlayer, ...player } }, this.clearAvatar);
 	};
 
 	loadEmpty = () => {
@@ -108,10 +109,13 @@ export default class Players extends React.Component<
 		this.setState({ search: event.target.value });
 	};
 	changeHandler = (event: any) => {
-		const name: 'steamid' | 'firstName' | 'lastName' | 'username' | 'avatar' | 'country' = event.target.name;
+		const name: 'steamid' | 'firstName' | 'lastName' | 'username' | 'avatar' | 'country' | 'team' = event.target.name;
 		const { form } = this.state;
 
 		if (!event.target.files) {
+			if (!(name in form)) {
+				form[name] = '';
+			}
 			form[name] = event.target.value;
 			return this.setState({ form });
 		}
@@ -168,6 +172,7 @@ export default class Players extends React.Component<
 				avatar = `data:image/${encoding};base64,${form.avatar}`;
 			}
 		}
+		console.log(form);
 		return (
 			<Form>
 				<div className="tab-title-container">
@@ -276,6 +281,29 @@ export default class Players extends React.Component<
 									onChange={this.changeHandler}
 									placeholder="SteamID64"
 								/>
+							</FormGroup>
+						</Col>
+					</Row>
+					<Row>
+						<Col md="12">
+							<FormGroup>
+								<Input
+									type="select"
+									id="player_teams"
+									name="team"
+									value={form.team}
+									onChange={this.changeHandler}
+								>
+									<option value="">Team</option>
+									{this.props.cxt.teams
+										.concat()
+										.sort((a, b) => (a.name < b.name ? -1 : 1))
+										.map(team => (
+											<option key={team._id} value={team._id}>
+												{team.name}
+											</option>
+										))}
+								</Input>
 							</FormGroup>
 						</Col>
 					</Row>
