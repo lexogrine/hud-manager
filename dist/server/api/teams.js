@@ -193,14 +193,12 @@ exports.deleteTeam = function (req, res) { return __awaiter(void 0, void 0, void
                     if (err) {
                         return res.sendStatus(500);
                     }
-                    if (n > 0) {
-                        players.update({ team: req.params.id }, { $set: { team: '' } }, { multi: true }, function (err, _m) {
-                            if (err) {
-                                return res.sendStatus(500);
-                            }
-                            return res.sendStatus(n ? 200 : 404);
-                        });
-                    }
+                    players.update({ team: req.params.id }, { $set: { team: '' } }, { multi: true }, function (err) {
+                        if (err) {
+                            return res.sendStatus(500);
+                        }
+                        return res.sendStatus(n ? 200 : 404);
+                    });
                 });
                 return [2 /*return*/];
         }
