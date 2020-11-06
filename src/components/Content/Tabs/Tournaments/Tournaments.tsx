@@ -170,7 +170,7 @@ export default class Teams extends React.Component<{ cxt: IContextData }, State>
 		const reader: any = new FileReader();
 		reader.readAsDataURL(file);
 		reader.onload = () => {
-			const logo = reader.result.replace(/^data:([a-z]+)\/([a-z0-9]+);base64,/, '');
+			const logo = reader.result.replace(/^data:([a-z]+)\/(.+);base64,/, '');
 			this.setState(state => {
 				state.form.logo = logo;
 				return state;
