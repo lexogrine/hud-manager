@@ -37,6 +37,7 @@ If you are in the business of broadcasting professional CS:GO matches, the Lexog
 - Support for player avatars (custom and Steam)
 - Killfeed API
 - Boltobserv minimap support
+- Tournament ladder
 - Custom HUD support
 - Keybinding API
   
