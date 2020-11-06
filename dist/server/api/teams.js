@@ -50,6 +50,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
+exports.getLogoFile = exports.deleteTeam = exports.updateTeam = exports.addTeam = exports.getTeam = exports.getTeams = exports.getTeamsList = exports.getTeamById = void 0;
 var database_1 = __importDefault(require("./../../init/database"));
 var config_1 = require("./config");
 var ip_1 = __importDefault(require("ip"));

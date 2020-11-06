@@ -50,6 +50,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
+exports.getAvatarURLBySteamID = exports.getAvatarFile = exports.deletePlayer = exports.addPlayer = exports.updatePlayer = exports.getPlayer = exports.getPlayers = exports.getPlayersList = exports.getPlayerById = void 0;
 var database_1 = __importDefault(require("./../../init/database"));
 var config_1 = require("./config");
 var node_fetch_1 = __importDefault(require("node-fetch"));

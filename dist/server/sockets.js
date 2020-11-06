@@ -50,6 +50,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
+exports.GSI = exports.HUDState = exports.Sockets = void 0;
 var socket_io_1 = __importDefault(require("socket.io"));
 var csgogsi_1 = __importDefault(require("csgogsi"));
 var electron_1 = require("electron");

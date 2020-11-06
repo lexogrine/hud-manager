@@ -3,6 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
+exports.createDEBracket = exports.createSEBracket = void 0;
 var v4_1 = __importDefault(require("uuid/v4"));
 var createMatchup = function () { return ({
     _id: v4_1["default"](),

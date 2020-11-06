@@ -39,6 +39,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
+exports.logout = exports.getCurrent = exports.verifyToken = void 0;
 var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 var publickey_1 = require("./publickey");
 var api_1 = require("./../api");

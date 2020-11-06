@@ -39,6 +39,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
+exports.runExperimental = exports.run = exports.getSteamPath = exports.getLatestData = exports.createCFGs = exports.checkCFGs = void 0;
 var fs_1 = __importDefault(require("fs"));
 var path_1 = __importDefault(require("path"));
 var steam_game_path_1 = require("steam-game-path");

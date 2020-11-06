@@ -39,6 +39,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
+exports.setConfig = exports.updateConfig = exports.getConfig = exports.loadConfig = void 0;
 var database_1 = __importDefault(require("./../../init/database"));
 var fs_1 = __importDefault(require("fs"));
 var configs = database_1["default"].config;

@@ -50,6 +50,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
+exports.updateRound = exports.reverseSide = exports.getMaps = exports.updateMatchRoute = exports.deleteMatchRoute = exports.addMatchRoute = exports.updateMatch = exports.setCurrent = exports.deleteMatch = exports.addMatch = exports.updateMatches = exports.setMatches = exports.getMatchById = exports.getMatchesRoute = exports.getMatches = void 0;
 var sockets_1 = require("./../sockets");
 var database_1 = __importDefault(require("./../../init/database"));
 var teams_1 = require("./teams");
