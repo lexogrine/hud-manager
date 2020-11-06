@@ -27,6 +27,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    color: #f4f4f4;
     text-transform: uppercase;
     border-bottom: 1px solid #373a40 !important;
 }
