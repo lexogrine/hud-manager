@@ -27,7 +27,7 @@ class BindModal extends React.Component<Props> {
 				<ModalBody>
 					<FormGroup>
 						<Input type="select" name="type" id="match_to_bracket" value={matchId} onChange={bindHandler}>
-							<option value="" disabled defaultChecked>
+							<option value="" defaultChecked>
 								Match
 							</option>
 							{matches.map(match => (
