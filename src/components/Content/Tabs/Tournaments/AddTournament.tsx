@@ -2,6 +2,7 @@ import React from 'react';
 import { Modal, ModalHeader, ModalBody, Button, FormGroup, Input, ModalFooter, Row, Col, FormText } from 'reactstrap';
 import DragFileInput from '../../../DragFileInput';
 import api from '../../../../api/api';
+import isSvg from '../../../../isSvg';
 
 const hashCode = (s: string) =>
 	s
@@ -66,7 +67,9 @@ class AddTournamentModal extends React.Component<Props, State> {
 			if (this.props.form.logo.includes('api/players/avatar')) {
 				logo = `${this.props.form.logo}?hash=${hash()}`;
 			} else {
-				logo = `data:image/jpeg;base64,${this.props.form.logo}`;
+				logo = `data:image/${isSvg(Buffer.from(this.props.form.logo, 'base64')) ? 'svg+xml' : 'png'};base64,${
+					this.props.form.logo
+				}`;
 			}
 		}
 		return (

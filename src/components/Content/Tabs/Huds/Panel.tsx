@@ -5,7 +5,7 @@ import * as I from './../../../../api/interfaces';
 import { socket } from './../Live/Live';
 import { Row, Col, FormGroup, Input, Form, Button, Label } from 'reactstrap';
 import FileInput from './../../../DragFileInput';
-
+import isSvg from './../../../../isSvg';
 interface IProps {
 	cxt: IContextData;
 	hud: I.HUD;
@@ -74,7 +74,7 @@ export default class ActionPanel extends React.Component<IProps, IState> {
 		const reader: any = new FileReader();
 		reader.readAsDataURL(file);
 		reader.onload = () => {
-			form[sectionName][name] = reader.result.replace(/^data:([a-z]+)\/([a-z0-9]+);base64,/, '');
+			form[sectionName][name] = reader.result.replace(/^data:([a-z]+)\/(.+);base64,/, '');
 			this.setState({ form });
 		};
 	};
@@ -107,6 +107,9 @@ export default class ActionPanel extends React.Component<IProps, IState> {
 
 		return layout;
 	};
+
+	getEncoding = (img: string) => (isSvg(Buffer.from(img, 'base64')) ? 'svg+xml' : 'png');
+
 	getImageInputs = (panel: I.PanelTemplate) => this.filterInputs(panel, 'image');
 
 	getTeamSelect = (panel: I.PanelTemplate) => this.filterInputs(panel, 'team');
@@ -299,7 +302,9 @@ export default class ActionPanel extends React.Component<IProps, IState> {
 									label={(input && input.label && input.label.toUpperCase()) || ''}
 									imgSrc={
 										form[section.name] && form[section.name][input.name]
-											? `data:image/jpeg;base64,${form[section.name][input.name]}`
+											? `data:image/${this.getEncoding(form[section.name][input.name])};base64,${
+													form[section.name][input.name]
+											  }`
 											: undefined
 									}
 								/>
