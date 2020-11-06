@@ -221,6 +221,7 @@ button.btn-primary {
 }
 .bracket-details .match-details .team-data .team-logo img {
     height: 20px;
+    max-width: 20px;
 }
 .match_data code {
     cursor: pointer;

@@ -51,6 +51,11 @@ export default class Layout extends React.Component<{}, IState> {
 		socket.on('match', (fromVeto?: boolean) => {
 			if (fromVeto) this.loadMatch();
 		});
+		window.onkeydown = (evt: any) => {
+			if ((evt.code == 'Minus' || evt.code == 'Equal') && (evt.ctrlKey || evt.metaKey)) {
+				evt.preventDefault();
+			}
+		};
 	}
 	loadUser = async () => {
 		try {
