@@ -162,7 +162,7 @@ export default class Layout extends React.Component<{}, IState> {
 					</div>
 					{data.customer ? (
 						<div className={`license-status ${isElectron ? 'electron' : ''}`}>
-							{data.customer.license.type}
+							{data.customer.license.type} 1.6.1
 							<ElectronOnly>
 								<div className="logout-button" onClick={this.logout}>
 									Logout
