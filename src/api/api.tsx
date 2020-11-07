@@ -54,6 +54,8 @@ export async function apiV2(url: string, method = 'GET', body?: any) {
         });*/
 }
 
+export const ver = '1.6.1';
+
 export default {
 	players: {
 		get: async (): Promise<I.Player[]> => await apiV2('players'),
@@ -130,7 +132,7 @@ export default {
 		get: async (machineId: string): Promise<{ token: string } | { error: string } | false> =>
 			await sessionAPI(`auth/${machineId}`),
 		login: async (username: string, password: string): Promise<any> =>
-			await sessionAPI('auth', 'POST', { username, password }),
+			await sessionAPI('auth', 'POST', { username, password, ver }),
 		logout: async () => await Promise.all([sessionAPI('auth', 'DELETE'), apiV2('auth', 'DELETE')]),
 		verify: async (token: string): Promise<I.Customer | false> => await apiV2('user', 'POST', { token }),
 		getCurrent: async (): Promise<I.Customer | false> => await apiV2('auth')

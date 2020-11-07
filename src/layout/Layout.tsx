@@ -1,7 +1,7 @@
 import React from 'react';
 import Content from '../components/Content/Content';
 import { ContextData, IContextData } from './../components/Context';
-import api from './../api/api';
+import api, { ver } from './../api/api';
 import * as I from './../api/interfaces';
 import config from './../api/config';
 import { socket } from './../components/Content/Tabs/Live/Live';
@@ -162,7 +162,7 @@ export default class Layout extends React.Component<{}, IState> {
 					</div>
 					{data.customer ? (
 						<div className={`license-status ${isElectron ? 'electron' : ''}`}>
-							{data.customer.license.type} 1.6.1
+							{data.customer.license.type} {ver}
 							<ElectronOnly>
 								<div className="logout-button" onClick={this.logout}>
 									Logout
