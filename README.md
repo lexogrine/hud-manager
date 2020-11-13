@@ -286,19 +286,6 @@ npm install registry-js
 ```
 If the build has been successful, an `app` directory should appear with the installer and the unpacked version of the Lexogrine HUD Manager.
 
-### Sockets
-Once connected to the Lexogrine HUD Manager with sockets, it sends the following events:
-
-|Name|Data|Description|
-|--|--|--|
-|`readyToRegister`||Manager then expects to get a `register` event with two arguments: `name: string` and `isDev: boolean`. `isDev` should only be true if you are in development mode AND on port 3500.
-|`update`|CSGO GSI data
-|`update_mirv`|MIRV `player_death` gameEvent
-|`hud_config`|Data from `panel.json` filled form|
-|`hud_action`|Action name and action type from `panel.json`
-|`keybindAction`|Action name from `keybinds.json`
-  
-
 ## REST API
 |Endpoint| Method | Returned|
 |--|--|--|
