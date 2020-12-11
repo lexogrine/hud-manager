@@ -27,7 +27,7 @@ async function createRenderer(server: Server, forceDev = false) {
 		if (AFXInterop.process) {
 			AFXInterop.process.kill();
 		}
-		if(RMTPServer){
+		if (RMTPServer) {
 			RMTPServer.kill();
 		}
 		app.quit();
