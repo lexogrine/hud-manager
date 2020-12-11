@@ -2,7 +2,7 @@
 import init from './server';
 import { Server } from 'http';
 import * as directories from './init/directories';
-import { ChildProcess, spawn } from 'child_process';
+import { ChildProcess, spawn, fork } from 'child_process';
 import args from './init/args';
 import { app } from 'electron';
 import { createMainWindow } from './renderer';
@@ -18,12 +18,17 @@ export const AFXInterop: HLAEChild = {
 export const isDev = process.env.DEV === 'true';
 
 async function createRenderer(server: Server, forceDev = false) {
+	const RMTPServer = fork(require.resolve('./RMTPServer.js'));
+
 	const closeManager = () => {
 		if (server) {
 			server.close();
 		}
 		if (AFXInterop.process) {
 			AFXInterop.process.kill();
+		}
+		if(RMTPServer){
+			RMTPServer.kill();
 		}
 		app.quit();
 	};
