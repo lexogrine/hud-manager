@@ -38,7 +38,7 @@
     "request": "^2.88.2",
     "socket.io": "^2.3.0",
     "socket.io-client": "^2.3.0",
-    "steam-game-path": "^1.0.0",
+    "steam-game-path": "^1.1.1",
     "typescript": "^3.8.3",
     "uuid": "^3.4.0",
     "ws": "^7.2.5",
