@@ -217,7 +217,10 @@ exports.renderHUD = function (req, res) { return __awaiter(void 0, void 0, void 
                     return [2 /*return*/, res.sendStatus(404)];
                 }
                 if (req.headers.referer !== "http://" + ip_1["default"].address() + ":" + cfg.port + "/hud/" + req.params.dir + "/") {
-                    return [2 /*return*/, res.sendStatus(403)];
+                    return [2 /*return*/, res.status(403).json({
+                            expected: "http://" + ip_1["default"].address() + ":" + cfg.port + "/hud/" + req.params.dir + "/",
+                            given: req.headers.referer
+                        })];
                 }
                 return [4 /*yield*/, exports.getHUDData(req.params.dir)];
             case 2:

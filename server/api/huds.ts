@@ -125,14 +125,13 @@ export const openHUDsDirectory: express.RequestHandler = async (_req, res) => {
 export const renderHUD: express.RequestHandler = async (req, res) => {
 	const cfg = await loadConfig();
 	if (!req.params.dir) {
-		return res.status(403).json({
-			expected: `http://${ip.address()}:${cfg.port}/hud/${req.params.dir}/`,
-			given: req.headers.referer,
-		})
 		return res.sendStatus(404);
 	}
 	if (req.headers.referer !== `http://${ip.address()}:${cfg.port}/hud/${req.params.dir}/`) {
-		return res.sendStatus(403);
+		return res.status(403).json({
+			expected: `http://${ip.address()}:${cfg.port}/hud/${req.params.dir}/`,
+			given: req.headers.referer,
+		});
 	}
 	const data = await getHUDData(req.params.dir);
 	if (!data) {
