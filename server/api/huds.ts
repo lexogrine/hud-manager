@@ -130,7 +130,7 @@ export const renderHUD: express.RequestHandler = async (req, res) => {
 	if (req.headers.referer !== `http://${ip.address()}:${cfg.port}/hud/${req.params.dir}/`) {
 		return res.status(403).json({
 			expected: `http://${ip.address()}:${cfg.port}/hud/${req.params.dir}/`,
-			given: req.headers.referer,
+			given: req.headers.referer
 		});
 	}
 	const data = await getHUDData(req.params.dir);
