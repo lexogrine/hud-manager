@@ -10,6 +10,13 @@ import { HUDState } from './../sockets';
 import HUDWindow from './../../init/huds';
 import DecompressZip from 'decompress-zip';
 import overlay from './overlay';
+import publicIp from 'public-ip';
+
+let publicIP: string | null = null;
+
+publicIp.v4().then(ip => {
+	publicIP = ip;
+}).catch();
 
 const remove = (pathToRemove: string) => {
 	if (!fs.existsSync(pathToRemove)) {
@@ -124,12 +131,17 @@ export const openHUDsDirectory: express.RequestHandler = async (_req, res) => {
 
 export const renderHUD: express.RequestHandler = async (req, res) => {
 	const cfg = await loadConfig();
+	const availableUrls = [
+		`http://${ip.address()}:${cfg.port}/hud/${req.params.dir}/`,
+		`http://${publicIP}:${cfg.port}/hud/${req.params.dir}/`
+	]
 	if (!req.params.dir) {
 		return res.sendStatus(404);
 	}
-	if (req.headers.referer !== `http://${ip.address()}:${cfg.port}/hud/${req.params.dir}/`) {
+	
+	if (!availableUrls.includes(req.headers.referer)) {
 		return res.status(403).json({
-			expected: `http://${ip.address()}:${cfg.port}/hud/${req.params.dir}/`,
+			expected: availableUrls,
 			given: req.headers.referer
 		});
 	}
