@@ -14,9 +14,12 @@ import publicIp from 'public-ip';
 
 let publicIP: string | null = null;
 
-publicIp.v4().then(ip => {
-	publicIP = ip;
-}).catch();
+publicIp
+	.v4()
+	.then(ip => {
+		publicIP = ip;
+	})
+	.catch();
 
 const remove = (pathToRemove: string) => {
 	if (!fs.existsSync(pathToRemove)) {
@@ -134,11 +137,11 @@ export const renderHUD: express.RequestHandler = async (req, res) => {
 	const availableUrls = [
 		`http://${ip.address()}:${cfg.port}/hud/${req.params.dir}/`,
 		`http://${publicIP}:${cfg.port}/hud/${req.params.dir}/`
-	]
+	];
 	if (!req.params.dir) {
 		return res.sendStatus(404);
 	}
-	
+
 	if (!availableUrls.includes(req.headers.referer)) {
 		return res.status(403).json({
 			expected: availableUrls,
