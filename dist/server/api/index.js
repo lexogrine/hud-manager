@@ -50,6 +50,7 @@ function default_1(router, io) {
     router.route('/api/teams/:id').get(teams.getTeam).patch(teams.updateTeam)["delete"](teams.deleteTeam);
     router.route('/api/teams/logo/:id').get(teams.getLogoFile);
     router.route('/api/config').get(config.getConfig).patch(config.updateConfig);
+    router.route('/api/version').get(function (req, res) { return res.json({ version: electron_1.app.getVersion() }); });
     router.route('/api/match').get(match.getMatchesRoute).post(match.addMatchRoute);
     router
         .route('/api/match/:id')

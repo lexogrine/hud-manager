@@ -8,6 +8,7 @@ interface IProps {
 	setLoading: (loading: boolean, error?: string) => void;
 	setUser: (user: I.Customer) => void;
 	error: string;
+	version: string;
 }
 interface IState {
 	type: 'login' | 'register';
@@ -28,10 +29,10 @@ export default class LoginRegisterModal extends React.Component<IProps, IState> 
 		this.setState({ [field]: e.target.value } as any);
 	};
 	login = async () => {
-		const { setLoading, setUser } = this.props;
+		const { setLoading, setUser, version } = this.props;
 		setLoading(true);
 		try {
-			const loginResponse = await api.user.login(this.state.email, this.state.password);
+			const loginResponse = await api.user.login(this.state.email, this.state.password, version);
 			if (loginResponse !== true) return setLoading(false, 'Incorrect email or password');
 
 			const machine = await api.machine.get();

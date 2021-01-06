@@ -71,7 +71,9 @@ var decompress_zip_1 = __importDefault(require("decompress-zip"));
 var overlay_1 = __importDefault(require("./overlay"));
 var public_ip_1 = __importDefault(require("public-ip"));
 var publicIP = null;
-public_ip_1["default"].v4().then(function (ip) {
+public_ip_1["default"]
+    .v4()
+    .then(function (ip) {
     publicIP = ip;
 })["catch"]();
 var remove = function (pathToRemove) {

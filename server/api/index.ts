@@ -1,6 +1,6 @@
 import express from 'express';
 import socketio from 'socket.io';
-import { globalShortcut } from 'electron';
+import { globalShortcut, app } from 'electron';
 import * as players from './players';
 import * as teams from './teams';
 import * as match from './match';
@@ -37,6 +37,8 @@ export default function (router: express.Router, io: socketio.Server) {
 	router.route('/api/teams/logo/:id').get(teams.getLogoFile);
 
 	router.route('/api/config').get(config.getConfig).patch(config.updateConfig);
+
+	router.route('/api/version').get((req, res) => res.json({version: app.getVersion()}))
 
 	router.route('/api/match').get(match.getMatchesRoute).post(match.addMatchRoute);
 

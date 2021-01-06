@@ -1,7 +1,7 @@
 import React from 'react';
 import Content from '../components/Content/Content';
 import { ContextData, IContextData } from './../components/Context';
-import api, { ver } from './../api/api';
+import api from './../api/api';
 import * as I from './../api/interfaces';
 import config from './../api/config';
 import { socket } from './../components/Content/Tabs/Live/Live';
@@ -21,6 +21,7 @@ interface IState {
 	loading: boolean;
 	loadingLogin: boolean;
 	loginError: string;
+	version: string;
 }
 export default class Layout extends React.Component<{}, IState> {
 	constructor(props: {}) {
@@ -42,11 +43,13 @@ export default class Layout extends React.Component<{}, IState> {
 			},
 			loginError: '',
 			loadingLogin: false,
-			loading: true
+			loading: true,
+			version: '-'
 		};
 	}
-	componentDidMount() {
+	async componentDidMount() {
 		//const socket = io.connect(`${config.isDev ? config.apiAddress : '/'}`);
+		await this.getVersion();
 		this.loadUser();
 		socket.on('match', (fromVeto?: boolean) => {
 			if (fromVeto) this.loadMatch();
@@ -56,6 +59,11 @@ export default class Layout extends React.Component<{}, IState> {
 				evt.preventDefault();
 			}
 		};
+	}
+	getVersion = async () => {
+		const response = await api.config.getVersion();
+		this.setState({version: response.version});
+		return response.version;
 	}
 	loadUser = async () => {
 		try {
@@ -150,7 +158,7 @@ export default class Layout extends React.Component<{}, IState> {
 	};
 	render() {
 		const { Provider } = ContextData;
-		const { loading, data, loadingLogin, loginError } = this.state;
+		const { loading, data, loadingLogin, loginError, version } = this.state;
 		return (
 			<Provider value={this.state.data}>
 				<div className={`loaded ${isElectron ? 'electron' : ''}`}>
@@ -162,7 +170,7 @@ export default class Layout extends React.Component<{}, IState> {
 					</div>
 					{data.customer ? (
 						<div className={`license-status ${isElectron ? 'electron' : ''}`}>
-							{data.customer.license.type} {ver}
+							{data.customer.license.type} {version}
 							<ElectronOnly>
 								<div className="logout-button" onClick={this.logout}>
 									Logout
@@ -177,6 +185,7 @@ export default class Layout extends React.Component<{}, IState> {
 						setLoading={this.setLoading}
 						setUser={this.setUser}
 						error={loginError}
+						version={version}
 					/>
 					<Content />
 				</div>
