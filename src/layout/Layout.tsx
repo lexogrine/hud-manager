@@ -62,9 +62,9 @@ export default class Layout extends React.Component<{}, IState> {
 	}
 	getVersion = async () => {
 		const response = await api.config.getVersion();
-		this.setState({version: response.version});
+		this.setState({ version: response.version });
 		return response.version;
-	}
+	};
 	loadUser = async () => {
 		try {
 			const appLoadedUser = await api.user.getCurrent();

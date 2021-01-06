@@ -38,7 +38,7 @@ export default function (router: express.Router, io: socketio.Server) {
 
 	router.route('/api/config').get(config.getConfig).patch(config.updateConfig);
 
-	router.route('/api/version').get((req, res) => res.json({version: app.getVersion()}))
+	router.route('/api/version').get((req, res) => res.json({ version: app.getVersion() }));
 
 	router.route('/api/match').get(match.getMatchesRoute).post(match.addMatchRoute);
 

@@ -83,7 +83,7 @@ export default {
 			}
 			window.location.assign(`${config.isDev ? apiUrl : '/'}api/${target}/download`);
 		},
-		getVersion: (): Promise<{version: string}> => apiV2('version')
+		getVersion: (): Promise<{ version: string }> => apiV2('version')
 	},
 	cfgs: {
 		check: async (): Promise<I.CFGGSIResponse> => await apiV2('cfg'),
