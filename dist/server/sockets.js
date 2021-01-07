@@ -248,6 +248,34 @@ function default_1(server, app) {
     };
     var io = socket_io_1["default"](server);
     var intervalId = null;
+    var testDataIndex = 0;
+    var startSendingTestData = function () {
+        var _a, _b;
+        if (intervalId)
+            return;
+        if (((_b = (_a = runtimeConfig.last) === null || _a === void 0 ? void 0 : _a.provider) === null || _b === void 0 ? void 0 : _b.timestamp) &&
+            new Date().getTime() - runtimeConfig.last.provider.timestamp * 1000 <= 5000)
+            return;
+        io.emit('enableTest', false);
+        intervalId = setInterval(function () {
+            if (!testing_1.testData[testDataIndex]) {
+                clearInterval(intervalId);
+                intervalId = null;
+                io.emit('enableTest', true);
+                testDataIndex = 0;
+                return;
+            }
+            io.emit('update', testing_1.testData[testDataIndex]);
+            testDataIndex++;
+        }, 16);
+    };
+    var stopSendingTestData = function () {
+        if (!intervalId)
+            return;
+        clearInterval(intervalId);
+        intervalId = null;
+        io.emit('enableTest', true);
+    };
     exports.Sockets.set(io);
     var portListener = new DevHUDListener(3500);
     portListener.onChange(function (status) {
@@ -417,25 +445,11 @@ function default_1(server, app) {
         res.sendStatus(200);
     });
     app.post('/api/test', function (_req, res) {
-        var _a, _b;
         res.sendStatus(200);
         if (intervalId)
-            return;
-        if (((_b = (_a = runtimeConfig.last) === null || _a === void 0 ? void 0 : _a.provider) === null || _b === void 0 ? void 0 : _b.timestamp) &&
-            new Date().getTime() - runtimeConfig.last.provider.timestamp * 1000 <= 5000)
-            return;
-        io.emit('enableTest', false);
-        var i = 0;
-        intervalId = setInterval(function () {
-            if (!testing_1.testData[i]) {
-                clearInterval(intervalId);
-                intervalId = null;
-                io.emit('enableTest', true);
-                return;
-            }
-            io.emit('update', testing_1.testData[i]);
-            i++;
-        }, 16);
+            stopSendingTestData();
+        else
+            startSendingTestData();
     });
     io.on('connection', function (socket) {
         socket.on('started', function () {

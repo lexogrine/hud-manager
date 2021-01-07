@@ -76,7 +76,6 @@ function createRenderer(server, forceDev) {
         var RMTPServer, closeManager, args, renderer;
         return __generator(this, function (_a) {
             RMTPServer = child_process_1.fork(require.resolve('./RMTPServer.js'));
-
             closeManager = function () {
                 if (server) {
                     server.close();

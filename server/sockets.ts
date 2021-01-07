@@ -171,6 +171,36 @@ export default function (server: http.Server, app: express.Router) {
 	const io = socketio(server);
 
 	let intervalId: NodeJS.Timeout | null = null;
+	let testDataIndex = 0;
+
+	const startSendingTestData = () => {
+		if(intervalId) return;
+		if (
+			runtimeConfig.last?.provider?.timestamp &&
+			new Date().getTime() - runtimeConfig.last.provider.timestamp * 1000 <= 5000
+		)
+			return;
+		
+		io.emit('enableTest', false);
+
+		intervalId = setInterval(() => {
+			if (!testData[testDataIndex]) {
+				stopSendingTestData();
+				testDataIndex = 0;
+				return;
+			}
+			io.emit('update', testData[testDataIndex]);
+			testDataIndex++;
+		}, 16);
+
+	}
+
+	const stopSendingTestData = () => {
+		if(!intervalId) return;
+		clearInterval(intervalId);
+		intervalId = null;
+		io.emit('enableTest', true);
+	}
 
 	Sockets.set(io);
 
@@ -295,27 +325,8 @@ export default function (server: http.Server, app: express.Router) {
 
 	app.post('/api/test', (_req, res) => {
 		res.sendStatus(200);
-
-		if (intervalId) return;
-		if (
-			runtimeConfig.last?.provider?.timestamp &&
-			new Date().getTime() - runtimeConfig.last.provider.timestamp * 1000 <= 5000
-		)
-			return;
-
-		io.emit('enableTest', false);
-
-		let i = 0;
-		intervalId = setInterval(() => {
-			if (!testData[i]) {
-				clearInterval(intervalId);
-				intervalId = null;
-				io.emit('enableTest', true);
-				return;
-			}
-			io.emit('update', testData[i]);
-			i++;
-		}, 16);
+		if(intervalId) stopSendingTestData();
+		else startSendingTestData();
 	});
 
 	io.on('connection', socket => {
