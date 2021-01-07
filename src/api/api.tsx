@@ -75,7 +75,7 @@ export default {
 		}
 	},
 	config: {
-		get: async (): Promise<I.Config> => await apiV2('config'),
+		get: async (): Promise<I.ExtendedConfig> => await apiV2('config'),
 		update: async (config: I.Config) => await apiV2('config', 'PATCH', config),
 		download: async (target: 'gsi' | 'cfgs' | 'db') => {
 			if (config.isElectron) {

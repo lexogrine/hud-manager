@@ -499,6 +499,11 @@ img.smallLogo {
     padding-right: 65px;
     font-size:12px;
 }
+.config-entry p {
+    text-transform: uppercase;
+    margin-bottom: 0;
+    font-weight:600;
+}
 .config-entry:nth-child(2n) {
     background-color:#202328;
 }

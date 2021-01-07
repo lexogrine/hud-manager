@@ -9,7 +9,9 @@ export type {
 	Match,
 	Veto,
 	VetoType,
-	Tournament
+	Tournament,
+	Config,
+	ExtendedConfig
 } from './../../types/interfaces';
 
 export interface Player {
@@ -31,13 +33,6 @@ export interface Team {
 	logo: string;
 }
 
-export interface Config {
-	port: number;
-	steamApiKey: string;
-	token: string;
-	hlaePath: string;
-	afxCEFHudInteropPath: string;
-}
 export interface CFGGSIResponse {
 	success: boolean;
 	accessible: boolean;

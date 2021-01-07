@@ -79,6 +79,11 @@ export interface Config {
 	hlaePath: string;
 	afxCEFHudInteropPath: string;
 }
+
+export interface ExtendedConfig extends Config {
+	ip: string;
+}
+
 export type PanelInputType =
 	| 'text'
 	| 'number'

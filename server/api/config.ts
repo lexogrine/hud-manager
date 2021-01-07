@@ -1,7 +1,8 @@
 import express from 'express';
 import db from './../../init/database';
 import fs from 'fs';
-import { Config } from '../../types/interfaces';
+import ip from 'ip';
+import { Config, ExtendedConfig } from '../../types/interfaces';
 
 const configs = db.config;
 
@@ -46,7 +47,8 @@ export const getConfig: express.RequestHandler = async (_req, res) => {
 	if (!config) {
 		return res.sendStatus(500);
 	}
-	return res.json(config);
+	const response: ExtendedConfig = { ...config, ip: ip.address() };
+	return res.json(response);
 };
 export const updateConfig: express.RequestHandler = async (req, res) => {
 	const updated: Config = {

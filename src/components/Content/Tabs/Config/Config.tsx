@@ -33,6 +33,7 @@ interface IState {
 		teams: number;
 		players: number;
 	};
+	ip: string;
 	data: any;
 }
 
@@ -65,7 +66,8 @@ export default class Config extends React.Component<IProps, IState> {
 				teams: 0,
 				players: 0
 			},
-			data: {}
+			data: {},
+			ip: ''
 		};
 	}
 	loadEXE = (type: 'hlaePath' | 'afxCEFHudInteropPath') => (files: FileList) => {
@@ -81,7 +83,7 @@ export default class Config extends React.Component<IProps, IState> {
 	import = (data: any, callback: any) => async () => {
 		try {
 			await api.files.sync(data);
-		} catch {}
+		} catch { }
 		this.setState({ data: {}, conflict: { teams: 0, players: 0 }, importModalOpen: false }, callback);
 	};
 	importCheck = (callback: any) => (files: FileList) => {
@@ -109,7 +111,7 @@ export default class Config extends React.Component<IProps, IState> {
 					importModalOpen: true,
 					data: db
 				});
-			} catch {}
+			} catch { }
 		};
 	};
 	download = (target: 'gsi' | 'cfgs' | 'db') => {
@@ -120,7 +122,10 @@ export default class Config extends React.Component<IProps, IState> {
 	};
 	getConfig = async () => {
 		const config = await api.config.get();
-		this.setState({ config });
+
+		const { ip, ...cfg } = config;
+
+		this.setState({ config: cfg, ip });
 	};
 	createGSI = async () => {
 		const { gsi } = this.state;
@@ -212,7 +217,7 @@ export default class Config extends React.Component<IProps, IState> {
 	};
 	render() {
 		const { cxt } = this.props;
-		const { gsi, cfg, importModalOpen, conflict, data } = this.state;
+		const { gsi, cfg, importModalOpen, conflict, data, ip, config } = this.state;
 		return (
 			<Form>
 				<div className="tab-title-container">Settings</div>
@@ -343,6 +348,14 @@ export default class Config extends React.Component<IProps, IState> {
 								onChange={this.importCheck(cxt.reload)}
 								className="path_selector"
 							/>
+						</Col>
+						<Col md="12" className="config-entry">
+							<div className="config-description">Reader Code</div>
+							<p>{ip
+								.split('.')
+								.map(Number)
+								.map(n => n.toString(16))
+								.join('-')}-{config.port.toString(16)}</p>
 						</Col>
 					</Row>
 
