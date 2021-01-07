@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+
+<head>
+  <style>
+    html, body {
+      margin: 0;
+      width: 800px;
+      height: 350px;
+      overflow: hidden;
+      
+    }
+    #playercams {
+      overflow: hidden;
+    }
+  </style>
+</head>
+<script src="./flv.min.js"></script>
+<script>
+  window.onload = function () {
+      if (flvjs.isSupported()) {
+          var videoElement = document.getElementById('playercams');
+          var flvPlayer = flvjs.createPlayer({
+              type: 'flv',
+              autoPlay: true,
+              live: true,
+              videoChunk: 752 * 300,
+              audioChunk: 0,
+              url: `ws://${window.location.host.substr(0, window.location.host.indexOf(':'))}:8000/live/HUD_MANAGER.flv`
+          });
+          flvPlayer.attachMediaElement(videoElement);
+          flvPlayer.load();
+          flvPlayer.play();
+      }
+  };
+
+</script>
+
+<body>
+  <video id="playercams" width=750 height=300 muted="muted"></video>
+</body>
+
+</html>
