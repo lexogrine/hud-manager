@@ -455,6 +455,14 @@ function default_1(server, app) {
                 socket.emit('update', runtimeConfig.last);
             }
         });
+        socket.on('registerReader', function () {
+            socket.on('readerKeybindAction', function (dir, action) {
+                io.to(dir).emit('keybindAction', action);
+            });
+            socket.on('readerReverseSide', function () {
+                match_1.reverseSide(io);
+            });
+        });
         socket.emit('readyToRegister');
         socket.on('register', function (name, isDev) { return __awaiter(_this, void 0, void 0, function () {
             var hudData, extended, hudData, extended;

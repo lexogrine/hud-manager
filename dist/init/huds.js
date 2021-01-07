@@ -98,7 +98,7 @@ var HUD = /** @class */ (function () {
                         });
                         hudWindow.setIgnoreMouseEvents(true);
                         tray = new electron_1.Tray(path.join(__dirname, 'favicon.ico'));
-                        tray.setToolTip('HUD Manager');
+                        tray.setToolTip('Lexogrine HUD Manager');
                         tray.on('right-click', function () {
                             var contextMenu = electron_1.Menu.buildFromTemplate([
                                 { label: hud.name, enabled: false },

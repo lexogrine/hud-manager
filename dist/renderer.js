@@ -109,7 +109,7 @@ exports.createMainWindow = function (forceDev) {
                         frame: false,
                         titleBarStyle: 'hidden',
                         //resizable: isDev,
-                        title: 'HUD Manager',
+                        title: 'Lexogrine HUD Manager',
                         icon: path_1["default"].join(__dirname, 'assets/icon.png'),
                         webPreferences: {
                             nodeIntegration: true,

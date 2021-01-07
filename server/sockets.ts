@@ -8,7 +8,7 @@ import fetch from 'node-fetch';
 import * as I from './../types/interfaces';
 import request from 'request';
 import { getHUDData } from './../server/api/huds';
-import { getMatches, updateRound, getMatchById, updateMatch } from './api/match';
+import { getMatches, updateRound, getMatchById, updateMatch, reverseSide } from './api/match';
 import fs from 'fs';
 import portscanner from 'portscanner';
 import { loadConfig } from './api/config';
@@ -333,6 +333,14 @@ export default function (server: http.Server, app: express.Router) {
 			if (runtimeConfig.last) {
 				socket.emit('update', runtimeConfig.last);
 			}
+		});
+		socket.on('registerReader', () => {
+			socket.on('readerKeybindAction', (dir: string, action: string) => {
+				io.to(dir).emit('keybindAction', action);
+			});
+			socket.on('readerReverseSide', () => {
+				reverseSide(io);
+			});
 		});
 		socket.emit('readyToRegister');
 		socket.on('register', async (name: string, isDev: boolean) => {
