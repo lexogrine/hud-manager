@@ -259,9 +259,7 @@ function default_1(server, app) {
         io.emit('enableTest', false);
         intervalId = setInterval(function () {
             if (!testing_1.testData[testDataIndex]) {
-                clearInterval(intervalId);
-                intervalId = null;
-                io.emit('enableTest', true);
+                stopSendingTestData();
                 testDataIndex = 0;
                 return;
             }

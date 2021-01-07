@@ -42,7 +42,7 @@ class HUD {
 
 		const tray = new Tray(path.join(__dirname, 'favicon.ico'));
 
-		tray.setToolTip('HUD Manager');
+		tray.setToolTip('Lexogrine HUD Manager');
 		tray.on('right-click', () => {
 			const contextMenu = Menu.buildFromTemplate([
 				{ label: hud.name, enabled: false },
