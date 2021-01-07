@@ -73,14 +73,19 @@ exports.isDev = process.env.DEV === 'true';
 function createRenderer(server, forceDev) {
     if (forceDev === void 0) { forceDev = false; }
     return __awaiter(this, void 0, void 0, function () {
-        var closeManager, args, renderer;
+        var RMTPServer, closeManager, args, renderer;
         return __generator(this, function (_a) {
+            RMTPServer = child_process_1.fork(require.resolve('./RMTPServer.js'));
+
             closeManager = function () {
                 if (server) {
                     server.close();
                 }
                 if (exports.AFXInterop.process) {
                     exports.AFXInterop.process.kill();
+                }
+                if (RMTPServer) {
+                    RMTPServer.kill();
                 }
                 electron_1.app.quit();
             };
