@@ -219,7 +219,7 @@ export default class Huds extends React.Component<IProps, IState> {
 											// disabled={!this.state.enableTest}
 											onClick={api.game.runTest}
 										>
-											{ !this.state.enableTest ? 'PAUSE TEST DATA' : 'RUN TEST DATA'}
+											{!this.state.enableTest ? 'PAUSE TEST DATA' : 'RUN TEST DATA'}
 										</Button>
 									</ElectronOnly>
 								</div>
