@@ -83,7 +83,7 @@ export default class Config extends React.Component<IProps, IState> {
 	import = (data: any, callback: any) => async () => {
 		try {
 			await api.files.sync(data);
-		} catch { }
+		} catch {}
 		this.setState({ data: {}, conflict: { teams: 0, players: 0 }, importModalOpen: false }, callback);
 	};
 	importCheck = (callback: any) => (files: FileList) => {
@@ -111,7 +111,7 @@ export default class Config extends React.Component<IProps, IState> {
 					importModalOpen: true,
 					data: db
 				});
-			} catch { }
+			} catch {}
 		};
 	};
 	download = (target: 'gsi' | 'cfgs' | 'db') => {
@@ -351,11 +351,14 @@ export default class Config extends React.Component<IProps, IState> {
 						</Col>
 						<Col md="12" className="config-entry">
 							<div className="config-description">Reader Code</div>
-							<p>{ip
-								.split('.')
-								.map(Number)
-								.map(n => n.toString(16))
-								.join('-')}-{config.port.toString(16)}</p>
+							<p>
+								{ip
+									.split('.')
+									.map(Number)
+									.map(n => n.toString(16))
+									.join('-')}
+								-{config.port.toString(16)}
+							</p>
 						</Col>
 					</Row>
 
