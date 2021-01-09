@@ -94,7 +94,8 @@ export default {
 		create: async (): Promise<I.CFGGSIResponse> => await apiV2('gsi', 'PUT')
 	},
 	game: {
-		run: async (config: { radar: boolean, killfeed: boolean, afx: boolean, autoexec: boolean }) => await apiV2(`game/run`, "POST", config),
+		run: async (config: { radar: boolean; killfeed: boolean; afx: boolean; autoexec: boolean }) =>
+			await apiV2(`game/run`, 'POST', config),
 		runTest: () => apiV2('test', 'POST')
 	},
 	huds: {

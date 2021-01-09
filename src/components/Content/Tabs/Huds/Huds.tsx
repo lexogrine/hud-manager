@@ -169,9 +169,7 @@ export default class Huds extends React.Component<IProps, IState> {
 							/>
 						</Col>
 						<Col md="12" className="config-entry">
-							<div className="config-description">
-								Use embedded HUD
-							</div>
+							<div className="config-description">Use embedded HUD</div>
 							<Switch isOn={this.state.form.afx} id="afx-toggle" handleToggle={this.changeForm('afx')} />
 						</Col>
 						<Col md="12" className="config-entry">

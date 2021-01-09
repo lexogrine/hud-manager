@@ -160,7 +160,7 @@ export const run: express.RequestHandler = async (req, res) => {
 		return res.sendStatus(422);
 	}
 
-	const cfgData: { radar: boolean, killfeed: boolean, afx: boolean, autoexec: boolean } = req.body;
+	const cfgData: { radar: boolean; killfeed: boolean; afx: boolean; autoexec: boolean } = req.body;
 	const cfg = createCFG(cfgData.radar, cfgData.killfeed, cfgData.afx, cfgData.autoexec);
 
 	const exec = cfg.file ? `+exec ${cfg.file}` : '';
@@ -197,8 +197,8 @@ export const run: express.RequestHandler = async (req, res) => {
 		}
 	} else {
 		args.push('-csgoLauncher', '-noGui', '-autoStart', `-csgoExe "${GameExePath}"`);
-		if(cfgData.afx) {
-			if(exec){
+		if (cfgData.afx) {
+			if (exec) {
 				args.push(`-customLaunchOptions "-afxInteropLight ${exec}"`);
 			} else {
 				args.push(`-customLaunchOptions "-afxInteropLight"`);
@@ -211,7 +211,7 @@ export const run: express.RequestHandler = async (req, res) => {
 	try {
 		const steam = spawn(`"${exePath}"`, args, { detached: true, shell: true, stdio: 'ignore' });
 		steam.unref();
-		if(cfgData.afx && !AFXInterop.process){
+		if (cfgData.afx && !AFXInterop.process) {
 			const process = spawn(`${config.afxCEFHudInteropPath}`, [`--url=${afxURL}`], { stdio: 'ignore' });
 			AFXInterop.process = process;
 		}
