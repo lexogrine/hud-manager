@@ -39,7 +39,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
-exports.runExperimental = exports.run = exports.getSteamPath = exports.getLatestData = exports.createCFGs = exports.checkCFGs = void 0;
+exports.run = exports.getSteamPath = exports.getLatestData = exports.createCFGs = exports.checkCFGs = void 0;
 var fs_1 = __importDefault(require("fs"));
 var path_1 = __importDefault(require("path"));
 var steam_game_path_1 = require("steam-game-path");
@@ -47,7 +47,8 @@ var config_1 = require("./config");
 var sockets_1 = require("../sockets");
 var child_process_1 = require("child_process");
 var electron_1 = require("../../electron");
-function createCFG(customRadar, customKillfeed, afx) {
+function createCFG(customRadar, customKillfeed, afx, autoexec) {
+    if (autoexec === void 0) { autoexec = true; }
     var cfg = "cl_draw_only_deathnotices 1";
     var file = 'hud';
     if (!customRadar) {
@@ -69,6 +70,9 @@ function createCFG(customRadar, customKillfeed, afx) {
         cfg += "\nexec " + createCFG(customRadar, customKillfeed, false).file;
     }
     file += '.cfg';
+    if (!autoexec) {
+        file = '';
+    }
     return { cfg: cfg, file: file };
 }
 function exists(file) {
@@ -202,7 +206,7 @@ exports.getSteamPath = function (_req, res) { return __awaiter(void 0, void 0, v
     });
 }); };
 exports.run = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var config, exec, GamePath, HLAEPath, GameExePath, isHLAE, exePath, args, steam;
+    var config, cfgData, cfg, exec, GamePath, HLAEPath, GameExePath, isHLAE, exePath, args, afxURL, steam, process_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0: return [4 /*yield*/, config_1.loadConfig()];
@@ -211,10 +215,9 @@ exports.run = function (req, res) { return __awaiter(void 0, void 0, void 0, fun
                 if (!config) {
                     return [2 /*return*/, res.sendStatus(422)];
                 }
-                exec = '';
-                if (req.query.config && typeof req.query.config === 'string') {
-                    exec = "+exec " + req.query.config;
-                }
+                cfgData = req.body;
+                cfg = createCFG(cfgData.radar, cfgData.killfeed, cfgData.afx, cfgData.autoexec);
+                exec = cfg.file ? "+exec " + cfg.file : '';
                 try {
                     GamePath = steam_game_path_1.getGamePath(730);
                 }
@@ -226,12 +229,14 @@ exports.run = function (req, res) { return __awaiter(void 0, void 0, void 0, fun
                 }
                 HLAEPath = config.hlaePath;
                 GameExePath = path_1["default"].join(GamePath.game.path, 'csgo.exe');
-                isHLAE = exec.includes('killfeed');
+                isHLAE = cfgData.killfeed || cfgData.afx;
                 exePath = isHLAE ? HLAEPath : path_1["default"].join(GamePath.steam.path, 'Steam.exe');
-                if (isHLAE && (!HLAEPath || !fs_1["default"].existsSync(HLAEPath))) {
+                if ((isHLAE && (!HLAEPath || !fs_1["default"].existsSync(HLAEPath))) ||
+                    (cfgData.afx && (!config.afxCEFHudInteropPath || !fs_1["default"].existsSync(config.afxCEFHudInteropPath)))) {
                     return [2 /*return*/, res.sendStatus(404)];
                 }
                 args = [];
+                afxURL = "http://localhost:" + config.port + "/hlae.html";
                 if (!isHLAE) {
                     args.push('-applaunch 730');
                     if (exec) {
@@ -240,67 +245,23 @@ exports.run = function (req, res) { return __awaiter(void 0, void 0, void 0, fun
                 }
                 else {
                     args.push('-csgoLauncher', '-noGui', '-autoStart', "-csgoExe \"" + GameExePath + "\"");
-                    if (exec) {
+                    if (cfgData.afx) {
+                        if (exec) {
+                            args.push("-customLaunchOptions \"-afxInteropLight " + exec + "\"");
+                        }
+                        else {
+                            args.push("-customLaunchOptions \"-afxInteropLight\"");
+                        }
+                    }
+                    else {
                         args.push("-customLaunchOptions \"" + exec + "\"");
                     }
                 }
                 try {
                     steam = child_process_1.spawn("\"" + exePath + "\"", args, { detached: true, shell: true, stdio: 'ignore' });
                     steam.unref();
-                }
-                catch (e) {
-                    return [2 /*return*/, res.sendStatus(500)];
-                }
-                return [2 /*return*/, res.sendStatus(200)];
-        }
-    });
-}); };
-exports.runExperimental = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var config, GamePath, HLAEPath, GameExePath, exePath, args, url, exec, steam, process_1;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4 /*yield*/, config_1.loadConfig()];
-            case 1:
-                config = _a.sent();
-                if (!config) {
-                    return [2 /*return*/, res.sendStatus(422)];
-                }
-                try {
-                    GamePath = steam_game_path_1.getGamePath(730);
-                }
-                catch (_b) {
-                    return [2 /*return*/, res.sendStatus(404)];
-                }
-                if (!GamePath || !GamePath.steam || !GamePath.steam.path || !GamePath.game || !GamePath.game.path) {
-                    return [2 /*return*/, res.sendStatus(404)];
-                }
-                HLAEPath = config.hlaePath;
-                GameExePath = path_1["default"].join(GamePath.game.path, 'csgo.exe');
-                exePath = HLAEPath;
-                if (!HLAEPath ||
-                    !fs_1["default"].existsSync(HLAEPath) ||
-                    !config.afxCEFHudInteropPath ||
-                    !fs_1["default"].existsSync(config.afxCEFHudInteropPath)) {
-                    return [2 /*return*/, res.sendStatus(404)];
-                }
-                args = [];
-                url = "http://localhost:" + config.port + "/hlae.html";
-                exec = '';
-                if (req.query.config && typeof req.query.config === 'string') {
-                    exec = "+exec " + req.query.config;
-                }
-                args.push('-csgoLauncher', '-noGui', '-autoStart', "-csgoExe \"" + GameExePath + "\"", '-gfxFull false');
-                if (exec) {
-                    args.push("-customLaunchOptions \"-afxInteropLight " + exec + "\"");
-                }
-                else {
-                    args.push("-customLaunchOptions \"-afxInteropLight\"");
-                }
-                try {
-                    steam = child_process_1.spawn("\"" + exePath + "\"", args, { detached: true, shell: true, stdio: 'ignore' });
-                    steam.unref();
-                    if (!electron_1.AFXInterop.process) {
-                        process_1 = child_process_1.spawn("" + config.afxCEFHudInteropPath, ["--url=" + url], { stdio: 'ignore' });
+                    if (cfgData.afx && !electron_1.AFXInterop.process) {
+                        process_1 = child_process_1.spawn("" + config.afxCEFHudInteropPath, ["--url=" + afxURL], { stdio: 'ignore' });
                         electron_1.AFXInterop.process = process_1;
                     }
                 }

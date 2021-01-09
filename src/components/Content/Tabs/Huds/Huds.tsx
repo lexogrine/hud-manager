@@ -13,11 +13,7 @@ import goBack from './../../../../styles/goBack.png';
 import config from './../../../../api/config';
 const isElectron = config.isElectron;
 
-interface CFG {
-	cfg: string;
-	file: string;
-}
-function createCFG(customRadar: boolean, customKillfeed: boolean, afx: boolean, autoexec = true): CFG {
+function createCFG(customRadar: boolean, customKillfeed: boolean, afx: boolean, autoexec = true): I.CFG {
 	let cfg = `cl_draw_only_deathnotices 1`;
 	let file = 'hud';
 
@@ -36,7 +32,7 @@ function createCFG(customRadar: boolean, customKillfeed: boolean, afx: boolean, 
 	if (afx) {
 		file += '_interop';
 		cfg = 'afx_interop connect 1';
-		cfg += `exec ${createCFG(customRadar, customKillfeed, false)}`;
+		cfg += `\nexec ${createCFG(customRadar, customKillfeed, false).file}`;
 	}
 	file += '.cfg';
 	if (!autoexec) {
@@ -89,18 +85,7 @@ export default class Huds extends React.Component<IProps, IState> {
 		};
 	}
 
-	runGame = (afx: boolean) => () => {
-		const config = createCFG(
-			this.state.form.radar,
-			this.state.form.killfeed,
-			this.state.form.afx,
-			this.state.form.autoexec
-		).file;
-		if (afx) {
-			return api.game.runExperimental(config);
-		}
-		return api.game.run(config);
-	};
+	runGame = () => api.game.run(this.state.form);
 
 	handleZIPs = (files: FileList) => {
 		const file = files[0];
@@ -185,7 +170,7 @@ export default class Huds extends React.Component<IProps, IState> {
 						</Col>
 						<Col md="12" className="config-entry">
 							<div className="config-description">
-								Use built-in HUD (Experimental mode, uses AFX Interop)
+								Use embedded HUD
 							</div>
 							<Switch isOn={this.state.form.afx} id="afx-toggle" handleToggle={this.changeForm('afx')} />
 						</Col>
@@ -210,7 +195,7 @@ export default class Huds extends React.Component<IProps, IState> {
 												(killfeed && !config.hlaePath) ||
 												(afx && (!config.hlaePath || !config.afxCEFHudInteropPath))
 											}
-											onClick={this.runGame(afx)}
+											onClick={this.runGame}
 										>
 											RUN GAME
 										</Button>

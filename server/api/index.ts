@@ -75,9 +75,7 @@ export default function (router: express.Router, io: socketio.Server) {
 
 	router.route('/api/game').get(game.getLatestData);
 
-	router.route('/api/game/run').get(game.run);
-
-	router.route('/api/game/experimental').get(game.runExperimental);
+	router.route('/api/game/run').post(game.run);
 
 	router.route('/api/cfg').get(game.checkCFGs).put(game.createCFGs);
 

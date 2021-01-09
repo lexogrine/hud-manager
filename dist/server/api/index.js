@@ -70,8 +70,7 @@ function default_1(router, io) {
     //router.route('/api/events')
     //    .get(game.getEvents);
     router.route('/api/game').get(game.getLatestData);
-    router.route('/api/game/run').get(game.run);
-    router.route('/api/game/experimental').get(game.runExperimental);
+    router.route('/api/game/run').post(game.run);
     router.route('/api/cfg').get(game.checkCFGs).put(game.createCFGs);
     router.route('/api/cfgs/download').get(gsi.saveFile('configs.zip', gsi.cfgsZIPBase64, true));
     router.route('/huds/:dir/').get(huds.renderHUD);

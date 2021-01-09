@@ -5,15 +5,10 @@ import express from 'express';
 import { loadConfig } from './config';
 import { GSI } from '../sockets';
 import { spawn } from 'child_process';
-import { Config } from '../../types/interfaces';
+import { Config, CFG } from '../../types/interfaces';
 import { AFXInterop } from '../../electron';
 
-interface CFG {
-	cfg: string;
-	file: string;
-}
-
-function createCFG(customRadar: boolean, customKillfeed: boolean, afx: boolean): CFG {
+function createCFG(customRadar: boolean, customKillfeed: boolean, afx: boolean, autoexec = true): CFG {
 	let cfg = `cl_draw_only_deathnotices 1`;
 	let file = 'hud';
 
@@ -35,6 +30,9 @@ function createCFG(customRadar: boolean, customKillfeed: boolean, afx: boolean):
 		cfg += `\nexec ${createCFG(customRadar, customKillfeed, false).file}`;
 	}
 	file += '.cfg';
+	if (!autoexec) {
+		file = '';
+	}
 	return { cfg, file };
 }
 
@@ -161,11 +159,11 @@ export const run: express.RequestHandler = async (req, res) => {
 	if (!config) {
 		return res.sendStatus(422);
 	}
-	let exec = '';
 
-	if (req.query.config && typeof req.query.config === 'string') {
-		exec = `+exec ${req.query.config}`;
-	}
+	const cfgData: { radar: boolean, killfeed: boolean, afx: boolean, autoexec: boolean } = req.body;
+	const cfg = createCFG(cfgData.radar, cfgData.killfeed, cfgData.afx, cfgData.autoexec);
+
+	const exec = cfg.file ? `+exec ${cfg.file}` : '';
 
 	let GamePath;
 	try {
@@ -180,15 +178,18 @@ export const run: express.RequestHandler = async (req, res) => {
 	const HLAEPath = config.hlaePath;
 	const GameExePath = path.join(GamePath.game.path, 'csgo.exe');
 
-	const isHLAE = exec.includes('killfeed');
+	const isHLAE = cfgData.killfeed || cfgData.afx;
 	const exePath = isHLAE ? HLAEPath : path.join(GamePath.steam.path, 'Steam.exe');
 
-	if (isHLAE && (!HLAEPath || !fs.existsSync(HLAEPath))) {
+	if (
+		(isHLAE && (!HLAEPath || !fs.existsSync(HLAEPath))) ||
+		(cfgData.afx && (!config.afxCEFHudInteropPath || !fs.existsSync(config.afxCEFHudInteropPath)))
+	) {
 		return res.sendStatus(404);
 	}
 
 	const args = [];
-
+	const afxURL = `http://localhost:${config.port}/hlae.html`;
 	if (!isHLAE) {
 		args.push('-applaunch 730');
 		if (exec) {
@@ -196,7 +197,13 @@ export const run: express.RequestHandler = async (req, res) => {
 		}
 	} else {
 		args.push('-csgoLauncher', '-noGui', '-autoStart', `-csgoExe "${GameExePath}"`);
-		if (exec) {
+		if(cfgData.afx) {
+			if(exec){
+				args.push(`-customLaunchOptions "-afxInteropLight ${exec}"`);
+			} else {
+				args.push(`-customLaunchOptions "-afxInteropLight"`);
+			}
+		} else {
 			args.push(`-customLaunchOptions "${exec}"`);
 		}
 	}
@@ -204,63 +211,8 @@ export const run: express.RequestHandler = async (req, res) => {
 	try {
 		const steam = spawn(`"${exePath}"`, args, { detached: true, shell: true, stdio: 'ignore' });
 		steam.unref();
-	} catch (e) {
-		return res.sendStatus(500);
-	}
-	return res.sendStatus(200);
-};
-export const runExperimental: express.RequestHandler = async (req, res) => {
-	const config = await loadConfig();
-	if (!config) {
-		return res.sendStatus(422);
-	}
-	let GamePath;
-	try {
-		GamePath = getGamePath(730);
-	} catch {
-		return res.sendStatus(404);
-	}
-	if (!GamePath || !GamePath.steam || !GamePath.steam.path || !GamePath.game || !GamePath.game.path) {
-		return res.sendStatus(404);
-	}
-
-	const HLAEPath = config.hlaePath;
-	const GameExePath = path.join(GamePath.game.path, 'csgo.exe');
-
-	const exePath = HLAEPath;
-
-	if (
-		!HLAEPath ||
-		!fs.existsSync(HLAEPath) ||
-		!config.afxCEFHudInteropPath ||
-		!fs.existsSync(config.afxCEFHudInteropPath)
-	) {
-		return res.sendStatus(404);
-	}
-
-	const args = [];
-
-	const url = `http://localhost:${config.port}/hlae.html`;
-
-	let exec = '';
-
-	if (req.query.config && typeof req.query.config === 'string') {
-		exec = `+exec ${req.query.config}`;
-	}
-
-	args.push('-csgoLauncher', '-noGui', '-autoStart', `-csgoExe "${GameExePath}"`, '-gfxFull false');
-
-	if (exec) {
-		args.push(`-customLaunchOptions "-afxInteropLight ${exec}"`);
-	} else {
-		args.push(`-customLaunchOptions "-afxInteropLight"`);
-	}
-
-	try {
-		const steam = spawn(`"${exePath}"`, args, { detached: true, shell: true, stdio: 'ignore' });
-		steam.unref();
-		if (!AFXInterop.process) {
-			const process = spawn(`${config.afxCEFHudInteropPath}`, [`--url=${url}`], { stdio: 'ignore' });
+		if(cfgData.afx && !AFXInterop.process){
+			const process = spawn(`${config.afxCEFHudInteropPath}`, [`--url=${afxURL}`], { stdio: 'ignore' });
 			AFXInterop.process = process;
 		}
 	} catch (e) {

@@ -9,6 +9,11 @@ export interface Player {
 	team: string;
 }
 
+export interface CFG {
+	cfg: string;
+	file: string;
+}
+
 export interface Team {
 	_id?: string;
 	name: string;

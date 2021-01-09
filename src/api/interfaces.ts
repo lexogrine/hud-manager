@@ -11,7 +11,8 @@ export type {
 	VetoType,
 	Tournament,
 	Config,
-	ExtendedConfig
+	ExtendedConfig,
+	CFG
 } from './../../types/interfaces';
 
 export interface Player {
