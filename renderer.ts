@@ -1,6 +1,7 @@
-import { app, BrowserWindow, shell, session } from 'electron';
+import { app, BrowserWindow, shell, session, ipcMain } from 'electron';
 import path from 'path';
 import fs from 'fs';
+import autoUpdater from './autoUpdater';
 import { loadConfig } from './server/api/config';
 
 const isDev = process.env.DEV === 'true';
@@ -59,6 +60,24 @@ export const createMainWindow = async (forceDev = false) => {
 		minWidth: 775,
 		minHeight: 835,
 		width: 1010
+	});
+
+	ipcMain.on('min', () => {
+		win.minimize();
+	});
+
+	ipcMain.on('max', () => {
+		if (win.isMaximized()) {
+			win.restore();
+		} else {
+			win.maximize();
+		}
+	});
+
+	autoUpdater(win);
+
+	ipcMain.on('close', () => {
+		win.close();
 	});
 
 	win.once('ready-to-show', () => {

@@ -6,6 +6,7 @@ import config from './../../../../api/config';
 import DragInput from './../../../DragFileInput';
 import ImportModal from './ImportModal';
 import { IContextData } from '../../../Context';
+import ElectronOnly from '../../../ElectronOnly';
 
 const { isElectron } = config;
 
@@ -32,6 +33,10 @@ interface IState {
 	conflict: {
 		teams: number;
 		players: number;
+	};
+	update: {
+		available: boolean;
+		installing: boolean;
 	};
 	ip: string;
 	data: any;
@@ -65,6 +70,10 @@ export default class Config extends React.Component<IProps, IState> {
 			conflict: {
 				teams: 0,
 				players: 0
+			},
+			update: {
+				available: false,
+				installing: false
 			},
 			data: {},
 			ip: ''
@@ -194,8 +203,33 @@ export default class Config extends React.Component<IProps, IState> {
 		this.getConfig();
 		this.checkCFG();
 		this.checkGSI();
+		this.checkUpdate();
 	}
+	checkUpdate = () => {
+		if (!isElectron) return;
+		const { ipcRenderer } = window.require('electron');
+		ipcRenderer.on('updateStatus', (e: any, data: boolean) => {
+			this.setState(state => {
+				state.update.available = data;
+				return state;
+			});
+		});
 
+		ipcRenderer.send('checkUpdate');
+	};
+	installUpdate = () => {
+		if (!isElectron) return;
+		const { ipcRenderer } = window.require('electron');
+		this.setState(
+			state => {
+				state.update.installing = true;
+				return state;
+			},
+			() => {
+				ipcRenderer.send('updateApp');
+			}
+		);
+	};
 	changeHandler = (event: any) => {
 		const name: 'steamApiKey' | 'port' | 'token' = event.target.name;
 		const { config }: any = this.state;
@@ -217,7 +251,7 @@ export default class Config extends React.Component<IProps, IState> {
 	};
 	render() {
 		const { cxt } = this.props;
-		const { gsi, cfg, importModalOpen, conflict, data, ip, config } = this.state;
+		const { gsi, cfg, importModalOpen, conflict, data, ip, config, update } = this.state;
 		return (
 			<Form>
 				<div className="tab-title-container">Settings</div>
@@ -268,6 +302,22 @@ export default class Config extends React.Component<IProps, IState> {
 						</Col>
 					</Row>
 					<Row className="config-container bottom-margin">
+						<ElectronOnly>
+							<Col md="12" className="config-entry">
+								<div className="config-description">Version</div>
+								<Button
+									className="purple-btn round-btn"
+									disabled={update.installing || !update.available}
+									onClick={this.installUpdate}
+								>
+									{update.installing
+										? 'Installing...'
+										: update.available
+										? 'Install update'
+										: 'Latest'}
+								</Button>
+							</Col>
+						</ElectronOnly>
 						<Col md="12" className="config-entry">
 							<div className="config-description">
 								HLAE Path: {this.state.config.hlaePath ? 'Loaded' : 'Not loaded'}

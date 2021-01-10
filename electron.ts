@@ -34,8 +34,8 @@ async function createRenderer(server: Server, forceDev = false) {
 	};
 	const args = ['./', '--renderer'];
 	if (forceDev) args.push('--dev');
-	const renderer = spawn(process.execPath, ['./', '--renderer', '--dev'], {
-		stdio: ['ignore', 'ignore', 'ignore', 'ipc']
+	const renderer = spawn(process.execPath, args, {
+		stdio: forceDev ? ['pipe', 'pipe', 'pipe', 'ipc'] : ['ignore', 'ignore', 'ignore', 'ipc']
 	});
 
 	app.on('window-all-closed', () => {});
@@ -57,11 +57,11 @@ async function createRenderer(server: Server, forceDev = false) {
 }
 
 async function startManager() {
+	app.setAppUserModelId('com.lexogrine.hudmanager');
 	if (process.argv.includes('--renderer')) {
 		createMainWindow(process.argv.includes('--dev'));
 		return;
 	}
-	app.setAppUserModelId('com.lexogrine.hudmanager');
 	directories.checkDirectories();
 	const server = await init();
 	const argv = args(process.argv);

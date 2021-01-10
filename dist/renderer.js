@@ -43,6 +43,7 @@ exports.createMainWindow = void 0;
 var electron_1 = require("electron");
 var path_1 = __importDefault(require("path"));
 var fs_1 = __importDefault(require("fs"));
+var autoUpdater_1 = __importDefault(require("./autoUpdater"));
 var config_1 = require("./server/api/config");
 var isDev = process.env.DEV === 'true';
 exports.createMainWindow = function (forceDev) {
@@ -119,6 +120,21 @@ exports.createMainWindow = function (forceDev) {
                         minWidth: 775,
                         minHeight: 835,
                         width: 1010
+                    });
+                    electron_1.ipcMain.on('min', function () {
+                        win.minimize();
+                    });
+                    electron_1.ipcMain.on('max', function () {
+                        if (win.isMaximized()) {
+                            win.restore();
+                        }
+                        else {
+                            win.maximize();
+                        }
+                    });
+                    autoUpdater_1["default"](win);
+                    electron_1.ipcMain.on('close', function () {
+                        win.close();
                     });
                     win.once('ready-to-show', function () {
                         if (win) {

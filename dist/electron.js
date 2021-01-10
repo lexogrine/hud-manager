@@ -91,8 +91,8 @@ function createRenderer(server, forceDev) {
             args = ['./', '--renderer'];
             if (forceDev)
                 args.push('--dev');
-            renderer = child_process_1.spawn(process.execPath, ['./', '--renderer', '--dev'], {
-                stdio: ['ignore', 'ignore', 'ignore', 'ipc']
+            renderer = child_process_1.spawn(process.execPath, args, {
+                stdio: forceDev ? ['pipe', 'pipe', 'pipe', 'ipc'] : ['ignore', 'ignore', 'ignore', 'ipc']
             });
             electron_1.app.on('window-all-closed', function () { });
             electron_1.app.on('second-instance', function () {
@@ -117,11 +117,11 @@ function startManager() {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
+                    electron_1.app.setAppUserModelId('com.lexogrine.hudmanager');
                     if (process.argv.includes('--renderer')) {
                         renderer_1.createMainWindow(process.argv.includes('--dev'));
                         return [2 /*return*/];
                     }
-                    electron_1.app.setAppUserModelId('com.lexogrine.hudmanager');
                     directories.checkDirectories();
                     return [4 /*yield*/, server_1["default"]()];
                 case 1:
