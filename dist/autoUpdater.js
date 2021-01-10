@@ -6,10 +6,10 @@ electron_updater_1.autoUpdater.autoDownload = false;
 electron_updater_1.autoUpdater.autoInstallOnAppQuit = false;
 exports["default"] = (function (window) {
     electron_updater_1.autoUpdater.on('update-available', function () {
-        window.webContents.send("updateStatus", true);
+        window.webContents.send('updateStatus', true);
     });
     electron_updater_1.autoUpdater.on('update-not-available', function () {
-        window.webContents.send("updateStatus", false);
+        window.webContents.send('updateStatus', false);
     });
     electron_updater_1.autoUpdater.on('update-downloaded', electron_updater_1.autoUpdater.quitAndInstall);
     electron_1.ipcMain.on('updateApp', function () {
