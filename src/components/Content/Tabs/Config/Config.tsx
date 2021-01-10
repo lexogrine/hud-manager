@@ -304,13 +304,13 @@ export default class Config extends React.Component<IProps, IState> {
 					<Row className="config-container bottom-margin">
 						<ElectronOnly>
 							<Col md="12" className="config-entry">
-								<div className="config-description">Update</div>
+								<div className="config-description">Version</div>
 								<Button
 									className="purple-btn round-btn"
 									disabled={update.installing || !update.available}
 									onClick={this.installUpdate}
 								>
-									{update.installing ? 'Installing...' : update.available ? 'Install' : 'Unavailable'}
+									{update.installing ? 'Installing...' : update.available ? 'Install update' : 'Latest'}
 								</Button>
 							</Col>
 						</ElectronOnly>
