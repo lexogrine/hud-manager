@@ -11,7 +11,7 @@ exports["default"] = (function (window) {
     electron_updater_1.autoUpdater.on('update-not-available', function () {
         window.webContents.send('updateStatus', false);
     });
-    electron_updater_1.autoUpdater.on('update-downloaded', electron_updater_1.autoUpdater.quitAndInstall);
+    electron_updater_1.autoUpdater.on('update-downloaded', function () { return electron_updater_1.autoUpdater.quitAndInstall(true, true); });
     electron_1.ipcMain.on('updateApp', function () {
         electron_updater_1.autoUpdater.downloadUpdate();
     });

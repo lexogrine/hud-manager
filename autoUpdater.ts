@@ -12,7 +12,7 @@ export default (window: BrowserWindow) => {
 		window.webContents.send('updateStatus', false);
 	});
 
-	autoUpdater.on('update-downloaded', autoUpdater.quitAndInstall);
+	autoUpdater.on('update-downloaded', () => autoUpdater.quitAndInstall(true, true));
 
 	ipcMain.on('updateApp', () => {
 		autoUpdater.downloadUpdate();
