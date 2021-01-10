@@ -9,7 +9,7 @@ export default (window: BrowserWindow) => {
 		window.webContents.send('updateStatus', true);
 		const notification = new Notification({
 			title: 'Update available',
-			body: `You can install the newest Lexogrine HUD Manager update in the Settings tab`,
+			body: `You can install the newest Lexogrine HUD Manager update in the Settings tab`
 		});
 		notification.show();
 	});
