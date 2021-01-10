@@ -60,6 +60,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 exports.__esModule = true;
 exports.isDev = exports.AFXInterop = void 0;
 /* eslint-disable no-console */
+require('dotenv').config();
 var server_1 = __importDefault(require("./server"));
 var directories = __importStar(require("./init/directories"));
 var child_process_1 = require("child_process");
