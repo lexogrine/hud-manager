@@ -1,6 +1,6 @@
 {
   "name": "hud-manager",
-  "version": "1.7.5",
+  "version": "1.8.0",
   "homepage": "./",
   "description": "Lexogrine HUD Manager",
   "author": "Lexogrine",
@@ -80,7 +80,7 @@
     "publish": [
       {
         "provider": "github",
-        "owner": "osztenkurden",
+        "owner": "lexogrine",
         "repo": "hud-manager"
       }
     ]
