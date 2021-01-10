@@ -1,6 +1,7 @@
 import { app, BrowserWindow, shell, session, ipcMain } from 'electron';
 import path from 'path';
 import fs from 'fs';
+import autoUpdater from './autoUpdater';
 import { loadConfig } from './server/api/config';
 
 const isDev = process.env.DEV === 'true';
@@ -72,6 +73,8 @@ export const createMainWindow = async (forceDev = false) => {
 			win.maximize();
 		}
 	});
+
+	autoUpdater(win);
 
 	ipcMain.on('close', () => {
 		win.close();

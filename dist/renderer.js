@@ -43,6 +43,7 @@ exports.createMainWindow = void 0;
 var electron_1 = require("electron");
 var path_1 = __importDefault(require("path"));
 var fs_1 = __importDefault(require("fs"));
+var autoUpdater_1 = __importDefault(require("./autoUpdater"));
 var config_1 = require("./server/api/config");
 var isDev = process.env.DEV === 'true';
 exports.createMainWindow = function (forceDev) {
@@ -131,6 +132,7 @@ exports.createMainWindow = function (forceDev) {
                             win.maximize();
                         }
                     });
+                    autoUpdater_1["default"](win);
                     electron_1.ipcMain.on('close', function () {
                         win.close();
                     });

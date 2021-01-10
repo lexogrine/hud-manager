@@ -78,7 +78,6 @@ var get_port_1 = __importStar(require("get-port"));
 var api_1 = __importDefault(require("./api"));
 var path_1 = __importDefault(require("path"));
 var electron_1 = require("electron");
-var electron_updater_1 = require("electron-updater");
 var fs_1 = __importDefault(require("fs"));
 var config_1 = require("./api/config");
 function init() {
@@ -86,16 +85,7 @@ function init() {
         var config, app, server, port, io;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0:
-                    electron_updater_1.autoUpdater.on('update-available', function (info) {
-                        console.log("Update available");
-                        console.log(info);
-                    });
-                    electron_updater_1.autoUpdater.on('update-downloaded', function (info) {
-                        console.log('downbloaded');
-                        console.log(info);
-                    });
-                    return [4 /*yield*/, config_1.loadConfig()];
+                case 0: return [4 /*yield*/, config_1.loadConfig()];
                 case 1:
                     config = _a.sent();
                     app = express_1["default"]();
@@ -114,7 +104,6 @@ function init() {
                     _a.label = 5;
                 case 5:
                     console.log("Server listening on " + port);
-                    electron_updater_1.autoUpdater.checkForUpdatesAndNotify();
                     app.use(express_1["default"].urlencoded({ extended: true }));
                     app.use(express_1["default"].raw({ limit: '100Mb', type: 'application/json' }));
                     app.use(function (req, res, next) {

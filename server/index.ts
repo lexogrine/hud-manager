@@ -7,25 +7,10 @@ import getPort, { makeRange } from 'get-port';
 import router from './api';
 import path from 'path';
 import { app as application } from 'electron';
-import { autoUpdater } from 'electron-updater';
 import fs from 'fs';
 import { loadConfig, setConfig } from './api/config';
 
 export default async function init() {
-	autoUpdater.on('update-available', (info: any) => {
-		console.log("Update available")
-		console.log(info)
-	})
-	autoUpdater.on('update-downloaded', (info: any) => {
-		console.log('downbloaded');
-		console.log(info)
-	});
-	
-	autoUpdater.on('checking-for-update', (info: any) => {
-		console.log('checking');
-		console.log(info)
-	});
-
 	let config = await loadConfig();
 	const app = express();
 	const server = http.createServer(app);
@@ -37,7 +22,6 @@ export default async function init() {
 		config = await setConfig({ ...config, port: port });
 	}
 	console.log(`Server listening on ${port}`);
-	autoUpdater.checkForUpdatesAndNotify()
 
 	app.use(express.urlencoded({ extended: true }));
 	app.use(express.raw({ limit: '100Mb', type: 'application/json' }));
