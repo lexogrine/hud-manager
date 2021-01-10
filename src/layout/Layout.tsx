@@ -10,11 +10,11 @@ import ElectronOnly from './../components/ElectronOnly';
 
 declare let window: any;
 const isElectron = config.isElectron;
-const fakeRequire = () => ({ remote: null });
+const fakeRequire = () => ({ ipcRenderer: null });
 if (!isElectron) {
 	window.require = fakeRequire;
 }
-const { remote } = window.require('electron');
+const { ipcRenderer } = window.require('electron');
 
 interface IState {
 	data: IContextData;
@@ -134,24 +134,20 @@ export default class Layout extends React.Component<{}, IState> {
 		}
 	};
 	minimize = () => {
-		if (!remote) return;
-		remote.getCurrentWindow().minimize();
+		if (!ipcRenderer) return;
+		ipcRenderer.send('min');
 	};
 	maximize = () => {
-		if (!remote) return;
-		if (remote.getCurrentWindow().isMaximized()) {
-			remote.getCurrentWindow().restore();
-		} else {
-			remote.getCurrentWindow().maximize();
-		}
+		if (!ipcRenderer) return;
+		ipcRenderer.send('max');
 	};
 	logout = async () => {
 		await api.user.logout();
 		this.loadUser();
 	};
 	close = () => {
-		if (!remote) return;
-		remote.getCurrentWindow().close();
+		if (!ipcRenderer) return;
+		ipcRenderer.send('close');
 	};
 	setLoading = (loading: boolean, loginError?: string) => {
 		this.setState({ loadingLogin: loading, loginError: loginError || '' });

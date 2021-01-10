@@ -120,6 +120,20 @@ exports.createMainWindow = function (forceDev) {
                         minHeight: 835,
                         width: 1010
                     });
+                    electron_1.ipcMain.on('min', function () {
+                        win.minimize();
+                    });
+                    electron_1.ipcMain.on('max', function () {
+                        if (win.isMaximized()) {
+                            win.restore();
+                        }
+                        else {
+                            win.maximize();
+                        }
+                    });
+                    electron_1.ipcMain.on('close', function () {
+                        win.close();
+                    });
                     win.once('ready-to-show', function () {
                         if (win) {
                             win.show();
