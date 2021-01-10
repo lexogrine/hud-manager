@@ -7,6 +7,11 @@ electron_updater_1.autoUpdater.autoInstallOnAppQuit = false;
 exports["default"] = (function (window) {
     electron_updater_1.autoUpdater.on('update-available', function () {
         window.webContents.send('updateStatus', true);
+        var notification = new electron_1.Notification({
+            title: 'Update available',
+            body: "You can install the newest Lexogrine HUD Manager update in the Settings tab"
+        });
+        notification.show();
     });
     electron_updater_1.autoUpdater.on('update-not-available', function () {
         window.webContents.send('updateStatus', false);
