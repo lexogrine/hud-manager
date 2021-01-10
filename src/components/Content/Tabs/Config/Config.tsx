@@ -310,7 +310,11 @@ export default class Config extends React.Component<IProps, IState> {
 									disabled={update.installing || !update.available}
 									onClick={this.installUpdate}
 								>
-									{update.installing ? 'Installing...' : update.available ? 'Install update' : 'Latest'}
+									{update.installing
+										? 'Installing...'
+										: update.available
+										? 'Install update'
+										: 'Latest'}
 								</Button>
 							</Col>
 						</ElectronOnly>
