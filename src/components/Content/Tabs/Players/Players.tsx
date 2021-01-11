@@ -26,26 +26,26 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 		steamid: '',
 		team: ''
 	};
-	const [ form, setForm ] = useState(emptyPlayer);
-	const [ forceLoad, setForceLoad ] = useState(false);
-	const [ openModalState, setOpenState ] = useState(false);
-	const [ search, setSearch ] = useState('');
+	const [form, setForm] = useState(emptyPlayer);
+	const [forceLoad, setForceLoad] = useState(false);
+	const [openModalState, setOpenState] = useState(false);
+	const [search, setSearch] = useState('');
 
 	const clearAvatar = () => {
 		const avatarInput: any = document.getElementById('avatar');
-		if(avatarInput) avatarInput.value = '';
-	}
+		if (avatarInput) avatarInput.value = '';
+	};
 
 	const loadPlayer = (id: string) => {
 		const player = cxt.players.filter(player => player._id === id)[0];
 		if (player) {
-			setForm({...emptyPlayer, ...player});
+			setForm({ ...emptyPlayer, ...player });
 			clearAvatar();
 		}
 	};
 
 	const loadEmpty = () => {
-		setForm({...emptyPlayer});
+		setForm({ ...emptyPlayer });
 		clearAvatar();
 	};
 
@@ -55,14 +55,14 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 			return loadEmpty();
 		}
 		loadPlayer(event.target.value);
-	}
+	};
 
 	const loadPlayers = async (id?: string) => {
 		await cxt.reload();
 		if (id) {
 			loadPlayer(id);
 		}
-	}
+	};
 
 	const fileHandler = (files: FileList) => {
 		if (!files || !files[0]) return;
@@ -73,7 +73,7 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 		const reader: any = new FileReader();
 		reader.readAsDataURL(file);
 		reader.onload = () => {
-			setForm(prevForm => ({...prevForm, avatar: reader.result.replace(/^data:([a-z]+)\/(.+);base64,/, '')}));
+			setForm(prevForm => ({ ...prevForm, avatar: reader.result.replace(/^data:([a-z]+)\/(.+);base64,/, '') }));
 		};
 	};
 
@@ -83,15 +83,20 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 
 	const changeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
 		event.persist();
-		const name =
-			event.target.name as 'steamid' | 'firstName' | 'lastName' | 'username' | 'avatar' | 'country' | 'team';
+		const name = event.target.name as
+			| 'steamid'
+			| 'firstName'
+			| 'lastName'
+			| 'username'
+			| 'avatar'
+			| 'country'
+			| 'team';
 
 		if (!event.target.files) {
 			return setForm(prevForm => ({
 				...prevForm,
 				[name]: name in form ? event.target.value : ''
-
-			}))
+			}));
 		}
 
 		return fileHandler(event.target.files);
@@ -125,7 +130,7 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 	const edit = (player: I.Player) => {
 		setForm(player);
 		setOpenState(true);
-	}
+	};
 
 	const filterPlayers = (player: I.Player): boolean => {
 		const str = search.toLowerCase();
@@ -161,7 +166,9 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 			</div>
 			<PlayerEditModal
 				open={openModalState}
-				toggle={() => { setOpenState(!openModalState) }}
+				toggle={() => {
+					setOpenState(!openModalState);
+				}}
 				player={form}
 				teams={cxt.teams}
 				onChange={changeHandler}
@@ -189,7 +196,7 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 			</div>
 		</Form>
 	);
-}
+};
 
 export default PlayersTab;
 /*

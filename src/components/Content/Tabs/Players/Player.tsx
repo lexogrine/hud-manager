@@ -15,7 +15,7 @@ const PlayerListEntry = ({ player, team, edit, no }: Props) => {
 	const country = !player.country ? null : countries[player.country] || null;
 	return (
 		<div className="player-list-entry" onClick={edit}>
-			<div className="position">{no+1}</div>
+			<div className="position">{no + 1}</div>
 			<div className="picture">{player.avatar ? <img src={player.avatar} /> : null}</div>
 			<div className="realName">
 				{player.firstName} {player.lastName}
