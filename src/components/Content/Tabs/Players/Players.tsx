@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Form, FormGroup, Input, Row, Col, FormText } from 'reactstrap';
 import countries from './../../countries';
 import api from './../../../../api/api';
@@ -6,17 +6,193 @@ import * as I from './../../../../api/interfaces';
 import { IContextData } from './../../../../components/Context';
 import DragFileInput from './../../../DragFileInput';
 import isSvg from '../../../../isSvg';
+import PlayerEntry from './Player';
+import { hash } from '../../../../hash';
+import PlayerEditModal from './PlayerEditModal';
 
-const hashCode = (s: string) =>
-	s
-		.split('')
-		.reduce((a, b) => {
-			a = (a << 5) - a + b.charCodeAt(0);
-			return a & a;
-		}, 0)
-		.toString();
-const hash = () => hashCode(String(new Date().getTime()));
+interface IProps {
+	cxt: IContextData;
+	data: any;
+}
 
+const PlayersTab = ({ cxt, data }: IProps) => {
+	const emptyPlayer: I.Player = {
+		_id: 'empty',
+		firstName: '',
+		lastName: '',
+		username: '',
+		avatar: '',
+		country: '',
+		steamid: '',
+		team: ''
+	};
+	const [ form, setForm ] = useState(emptyPlayer);
+	const [ forceLoad, setForceLoad ] = useState(false);
+	const [ openModalState, setOpenState ] = useState(false);
+	const [ search, setSearch ] = useState('');
+
+	const clearAvatar = () => {
+		const avatarInput: any = document.getElementById('avatar');
+		if(avatarInput) avatarInput.value = '';
+	}
+
+	const loadPlayer = (id: string) => {
+		const player = cxt.players.filter(player => player._id === id)[0];
+		if (player) {
+			setForm({...emptyPlayer, ...player});
+			clearAvatar();
+		}
+	};
+
+	const loadEmpty = () => {
+		setForm({...emptyPlayer});
+		clearAvatar();
+	};
+
+	const setPlayer = (event: any) => {
+		if (event.target.value === 'empty') {
+			//return this.setState({form:{...this.emptyPlayer}, filePath:''})
+			return loadEmpty();
+		}
+		loadPlayer(event.target.value);
+	}
+
+	const loadPlayers = async (id?: string) => {
+		await cxt.reload();
+		if (id) {
+			loadPlayer(id);
+		}
+	}
+
+	const fileHandler = (files: FileList) => {
+		if (!files || !files[0]) return;
+		const file = files[0];
+		if (!file.type.startsWith('image')) {
+			return;
+		}
+		const reader: any = new FileReader();
+		reader.readAsDataURL(file);
+		reader.onload = () => {
+			setForm(prevForm => ({...prevForm, avatar: reader.result.replace(/^data:([a-z]+)\/(.+);base64,/, '')}));
+		};
+	};
+
+	const searchHandler = (event: any) => {
+		setSearch(event.target.value);
+	};
+
+	const changeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
+		event.persist();
+		const name =
+			event.target.name as 'steamid' | 'firstName' | 'lastName' | 'username' | 'avatar' | 'country' | 'team';
+
+		if (!event.target.files) {
+			return setForm(prevForm => ({
+				...prevForm,
+				[name]: name in form ? event.target.value : ''
+
+			}))
+		}
+
+		return fileHandler(event.target.files);
+	};
+
+	const save = async () => {
+		let response: any;
+		if (form._id === 'empty') {
+			response = await api.players.add(form);
+		} else {
+			let avatar = form.avatar;
+			if (avatar && avatar.includes('api/players/avatar')) {
+				avatar = undefined as any;
+			}
+			response = await api.players.update(form._id, { ...form, avatar });
+		}
+		if (response && response._id) {
+			loadPlayers(response._id);
+		}
+	};
+
+	const deletePlayer = async () => {
+		if (form._id === 'empty') return;
+		const response = await api.players.delete(form._id);
+		if (response) {
+			await loadPlayers();
+			return loadEmpty();
+		}
+	};
+
+	const edit = (player: I.Player) => {
+		setForm(player);
+		setOpenState(true);
+	}
+
+	const filterPlayers = (player: I.Player): boolean => {
+		const str = search.toLowerCase();
+		const country = countries.find(country => country.value === player.country);
+		const team = cxt.teams.find(team => team._id === player.team);
+		return (
+			player._id.toLowerCase().includes(str) ||
+			player.firstName.toLowerCase().includes(str) ||
+			player.lastName.toLowerCase().includes(str) ||
+			player.username.toLowerCase().includes(str) ||
+			player.steamid.toLowerCase().includes(str) ||
+			(team && (team.name.toLowerCase().includes(str) || team.shortName.toLowerCase().includes(str))) ||
+			(country && (country.value.toLowerCase().includes(str) || country.label.toLowerCase().includes(str)))
+		);
+	};
+
+	useEffect(() => {
+		// Load player
+	}, [data]);
+
+	return (
+		<Form>
+			<div className="tab-title-container">
+				<div>Players</div>
+				<Input
+					type="text"
+					name="name"
+					id="team_search"
+					value={search}
+					onChange={searchHandler}
+					placeholder="Search..."
+				/>
+			</div>
+			<PlayerEditModal
+				open={openModalState}
+				toggle={() => { setOpenState(!openModalState) }}
+				player={form}
+				teams={cxt.teams}
+				onChange={changeHandler}
+				onFileChange={fileHandler}
+				save={save}
+			/>
+			<div className="tab-content-container list-padding full-scroll">
+				<div className="player-list-entry heading">
+					<div className="position">No.</div>
+					<div className="picture">Avatar</div>
+					<div className="realName">Real Name</div>
+					<div className="username">Username</div>
+					<div className="team">Team</div>
+					<div className="country">Country</div>
+				</div>
+				{cxt.players.filter(filterPlayers).map((player, no) => (
+					<PlayerEntry
+						no={no}
+						key={player._id}
+						player={player}
+						edit={() => edit(player)}
+						team={cxt.teams.find(team => team._id === player.team)}
+					/>
+				))}
+			</div>
+		</Form>
+	);
+}
+
+export default PlayersTab;
+/*
 export default class Players extends React.Component<
 	{ cxt: IContextData; data: any },
 	{ options: any[]; value: string; form: I.Player; forceLoad: boolean; search: string }
@@ -80,7 +256,7 @@ export default class Players extends React.Component<
 
 	clearAvatar = () => {
 		const avatarInput: any = document.getElementById('avatar');
-		avatarInput.value = '';
+		if(avatarInput) avatarInput.value = '';
 	};
 
 	setPlayer = (event: any) => {
@@ -188,6 +364,41 @@ export default class Players extends React.Component<
 						placeholder="Search..."
 					/>
 				</div>
+				<PlayerEditModal
+					open={this.state.op}
+				/>
+				<div className="tab-content-container no-padding full-scroll">
+					<div className="player-list-entry heading">
+						<div className="position">No.</div>
+						<div className="picture">Avatar</div>
+						<div className="realName">Real Name</div>
+						<div className="username">Username</div>
+						<div className="team">Team</div>
+						<div className="country">Country</div>
+					</div>
+					{this.props.cxt.players.filter(this.filterPlayers).map(player => (
+						<PlayerEntry
+							key={player._id}
+							player={player}
+							team={this.props.cxt.teams.find(team => team._id === player.team)}
+						/>
+					))}
+				</div>
+			</Form>
+		);
+		return (
+			<Form>
+				<div className="tab-title-container">
+					<div>Players</div>
+					<Input
+						type="text"
+						name="name"
+						id="team_search"
+						value={this.state.search}
+						onChange={this.searchHandler}
+						placeholder="Search..."
+					/>
+				</div>
 				<div className="tab-content-container">
 					<FormText color="muted">
 						Player: {form._id || form._id !== 'empty' ? form._id : '--- NONE ---'}
@@ -247,16 +458,6 @@ export default class Players extends React.Component<
 					<Row>
 						<Col md="6">
 							<FormGroup>
-								{/*<CustomInput
-                                    type="select"
-                                    id="country"
-                                    name="country"
-                                    value={this.state.form.country}
-                                    onChange={this.changeHandler}
-                                >
-                                    <option value=''>None</option>
-                                    {this.state.options.map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
-                                </CustomInput>*/}
 								<Input
 									type="select"
 									id="country"
@@ -322,11 +523,7 @@ export default class Players extends React.Component<
 								<FormText color="muted">
 									Avatar to be used for player images instead of the default from Steam
 								</FormText>
-								{/*<Label for="avatar">Avatar</Label>
-                                <Input type="file" name="avatar" id="avatar" onChange={this.changeHandler} />
-                                <FormText color="muted">
-                                    Avatar to be used for player images, instead of Steam's default
-                                </FormText>*/}
+
 							</FormGroup>
 						</Col>
 					</Row>
@@ -345,3 +542,4 @@ export default class Players extends React.Component<
 		);
 	}
 }
+*/

@@ -13,15 +13,7 @@ import Map from './../../../../styles/Map.png';
 import Killfeed from './../../../../styles/Killfeed.png';
 import { socket } from '../Live/Live';
 import RemoveHUDModal from './RemoveModal';
-
-const hashCode = (s: string) =>
-	s
-		.split('')
-		.reduce((a, b) => {
-			a = (a << 5) - a + b.charCodeAt(0);
-			return a & a;
-		}, 0)
-		.toString();
+import { hashCode } from '../../../../hash';
 
 interface IProps {
 	hud: I.HUD;

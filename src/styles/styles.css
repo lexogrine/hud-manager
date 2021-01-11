@@ -48,7 +48,6 @@ body {
 }
 .navbar-container > li:nth-last-child(2) > a:hover{
     border-color: transparent !important;
-    border-bottom: none !important;
 }
 
 .main-container {
@@ -122,6 +121,13 @@ body {
     padding-right: 43px;
     margin-right: 10px;
     margin-left: 10px;
+}
+.tab-content-container.list-padding {
+    padding-top:0;
+    margin-top: 188px;
+}
+.loaded.electron .tab-content-container.list-padding {
+    height: calc(100vh - 135px - 64px - 53px);
 }
 .event-container {
     display: flex;
