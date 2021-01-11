@@ -31,7 +31,21 @@ export default function overlay(hud: string) {
         <iframe id="hud-container" src="${hud.substr(hud.indexOf('/hud'))}"></iframe>
         ${
 			!customer.customer || customer.customer.license.type === 'free'
-				? '<div id="watermark">Powered by Lexogrine HUD Manager</div>'
+                ? `<div style="
+                    position: fixed !important;
+                    bottom: 20px !important;
+                    top: unset !important;
+                    left: unset !important;
+                    right: 10px !important;
+                    font-family: Arial !important;
+                    font-weight: 600 !important;
+                    color: rgba(255,255,255,0.5) !important;
+                    font-size: 14pt !important;
+                    z-index:2 !important;
+                    display: block !important;
+                    opacity: 1 !important;
+                    transform: none !important;
+                ">Powered by Lexogrine HUD Manager</div>`
 				: ''
 		}
     </body>
