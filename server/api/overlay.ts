@@ -21,7 +21,7 @@ export default function overlay(hud: string) {
         <iframe id="hud-container" src="${hud.substr(hud.indexOf('/hud'))}"></iframe>
         ${
 			!customer.customer || customer.customer.license.type === 'free'
-                ? `<div style="
+				? `<div style="
                     position: fixed !important;
                     bottom: 20px !important;
                     top: unset !important;
