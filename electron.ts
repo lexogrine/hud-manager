@@ -39,7 +39,6 @@ async function mainProcess(server: Server, forceDev = false, gui = true) {
 		const cookies = await session.defaultSession.cookies.get({ url: 'https://hmapi.lexogrine.com/' });
 
 		fs.writeFileSync(cookieFile, JSON.stringify(cookies), 'utf8');
-
 	});
 
 	const RMTPServer = fork(require.resolve('./RMTPServer.js'));
@@ -59,20 +58,18 @@ async function mainProcess(server: Server, forceDev = false, gui = true) {
 		app.quit();
 	};
 
-
 	app.on('quit', () => {
-		if(renderer) renderer.kill();
+		if (renderer) renderer.kill();
 		closeManager();
 	});
 
-	if(!gui) return;
+	if (!gui) return;
 
 	const args = ['./', '--renderer'];
 	if (forceDev) args.push('--dev');
 	renderer = spawn(process.execPath, args, {
 		stdio: forceDev ? ['pipe', 'pipe', 'pipe', 'ipc'] : ['ignore', 'ignore', 'ignore', 'ipc']
 	});
-
 
 	app.on('second-instance', () => {
 		if (renderer.send) {
