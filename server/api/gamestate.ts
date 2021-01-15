@@ -7,7 +7,7 @@ import { loadConfig } from './config';
 import { dialog } from 'electron';
 import generateGSI, { GSI } from 'csgogsi-generator';
 
-const GSITemplate = generateGSI("HUDMANAGERGSI",'http://localhost:1349/').json;
+const GSITemplate = generateGSI('HUDMANAGERGSI', 'http://localhost:1349/').json;
 
 export const checkGSIFile: express.RequestHandler = async (req, res) => {
 	const config = await loadConfig();
@@ -58,7 +58,7 @@ export const generateGSIFile = async () => {
 	}
 	const address = `http://localhost:${config.port}/`;
 
-	const text = generateGSI("HUDMANAGERGSI", address, config.token).vdf;
+	const text = generateGSI('HUDMANAGERGSI', address, config.token).vdf;
 	return text;
 };
 
