@@ -55,6 +55,9 @@
       "icon": "./dist/build/favicon.ico",
       "target": "NSIS"
     },
+    "linux":{
+      "target":"tar.xz"
+    },
     "directories": {
       "output": "app",
       "buildResources": "assets"
