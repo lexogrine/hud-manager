@@ -64,50 +64,99 @@ var server_1 = __importDefault(require("./server"));
 var directories = __importStar(require("./init/directories"));
 var child_process_1 = require("child_process");
 var args_1 = __importDefault(require("./init/args"));
+var path_1 = __importDefault(require("path"));
+var fs_1 = __importDefault(require("fs"));
 var electron_1 = require("electron");
 var renderer_1 = require("./renderer");
 exports.AFXInterop = {
     process: null
 };
 exports.isDev = process.env.DEV === 'true';
-function createRenderer(server, forceDev) {
+function mainProcess(server, forceDev, gui) {
     if (forceDev === void 0) { forceDev = false; }
+    if (gui === void 0) { gui = true; }
     return __awaiter(this, void 0, void 0, function () {
-        var RMTPServer, closeManager, args, renderer;
+        var cookieFile, cookie, cookies, _i, cookies_1, cookie_1, e_1, RMTPServer, renderer, closeManager, args;
+        var _this = this;
         return __generator(this, function (_a) {
-            RMTPServer = child_process_1.fork(require.resolve('./RMTPServer.js'));
-            closeManager = function () {
-                if (server) {
-                    server.close();
-                }
-                if (exports.AFXInterop.process) {
-                    exports.AFXInterop.process.kill();
-                }
-                if (RMTPServer) {
-                    RMTPServer.kill();
-                }
-                electron_1.app.quit();
-            };
-            args = ['./', '--renderer'];
-            if (forceDev)
-                args.push('--dev');
-            renderer = child_process_1.spawn(process.execPath, args, {
-                stdio: forceDev ? ['pipe', 'pipe', 'pipe', 'ipc'] : ['ignore', 'ignore', 'ignore', 'ipc']
-            });
-            electron_1.app.on('window-all-closed', function () { });
-            electron_1.app.on('second-instance', function () {
-                if (renderer.send) {
-                    renderer.send('refocus');
-                }
-            });
-            if (forceDev)
-                renderer.stdout.on('data', function (data) { return console.log(data.toString()); });
-            renderer.on('exit', closeManager);
-            renderer.on('close', closeManager);
-            electron_1.app.on('quit', function () {
-                renderer.kill();
-            });
-            return [2 /*return*/];
+            switch (_a.label) {
+                case 0:
+                    cookieFile = path_1["default"].join(electron_1.app.getPath('userData'), 'databases', 'cookie');
+                    cookie = fs_1["default"].readFileSync(cookieFile, 'utf8');
+                    _a.label = 1;
+                case 1:
+                    _a.trys.push([1, 6, , 7]);
+                    cookies = JSON.parse(cookie);
+                    if (!Array.isArray(cookies)) return [3 /*break*/, 5];
+                    _i = 0, cookies_1 = cookies;
+                    _a.label = 2;
+                case 2:
+                    if (!(_i < cookies_1.length)) return [3 /*break*/, 5];
+                    cookie_1 = cookies_1[_i];
+                    cookie_1.url = 'https://hmapi.lexogrine.com/';
+                    return [4 /*yield*/, electron_1.session.defaultSession.cookies.set(cookie_1)];
+                case 3:
+                    _a.sent();
+                    _a.label = 4;
+                case 4:
+                    _i++;
+                    return [3 /*break*/, 2];
+                case 5: return [3 /*break*/, 7];
+                case 6:
+                    e_1 = _a.sent();
+                    return [3 /*break*/, 7];
+                case 7:
+                    electron_1.app.on('window-all-closed', electron_1.app.quit);
+                    electron_1.app.on('before-quit', function () { return __awaiter(_this, void 0, void 0, function () {
+                        var cookies;
+                        return __generator(this, function (_a) {
+                            switch (_a.label) {
+                                case 0: return [4 /*yield*/, electron_1.session.defaultSession.cookies.get({ url: 'https://hmapi.lexogrine.com/' })];
+                                case 1:
+                                    cookies = _a.sent();
+                                    fs_1["default"].writeFileSync(cookieFile, JSON.stringify(cookies), 'utf8');
+                                    return [2 /*return*/];
+                            }
+                        });
+                    }); });
+                    RMTPServer = child_process_1.fork(require.resolve('./RMTPServer.js'));
+                    renderer = null;
+                    closeManager = function () {
+                        if (server) {
+                            server.close();
+                        }
+                        if (exports.AFXInterop.process) {
+                            exports.AFXInterop.process.kill();
+                        }
+                        if (RMTPServer) {
+                            RMTPServer.kill();
+                        }
+                        electron_1.app.quit();
+                    };
+                    electron_1.app.on('quit', function () {
+                        if (renderer)
+                            renderer.kill();
+                        closeManager();
+                    });
+                    if (!gui)
+                        return [2 /*return*/];
+                    args = ['./', '--renderer'];
+                    if (forceDev)
+                        args.push('--dev');
+                    renderer = child_process_1.spawn(process.execPath, args, {
+                        stdio: forceDev ? ['pipe', 'pipe', 'pipe', 'ipc'] : ['ignore', 'ignore', 'ignore', 'ipc']
+                    });
+                    electron_1.app.on('second-instance', function () {
+                        if (renderer.send) {
+                            renderer.send('refocus');
+                        }
+                    });
+                    if (forceDev)
+                        renderer.stdout.on('data', function (data) { return console.log(data.toString()); });
+                    renderer.on('exit', closeManager);
+                    renderer.on('close', closeManager);
+                    return [2 /*return*/];
+            }
         });
     });
 }
@@ -127,9 +176,7 @@ function startManager() {
                 case 1:
                     server = _a.sent();
                     argv = args_1["default"](process.argv);
-                    if (!argv.noGUI) {
-                        createRenderer(server, argv.dev);
-                    }
+                    mainProcess(server, argv.dev, !argv.noGUI);
                     return [2 /*return*/];
             }
         });

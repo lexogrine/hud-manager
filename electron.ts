@@ -4,7 +4,9 @@ import { Server } from 'http';
 import * as directories from './init/directories';
 import { ChildProcess, spawn, fork } from 'child_process';
 import args from './init/args';
-import { app } from 'electron';
+import path from 'path';
+import fs from 'fs';
+import { app, session } from 'electron';
 import { createMainWindow } from './renderer';
 
 interface HLAEChild {
@@ -17,8 +19,32 @@ export const AFXInterop: HLAEChild = {
 
 export const isDev = process.env.DEV === 'true';
 
-async function createRenderer(server: Server, forceDev = false) {
+async function mainProcess(server: Server, forceDev = false, gui = true) {
+	const cookieFile = path.join(app.getPath('userData'), 'databases', 'cookie');
+
+	const cookie = fs.readFileSync(cookieFile, 'utf8');
+	try {
+		const cookies = JSON.parse(cookie);
+		if (Array.isArray(cookies)) {
+			for (const cookie of cookies) {
+				cookie.url = 'https://hmapi.lexogrine.com/';
+				await session.defaultSession.cookies.set(cookie);
+			}
+		}
+	} catch (e) {}
+
+	app.on('window-all-closed', app.quit);
+
+	app.on('before-quit', async () => {
+		const cookies = await session.defaultSession.cookies.get({ url: 'https://hmapi.lexogrine.com/' });
+
+		fs.writeFileSync(cookieFile, JSON.stringify(cookies), 'utf8');
+
+	});
+
 	const RMTPServer = fork(require.resolve('./RMTPServer.js'));
+
+	let renderer: ChildProcess = null;
 
 	const closeManager = () => {
 		if (server) {
@@ -32,13 +58,21 @@ async function createRenderer(server: Server, forceDev = false) {
 		}
 		app.quit();
 	};
+
+
+	app.on('quit', () => {
+		if(renderer) renderer.kill();
+		closeManager();
+	});
+
+	if(!gui) return;
+
 	const args = ['./', '--renderer'];
 	if (forceDev) args.push('--dev');
-	const renderer = spawn(process.execPath, args, {
+	renderer = spawn(process.execPath, args, {
 		stdio: forceDev ? ['pipe', 'pipe', 'pipe', 'ipc'] : ['ignore', 'ignore', 'ignore', 'ipc']
 	});
 
-	app.on('window-all-closed', () => {});
 
 	app.on('second-instance', () => {
 		if (renderer.send) {
@@ -50,10 +84,6 @@ async function createRenderer(server: Server, forceDev = false) {
 
 	renderer.on('exit', closeManager);
 	renderer.on('close', closeManager);
-
-	app.on('quit', () => {
-		renderer.kill();
-	});
 }
 
 async function startManager() {
@@ -65,9 +95,7 @@ async function startManager() {
 	directories.checkDirectories();
 	const server = await init();
 	const argv = args(process.argv);
-	if (!argv.noGUI) {
-		createRenderer(server, argv.dev);
-	}
+	mainProcess(server, argv.dev, !argv.noGUI);
 }
 
 const lock = app.requestSingleInstanceLock();
