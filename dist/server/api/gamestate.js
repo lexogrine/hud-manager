@@ -65,43 +65,20 @@ var VDF = __importStar(require("@node-steam/vdf"));
 var steam_game_path_1 = require("steam-game-path");
 var config_1 = require("./config");
 var electron_1 = require("electron");
-var GSITemplate = {
-    HUDMANAGERGSI: {
-        uri: 'http://localhost:1349/',
-        timeout: 0.1,
-        buffer: 0,
-        throttle: 0,
-        heartbeat: 0.01,
-        data: {
-            provider: 1,
-            map: 1,
-            round: 1,
-            player_id: 1,
-            allplayers_id: 1,
-            player_state: 1,
-            allplayers_state: 1,
-            allplayers_match_stats: 1,
-            allplayers_weapons: 1,
-            allplayers_position: 1,
-            phase_countdowns: 1,
-            allgrenades: 1,
-            map_round_wins: 1,
-            player_position: 1,
-            bomb: 1
-        }
-    }
-};
+var csgogsi_generator_1 = __importDefault(require("csgogsi-generator"));
+var GSITemplate = csgogsi_generator_1["default"]("HUDMANAGERGSI", 'http://localhost:1349/').json;
 exports.checkGSIFile = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var config, GamePath, cfgPath, rawContent, content;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
+    var _a;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
             case 0: return [4 /*yield*/, config_1.loadConfig()];
             case 1:
-                config = _a.sent();
+                config = _b.sent();
                 try {
                     GamePath = steam_game_path_1.getGamePath(730);
                 }
-                catch (_b) {
+                catch (_c) {
                     return [2 /*return*/, res.json({ success: false, message: "Game path couldn't be found", accessible: false })];
                 }
                 if (!config || !GamePath || !GamePath.game || !GamePath.game.path) {
@@ -113,28 +90,28 @@ exports.checkGSIFile = function (req, res) { return __awaiter(void 0, void 0, vo
                 }
                 try {
                     rawContent = fs_1["default"].readFileSync(cfgPath, 'UTF-8');
-                    content = VDF.parse(rawContent);
-                    if (!content || !content.HUDMANAGERGSI) {
+                    content = (_a = VDF.parse(rawContent)) === null || _a === void 0 ? void 0 : _a.HUDMANAGERGSI;
+                    if (!content) {
                         //Corrupted file
                         return [2 /*return*/, res.json({ success: false, message: 'File seems to be corrupted', accessible: true })];
                     }
-                    if (!content.HUDMANAGERGSI.uri.endsWith(":" + config.port + "/")) {
+                    if (!content.uri.endsWith(":" + config.port + "/")) {
                         // wrong port
                         return [2 /*return*/, res.json({ success: false, message: 'Wrong address', accessible: true })];
                     }
-                    if (JSON.stringify(GSITemplate.HUDMANAGERGSI.data) !== JSON.stringify(content.HUDMANAGERGSI.data)) {
+                    if (JSON.stringify(GSITemplate.HUDMANAGERGSI.data) !== JSON.stringify(content.data)) {
                         // wrong settings
                         return [2 /*return*/, res.json({ success: false, message: 'Wrong configuration', accessible: true })];
                     }
-                    if (!content.HUDMANAGERGSI.auth && config.token) {
+                    if (!content.auth && config.token) {
                         return [2 /*return*/, res.json({ success: false, message: 'Wrong token', accessible: true })];
                     }
-                    if (content.HUDMANAGERGSI.auth && content.HUDMANAGERGSI.auth.token !== config.token) {
+                    if (content.auth && content.auth.token !== config.token) {
                         return [2 /*return*/, res.json({ success: false, message: 'Wrong token', accessible: true })];
                     }
                     return [2 /*return*/, res.json({ success: true })];
                 }
-                catch (_c) {
+                catch (_d) {
                     return [2 /*return*/, res.json({ success: false, message: 'Unexpected error occured', accessible: true })];
                 }
                 return [2 /*return*/];
@@ -142,7 +119,7 @@ exports.checkGSIFile = function (req, res) { return __awaiter(void 0, void 0, vo
     });
 }); };
 exports.generateGSIFile = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var config, address, gsiCFG, text;
+    var config, address, text;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0: return [4 /*yield*/, config_1.loadConfig()];
@@ -152,12 +129,7 @@ exports.generateGSIFile = function () { return __awaiter(void 0, void 0, void 0,
                     return [2 /*return*/, null];
                 }
                 address = "http://localhost:" + config.port + "/";
-                gsiCFG = JSON.parse(JSON.stringify(GSITemplate));
-                gsiCFG.HUDMANAGERGSI.uri = address;
-                if (config.token.length) {
-                    gsiCFG.HUDMANAGERGSI.auth = { token: config.token };
-                }
-                text = VDF.stringify(gsiCFG);
+                text = csgogsi_generator_1["default"]("HUDMANAGERGSI", address, config.token).vdf;
                 return [2 /*return*/, text];
         }
     });

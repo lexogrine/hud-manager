@@ -16,6 +16,7 @@
     "cors": "^2.8.5",
     "cross-env": "^6.0.3",
     "csgogsi": "^1.2.6",
+    "csgogsi-generator": "^1.0.1",
     "csgogsi-socket": "^1.2.8",
     "decompress-zip": "^0.2.2",
     "electron-updater": "^4.3.5",
