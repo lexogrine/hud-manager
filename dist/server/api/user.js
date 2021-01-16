@@ -40,9 +40,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 exports.__esModule = true;
 exports.logout = exports.getCurrent = exports.verifyToken = void 0;
+var electron_1 = require("electron");
 var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+var node_fetch_1 = __importDefault(require("node-fetch"));
 var publickey_1 = require("./publickey");
 var api_1 = require("./../api");
+var tough_cookie_1 = require("tough-cookie");
+var path_1 = __importDefault(require("path"));
+var tough_cookie_file_store_1 = require("tough-cookie-file-store");
+var fetch_cookie_1 = __importDefault(require("fetch-cookie"));
+var cookiePath = path_1["default"].join(electron_1.app.getPath('userData'), 'cookie.json');
+var cookieJar = new tough_cookie_1.CookieJar(new tough_cookie_file_store_1.FileCookieStore(cookiePath));
+var fetch = fetch_cookie_1["default"](node_fetch_1["default"], cookieJar);
 exports.verifyToken = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var result;
     return __generator(this, function (_a) {

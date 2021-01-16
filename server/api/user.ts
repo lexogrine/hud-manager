@@ -1,8 +1,18 @@
 import express from 'express';
+import { app } from 'electron';
 import jwt from 'jsonwebtoken';
+import nodeFetch from "node-fetch";
 import { publicKey } from './publickey';
 import * as I from '../../types/interfaces';
 import { customer } from './../api';
+import { Cookie, CookieJar } from 'tough-cookie';
+import path from 'path';
+import {FileCookieStore} from 'tough-cookie-file-store';
+import fetchHandler from 'fetch-cookie';
+
+const cookiePath = path.join(app.getPath('userData'), 'cookie.json');
+const cookieJar = new CookieJar(new FileCookieStore(cookiePath));
+const fetch = fetchHandler(nodeFetch, cookieJar);
 
 export const verifyToken: express.RequestHandler = async (req, res) => {
 	if (!req.body || !req.body.token) return res.sendStatus(422);
