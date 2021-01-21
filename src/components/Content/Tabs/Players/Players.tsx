@@ -147,6 +147,11 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 		);
 	};
 
+	const add = () => {
+		loadEmpty();
+		setOpenState(true);
+	}
+
 	useEffect(() => {
 		// Load player
 	}, [data]);
@@ -175,7 +180,7 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 				onFileChange={fileHandler}
 				save={save}
 			/>
-			<div className="tab-content-container list-padding full-scroll">
+			<div className="tab-content-container no-padding">
 				<div className="player-list-entry heading">
 					<div className="position">No.</div>
 					<div className="picture">Avatar</div>
@@ -193,6 +198,16 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 						team={cxt.teams.find(team => team._id === player.team)}
 					/>
 				))}
+				<Row>
+					<Col className="main-buttons-container">
+						<Button color="secondary" onClick={() => {}} disabled={form._id === 'empty'}>
+							Delete
+						</Button>
+						<Button color="primary" onClick={add}>
+							+Add Player
+						</Button>
+					</Col>
+				</Row>
 			</div>
 		</Form>
 	);
