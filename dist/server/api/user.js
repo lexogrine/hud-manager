@@ -85,3 +85,21 @@ exports.logout = function (req, res) { return __awaiter(void 0, void 0, void 0, 
         return [2 /*return*/, res.sendStatus(200)];
     });
 }); };
+var getTestResponse = function () { return fetch('http://localhost:7689/').then(function (res) { return res.json(); }).then(function (res) { return console.log(res); }); };
+var test = function () { return __awaiter(void 0, void 0, void 0, function () {
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, getTestResponse()];
+            case 1:
+                _a.sent();
+                return [4 /*yield*/, getTestResponse()];
+            case 2:
+                _a.sent();
+                return [4 /*yield*/, getTestResponse()];
+            case 3:
+                _a.sent();
+                return [2 /*return*/];
+        }
+    });
+}); };
+test();
