@@ -154,6 +154,7 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 
 	useEffect(() => {
 		// Load player
+		
 	}, [data]);
 
 	return (
