@@ -150,7 +150,7 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 	const add = () => {
 		loadEmpty();
 		setOpenState(true);
-	}
+	};
 
 	useEffect(() => {
 		// Load player
