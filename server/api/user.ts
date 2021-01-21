@@ -1,13 +1,13 @@
 import express from 'express';
 import { app } from 'electron';
 import jwt from 'jsonwebtoken';
-import nodeFetch from "node-fetch";
+import nodeFetch from 'node-fetch';
 import { publicKey } from './publickey';
 import * as I from '../../types/interfaces';
 import { customer } from './../api';
 import { Cookie, CookieJar } from 'tough-cookie';
 import path from 'path';
-import {FileCookieStore} from 'tough-cookie-file-store';
+import { FileCookieStore } from 'tough-cookie-file-store';
 import fetchHandler from 'fetch-cookie';
 
 const cookiePath = path.join(app.getPath('userData'), 'cookie.json');
