@@ -45,7 +45,7 @@ export const createMainWindow = async (forceDev = false) => {
 	}
 
 	win = new BrowserWindow({
-		height: 835,
+		height: 874,
 		show: false,
 		frame: false,
 		titleBarStyle: 'hidden',
@@ -58,8 +58,8 @@ export const createMainWindow = async (forceDev = false) => {
 			devTools: isDev || forceDev
 		},
 		minWidth: 775,
-		minHeight: 835,
-		width: 1010
+		minHeight: 874,
+		width: 1200
 	});
 
 	ipcMain.on('min', () => {

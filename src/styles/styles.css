@@ -908,6 +908,9 @@ form .card > .card-body > button.btn {
     font-size: 12px;
     font-weight: 600;
 }
+.nav-tabs .nav-item {
+    margin-bottom: unset;
+}
 .nav-tabs .nav-link div {
     margin-top: 17px;
 }
@@ -1139,11 +1142,17 @@ input:checked ~ .customCheckbox {
 
 .player-list-entry {
     display: flex;
-    height: 64px;
+    height: 49px;
     cursor:pointer;
+    padding: 0 15px;
+}
+.player-list-entry.heading {
+    height: 42px;
+    font-size: 12px;
+    font-weight: 300;
 }
 .player-list-entry .position, .player-list-entry .picture {
-    width: 64px;
+    width: 96px;
     justify-content: center;
     flex: unset;
 }
@@ -1159,7 +1168,7 @@ input:checked ~ .customCheckbox {
     background-color: #ffffff0d;
 }
 .player-list-entry .picture img {
-    max-height:48px;
+    max-height:32px;
     border-radius:50%;
 }
 .player-list-entry .team img {
