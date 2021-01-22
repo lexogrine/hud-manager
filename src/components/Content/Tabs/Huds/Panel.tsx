@@ -68,7 +68,7 @@ export default class ActionPanel extends React.Component<IProps, IState> {
 		if (!files) return;
 		const file = files[0];
 		const { form } = this.state;
-		if(!file){
+		if (!file) {
 			form[sectionName][name] = '';
 			this.setState({ form });
 			return;

@@ -163,11 +163,11 @@ export default class Teams extends React.Component<{ cxt: IContextData }, State>
 	fileHandler = (files: FileList) => {
 		if (!files) return;
 		const file = files[0];
-		if(!file){
+		if (!file) {
 			this.setState(state => {
 				state.form.logo = '';
 				return state;
-			})
+			});
 			return;
 		}
 		if (!file.type.startsWith('image')) {

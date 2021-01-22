@@ -48,8 +48,8 @@ export default class DragFileInput extends React.Component<Props, State> {
 	};
 
 	clear = () => {
-		this.props.onChange([] as unknown as FileList);
-	}
+		this.props.onChange(([] as unknown) as FileList);
+	};
 
 	render() {
 		let accept = '';
@@ -73,7 +73,9 @@ export default class DragFileInput extends React.Component<Props, State> {
 				onDragEnd={this.whileOver}
 				onDragLeave={this.whileOver}
 			>
-				<div className="removeButton" onClick={this.clear}>X</div>
+				<div className="removeButton" onClick={this.clear}>
+					X
+				</div>
 				<input type="file" id={this.props.id} accept={accept} onChange={this.uploadHandler} />
 				<label className="centered" htmlFor={this.props.id}>
 					<img src={DragIcon} alt="Drag file here" />

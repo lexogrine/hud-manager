@@ -51,8 +51,8 @@ const TeamsTab = ({ cxt }: IProps) => {
 	const fileHandler = (files: FileList) => {
 		if (!files) return;
 		const file = files[0];
-		if(!file){
-			setForm(prevForm => ({...prevForm, logo: ''}));
+		if (!file) {
+			setForm(prevForm => ({ ...prevForm, logo: '' }));
 			return;
 		}
 		if (!file.type.startsWith('image')) {

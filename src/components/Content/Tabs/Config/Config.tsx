@@ -82,7 +82,7 @@ export default class Config extends React.Component<IProps, IState> {
 	loadEXE = (type: 'hlaePath' | 'afxCEFHudInteropPath') => (files: FileList) => {
 		if (!files) return;
 		const file = files[0] as ExtendedFile;
-		if(!file){
+		if (!file) {
 			this.setState(state => {
 				state.config[type] = '';
 				return state;
@@ -105,7 +105,7 @@ export default class Config extends React.Component<IProps, IState> {
 	importCheck = (callback: any) => (files: FileList) => {
 		if (!files) return;
 		const file = files[0] as ExtendedFile;
-		if(!file){
+		if (!file) {
 			return;
 		}
 		if (!file.path || file.type !== 'application/json') return;
