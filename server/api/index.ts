@@ -65,7 +65,7 @@ export default function (router: express.Router, io: socketio.Server) {
 
 	router.route('/api/import').post(sync.importDb);
 
-	router.route('/api/steam').get((req, res) => res.json({ gamePath: getGamePath(730) }))
+	router.route('/api/steam').get((req, res) => res.json({ gamePath: getGamePath(730) }));
 
 	router.route('/api/import/verify').post(sync.checkForConflicts);
 
