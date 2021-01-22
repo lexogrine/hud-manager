@@ -344,6 +344,69 @@ img.smallLogo {
     align-items: center;
     justify-content: center;
 }
+.veto-menu {
+    margin-left:auto;
+    display: flex;
+    position: relative;
+    right: 0;
+    width:325px;
+}
+.veto-menu .toggler{
+    height: 29px;
+    width:29px;
+    background-color: #7ad9f5;
+    border-radius: 50%;
+}
+.veto-summary {
+    width:175px;
+}
+.veto-title {
+    width: 52px;
+}
+.veto-title, .veto-summary {
+    white-space: nowrap;
+    word-wrap: none;
+    transition: width 0.75s, opacity 0.5s;
+}
+.veto-title.hide, .veto-summary.hide {
+    opacity: 0;
+    width:0;
+}
+.veto-score {
+    display: flex;
+    font-size: 12px;
+    align-items: center;
+    margin-right: auto;
+}
+.veto-menu-container {
+    width:29px;
+    transition: width 1s;
+    margin-left:auto;
+}
+.veto-menu-container.expanded {
+    width:325px;
+}
+.veto-score .win-icon {
+    color: #f2cb54;
+    font-size: 10px;
+    font-weight: 700;
+}
+.veto-score .win-icon:not(.active){
+    opacity: 0;
+}
+.veto-score .score {
+    font-weight: 600;
+}
+.veto-score .team-logo {
+    max-height: 25px;
+    margin: 0 15px;
+}
+.veto-score .versus {
+    margin: 0 14px;
+}
+.veto-container .edit-veto:first-of-type{
+    margin-left: 16px;
+}
 .veto-container:nth-child(2n) {
     background-color:#2f3238;
 }
@@ -354,14 +417,13 @@ img.smallLogo {
     text-transform: uppercase;
     align-items: center;
     width:100%;
+    overflow: hidden;
 }
 .veto-container .veto-title {
     font-weight: 700;
     padding-right:5px;
 }
-.veto-container .edit-veto:first-of-type {
-    margin-left:auto;
-}
+
 .veto-container .edit-veto:last-of-type {
     margin-right: 0;
 }
