@@ -66,7 +66,7 @@ var steam_game_path_1 = require("steam-game-path");
 var config_1 = require("./config");
 var electron_1 = require("electron");
 var csgogsi_generator_1 = __importDefault(require("csgogsi-generator"));
-var GSITemplate = csgogsi_generator_1["default"]("HUDMANAGERGSI", 'http://localhost:1349/').json;
+var GSITemplate = csgogsi_generator_1["default"]('HUDMANAGERGSI', 'http://localhost:1349/').json;
 exports.checkGSIFile = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var config, GamePath, cfgPath, rawContent, content;
     var _a;
@@ -129,7 +129,7 @@ exports.generateGSIFile = function () { return __awaiter(void 0, void 0, void 0,
                     return [2 /*return*/, null];
                 }
                 address = "http://localhost:" + config.port + "/";
-                text = csgogsi_generator_1["default"]("HUDMANAGERGSI", address, config.token).vdf;
+                text = csgogsi_generator_1["default"]('HUDMANAGERGSI', address, config.token).vdf;
                 return [2 /*return*/, text];
         }
     });

@@ -109,7 +109,7 @@ exports.getConfig = function (_req, res) { return __awaiter(void 0, void 0, void
         }
     });
 }); };
-exports.updateConfig = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+exports.updateConfig = function (io) { return function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var updated, config;
     return __generator(this, function (_a) {
         switch (_a.label) {
@@ -127,10 +127,11 @@ exports.updateConfig = function (req, res) { return __awaiter(void 0, void 0, vo
                 if (!config) {
                     return [2 /*return*/, res.sendStatus(500)];
                 }
+                io.emit('config');
                 return [2 /*return*/, res.json(config)];
         }
     });
-}); };
+}); }; };
 exports.setConfig = function (config) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         return [2 /*return*/, new Promise(function (res) {
