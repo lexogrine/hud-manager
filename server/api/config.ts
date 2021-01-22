@@ -64,7 +64,7 @@ export const updateConfig = (io: socketio.Server): express.RequestHandler => asy
 	if (!config) {
 		return res.sendStatus(500);
 	}
-	io.emit('config')
+	io.emit('config');
 	return res.json(config);
 };
 
