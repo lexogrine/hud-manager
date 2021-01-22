@@ -26,6 +26,7 @@ exports.customer = void 0;
 var express_1 = __importDefault(require("express"));
 var electron_1 = require("electron");
 var players = __importStar(require("./players"));
+var steam_game_path_1 = require("steam-game-path");
 var teams = __importStar(require("./teams"));
 var match = __importStar(require("./match"));
 var config = __importStar(require("./config"));
@@ -64,6 +65,7 @@ function default_1(router, io) {
     router.route('/api/maps').get(match.getMaps);
     router.route('/api/gsi').get(gsi.checkGSIFile).put(gsi.createGSIFile);
     router.route('/api/import').post(sync.importDb);
+    router.route('/api/steam').get(function (req, res) { return res.json({ gamePath: steam_game_path_1.getGamePath(730) }); });
     router.route('/api/import/verify').post(sync.checkForConflicts);
     router.route('/api/gsi/download').get(gsi.saveFile('gamestate_integration_hudmanager.cfg', gsi.generateGSIFile()));
     router.route('/api/db/download').get(gsi.saveFile('hudmanagerdb.json', sync.exportDatabase()));
