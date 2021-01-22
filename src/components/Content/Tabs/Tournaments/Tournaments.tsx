@@ -161,9 +161,15 @@ export default class Teams extends React.Component<{ cxt: IContextData }, State>
 		this.setState({ isOpen: false });
 	};
 	fileHandler = (files: FileList) => {
-		if (!files || !files[0]) return;
+		if (!files) return;
 		const file = files[0];
-
+		if(!file){
+			this.setState(state => {
+				state.form.logo = '';
+				return state;
+			})
+			return;
+		}
 		if (!file.type.startsWith('image')) {
 			return;
 		}

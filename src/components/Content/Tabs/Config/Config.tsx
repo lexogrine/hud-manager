@@ -80,8 +80,15 @@ export default class Config extends React.Component<IProps, IState> {
 		};
 	}
 	loadEXE = (type: 'hlaePath' | 'afxCEFHudInteropPath') => (files: FileList) => {
-		if (!files || !files[0]) return;
-		const file: ExtendedFile = files[0];
+		if (!files) return;
+		const file = files[0] as ExtendedFile;
+		if(!file){
+			this.setState(state => {
+				state.config[type] = '';
+				return state;
+			});
+			return;
+		}
 		if (!file.path) return;
 		const path = file.path;
 		this.setState(state => {
@@ -96,8 +103,11 @@ export default class Config extends React.Component<IProps, IState> {
 		this.setState({ data: {}, conflict: { teams: 0, players: 0 }, importModalOpen: false }, callback);
 	};
 	importCheck = (callback: any) => (files: FileList) => {
-		if (!files || !files[0]) return;
-		const file: ExtendedFile = files[0];
+		if (!files) return;
+		const file = files[0] as ExtendedFile;
+		if(!file){
+			return;
+		}
 		if (!file.path || file.type !== 'application/json') return;
 		const reader: any = new FileReader();
 		reader.readAsDataURL(file);

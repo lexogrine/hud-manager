@@ -62,8 +62,12 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 	};
 
 	const fileHandler = (files: FileList) => {
-		if (!files || !files[0]) return;
+		if (!files) return;
 		const file = files[0];
+		if(!file){
+			setForm(prevForm => ({...prevForm, avatar: ''}));
+			return;
+		}
 		if (!file.type.startsWith('image')) {
 			return;
 		}

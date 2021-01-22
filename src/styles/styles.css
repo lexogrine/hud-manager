@@ -925,6 +925,21 @@ form .card > .card-body > button.btn {
 .dropArea.hightlight .background, .dropArea:hover .background {
     display: block;
 }
+.dropArea .removeButton {
+
+    position: absolute;
+    top: 6px;
+    right: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    font-size: 12px;
+    z-index: 999;
+    background-color: #ff000059;
+    border-radius: 50%;
+}
 .dropArea.path_selector {
     height: 37px;
     width: 200px
