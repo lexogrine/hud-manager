@@ -5,23 +5,21 @@ import { countries } from './../../../../api/countries';
 import config from './../../../../api/config';
 
 interface Props {
-	player: I.Player;
-	team?: I.Team;
+	team: I.Team;
 	edit: () => void;
 }
 
-const PlayerListEntry = ({ player, team, edit }: Props) => {
-	const country = !player.country ? null : countries[player.country] || null;
+const TeamListEntry = ({ team, edit }: Props) => {
+	const country = !team.country ? null : countries[team.country] || null;
+
 	return (
 		<div className="player-list-entry">
-			<div className="picture">{player.avatar ? <img src={player.avatar} /> : null}</div>
-			<div className="realName">
-				{player.firstName} {player.lastName}
+			<div className="picture">{team.logo ? <img src={team.logo} /> : null}</div>
+			<div className="name">
+				{team.name}
 			</div>
-			<div className="username">{player.username}</div>
-			<div className="team">
-				{team?._id && team?.logo ? <img src={team.logo} /> : null}
-				{team?.name || '-'}
+			<div className="shortname">
+				{team.shortName}
 			</div>
 			<div className="country">
 				{country ? (
@@ -41,4 +39,4 @@ const PlayerListEntry = ({ player, team, edit }: Props) => {
 	);
 };
 
-export default PlayerListEntry;
+export default TeamListEntry;

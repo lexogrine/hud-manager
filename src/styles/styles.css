@@ -1143,12 +1143,11 @@ input:checked ~ .customCheckbox {
 .player-list-entry {
     display: flex;
     height: 49px;
-    cursor:pointer;
     padding: 0 15px;
+    font-size: 12px;
 }
 .player-list-entry.heading {
     height: 42px;
-    font-size: 12px;
     font-weight: 300;
 }
 .player-list-entry .position, .player-list-entry .picture {
@@ -1172,21 +1171,24 @@ input:checked ~ .customCheckbox {
     border-radius:50%;
 }
 .player-list-entry .team img {
-    max-height: 48px;
+    max-height: 38.4px;
     max-width: 48px;
+    margin-right: 8px;
+}
+.player-list-entry .country {
+    width: 100px;
+    flex: unset;
 }
 .player-list-entry .country img {
-    max-height: 48px;
+    max-height: 38.4px;
+}
+.player-list-entry .options {
+    flex: unset;
+    width:96px;
 }
 .player-list-entry.heading {
     cursor: default;
     background-color: #15171b;
     top:0;
     position: sticky;
-}
-.player-list-entry:nth-child(2n):hover {
-    background-color: #ffffff1a;
-}
-.player-list-entry:not(.heading):nth-child(2n+1):hover {
-    background-color: #1f2127f0;
 }

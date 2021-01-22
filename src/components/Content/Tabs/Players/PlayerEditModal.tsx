@@ -14,9 +14,10 @@ interface IProps {
 	onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 	onFileChange: (files: FileList) => void;
 	save: () => void;
+	deletePlayer: () => void;
 }
 
-const PlayerEditModal = ({ open, toggle, player, teams, onChange, onFileChange, save }: IProps) => {
+const PlayerEditModal = ({ open, toggle, player, teams, onChange, onFileChange, save, deletePlayer }: IProps) => {
 	let avatar = '';
 	if (player.avatar) {
 		if (player.avatar.includes('api/players/avatar')) {
@@ -130,14 +131,12 @@ const PlayerEditModal = ({ open, toggle, player, teams, onChange, onFileChange, 
 							<FormText color="muted">
 								Avatar to be used for player images instead of the default from Steam
 							</FormText>
-							{/*<Label for="avatar">Avatar</Label>
-                                <Input type="file" name="avatar" id="avatar" onChange={this.changeHandler} />
-                                <FormText color="muted">
-                                    Avatar to be used for player images, instead of Steam's default
-                                </FormText>*/}
 						</FormGroup>
 					</Col>
 				</Row>
+				{player._id !== "empty" ? <Row className="centered">
+					<Button className="purple-btn round-btn" onClick={deletePlayer}>Delete</Button>
+				</Row> : null}
 			</ModalBody>
 			<ModalFooter className="no-padding">
 				<Button color="primary" className="modal-save" onClick={save}>
