@@ -15,21 +15,23 @@ interface Props {
 interface State {
 	isOpen: boolean;
 	isScoreOpen: boolean;
-	isMenuExpanded: boolean
+	isMenuExpanded: boolean;
 }
-const VetoScore = ({ veto, left, right}: { veto: I.Veto, left: I.Team | null, right: I.Team | null}) => {
-	if(!left || !right || !veto.score) return null;
-	return <div className="veto-score">
-		<div className={`win-icon ${veto.winner === left._id ? 'active':""}`}>WINS</div>
+const VetoScore = ({ veto, left, right }: { veto: I.Veto; left: I.Team | null; right: I.Team | null }) => {
+	if (!left || !right || !veto.score) return null;
+	return (
+		<div className="veto-score">
+			<div className={`win-icon ${veto.winner === left._id ? 'active' : ''}`}>WINS</div>
 
-		{left.logo ? <img src={left.logo} alt={`${left.name} logo`} className="team-logo" /> : ''}
-		<div className="score">{veto.score[left._id] || 0}</div>
-		<div className="versus">VS</div>
-		<div className="score">{veto.score[right._id] || 0}</div>		
-		{right.logo ? <img src={right.logo} alt={`${right.name} logo`} className="team-logo" /> : ''}
-		<div className={`win-icon ${veto.winner === right._id ? 'active':""}`}>WINS</div>
-	</div>
-}
+			{left.logo ? <img src={left.logo} alt={`${left.name} logo`} className="team-logo" /> : ''}
+			<div className="score">{veto.score[left._id] || 0}</div>
+			<div className="versus">VS</div>
+			<div className="score">{veto.score[right._id] || 0}</div>
+			{right.logo ? <img src={right.logo} alt={`${right.name} logo`} className="team-logo" /> : ''}
+			<div className={`win-icon ${veto.winner === right._id ? 'active' : ''}`}>WINS</div>
+		</div>
+	);
+};
 function generateDescription(veto: I.Veto, team?: I.Team, secTeam?: I.Team) {
 	if (!veto.mapName) {
 		return '';
@@ -68,8 +70,8 @@ class SingleVeto extends React.Component<Props, State> {
 		};
 	}
 	toggleMenu = () => {
-		this.setState({isMenuExpanded:!this.state.isMenuExpanded})
-	}
+		this.setState({ isMenuExpanded: !this.state.isMenuExpanded });
+	};
 	toggleScoreOpen = () => {
 		this.setState({ isScoreOpen: !this.state.isScoreOpen });
 	};
@@ -100,7 +102,7 @@ class SingleVeto extends React.Component<Props, State> {
 	componentDidMount() {}
 	render() {
 		const { vetoTeams, veto, map, maps, onSave } = this.props;
-		const { isMenuExpanded} = this.state;
+		const { isMenuExpanded } = this.state;
 		let team = vetoTeams.filter(team => team._id === veto.teamId)[0];
 		let secTeam = vetoTeams.filter(team => team._id !== veto.teamId)[0];
 		if (!veto.teamId) {
@@ -115,24 +117,25 @@ class SingleVeto extends React.Component<Props, State> {
 					<>
 						<div className="veto-main">
 							<div className={`veto-title ${isMenuExpanded ? 'hide' : ''}`}>VETO {map + 1}:</div>
-							<div className={`veto-summary ${isMenuExpanded ? 'hide' : ''}`}>{generateDescription(veto, team, secTeam)}</div>
-							<VetoScore veto={veto} left={team} right={secTeam}/>
-							<div className={`veto-menu-container ${isMenuExpanded ? 'expanded':'collapsed'}`}>
-							<div className={`veto-menu`}>
-								<div className="toggler" onClick={this.toggleMenu}></div>
-								<Button onClick={this.resetScore} className="edit-veto purple-btn">
-									Reset score
-								</Button>
-								{veto.mapName ? (
-									<Button onClick={this.toggleScoreOpen} className="edit-veto purple-btn">
-										Set score
-									</Button>
-								) : null}
-								<Button onClick={this.toggle} className="edit-veto purple-btn">
-									Edit
-								</Button>
+							<div className={`veto-summary ${isMenuExpanded ? 'hide' : ''}`}>
+								{generateDescription(veto, team, secTeam)}
 							</div>
-							
+							<VetoScore veto={veto} left={team} right={secTeam} />
+							<div className={`veto-menu-container ${isMenuExpanded ? 'expanded' : 'collapsed'}`}>
+								<div className={`veto-menu`}>
+									<div className="toggler" onClick={this.toggleMenu}></div>
+									<Button onClick={this.resetScore} className="edit-veto purple-btn">
+										Reset score
+									</Button>
+									{veto.mapName ? (
+										<Button onClick={this.toggleScoreOpen} className="edit-veto purple-btn">
+											Set score
+										</Button>
+									) : null}
+									<Button onClick={this.toggle} className="edit-veto purple-btn">
+										Edit
+									</Button>
+								</div>
 							</div>
 						</div>
 						{veto.mapName ? (
