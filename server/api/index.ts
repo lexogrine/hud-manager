@@ -36,7 +36,7 @@ export default function (router: express.Router, io: socketio.Server) {
 
 	router.route('/api/teams/logo/:id').get(teams.getLogoFile);
 
-	router.route('/api/config').get(config.getConfig).patch(config.updateConfig);
+	router.route('/api/config').get(config.getConfig).patch(config.updateConfig(io));
 
 	router.route('/api/version').get((req, res) => res.json({ version: app.getVersion() }));
 

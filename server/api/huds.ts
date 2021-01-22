@@ -205,8 +205,8 @@ export const renderLegacy: express.RequestHandler = async (req, res) => {
 		ip: 'localhost',
 		port: cfg.port,
 		avatars: false,
-		hud: path.join('/legacy', req.params.dir, 'index.js'),
-		css: path.join('/legacy', req.params.dir, 'style.css'),
+		hud: path.join('/huds', req.params.dir, 'index.js'),
+		css: path.join('/huds', req.params.dir, 'style.css'),
 		delay: 0
 	});
 };

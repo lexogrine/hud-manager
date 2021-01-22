@@ -65,7 +65,7 @@ async function startManager() {
 	directories.checkDirectories();
 	const server = await init();
 	const argv = args(process.argv);
-	if (!argv.noGui) {
+	if (!argv.noGUI) {
 		createRenderer(server, argv.dev);
 	}
 }

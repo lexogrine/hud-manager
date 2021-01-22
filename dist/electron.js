@@ -127,7 +127,7 @@ function startManager() {
                 case 1:
                     server = _a.sent();
                     argv = args_1["default"](process.argv);
-                    if (!argv.noGui) {
+                    if (!argv.noGUI) {
                         createRenderer(server, argv.dev);
                     }
                     return [2 /*return*/];

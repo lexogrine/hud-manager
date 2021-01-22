@@ -121,6 +121,9 @@ export default class Huds extends React.Component<IProps, IState> {
 		socket.on('enableTest', (status: boolean) => {
 			this.setState({ enableTest: status });
 		});
+		socket.on('config', () => {
+			this.getConfig();
+		});
 		socket.emit('get_active_hlae');
 		this.loadHUDs();
 		this.getConfig();
