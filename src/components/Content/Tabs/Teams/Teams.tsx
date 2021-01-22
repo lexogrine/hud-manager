@@ -8,7 +8,7 @@ import TeamEditModal from './TeamEditModal';
 import TeamListEntry from './Team';
 
 interface IProps {
-	cxt: IContextData
+	cxt: IContextData;
 }
 
 const TeamsTab = ({ cxt }: IProps) => {
@@ -67,11 +67,7 @@ const TeamsTab = ({ cxt }: IProps) => {
 
 	const changeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
 		event.persist();
-		const name = event.target.name as
-			| 'name'
-			| 'shortName'
-			| 'logo'
-			| 'country';
+		const name = event.target.name as 'name' | 'shortName' | 'logo' | 'country';
 
 		if (!event.target.files) {
 			return setForm(prevForm => ({
@@ -163,11 +159,7 @@ const TeamsTab = ({ cxt }: IProps) => {
 					<div className="options"></div>
 				</div>
 				{cxt.teams.filter(filterTeams).map(team => (
-					<TeamListEntry
-						key={team._id}
-						team={team}
-						edit={() => edit(team)}
-					/>
+					<TeamListEntry key={team._id} team={team} edit={() => edit(team)} />
 				))}
 				<Row>
 					<Col className="main-buttons-container">

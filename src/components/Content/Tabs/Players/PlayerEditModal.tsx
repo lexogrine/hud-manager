@@ -134,9 +134,13 @@ const PlayerEditModal = ({ open, toggle, player, teams, onChange, onFileChange, 
 						</FormGroup>
 					</Col>
 				</Row>
-				{player._id !== "empty" ? <Row className="centered">
-					<Button className="purple-btn round-btn" onClick={deletePlayer}>Delete</Button>
-				</Row> : null}
+				{player._id !== 'empty' ? (
+					<Row className="centered">
+						<Button className="purple-btn round-btn" onClick={deletePlayer}>
+							Delete
+						</Button>
+					</Row>
+				) : null}
 			</ModalBody>
 			<ModalFooter className="no-padding">
 				<Button color="primary" className="modal-save" onClick={save}>

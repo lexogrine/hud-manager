@@ -34,9 +34,10 @@ const PlayerListEntry = ({ player, team, edit }: Props) => {
 				) : null}
 			</div>
 			<div className="options">
-				<Button className="purple-btn round-btn" onClick={edit}>Edit</Button>
+				<Button className="purple-btn round-btn" onClick={edit}>
+					Edit
+				</Button>
 			</div>
-
 		</div>
 	);
 };

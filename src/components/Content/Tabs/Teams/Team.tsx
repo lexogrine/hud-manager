@@ -15,12 +15,8 @@ const TeamListEntry = ({ team, edit }: Props) => {
 	return (
 		<div className="player-list-entry">
 			<div className="picture">{team.logo ? <img src={team.logo} /> : null}</div>
-			<div className="name">
-				{team.name}
-			</div>
-			<div className="shortname">
-				{team.shortName}
-			</div>
+			<div className="name">{team.name}</div>
+			<div className="shortname">{team.shortName}</div>
 			<div className="country">
 				{country ? (
 					<img
@@ -32,9 +28,10 @@ const TeamListEntry = ({ team, edit }: Props) => {
 				) : null}
 			</div>
 			<div className="options">
-				<Button className="purple-btn round-btn" onClick={edit}>Edit</Button>
+				<Button className="purple-btn round-btn" onClick={edit}>
+					Edit
+				</Button>
 			</div>
-
 		</div>
 	);
 };
