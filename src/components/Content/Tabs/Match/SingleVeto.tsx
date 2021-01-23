@@ -97,7 +97,7 @@ class SingleVeto extends React.Component<Props, State> {
 		this.props.onSave('winner', this.props.map)({ target: { value: team } });
 		this.props.onSave('mapEnd', this.props.map)({ target: { value: !!team } });
 	};
-	componentDidMount() { }
+	componentDidMount() {}
 	render() {
 		const { vetoTeams, veto, map, maps, onSave } = this.props;
 		const { isMenuExpanded } = this.state;
@@ -112,55 +112,71 @@ class SingleVeto extends React.Component<Props, State> {
 				{vetoTeams.length !== 2 ? (
 					'Pick both teams to set vetos'
 				) : (
-						<>
-							<div className="veto-main">
-								<div className="veto-description">
-
-									<div className={`veto-title ${(isMenuExpanded && team && secTeam && veto.score) ? 'hide' : ''}`}>VETO {map + 1}:</div>
-									<div className={`veto-summary ${(isMenuExpanded && team && secTeam && veto.score) ? 'hide' : ''}`}>
-										{generateDescription(veto, team, secTeam)}
-									</div>
+					<>
+						<div className="veto-main">
+							<div className="veto-description">
+								<div
+									className={`veto-title ${
+										isMenuExpanded && team && secTeam && veto.score ? 'hide' : ''
+									}`}
+								>
+									VETO {map + 1}:
 								</div>
-								<VetoScore veto={veto} left={team} right={secTeam} />
-								{ veto.mapName ? <div className={`preview ${veto.mapName.replace("de_","")} ${veto.type}`} onClick={this.toggle}>{veto.mapName.replace("de_","")}</div> : null }
-								<div className={`veto-menu-container ${isMenuExpanded ? 'expanded' : 'collapsed'}`}>
-									<div className={`veto-menu`}>
-										<div className="toggler" onClick={this.toggleMenu}></div>
-										<Button onClick={this.resetScore} className="edit-veto purple-btn">
-											Reset score
-									</Button>
-										{veto.mapName ? (
-											<Button onClick={this.toggleScoreOpen} className="edit-veto purple-btn">
-												Set score
-											</Button>
-										) : null}
-										<Button onClick={this.toggle} className="edit-veto purple-btn">
-											Edit
-									</Button>
-									</div>
+								<div
+									className={`veto-summary ${
+										isMenuExpanded && team && secTeam && veto.score ? 'hide' : ''
+									}`}
+								>
+									{generateDescription(veto, team, secTeam)}
 								</div>
 							</div>
+							<VetoScore veto={veto} left={team} right={secTeam} />
 							{veto.mapName ? (
-								<EditScoreModal
-									setWinner={this.setWinner}
-									teams={vetoTeams}
-									toggle={this.toggleScoreOpen}
-									isOpen={this.state.isScoreOpen}
-									veto={veto}
-									saveScore={this.setScore}
-								/>
+								<div
+									className={`preview ${veto.mapName.replace('de_', '')} ${veto.type}`}
+									onClick={this.toggle}
+								>
+									{veto.mapName.replace('de_', '')}
+								</div>
 							) : null}
-							<VetoModal
-								maps={maps}
-								map={map}
-								veto={veto}
+							<div className={`veto-menu-container ${isMenuExpanded ? 'expanded' : 'collapsed'}`}>
+								<div className={`veto-menu`}>
+									<div className="toggler" onClick={this.toggleMenu}></div>
+									<Button onClick={this.resetScore} className="edit-veto purple-btn">
+										Reset score
+									</Button>
+									{veto.mapName ? (
+										<Button onClick={this.toggleScoreOpen} className="edit-veto purple-btn">
+											Set score
+										</Button>
+									) : null}
+									<Button onClick={this.toggle} className="edit-veto purple-btn">
+										Edit
+									</Button>
+								</div>
+							</div>
+						</div>
+						{veto.mapName ? (
+							<EditScoreModal
+								setWinner={this.setWinner}
 								teams={vetoTeams}
-								isOpen={this.state.isOpen}
-								toggle={this.toggle}
-								onChange={onSave}
+								toggle={this.toggleScoreOpen}
+								isOpen={this.state.isScoreOpen}
+								veto={veto}
+								saveScore={this.setScore}
 							/>
-						</>
-					)}
+						) : null}
+						<VetoModal
+							maps={maps}
+							map={map}
+							veto={veto}
+							teams={vetoTeams}
+							isOpen={this.state.isOpen}
+							toggle={this.toggle}
+							onChange={onSave}
+						/>
+					</>
+				)}
 			</div>
 		);
 	}
