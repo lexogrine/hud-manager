@@ -155,7 +155,19 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 	};
 
 	useEffect(() => {
-		// Load player
+		loadEmpty();
+		if(!data || !data.steamid) {
+			setOpenState(false);
+			return
+		}
+		const player = cxt.players.find(player => player.steamid === data.steamid);
+		if(!player){
+			setForm({...emptyPlayer, steamid: data.steamid });
+		} else {
+			setForm({...emptyPlayer, ...player});
+		}
+		setOpenState(true);
+
 	}, [data]);
 
 	return (
