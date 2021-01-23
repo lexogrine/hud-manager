@@ -50,11 +50,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
-exports.setConfig = exports.updateConfig = exports.getConfig = exports.loadConfig = void 0;
+exports.verifyUrl = exports.setConfig = exports.updateConfig = exports.getConfig = exports.loadConfig = exports.publicIP = void 0;
 var database_1 = __importDefault(require("./../../init/database"));
 var fs_1 = __importDefault(require("fs"));
 var ip_1 = __importDefault(require("ip"));
+var public_ip_1 = __importDefault(require("public-ip"));
 var configs = database_1["default"].config;
+exports.publicIP = null;
+public_ip_1["default"]
+    .v4()
+    .then(function (ip) {
+    exports.publicIP = ip;
+})["catch"]();
 exports.loadConfig = function () { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
         return [2 /*return*/, new Promise(function (res) {
@@ -154,5 +161,33 @@ exports.setConfig = function (config) { return __awaiter(void 0, void 0, void 0,
                     });
                 }); });
             })];
+    });
+}); };
+exports.verifyUrl = function (url) { return __awaiter(void 0, void 0, void 0, function () {
+    var cfg, bases, base, path, pathRegex;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                if (!url || typeof url !== 'string')
+                    return [2 /*return*/, false];
+                return [4 /*yield*/, exports.loadConfig()];
+            case 1:
+                cfg = _a.sent();
+                bases = ["http://" + ip_1["default"].address() + ":" + cfg.port, "http://" + exports.publicIP + ":" + cfg.port];
+                if (process.env.DEV === 'true') {
+                    bases.push("http://localhost:3000/?port=" + cfg.port);
+                }
+                base = bases.find(function (base) { return url.startsWith(base); });
+                if (!base)
+                    return [2 /*return*/, false];
+                path = url.substr(base.length);
+                if (!path || path === '/')
+                    return [2 /*return*/, true];
+                if (!path.endsWith("/?port=" + cfg.port + "&isProd=true"))
+                    return [2 /*return*/, false];
+                path = path.substr(0, path.lastIndexOf('/'));
+                pathRegex = /^\/huds\/([a-zA-Z0-9_-]+)$/;
+                return [2 /*return*/, pathRegex.test(path)];
+        }
     });
 }); };

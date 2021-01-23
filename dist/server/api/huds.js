@@ -69,13 +69,6 @@ var sockets_1 = require("./../sockets");
 var huds_1 = __importDefault(require("./../../init/huds"));
 var decompress_zip_1 = __importDefault(require("decompress-zip"));
 var overlay_1 = __importDefault(require("./overlay"));
-var public_ip_1 = __importDefault(require("public-ip"));
-var publicIP = null;
-public_ip_1["default"]
-    .v4()
-    .then(function (ip) {
-    publicIP = ip;
-})["catch"]();
 var remove = function (pathToRemove) {
     if (!fs.existsSync(pathToRemove)) {
         return;
@@ -222,7 +215,7 @@ exports.renderHUD = function (req, res) { return __awaiter(void 0, void 0, void 
                 cfg = _a.sent();
                 availableUrls = [
                     "http://" + ip_1["default"].address() + ":" + cfg.port + "/hud/" + req.params.dir + "/",
-                    "http://" + publicIP + ":" + cfg.port + "/hud/" + req.params.dir + "/"
+                    "http://" + config_1.publicIP + ":" + cfg.port + "/hud/" + req.params.dir + "/"
                 ];
                 if (!req.params.dir) {
                     return [2 /*return*/, res.sendStatus(404)];

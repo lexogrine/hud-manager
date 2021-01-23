@@ -44,6 +44,7 @@ var electron_1 = require("electron");
 var path_1 = __importDefault(require("path"));
 var fs_1 = __importDefault(require("fs"));
 var autoUpdater_1 = __importDefault(require("./autoUpdater"));
+var ip_1 = __importDefault(require("ip"));
 var config_1 = require("./server/api/config");
 var isDev = process.env.DEV === 'true';
 exports.createMainWindow = function (forceDev) {
@@ -117,7 +118,7 @@ exports.createMainWindow = function (forceDev) {
                             backgroundThrottling: false,
                             devTools: isDev || forceDev
                         },
-                        minWidth: 775,
+                        minWidth: 950,
                         minHeight: 874,
                         width: 1200
                     });
@@ -145,7 +146,7 @@ exports.createMainWindow = function (forceDev) {
                 case 8:
                     config = _a.sent();
                     win.setMenuBarVisibility(false);
-                    startUrl = "http://localhost:" + config.port + "/";
+                    startUrl = "http://" + ip_1["default"].address() + ":" + config.port + "/";
                     win.webContents.on('new-window', function (e, url) {
                         e.preventDefault();
                         electron_1.shell.openExternal(url);
