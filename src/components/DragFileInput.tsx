@@ -9,6 +9,7 @@ interface Props {
 	className?: string;
 	imgSrc?: string;
 	accept?: string;
+	removable?: boolean;
 }
 interface State {
 	highlight: boolean;
@@ -47,6 +48,10 @@ export default class DragFileInput extends React.Component<Props, State> {
 		}
 	};
 
+	clear = () => {
+		this.props.onChange(([] as unknown) as FileList);
+	};
+
 	render() {
 		let accept = '';
 		if (this.props.image) {
@@ -69,6 +74,11 @@ export default class DragFileInput extends React.Component<Props, State> {
 				onDragEnd={this.whileOver}
 				onDragLeave={this.whileOver}
 			>
+				{this.props.removable ? (
+					<div className="removeButton" onClick={this.clear}>
+						X
+					</div>
+				) : null}
 				<input type="file" id={this.props.id} accept={accept} onChange={this.uploadHandler} />
 				<label className="centered" htmlFor={this.props.id}>
 					<img src={DragIcon} alt="Drag file here" />

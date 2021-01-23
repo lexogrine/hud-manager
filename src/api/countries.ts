@@ -182,6 +182,8 @@ export const countries: any = {
 	RE: 'Reunion',
 	RO: 'Romania',
 	RU: 'Russia',
+	EU: 'European Union',
+	XK: 'Kosovo',
 	RW: 'Rwanda',
 	BL: 'Saint Barthelemy',
 	SH: 'Saint Helena',

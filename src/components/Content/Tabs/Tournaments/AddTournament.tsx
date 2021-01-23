@@ -3,16 +3,7 @@ import { Modal, ModalHeader, ModalBody, Button, FormGroup, Input, ModalFooter, R
 import DragFileInput from '../../../DragFileInput';
 import api from '../../../../api/api';
 import isSvg from '../../../../isSvg';
-
-const hashCode = (s: string) =>
-	s
-		.split('')
-		.reduce((a, b) => {
-			a = (a << 5) - a + b.charCodeAt(0);
-			return a & a;
-		}, 0)
-		.toString();
-const hash = () => hashCode(String(new Date().getTime()));
+import { hash } from '../../../../hash';
 
 interface Props {
 	isOpen: boolean;
@@ -97,6 +88,7 @@ class AddTournamentModal extends React.Component<Props, State> {
 							<FormGroup>
 								<DragFileInput
 									image
+									removable
 									onChange={this.props.fileHandler}
 									id="tournament_logo"
 									label="UPLOAD TOURNAMENT LOGO"

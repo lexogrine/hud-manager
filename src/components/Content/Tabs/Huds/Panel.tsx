@@ -65,9 +65,14 @@ export default class ActionPanel extends React.Component<IProps, IState> {
 	}
 
 	handleImages = (name: string, sectionName: string) => (files: FileList) => {
-		if (!files || !files[0]) return;
+		if (!files) return;
 		const file = files[0];
 		const { form } = this.state;
+		if (!file) {
+			form[sectionName][name] = '';
+			this.setState({ form });
+			return;
+		}
 		if (!file.type.startsWith('image')) {
 			return;
 		}
@@ -297,6 +302,7 @@ export default class ActionPanel extends React.Component<IProps, IState> {
 							<Col s={12}>
 								<FileInput
 									image
+									removable
 									id={`file_${input.name}`}
 									onChange={this.handleImages(input.name, section.name)}
 									label={(input && input.label && input.label.toUpperCase()) || ''}

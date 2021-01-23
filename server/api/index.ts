@@ -2,6 +2,7 @@ import express from 'express';
 import socketio from 'socket.io';
 import { globalShortcut, app } from 'electron';
 import * as players from './players';
+import { getGamePath } from 'steam-game-path';
 import * as teams from './teams';
 import * as match from './match';
 import * as config from './config';
@@ -63,6 +64,8 @@ export default function (router: express.Router, io: socketio.Server) {
 	router.route('/api/gsi').get(gsi.checkGSIFile).put(gsi.createGSIFile);
 
 	router.route('/api/import').post(sync.importDb);
+
+	router.route('/api/steam').get((req, res) => res.json({ gamePath: getGamePath(730) }));
 
 	router.route('/api/import/verify').post(sync.checkForConflicts);
 

@@ -154,7 +154,9 @@ export default class Layout extends React.Component<{}, IState> {
 			<Provider value={this.state.data}>
 				<div className={`loaded ${isElectron ? 'electron' : ''}`}>
 					<div className="window-bar">
-						<div className="window-drag-bar"></div>
+						<div className="window-drag-bar">
+							<div className="title-bar">Lexogrine HUD Manager</div>
+						</div>
 						<div onClick={this.minimize} className="app-control minimize"></div>
 						<div onClick={this.maximize} className="app-control maximize"></div>
 						<div onClick={this.close} className="app-control close"></div>

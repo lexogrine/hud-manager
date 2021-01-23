@@ -4,22 +4,12 @@ import { app, shell, Notification } from 'electron';
 import express from 'express';
 import * as I from './../../types/interfaces';
 import socketio from 'socket.io';
-import { loadConfig } from './config';
+import { loadConfig, publicIP } from './config';
 import ip from 'ip';
 import { HUDState } from './../sockets';
 import HUDWindow from './../../init/huds';
 import DecompressZip from 'decompress-zip';
 import overlay from './overlay';
-import publicIp from 'public-ip';
-
-let publicIP: string | null = null;
-
-publicIp
-	.v4()
-	.then(ip => {
-		publicIP = ip;
-	})
-	.catch();
 
 const remove = (pathToRemove: string) => {
 	if (!fs.existsSync(pathToRemove)) {

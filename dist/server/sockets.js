@@ -450,6 +450,8 @@ function default_1(server, app) {
             startSendingTestData();
     });
     io.on('connection', function (socket) {
+        // const ref = socket.request?.headers?.referer || '';
+        // verifyUrl(ref).then(res => console.log(ref, res));
         socket.on('started', function () {
             if (runtimeConfig.last) {
                 socket.emit('update', runtimeConfig.last);
