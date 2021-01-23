@@ -987,9 +987,9 @@ form .card > .card-body > button.btn {
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 24px;
-    height: 24px;
-    font-size: 12px;
+    width: 14px;
+    height: 14px;
+    font-size: 8px;
     z-index: 999;
     background-color: #ff000059;
     border-radius: 50%;
