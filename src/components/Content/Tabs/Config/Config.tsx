@@ -338,6 +338,7 @@ export default class Config extends React.Component<IProps, IState> {
 								accept=".exe"
 								onChange={this.loadEXE('hlaePath')}
 								className="path_selector"
+								removable
 							/>
 						</Col>
 						{
@@ -352,6 +353,7 @@ export default class Config extends React.Component<IProps, IState> {
 									accept=".exe"
 									onChange={this.loadEXE('afxCEFHudInteropPath')}
 									className="path_selector"
+									removable
 								/>
 							</Col>
 						}

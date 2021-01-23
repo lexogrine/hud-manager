@@ -79,6 +79,7 @@ const TeamEditModal = ({ open, toggle, team, onChange, onFileChange, save, delet
 								image
 								onChange={onFileChange}
 								id="team_logo"
+								removable
 								label="UPLOAD LOGO"
 								imgSrc={logo || undefined}
 							/>

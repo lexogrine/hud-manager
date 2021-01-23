@@ -88,6 +88,7 @@ class AddTournamentModal extends React.Component<Props, State> {
 							<FormGroup>
 								<DragFileInput
 									image
+									removable
 									onChange={this.props.fileHandler}
 									id="tournament_logo"
 									label="UPLOAD TOURNAMENT LOGO"

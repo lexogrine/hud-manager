@@ -127,6 +127,7 @@ const PlayerEditModal = ({ open, toggle, player, teams, onChange, onFileChange, 
 								id="avatar"
 								label="UPLOAD PROFILE PICTURE"
 								imgSrc={avatar}
+								removable
 							/>
 							<FormText color="muted">
 								Avatar to be used for player images instead of the default from Steam

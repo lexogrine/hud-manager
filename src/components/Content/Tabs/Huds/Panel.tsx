@@ -302,6 +302,7 @@ export default class ActionPanel extends React.Component<IProps, IState> {
 							<Col s={12}>
 								<FileInput
 									image
+									removable
 									id={`file_${input.name}`}
 									onChange={this.handleImages(input.name, section.name)}
 									label={(input && input.label && input.label.toUpperCase()) || ''}
