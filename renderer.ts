@@ -2,6 +2,7 @@ import { app, BrowserWindow, shell, session, ipcMain } from 'electron';
 import path from 'path';
 import fs from 'fs';
 import autoUpdater from './autoUpdater';
+import ip from 'ip';
 import { loadConfig } from './server/api/config';
 
 const isDev = process.env.DEV === 'true';
@@ -57,7 +58,7 @@ export const createMainWindow = async (forceDev = false) => {
 			backgroundThrottling: false,
 			devTools: isDev || forceDev
 		},
-		minWidth: 775,
+		minWidth: 950,
 		minHeight: 874,
 		width: 1200
 	});
@@ -88,7 +89,7 @@ export const createMainWindow = async (forceDev = false) => {
 	// win.setMenu(null);
 	const config = await loadConfig();
 	win.setMenuBarVisibility(false);
-	const startUrl = `http://localhost:${config.port}/`;
+	const startUrl = `http://${ip.address()}:${config.port}/`;
 
 	win.webContents.on('new-window', (e, url) => {
 		e.preventDefault();

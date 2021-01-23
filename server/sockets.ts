@@ -11,7 +11,7 @@ import { getHUDData } from './../server/api/huds';
 import { getMatches, updateRound, getMatchById, updateMatch, reverseSide } from './api/match';
 import fs from 'fs';
 import portscanner from 'portscanner';
-import { loadConfig } from './api/config';
+import { loadConfig, verifyUrl } from './api/config';
 import { testData } from './api/testing';
 import { getTeamById } from './api/teams';
 import { getPlayerById } from './api/players';
@@ -329,6 +329,8 @@ export default function (server: http.Server, app: express.Router) {
 	});
 
 	io.on('connection', socket => {
+		// const ref = socket.request?.headers?.referer || '';
+		// verifyUrl(ref).then(res => console.log(ref, res));
 		socket.on('started', () => {
 			if (runtimeConfig.last) {
 				socket.emit('update', runtimeConfig.last);
