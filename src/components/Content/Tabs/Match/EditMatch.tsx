@@ -100,7 +100,11 @@ export default class MatchEdit extends Component<IProps, I.Match> {
 						<div className="left team">
 							<div className="score">
 								{match.left.wins}
-								{left && left.logo ? <img src={`${left.logo}?hash=${hash()}`} alt={`${left.name} logo`} /> : ''}
+								{left && left.logo ? (
+									<img src={`${left.logo}?hash=${hash()}`} alt={`${left.name} logo`} />
+								) : (
+									''
+								)}
 							</div>
 							<div className="name">
 								{(left && left.name) || 'Team One'}
@@ -117,7 +121,11 @@ export default class MatchEdit extends Component<IProps, I.Match> {
 						<div className="right team">
 							<div className="score">
 								{match.right.wins}
-								{right && right.logo ? <img src={`${right.logo}?hash=${hash()}`} alt={`${right.name} logo`} /> : ''}
+								{right && right.logo ? (
+									<img src={`${right.logo}?hash=${hash()}`} alt={`${right.name} logo`} />
+								) : (
+									''
+								)}
 							</div>
 							<div className="name">
 								{(right && right.name) || 'Team Two'}

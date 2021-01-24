@@ -24,11 +24,19 @@ const VetoScore = ({ veto, left, right }: { veto: I.Veto; left: I.Team | null; r
 		<div className="veto-score">
 			<div className={`win-icon ${veto.winner === left._id ? 'active' : ''}`}>WINS</div>
 
-			{left.logo ? <img src={`${left.logo}?hash=${hash()}`} alt={`${left.name} logo`} className="team-logo" /> : ''}
+			{left.logo ? (
+				<img src={`${left.logo}?hash=${hash()}`} alt={`${left.name} logo`} className="team-logo" />
+			) : (
+				''
+			)}
 			<div className="score">{veto.score[left._id] || 0}</div>
 			<div className="versus">VS</div>
 			<div className="score">{veto.score[right._id] || 0}</div>
-			{right.logo ? <img src={`${right.logo}?hash=${hash()}`} alt={`${right.name} logo`} className="team-logo" /> : ''}
+			{right.logo ? (
+				<img src={`${right.logo}?hash=${hash()}`} alt={`${right.name} logo`} className="team-logo" />
+			) : (
+				''
+			)}
 			<div className={`win-icon ${veto.winner === right._id ? 'active' : ''}`}>WINS</div>
 		</div>
 	);

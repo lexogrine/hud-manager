@@ -241,7 +241,9 @@ export default class Teams extends React.Component<{ cxt: IContextData }, State>
 						</div>
 						<div className="team-data">
 							<div className="team-logo">
-								{match.right.logo ? <img src={`${match.right.logo}?hash=${hash()}`} alt="Logo" /> : null}
+								{match.right.logo ? (
+									<img src={`${match.right.logo}?hash=${hash()}`} alt="Logo" />
+								) : null}
 							</div>
 							<div className="team-name">{match.right.name}</div>
 							<div className="team-score">{match.right.score}</div>
