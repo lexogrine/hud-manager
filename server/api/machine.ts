@@ -15,19 +15,19 @@ export const getMachineId: express.RequestHandler = async (req, res) => {
 		.replace(/[^a-z]+/g, '')
 		.substr(0, 15);
 
-	if(fs.existsSync(machinePath)){
+	if (fs.existsSync(machinePath)) {
 		id = fs.readFileSync(machinePath, 'UTF-8');
 		return res.json({ id });
 	}
 
-	if(fs.existsSync(machineOldPath)){
-		if(!fs.existsSync(machinePathDirectory)){
+	if (fs.existsSync(machineOldPath)) {
+		if (!fs.existsSync(machinePathDirectory)) {
 			fs.mkdirSync(machinePathDirectory, { recursive: true });
 		}
 		id = fs.readFileSync(machineOldPath, 'UTF-8');
 		fs.renameSync(machineOldPath, machinePath);
 		return res.json({ id });
 	}
-	fs.writeFileSync(machinePath, id, {encoding: 'UTF-8'});
+	fs.writeFileSync(machinePath, id, { encoding: 'UTF-8' });
 	return res.json({ id });
 };
