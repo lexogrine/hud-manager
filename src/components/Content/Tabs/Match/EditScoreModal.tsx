@@ -1,5 +1,6 @@
 import React from 'react';
 import { Modal, ModalHeader, ModalBody, Button } from 'reactstrap';
+import { hash } from '../../../../hash';
 import * as I from './../../../../api/interfaces';
 import WinnerCrown from './../../../../styles/winnerCrown.png';
 
@@ -23,7 +24,7 @@ class EditScoreModal extends React.Component<Props> {
 					<img src={WinnerCrown} />
 				</div>
 				<div className={`team-logo-container`}>
-					<img src={team.logo} alt="Team Logo"></img>
+					<img src={`${team.logo}?hash=${hash()}`} alt="Team Logo"></img>
 				</div>
 				<div className="team-score-edit-container">
 					<div className="add">

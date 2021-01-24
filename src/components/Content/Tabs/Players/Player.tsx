@@ -3,6 +3,7 @@ import { Button } from 'reactstrap';
 import * as I from './../../../../api/interfaces';
 import { countries } from './../../../../api/countries';
 import config from './../../../../api/config';
+import { hash } from '../../../../hash';
 
 interface Props {
 	player: I.Player;
@@ -14,13 +15,13 @@ const PlayerListEntry = ({ player, team, edit }: Props) => {
 	const country = !player.country ? null : countries[player.country] || null;
 	return (
 		<div className="player-list-entry">
-			<div className="picture">{player.avatar ? <img src={player.avatar} /> : null}</div>
+			<div className="picture">{player.avatar ? <img src={`${player.avatar}?hash=${hash()}`} /> : null}</div>
 			<div className="realName">
 				{player.firstName} {player.lastName}
 			</div>
 			<div className="username">{player.username}</div>
 			<div className="team">
-				{team?._id && team?.logo ? <img src={team.logo} /> : null}
+				{team?._id && team?.logo ? <img src={`${team.logo}?hash=${hash()}`} /> : null}
 				{team?.name || '-'}
 			</div>
 			<div className="country">
