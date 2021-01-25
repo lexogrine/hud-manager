@@ -143,11 +143,11 @@ export const HUDState = new HUDStateManager();
 export const GSI = new CSGOGSI();
 
 const assertUser: express.RequestHandler = (req, res, next) => {
-	if(!customer.customer){
+	if (!customer.customer) {
 		return res.sendStatus(403);
 	}
 	return next();
-}
+};
 
 export default function (server: http.Server, app: express.Router) {
 	async function getJSONArray<T>(url: string) {
@@ -315,7 +315,7 @@ export default function (server: http.Server, app: express.Router) {
 	radar.startRadar(app, io);
 
 	app.post('/', assertUser, (req, res) => {
-		if(!customer.customer) {
+		if (!customer.customer) {
 			return res.sendStatus(200);
 		}
 		runtimeConfig.last = req.body;

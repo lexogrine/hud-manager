@@ -16,11 +16,11 @@ const fields: I.CustomFieldEntry[] = [
 	{
 		_id: 'sdfsdfsf',
 		name: 'sometest',
-		type:'text'
+		type: 'text'
 	}
 ];
 
-const quickClone: <T>(obj: T) => T = (obj) => JSON.parse(JSON.stringify(obj));
+const quickClone: <T>(obj: T) => T = obj => JSON.parse(JSON.stringify(obj));
 
 const TeamsTab = ({ cxt }: IProps) => {
 	const emptyTeam: I.Team = {
@@ -99,16 +99,16 @@ const TeamsTab = ({ cxt }: IProps) => {
 		return fileHandler(event.target.files);
 	};
 
-	const extraChangeHandler = (field: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+	/*const extraChangeHandler = (field: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
 		const value = event.target.value;
 		return setForm(prevForm => {
-			if(!prevForm.extra){
+			if (!prevForm.extra) {
 				prevForm.extra = {};
 			}
 			prevForm.extra[field] = value;
 			return prevForm;
 		});
-	}
+	};*/
 
 	const save = async () => {
 		let response: any;
@@ -181,7 +181,14 @@ const TeamsTab = ({ cxt }: IProps) => {
 				save={save}
 				deleteTeam={deleteTeam}
 			/>
-			<CustomFieldModal fields={customFieldForm} open={fieldsModalState} toggle={() => { setFieldsState(!fieldsModalState) }} setForm={setCustomFieldForm}  />
+			<CustomFieldModal
+				fields={customFieldForm}
+				open={fieldsModalState}
+				toggle={() => {
+					setFieldsState(!fieldsModalState);
+				}}
+				setForm={setCustomFieldForm}
+			/>
 			<div className="tab-content-container no-padding">
 				<div className="player-list-entry heading">
 					<div className="picture">Logo</div>

@@ -10,7 +10,7 @@ export interface Player {
 }
 
 export interface CustomFieldEntry {
-	_id:string;
+	_id: string;
 	name: string;
 	type: 'text';
 }
