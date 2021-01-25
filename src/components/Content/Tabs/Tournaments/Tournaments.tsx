@@ -6,7 +6,6 @@ import { IContextData } from './../../../../components/Context';
 import { TournamentMatchup, DepthTournamentMatchup } from '../../../../../types/interfaces';
 import BindModal from './BindModal';
 import AddTournamentModal from './AddTournament';
-import { hash } from '../../../../hash';
 
 interface MatchData {
 	left: { name: string; score: string | number; logo: string };
@@ -234,7 +233,7 @@ export default class Teams extends React.Component<{ cxt: IContextData }, State>
 					<div className="match-details" onClick={this.openModal(matchup._id, matchup.matchId || '')}>
 						<div className="team-data">
 							<div className="team-logo">
-								{match.left.logo ? <img src={`${match.left.logo}?hash=${hash()}`} alt="Logo" /> : null}
+								{match.left.logo ? <img src={`${match.left.logo}?hash=${this.props.cxt.hash}`} alt="Logo" /> : null}
 							</div>
 							<div className="team-name">{match.left.name}</div>
 							<div className="team-score">{match.left.score}</div>
@@ -242,7 +241,7 @@ export default class Teams extends React.Component<{ cxt: IContextData }, State>
 						<div className="team-data">
 							<div className="team-logo">
 								{match.right.logo ? (
-									<img src={`${match.right.logo}?hash=${hash()}`} alt="Logo" />
+									<img src={`${match.right.logo}?hash=${this.props.cxt.hash}`} alt="Logo" />
 								) : null}
 							</div>
 							<div className="team-name">{match.right.name}</div>

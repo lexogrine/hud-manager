@@ -3,7 +3,7 @@ import path from 'path';
 import fs from 'fs';
 import autoUpdater from './autoUpdater';
 import ip from 'ip';
-import { loadConfig } from './server/api/config';
+import { loadConfig, internalIP } from './server/api/config';
 
 const isDev = process.env.DEV === 'true';
 
@@ -89,7 +89,7 @@ export const createMainWindow = async (forceDev = false) => {
 	// win.setMenu(null);
 	const config = await loadConfig();
 	win.setMenuBarVisibility(false);
-	const startUrl = `http://${ip.address()}:${config.port}/`;
+	const startUrl = `http://${internalIP}:${config.port}/`;
 
 	win.webContents.on('new-window', (e, url) => {
 		e.preventDefault();

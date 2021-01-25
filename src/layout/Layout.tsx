@@ -7,6 +7,7 @@ import config from './../api/config';
 import { socket } from './../components/Content/Tabs/Live/Live';
 import LoginRegisterModal from './LoginRegisterModal';
 import ElectronOnly from './../components/ElectronOnly';
+import { hash } from '../hash';
 
 declare let window: any;
 const isElectron = config.isElectron;
@@ -38,8 +39,9 @@ export default class Layout extends React.Component<{}, IState> {
 						this.loadTeams(),
 						this.loadMatch(),
 						this.loadTournaments()
-					]);
-				}
+					]).then(this.rehash);
+				},
+				hash:''
 			},
 			loginError: '',
 			loadingLogin: false,
@@ -54,6 +56,12 @@ export default class Layout extends React.Component<{}, IState> {
 		socket.on('match', (fromVeto?: boolean) => {
 			if (fromVeto) this.loadMatch();
 		});
+	}
+	rehash = () => {
+		this.setState(state => {
+			state.data.hash = hash();
+			return state;
+		})
 	}
 	getVersion = async () => {
 		const response = await api.config.getVersion();

@@ -50,13 +50,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
-exports.verifyUrl = exports.setConfig = exports.updateConfig = exports.getConfig = exports.loadConfig = exports.publicIP = void 0;
+exports.verifyUrl = exports.setConfig = exports.updateConfig = exports.getConfig = exports.loadConfig = exports.internalIP = exports.publicIP = void 0;
 var database_1 = __importDefault(require("./../../init/database"));
 var fs_1 = __importDefault(require("fs"));
 var ip_1 = __importDefault(require("ip"));
 var public_ip_1 = __importDefault(require("public-ip"));
+var internal_ip_1 = __importDefault(require("internal-ip"));
 var configs = database_1["default"].config;
 exports.publicIP = null;
+exports.internalIP = internal_ip_1["default"].v4.sync() || ip_1["default"].address();
 public_ip_1["default"]
     .v4()
     .then(function (ip) {
@@ -111,7 +113,7 @@ exports.getConfig = function (_req, res) { return __awaiter(void 0, void 0, void
                 if (!config) {
                     return [2 /*return*/, res.sendStatus(500)];
                 }
-                response = __assign(__assign({}, config), { ip: ip_1["default"].address() });
+                response = __assign(__assign({}, config), { ip: exports.internalIP });
                 return [2 /*return*/, res.json(response)];
         }
     });
@@ -170,10 +172,12 @@ exports.verifyUrl = function (url) { return __awaiter(void 0, void 0, void 0, fu
             case 0:
                 if (!url || typeof url !== 'string')
                     return [2 /*return*/, false];
+                if (url === 'http://localhost:3500/')
+                    return [2 /*return*/, true];
                 return [4 /*yield*/, exports.loadConfig()];
             case 1:
                 cfg = _a.sent();
-                bases = ["http://" + ip_1["default"].address() + ":" + cfg.port, "http://" + exports.publicIP + ":" + cfg.port];
+                bases = ["http://" + exports.internalIP + ":" + cfg.port, "http://" + exports.publicIP + ":" + cfg.port];
                 if (process.env.DEV === 'true') {
                     bases.push("http://localhost:3000/?port=" + cfg.port);
                 }

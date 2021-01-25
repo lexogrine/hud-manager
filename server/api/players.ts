@@ -1,9 +1,8 @@
 import express from 'express';
 import db from './../../init/database';
 import { Player } from '../../types/interfaces';
-import { loadConfig } from './config';
+import { loadConfig, internalIP } from './config';
 import fetch from 'node-fetch';
-import ip from 'ip';
 import isSvg from './../../src/isSvg';
 
 const players = db.players;
@@ -49,7 +48,7 @@ export const getPlayers: express.RequestHandler = async (req, res) => {
 			...player,
 			avatar:
 				player.avatar && player.avatar.length
-					? `http://${ip.address()}:${config.port}/api/players/avatar/${player._id}`
+					? `http://${internalIP}:${config.port}/api/players/avatar/${player._id}`
 					: null
 		}))
 	);
@@ -159,7 +158,7 @@ export const getAvatarURLBySteamID: express.RequestHandler = async (req, res) =>
 	};
 	const player = await getPlayerBySteamId(req.params.steamid, true);
 	if (player && player.avatar && player.avatar.length && player._id) {
-		response.custom = `http://${ip.address()}:${config.port}/api/players/avatar/${player._id}`;
+		response.custom = `http://${internalIP}:${config.port}/api/players/avatar/${player._id}`;
 	}
 	try {
 		if (config.steamApiKey.length === 0) {

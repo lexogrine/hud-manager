@@ -163,7 +163,7 @@ const TeamsTab = ({ cxt }: IProps) => {
 					<div className="options"></div>
 				</div>
 				{cxt.teams.filter(filterTeams).map(team => (
-					<TeamListEntry key={team._id} team={team} edit={() => edit(team)} />
+					<TeamListEntry hash={cxt.hash} key={team._id} team={team} edit={() => edit(team)} />
 				))}
 				<Row>
 					<Col className="main-buttons-container">

@@ -10,7 +10,6 @@ import { IContextData } from '../../../Context';
 
 import goBack from './../../../../styles/goBack.png';
 import { socket } from '../Live/Live';
-import { hash } from '../../../../hash';
 
 class MatchRow extends Component<{
 	match: I.Match;
@@ -24,7 +23,7 @@ class MatchRow extends Component<{
 		this.props.cxt.reload();
 	};
 	render() {
-		const { match, teams } = this.props;
+		const { match, teams, cxt } = this.props;
 		const left = teams.filter(team => team._id === match.left.id)[0];
 		const right = teams.filter(team => team._id === match.right.id)[0];
 		return (
@@ -35,7 +34,7 @@ class MatchRow extends Component<{
 						<div className="score">
 							{match.left.wins}
 							{left && left.logo ? (
-								<img src={`${left.logo}?hash=${hash()}`} alt={`${left.name} logo`} />
+								<img src={`${left.logo}?hash=${cxt.hash}`} alt={`${left.name} logo`} />
 							) : (
 								''
 							)}
@@ -47,7 +46,7 @@ class MatchRow extends Component<{
 						<div className="score">
 							{match.right.wins}
 							{right && right.logo ? (
-								<img src={`${right.logo}?hash=${hash()}`} alt={`${right.name} logo`} />
+								<img src={`${right.logo}?hash=${cxt.hash}`} alt={`${right.name} logo`} />
 							) : (
 								''
 							)}

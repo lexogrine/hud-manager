@@ -46,14 +46,6 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 		clearAvatar();
 	};
 
-	const setPlayer = (event: any) => {
-		if (event.target.value === 'empty') {
-			//return this.setState({form:{...this.emptyPlayer}, filePath:''})
-			return loadEmpty();
-		}
-		loadPlayer(event.target.value);
-	};
-
 	const loadPlayers = async (id?: string) => {
 		await cxt.reload();
 		if (id) {
@@ -206,6 +198,7 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 				{cxt.players.filter(filterPlayers).map(player => (
 					<PlayerEntry
 						key={player._id}
+						hash={cxt.hash}
 						player={player}
 						edit={() => edit(player)}
 						team={cxt.teams.find(team => team._id === player.team)}

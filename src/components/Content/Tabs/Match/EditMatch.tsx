@@ -8,7 +8,6 @@ import { socket } from '../Live/Live';
 import { IContextData } from '../../../Context';
 import { Form, Row, Col, FormGroup, Input } from 'reactstrap';
 import SingleVeto from './SingleVeto';
-import { hash } from '../../../../hash';
 
 /*class EditTeam extends Component {
     render() {
@@ -86,7 +85,7 @@ export default class MatchEdit extends Component<IProps, I.Match> {
 	}
 
 	render() {
-		const { match, teams } = this.props;
+		const { match, teams, cxt } = this.props;
 		const left = teams.filter(team => team._id === match.left.id)[0];
 		const right = teams.filter(team => team._id === match.right.id)[0];
 		const vetoTeams: I.Team[] = [];
@@ -101,7 +100,7 @@ export default class MatchEdit extends Component<IProps, I.Match> {
 							<div className="score">
 								{match.left.wins}
 								{left && left.logo ? (
-									<img src={`${left.logo}?hash=${hash()}`} alt={`${left.name} logo`} />
+									<img src={`${left.logo}?hash=${cxt.hash}`} alt={`${left.name} logo`} />
 								) : (
 									''
 								)}
@@ -122,7 +121,7 @@ export default class MatchEdit extends Component<IProps, I.Match> {
 							<div className="score">
 								{match.right.wins}
 								{right && right.logo ? (
-									<img src={`${right.logo}?hash=${hash()}`} alt={`${right.name} logo`} />
+									<img src={`${right.logo}?hash=${cxt.hash}`} alt={`${right.name} logo`} />
 								) : (
 									''
 								)}

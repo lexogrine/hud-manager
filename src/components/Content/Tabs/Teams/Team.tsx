@@ -3,19 +3,19 @@ import { Button } from 'reactstrap';
 import * as I from './../../../../api/interfaces';
 import { countries } from './../../../../api/countries';
 import config from './../../../../api/config';
-import { hash } from '../../../../hash';
 
 interface Props {
 	team: I.Team;
 	edit: () => void;
+	hash: string;
 }
 
-const TeamListEntry = ({ team, edit }: Props) => {
+const TeamListEntry = ({ team, edit, hash }: Props) => {
 	const country = !team.country ? null : countries[team.country] || null;
 
 	return (
 		<div className="player-list-entry">
-			<div className="picture">{team.logo ? <img src={`${team.logo}?hash=${hash()}`} /> : null}</div>
+			<div className="picture">{team.logo ? <img src={`${team.logo}?hash=${hash}`} /> : null}</div>
 			<div className="name">{team.name}</div>
 			<div className="shortname">{team.shortName}</div>
 			<div className="country">

@@ -1,8 +1,7 @@
 import express from 'express';
 import db from './../../init/database';
 import { Team } from '../../types/interfaces';
-import { loadConfig } from './config';
-import ip from 'ip';
+import { loadConfig, internalIP } from './config';
 import isSvg from './../../src/isSvg';
 
 const teams = db.teams;
@@ -37,9 +36,7 @@ export const getTeams: express.RequestHandler = async (req, res) => {
 		teams.map(team => ({
 			...team,
 			logo:
-				team.logo && team.logo.length
-					? `http://${ip.address()}:${config.port}/api/teams/logo/${team._id}`
-					: null
+				team.logo && team.logo.length ? `http://${internalIP}:${config.port}/api/teams/logo/${team._id}` : null
 		}))
 	);
 };

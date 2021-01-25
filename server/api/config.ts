@@ -5,10 +5,12 @@ import ip from 'ip';
 import socketio from 'socket.io';
 import { Config, ExtendedConfig } from '../../types/interfaces';
 import publicIp from 'public-ip';
+import internalIp from 'internal-ip';
 
 const configs = db.config;
 
 export let publicIP: string | null = null;
+export const internalIP = internalIp.v4.sync() || ip.address();
 
 publicIp
 	.v4()
@@ -58,7 +60,7 @@ export const getConfig: express.RequestHandler = async (_req, res) => {
 	if (!config) {
 		return res.sendStatus(500);
 	}
-	const response: ExtendedConfig = { ...config, ip: ip.address() };
+	const response: ExtendedConfig = { ...config, ip: internalIP };
 	return res.json(response);
 };
 export const updateConfig = (io: socketio.Server): express.RequestHandler => async (req, res) => {
@@ -94,8 +96,9 @@ export const setConfig = async (config: Config) =>
 
 export const verifyUrl = async (url: string) => {
 	if (!url || typeof url !== 'string') return false;
+	if (url === 'http://localhost:3500/') return true;
 	const cfg = await loadConfig();
-	const bases = [`http://${ip.address()}:${cfg.port}`, `http://${publicIP}:${cfg.port}`];
+	const bases = [`http://${internalIP}:${cfg.port}`, `http://${publicIP}:${cfg.port}`];
 	if (process.env.DEV === 'true') {
 		bases.push(`http://localhost:3000/?port=${cfg.port}`);
 	}
