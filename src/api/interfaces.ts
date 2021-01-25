@@ -12,7 +12,8 @@ export type {
 	Tournament,
 	Config,
 	ExtendedConfig,
-	CFG
+	CFG,
+	CustomFieldEntry
 } from './../../types/interfaces';
 
 export interface Player {
@@ -32,6 +33,7 @@ export interface Team {
 	country: string;
 	shortName: string;
 	logo: string;
+	extra: Record<string, string>;
 }
 
 export interface CFGGSIResponse {

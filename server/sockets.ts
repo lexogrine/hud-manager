@@ -142,6 +142,13 @@ export const HUDState = new HUDStateManager();
 
 export const GSI = new CSGOGSI();
 
+const assertUser: express.RequestHandler = (req, res, next) => {
+	if(!customer.customer){
+		return res.sendStatus(403);
+	}
+	return next();
+}
+
 export default function (server: http.Server, app: express.Router) {
 	async function getJSONArray<T>(url: string) {
 		return new Promise<T[]>(resolve => {
@@ -307,7 +314,10 @@ export default function (server: http.Server, app: express.Router) {
 
 	radar.startRadar(app, io);
 
-	app.post('/', (req, res) => {
+	app.post('/', assertUser, (req, res) => {
+		if(!customer.customer) {
+			return res.sendStatus(200);
+		}
 		runtimeConfig.last = req.body;
 
 		if (intervalId) {
@@ -322,7 +332,7 @@ export default function (server: http.Server, app: express.Router) {
 		res.sendStatus(200);
 	});
 
-	app.post('/api/test', (_req, res) => {
+	app.post('/api/test', assertUser, (_req, res) => {
 		res.sendStatus(200);
 		if (intervalId) stopSendingTestData();
 		else startSendingTestData();

@@ -9,6 +9,12 @@ export interface Player {
 	team: string;
 }
 
+export interface CustomFieldEntry {
+	_id:string;
+	name: string;
+	type: 'text';
+}
+
 export interface CFG {
 	cfg: string;
 	file: string;
@@ -20,6 +26,7 @@ export interface Team {
 	shortName: string;
 	country: string;
 	logo: string;
+	extra: Record<string, string>;
 }
 
 export type VetoType = 'ban' | 'pick' | 'decider';

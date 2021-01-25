@@ -1286,6 +1286,9 @@ input:checked ~ .customCheckbox {
     justify-content: center;
     flex: unset;
 }
+.player-list-entry .options {
+    justify-content: center;
+}
 .player-list-entry > div {
     display: flex;
     align-items: center;
