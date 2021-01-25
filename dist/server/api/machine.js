@@ -49,6 +49,9 @@ exports.getMachineId = function (req, res) { return __awaiter(void 0, void 0, vo
         machinePathDirectory = path_1["default"].join(electron_1.app.getPath('appData'), '.lexogrine');
         machinePath = path_1["default"].join(machinePathDirectory, 'machine.hm');
         machineOldPath = path_1["default"].join(electron_1.app.getPath('userData'), 'machine.hm');
+        if (!fs_1["default"].existsSync(machinePathDirectory)) {
+            fs_1["default"].mkdirSync(machinePathDirectory, { recursive: true });
+        }
         id = (Math.random() * 1000 + 1)
             .toString(36)
             .replace(/[^a-z]+/g, '')
@@ -58,9 +61,6 @@ exports.getMachineId = function (req, res) { return __awaiter(void 0, void 0, vo
             return [2 /*return*/, res.json({ id: id })];
         }
         if (fs_1["default"].existsSync(machineOldPath)) {
-            if (!fs_1["default"].existsSync(machinePathDirectory)) {
-                fs_1["default"].mkdirSync(machinePathDirectory, { recursive: true });
-            }
             id = fs_1["default"].readFileSync(machineOldPath, 'UTF-8');
             fs_1["default"].renameSync(machineOldPath, machinePath);
             return [2 /*return*/, res.json({ id: id })];
