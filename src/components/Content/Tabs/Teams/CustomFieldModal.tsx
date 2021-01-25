@@ -1,5 +1,15 @@
 import React from 'react';
-import { Modal, ModalHeader, ModalBody, Row, Col, FormGroup, Input, /*FormText,*/ Button, ModalFooter } from 'reactstrap';
+import {
+	Modal,
+	ModalHeader,
+	ModalBody,
+	Row,
+	Col,
+	FormGroup,
+	Input,
+	/*FormText,*/ Button,
+	ModalFooter
+} from 'reactstrap';
 import * as I from '../../../../api/interfaces';
 
 interface Props {
