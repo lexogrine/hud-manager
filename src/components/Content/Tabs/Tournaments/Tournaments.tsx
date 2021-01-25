@@ -233,7 +233,9 @@ export default class Teams extends React.Component<{ cxt: IContextData }, State>
 					<div className="match-details" onClick={this.openModal(matchup._id, matchup.matchId || '')}>
 						<div className="team-data">
 							<div className="team-logo">
-								{match.left.logo ? <img src={`${match.left.logo}?hash=${this.props.cxt.hash}`} alt="Logo" /> : null}
+								{match.left.logo ? (
+									<img src={`${match.left.logo}?hash=${this.props.cxt.hash}`} alt="Logo" />
+								) : null}
 							</div>
 							<div className="team-name">{match.left.name}</div>
 							<div className="team-score">{match.left.score}</div>

@@ -41,7 +41,7 @@ export default class Layout extends React.Component<{}, IState> {
 						this.loadTournaments()
 					]).then(this.rehash);
 				},
-				hash:''
+				hash: ''
 			},
 			loginError: '',
 			loadingLogin: false,
@@ -61,8 +61,8 @@ export default class Layout extends React.Component<{}, IState> {
 		this.setState(state => {
 			state.data.hash = hash();
 			return state;
-		})
-	}
+		});
+	};
 	getVersion = async () => {
 		const response = await api.config.getVersion();
 		this.setState({ version: response.version });

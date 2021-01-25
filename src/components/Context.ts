@@ -9,9 +9,16 @@ export interface IContextData {
 	tournaments: I.Tournament[];
 	reload: Function;
 	customer?: I.Customer;
-	hash: string
+	hash: string;
 }
 
-const defaultContext: IContextData = { teams: [], tournaments: [], players: [], reload: () => {}, matches: [], hash: '' };
+const defaultContext: IContextData = {
+	teams: [],
+	tournaments: [],
+	players: [],
+	reload: () => {},
+	matches: [],
+	hash: ''
+};
 
 export const ContextData = React.createContext(defaultContext);
