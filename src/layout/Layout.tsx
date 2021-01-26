@@ -66,13 +66,12 @@ export default class Layout extends React.Component<{}, IState> {
 		});
 	};
 	getCustomFields = async () => {
-		const [ teams, players ] = await Promise.all([api.teams.fields.get(), api.players.fields.get()]);
+		const [teams, players] = await Promise.all([api.teams.fields.get(), api.players.fields.get()]);
 		this.setState(state => {
 			state.data.fields = { teams, players };
 			return state;
-		})
-
-	}
+		});
+	};
 	getVersion = async () => {
 		const response = await api.config.getVersion();
 		this.setState({ version: response.version });

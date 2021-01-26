@@ -120,11 +120,10 @@ export const getFields: express.RequestHandler = async (req, res) => {
 	return res.json(fields);
 };
 
-
 export const updateFields: express.RequestHandler = async (req, res) => {
-    if(!req.body) {
-        return res.sendStatus(422);
-    }
+	if (!req.body) {
+		return res.sendStatus(422);
+	}
 	const newFields = await updateTeamFields(req.body);
 	return res.json(newFields);
 };

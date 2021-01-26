@@ -10,7 +10,6 @@ const initRoute = (router: express.Router, io: SocketIO.Server) => {
 		.patch(M.updateMatchRoute(io))
 		.delete(M.deleteMatchRoute);
 
-	
 	router.route('/api/maps').get(M.getMaps);
 };
 

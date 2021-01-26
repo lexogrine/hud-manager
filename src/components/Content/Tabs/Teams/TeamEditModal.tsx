@@ -18,7 +18,17 @@ interface IProps {
 	deleteTeam: () => void;
 }
 
-const TeamEditModal = ({ open, toggle, team, onChange, onFileChange, save, deleteTeam, onExtraChange, fields }: IProps) => {
+const TeamEditModal = ({
+	open,
+	toggle,
+	team,
+	onChange,
+	onFileChange,
+	save,
+	deleteTeam,
+	onExtraChange,
+	fields
+}: IProps) => {
 	let logo = '';
 	if (team.logo) {
 		if (team.logo.includes('api/teams/logo')) {
@@ -28,7 +38,7 @@ const TeamEditModal = ({ open, toggle, team, onChange, onFileChange, save, delet
 			logo = `data:image/${encoding};base64,${team.logo}`;
 		}
 	}
-	const extraForm = () => (
+	const extraForm = () =>
 		fields.map(field => (
 			<Row key={field._id}>
 				<Col md="12">
@@ -43,8 +53,7 @@ const TeamEditModal = ({ open, toggle, team, onChange, onFileChange, save, delet
 					</FormGroup>
 				</Col>
 			</Row>
-		))
-	)
+		));
 	return (
 		<Modal isOpen={open} toggle={toggle} className="veto_modal">
 			<ModalHeader toggle={toggle}>Edit a team</ModalHeader>

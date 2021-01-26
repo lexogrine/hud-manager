@@ -37,7 +37,6 @@ export const getPlayersList = (query: any) =>
 		});
 	});
 
-
 export const getPlayerFields = async () => {
 	const store = await initiateCustomFields();
 	if (!store) return [];
@@ -47,27 +46,27 @@ export const getPlayerFields = async () => {
 export const updatePlayerFields = async (playerFields: CustomFieldEntry[]) => {
 	const store = await initiateCustomFields();
 
-    const deletedFields = store.players.filter(field => !playerFields.find(newField => newField.name === field.name));
-    const createdFields = playerFields.filter(newField => !store.players.find(field => field.name === newField.name));
+	const deletedFields = store.players.filter(field => !playerFields.find(newField => newField.name === field.name));
+	const createdFields = playerFields.filter(newField => !store.players.find(field => field.name === newField.name));
 
-    if(!deletedFields.length && !createdFields.length) {
-        return store;
-    }
-    return new Promise<CustomFieldStore>((res) => {
-        custom.update({}, { $set: { players: playerFields } }, { multi: true }, () => {
-            const updateQuery = {
-                $unset: {},
-                $set: {}
-            }
-            for(const deletedField of deletedFields){
-                updateQuery.$unset[`extra.${deletedField.name}`] = true;
-            }
-            for(const createdField of createdFields){
-                updateQuery.$set[`extra.${createdField.name}`] = '';
-            }
-            players.update({}, updateQuery, { multi: true }, async () => {
-                res(await initiateCustomFields());
-            });
-        });
-    });
+	if (!deletedFields.length && !createdFields.length) {
+		return store;
+	}
+	return new Promise<CustomFieldStore>(res => {
+		custom.update({}, { $set: { players: playerFields } }, { multi: true }, () => {
+			const updateQuery = {
+				$unset: {},
+				$set: {}
+			};
+			for (const deletedField of deletedFields) {
+				updateQuery.$unset[`extra.${deletedField.name}`] = true;
+			}
+			for (const createdField of createdFields) {
+				updateQuery.$set[`extra.${createdField.name}`] = '';
+			}
+			players.update({}, updateQuery, { multi: true }, async () => {
+				res(await initiateCustomFields());
+			});
+		});
+	});
 };

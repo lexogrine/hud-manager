@@ -93,7 +93,7 @@ const TeamsTab = ({ cxt }: IProps) => {
 
 	const extraChangeHandler = (field: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
 		const value = event.target.value;
-		return setForm({...form, extra: { ...form.extra, [field]: value }});
+		return setForm({ ...form, extra: { ...form.extra, [field]: value } });
 	};
 
 	const save = async () => {
@@ -141,7 +141,7 @@ const TeamsTab = ({ cxt }: IProps) => {
 	const openCustomFields = () => {
 		setCustomFieldForm(quickClone(cxt.fields.teams));
 		setFieldsState(true);
-	}
+	};
 
 	const add = () => {
 		loadEmpty();
@@ -152,7 +152,7 @@ const TeamsTab = ({ cxt }: IProps) => {
 		await api.teams.fields.update(customFieldForm);
 		cxt.reload();
 		setFieldsState(false);
-	}
+	};
 
 	return (
 		<Form>

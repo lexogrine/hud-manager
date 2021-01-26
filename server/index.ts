@@ -13,7 +13,7 @@ import { initiateCustomFields } from './api/teams/index';
 
 export default async function init() {
 	let config = await loadConfig();
-	
+
 	await initiateCustomFields();
 
 	const app = express();

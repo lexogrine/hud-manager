@@ -4,7 +4,7 @@ import { Player } from '../../../types/interfaces';
 import { loadConfig, internalIP } from './../config';
 import fetch from 'node-fetch';
 import isSvg from './../../../src/isSvg';
-import { getPlayersList, getPlayerById, getPlayerBySteamId, getPlayerFields, updatePlayerFields } from './index'
+import { getPlayersList, getPlayerById, getPlayerBySteamId, getPlayerFields, updatePlayerFields } from './index';
 
 const players = db.players;
 
@@ -150,12 +150,10 @@ export const getFields: express.RequestHandler = async (req, res) => {
 	return res.json(fields);
 };
 
-
 export const updateFields: express.RequestHandler = async (req, res) => {
-    if(!req.body) {
-        return res.sendStatus(422);
-    }
+	if (!req.body) {
+		return res.sendStatus(422);
+	}
 	const newFields = await updatePlayerFields(req.body);
 	return res.json(newFields);
 };
-

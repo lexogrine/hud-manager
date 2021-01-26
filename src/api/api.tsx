@@ -15,7 +15,12 @@ function arrayBufferToBase64(buffer: any) {
 	return window.btoa(binary);
 }
 
-const apiHandler: <T>(url: string, method?: string, body?: any, credentials?: boolean) => Promise<T> = (url, method = 'GET', body, credentials) => {
+const apiHandler: <T>(url: string, method?: string, body?: any, credentials?: boolean) => Promise<T> = (
+	url,
+	method = 'GET',
+	body,
+	credentials
+) => {
 	const options: RequestInit = {
 		method,
 		headers: {

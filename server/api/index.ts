@@ -23,7 +23,6 @@ export const customer: I.CustomerData = {
 export default function (router: express.Router, io: socketio.Server) {
 	router.route('/api/auth').get(user.getCurrent).delete(user.logout);
 
-
 	router.route('/api/config').get(config.getConfig).patch(config.updateConfig(io));
 
 	router.route('/api/version').get((req, res) => res.json({ version: app.getVersion() }));

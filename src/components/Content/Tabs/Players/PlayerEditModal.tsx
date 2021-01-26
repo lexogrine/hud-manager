@@ -19,8 +19,18 @@ interface IProps {
 	fields: I.CustomFieldEntry[];
 }
 
-const PlayerEditModal = ({ open, toggle, player, teams, onChange, onFileChange, save, deletePlayer, fields, onExtraChange }: IProps) => {
-
+const PlayerEditModal = ({
+	open,
+	toggle,
+	player,
+	teams,
+	onChange,
+	onFileChange,
+	save,
+	deletePlayer,
+	fields,
+	onExtraChange
+}: IProps) => {
 	let avatar = '';
 	if (player.avatar) {
 		if (player.avatar.includes('api/players/avatar')) {
@@ -30,7 +40,7 @@ const PlayerEditModal = ({ open, toggle, player, teams, onChange, onFileChange, 
 			avatar = `data:image/${encoding};base64,${player.avatar}`;
 		}
 	}
-	const extraForm = () => (
+	const extraForm = () =>
 		fields.map(field => (
 			<Row key={field._id}>
 				<Col md="12">
@@ -45,8 +55,7 @@ const PlayerEditModal = ({ open, toggle, player, teams, onChange, onFileChange, 
 					</FormGroup>
 				</Col>
 			</Row>
-		))
-	)
+		));
 	const playerForm = () => (
 		<>
 			<Row>
@@ -149,7 +158,7 @@ const PlayerEditModal = ({ open, toggle, player, teams, onChange, onFileChange, 
 						/>
 						<FormText color="muted">
 							Avatar to be used for player images instead of the default from Steam
-							</FormText>
+						</FormText>
 					</FormGroup>
 				</Col>
 			</Row>
@@ -162,13 +171,11 @@ const PlayerEditModal = ({ open, toggle, player, teams, onChange, onFileChange, 
 				) : null}
 			</Row>
 		</>
-	)
+	);
 	return (
 		<Modal isOpen={open} toggle={toggle} className="veto_modal">
 			<ModalHeader toggle={toggle}>Edit a player</ModalHeader>
-			<ModalBody>
-				{playerForm()}
-			</ModalBody>
+			<ModalBody>{playerForm()}</ModalBody>
 			<ModalFooter className="no-padding">
 				<Button color="primary" className="modal-save" onClick={save}>
 					Save

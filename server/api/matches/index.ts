@@ -104,7 +104,7 @@ export const deleteMatch = (id: string) =>
 		});
 	});
 
-	/*
+/*
 export const setCurrent = (id: string) =>
 	new Promise(res => {
 		matchesDb.update({}, { current: false }, { multi: true }, err => {

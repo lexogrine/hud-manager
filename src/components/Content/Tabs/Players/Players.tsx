@@ -38,14 +38,13 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 	const openCustomFields = () => {
 		setCustomFieldForm(quickClone(cxt.fields.players));
 		setFieldsState(true);
-	}
+	};
 
 	const saveFields = async () => {
 		await api.players.fields.update(customFieldForm);
 		cxt.reload();
 		setFieldsState(false);
-	}
-
+	};
 
 	const clearAvatar = () => {
 		const avatarInput: any = document.getElementById('avatar');
@@ -167,7 +166,7 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 
 	const extraChangeHandler = (field: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
 		const value = event.target.value;
-		return setForm({...form, extra: { ...form.extra, [field]: value }});
+		return setForm({ ...form, extra: { ...form.extra, [field]: value } });
 	};
 
 	useEffect(() => {
@@ -184,7 +183,6 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 		}
 		setEditState(true);
 	}, [data]);
-	
 
 	return (
 		<Form>

@@ -9,7 +9,7 @@ export interface IContextData {
 	tournaments: I.Tournament[];
 	reload: Function;
 	customer?: I.Customer;
-	fields: I.CustomFieldStore
+	fields: I.CustomFieldStore;
 	hash: string;
 }
 
