@@ -6,11 +6,14 @@ import * as I from './../../../../api/interfaces';
 import { IContextData } from './../../../../components/Context';
 import PlayerEntry from './Player';
 import PlayerEditModal from './PlayerEditModal';
+import CustomFieldsModal from '../../../CustomFields/CustomFieldsModal';
 
 interface IProps {
 	cxt: IContextData;
 	data: any;
 }
+
+const quickClone: <T>(obj: T) => T = obj => JSON.parse(JSON.stringify(obj));
 
 const PlayersTab = ({ cxt, data }: IProps) => {
 	const emptyPlayer: I.Player = {
@@ -21,12 +24,28 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 		avatar: '',
 		country: '',
 		steamid: '',
-		team: ''
+		team: '',
+		extra: {}
 	};
 	const [form, setForm] = useState(emptyPlayer);
-	// const [forceLoad, setForceLoad] = useState(false);
-	const [openModalState, setOpenState] = useState(false);
 	const [search, setSearch] = useState('');
+
+	const [editModalState, setEditState] = useState(false);
+	const [fieldsModalState, setFieldsState] = useState(false);
+
+	const [customFieldForm, setCustomFieldForm] = useState<I.CustomFieldEntry[]>(quickClone(cxt.fields.players));
+
+	const openCustomFields = () => {
+		setCustomFieldForm(quickClone(cxt.fields.players));
+		setFieldsState(true);
+	}
+
+	const saveFields = async () => {
+		await api.players.fields.update(customFieldForm);
+		cxt.reload();
+		setFieldsState(false);
+	}
+
 
 	const clearAvatar = () => {
 		const avatarInput: any = document.getElementById('avatar');
@@ -115,7 +134,7 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 		if (form._id === 'empty') return;
 		const response = await api.players.delete(form._id);
 		if (response) {
-			setOpenState(false);
+			setEditState(false);
 			await loadPlayers();
 			return loadEmpty();
 		}
@@ -123,7 +142,7 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 
 	const edit = (player: I.Player) => {
 		setForm(player);
-		setOpenState(true);
+		setEditState(true);
 	};
 
 	const filterPlayers = (player: I.Player): boolean => {
@@ -143,13 +162,18 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 
 	const add = () => {
 		loadEmpty();
-		setOpenState(true);
+		setEditState(true);
+	};
+
+	const extraChangeHandler = (field: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+		const value = event.target.value;
+		return setForm({...form, extra: { ...form.extra, [field]: value }});
 	};
 
 	useEffect(() => {
 		loadEmpty();
 		if (!data || !data.steamid) {
-			setOpenState(false);
+			setEditState(false);
 			return;
 		}
 		const player = cxt.players.find(player => player.steamid === data.steamid);
@@ -158,8 +182,9 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 		} else {
 			setForm({ ...emptyPlayer, ...player });
 		}
-		setOpenState(true);
+		setEditState(true);
 	}, [data]);
+	
 
 	return (
 		<Form>
@@ -175,16 +200,27 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 				/>
 			</div>
 			<PlayerEditModal
-				open={openModalState}
+				open={editModalState}
 				toggle={() => {
-					setOpenState(!openModalState);
+					setEditState(!editModalState);
 				}}
 				player={form}
 				teams={cxt.teams}
 				onChange={changeHandler}
+				onExtraChange={extraChangeHandler}
 				onFileChange={fileHandler}
 				save={save}
 				deletePlayer={deletePlayer}
+				fields={cxt.fields.players}
+			/>
+			<CustomFieldsModal
+				fields={customFieldForm}
+				open={fieldsModalState}
+				toggle={() => {
+					setFieldsState(!fieldsModalState);
+				}}
+				setForm={setCustomFieldForm}
+				save={saveFields}
 			/>
 			<div className="tab-content-container no-padding">
 				<div className="player-list-entry heading">
@@ -193,7 +229,11 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 					<div className="username">Username</div>
 					<div className="team">Team</div>
 					<div className="country">Country</div>
-					<div className="options"></div>
+					<div className="options">
+						<Button className="purple-btn round-btn" onClick={openCustomFields}>
+							Manage
+						</Button>
+					</div>
 				</div>
 				{cxt.players.filter(filterPlayers).map(player => (
 					<PlayerEntry

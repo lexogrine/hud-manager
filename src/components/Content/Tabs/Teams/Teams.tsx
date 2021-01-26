@@ -6,19 +6,11 @@ import * as I from './../../../../api/interfaces';
 import { IContextData } from './../../../../components/Context';
 import TeamEditModal from './TeamEditModal';
 import TeamListEntry from './Team';
-import CustomFieldModal from './CustomFieldModal';
+import CustomFieldsModal from '../../../CustomFields/CustomFieldsModal';
 
 interface IProps {
 	cxt: IContextData;
 }
-
-const fields: I.CustomFieldEntry[] = [
-	{
-		_id: 'sdfsdfsf',
-		name: 'sometest',
-		type: 'text'
-	}
-];
 
 const quickClone: <T>(obj: T) => T = obj => JSON.parse(JSON.stringify(obj));
 
@@ -37,7 +29,7 @@ const TeamsTab = ({ cxt }: IProps) => {
 	const [editModalState, setEditState] = useState(false);
 	const [fieldsModalState, setFieldsState] = useState(false);
 
-	const [customFieldForm, setCustomFieldForm] = useState<I.CustomFieldEntry[]>(quickClone(fields));
+	const [customFieldForm, setCustomFieldForm] = useState<I.CustomFieldEntry[]>(quickClone(cxt.fields.teams));
 
 	const clearAvatar = () => {
 		const avatarInput: any = document.getElementById('avatar');
@@ -99,16 +91,10 @@ const TeamsTab = ({ cxt }: IProps) => {
 		return fileHandler(event.target.files);
 	};
 
-	/*const extraChangeHandler = (field: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+	const extraChangeHandler = (field: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
 		const value = event.target.value;
-		return setForm(prevForm => {
-			if (!prevForm.extra) {
-				prevForm.extra = {};
-			}
-			prevForm.extra[field] = value;
-			return prevForm;
-		});
-	};*/
+		return setForm({...form, extra: { ...form.extra, [field]: value }});
+	};
 
 	const save = async () => {
 		let response: any;
@@ -152,10 +138,21 @@ const TeamsTab = ({ cxt }: IProps) => {
 		);
 	};
 
+	const openCustomFields = () => {
+		setCustomFieldForm(quickClone(cxt.fields.teams));
+		setFieldsState(true);
+	}
+
 	const add = () => {
 		loadEmpty();
 		setEditState(true);
 	};
+
+	const saveFields = async () => {
+		await api.teams.fields.update(customFieldForm);
+		cxt.reload();
+		setFieldsState(false);
+	}
 
 	return (
 		<Form>
@@ -178,16 +175,19 @@ const TeamsTab = ({ cxt }: IProps) => {
 				team={form}
 				onChange={changeHandler}
 				onFileChange={fileHandler}
+				onExtraChange={extraChangeHandler}
 				save={save}
 				deleteTeam={deleteTeam}
+				fields={cxt.fields.teams}
 			/>
-			<CustomFieldModal
+			<CustomFieldsModal
 				fields={customFieldForm}
 				open={fieldsModalState}
 				toggle={() => {
 					setFieldsState(!fieldsModalState);
 				}}
 				setForm={setCustomFieldForm}
+				save={saveFields}
 			/>
 			<div className="tab-content-container no-padding">
 				<div className="player-list-entry heading">
@@ -196,7 +196,7 @@ const TeamsTab = ({ cxt }: IProps) => {
 					<div className="shortname">Short name</div>
 					<div className="country">Country</div>
 					<div className="options">
-						<Button className="purple-btn round-btn" onClick={() => setFieldsState(true)}>
+						<Button className="purple-btn round-btn" onClick={openCustomFields}>
 							Manage
 						</Button>
 					</div>

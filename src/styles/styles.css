@@ -1111,6 +1111,9 @@ form .card > .card-body > button.btn {
 }
 .veto_modal .modal-body {
     padding: 31px;
+    max-height: 70vh;
+    overflow: auto;
+
 }
 .veto_modal .form-group {
     margin-bottom:26px;

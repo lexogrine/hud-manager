@@ -57,12 +57,12 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 exports.__esModule = true;
 exports.deleteTournament = exports.updateTournament = exports.bindMatchToMatchup = exports.addTournament = exports.getTournaments = exports.getCurrentTournament = void 0;
 var T = __importStar(require("./"));
-var match_1 = require("../match");
+var matches_1 = require("../matches");
 exports.getCurrentTournament = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var matches, current, tournament;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, match_1.getMatches()];
+            case 0: return [4 /*yield*/, matches_1.getMatches()];
             case 1:
                 matches = _a.sent();
                 current = matches.find(function (match) { return match.current; });

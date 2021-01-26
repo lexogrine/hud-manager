@@ -1,13 +1,9 @@
-import express, { RequestHandler } from 'express';
-import { Match, RoundData } from '../../types/interfaces';
-import { GSI } from './../sockets';
-import db from './../../init/database';
+import { Match, RoundData } from '../../../types/interfaces';
+import { GSI } from './../../sockets';
+import db from './../../../init/database';
 import socketio from 'socket.io';
-import { getTeamById } from './teams';
-import { app } from 'electron';
+import { getTeamById } from './../teams';
 import uuidv4 from 'uuid/v4';
-import path from 'path';
-import fs from 'fs';
 import { CSGO, RoundOutcome } from 'csgogsi';
 
 const matchesDb = db.matches;
@@ -21,11 +17,6 @@ export const getMatches = (): Promise<Match[]> => {
 			return res(matches);
 		});
 	});
-};
-
-export const getMatchesRoute: express.RequestHandler = async (req, res) => {
-	const matches = await getMatches();
-	return res.json(matches);
 };
 
 export async function getMatchById(id: string): Promise<Match | null> {
@@ -113,6 +104,7 @@ export const deleteMatch = (id: string) =>
 		});
 	});
 
+	/*
 export const setCurrent = (id: string) =>
 	new Promise(res => {
 		matchesDb.update({}, { current: false }, { multi: true }, err => {
@@ -123,7 +115,7 @@ export const setCurrent = (id: string) =>
 			});
 		});
 	});
-
+*/
 export const updateMatch = (match: Match) =>
 	new Promise(res => {
 		matchesDb.update({ id: match.id }, match, {}, err => {
@@ -165,35 +157,6 @@ export const updateMatch = (match: Match) =>
 			);
 		});
 	});
-
-export const addMatchRoute: RequestHandler = async (req, res) => {
-	const match = await addMatch(req.body);
-	return res.sendStatus(match ? 200 : 500);
-};
-export const deleteMatchRoute: RequestHandler = async (req, res) => {
-	const match = await deleteMatch(req.params.id);
-	return res.sendStatus(match ? 200 : 500);
-};
-
-export const updateMatchRoute = (io: socketio.Server): RequestHandler => async (req, res) => {
-	const match = await updateMatch(req.body);
-	io.emit('match');
-	return res.sendStatus(match ? 200 : 500);
-};
-
-export const getMaps: express.RequestHandler = (req, res) => {
-	const defaultMaps = ['de_mirage', 'de_dust2', 'de_inferno', 'de_nuke', 'de_train', 'de_overpass', 'de_vertigo'];
-	const mapFilePath = path.join(app.getPath('userData'), 'maps.json');
-	try {
-		const maps = JSON.parse(fs.readFileSync(mapFilePath, 'utf8'));
-		if (Array.isArray(maps)) {
-			return res.json(maps);
-		}
-		return res.json(defaultMaps);
-	} catch {
-		return res.json(defaultMaps);
-	}
-};
 
 export const reverseSide = async (io: socketio.Server) => {
 	const matches = await getMatches();

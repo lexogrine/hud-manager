@@ -50,45 +50,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
-exports.getLogoFile = exports.deleteTeam = exports.updateTeam = exports.addTeam = exports.getTeam = exports.getTeams = exports.getTeamsList = exports.getTeamById = void 0;
-var database_1 = __importDefault(require("./../../init/database"));
-var config_1 = require("./config");
-var isSvg_1 = __importDefault(require("./../../src/isSvg"));
+exports.updateFields = exports.getFields = exports.getLogoFile = exports.deleteTeam = exports.updateTeam = exports.addTeam = exports.getTeam = exports.getTeams = void 0;
+var database_1 = __importDefault(require("./../../../init/database"));
+var config_1 = require("./../config");
+var isSvg_1 = __importDefault(require("./../../../src/isSvg"));
+var index_1 = require("./index");
 var teams = database_1["default"].teams;
 var players = database_1["default"].players;
-function getTeamById(id, logo) {
-    if (logo === void 0) { logo = false; }
-    return __awaiter(this, void 0, void 0, function () {
-        return __generator(this, function (_a) {
-            return [2 /*return*/, new Promise(function (res) {
-                    teams.findOne({ _id: id }, function (err, team) {
-                        if (err) {
-                            return res(null);
-                        }
-                        if (!logo && team && team.logo)
-                            delete team.logo;
-                        return res(team);
-                    });
-                })];
-        });
-    });
-}
-exports.getTeamById = getTeamById;
-exports.getTeamsList = function (query) {
-    return new Promise(function (res) {
-        teams.find(query, function (err, teams) {
-            if (err) {
-                return res([]);
-            }
-            return res(teams);
-        });
-    });
-};
 exports.getTeams = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var teams, config;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, exports.getTeamsList({})];
+            case 0: return [4 /*yield*/, index_1.getTeamsList({})];
             case 1:
                 teams = _a.sent();
                 return [4 /*yield*/, config_1.loadConfig()];
@@ -106,7 +79,7 @@ exports.getTeam = function (req, res) { return __awaiter(void 0, void 0, void 0,
                 if (!req.params.id) {
                     return [2 /*return*/, res.sendStatus(422)];
                 }
-                return [4 /*yield*/, getTeamById(req.params.id, true)];
+                return [4 /*yield*/, index_1.getTeamById(req.params.id, true)];
             case 1:
                 team = _a.sent();
                 if (!team) {
@@ -121,7 +94,8 @@ exports.addTeam = function (req, res) {
         name: req.body.name,
         shortName: req.body.shortName,
         logo: req.body.logo,
-        country: req.body.country
+        country: req.body.country,
+        extra: req.body.extra
     };
     teams.insert(newTeam, function (err, team) {
         if (err) {
@@ -138,7 +112,7 @@ exports.updateTeam = function (req, res) { return __awaiter(void 0, void 0, void
                 if (!req.params.id) {
                     return [2 /*return*/, res.sendStatus(422)];
                 }
-                return [4 /*yield*/, getTeamById(req.params.id, true)];
+                return [4 /*yield*/, index_1.getTeamById(req.params.id, true)];
             case 1:
                 team = _a.sent();
                 if (!team) {
@@ -148,7 +122,8 @@ exports.updateTeam = function (req, res) { return __awaiter(void 0, void 0, void
                     name: req.body.name,
                     shortName: req.body.shortName,
                     logo: req.body.logo,
-                    country: req.body.country
+                    country: req.body.country,
+                    extra: req.body.extra
                 };
                 if (req.body.logo === undefined) {
                     updated.logo = team.logo;
@@ -161,7 +136,7 @@ exports.updateTeam = function (req, res) { return __awaiter(void 0, void 0, void
                                 if (err) {
                                     return [2 /*return*/, res.sendStatus(500)];
                                 }
-                                return [4 /*yield*/, getTeamById(req.params.id)];
+                                return [4 /*yield*/, index_1.getTeamById(req.params.id)];
                             case 1:
                                 team = _a.sent();
                                 return [2 /*return*/, res.json(team)];
@@ -180,7 +155,7 @@ exports.deleteTeam = function (req, res) { return __awaiter(void 0, void 0, void
                 if (!req.params.id) {
                     return [2 /*return*/, res.sendStatus(422)];
                 }
-                return [4 /*yield*/, getTeamById(req.params.id)];
+                return [4 /*yield*/, index_1.getTeamById(req.params.id)];
             case 1:
                 team = _a.sent();
                 if (!team) {
@@ -210,7 +185,7 @@ exports.getLogoFile = function (req, res) { return __awaiter(void 0, void 0, voi
                 if (!req.params.id) {
                     return [2 /*return*/, res.sendStatus(422)];
                 }
-                return [4 /*yield*/, getTeamById(req.params.id, true)];
+                return [4 /*yield*/, index_1.getTeamById(req.params.id, true)];
             case 1:
                 team = _a.sent();
                 if (!team || !team.logo || !team.logo.length) {
@@ -223,6 +198,32 @@ exports.getLogoFile = function (req, res) { return __awaiter(void 0, void 0, voi
                 });
                 res.end(imgBuffer);
                 return [2 /*return*/];
+        }
+    });
+}); };
+exports.getFields = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var fields;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, index_1.getTeamFields()];
+            case 1:
+                fields = _a.sent();
+                return [2 /*return*/, res.json(fields)];
+        }
+    });
+}); };
+exports.updateFields = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var newFields;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                if (!req.body) {
+                    return [2 /*return*/, res.sendStatus(422)];
+                }
+                return [4 /*yield*/, index_1.updateTeamFields(req.body)];
+            case 1:
+                newFields = _a.sent();
+                return [2 /*return*/, res.json(newFields)];
         }
     });
 }); };

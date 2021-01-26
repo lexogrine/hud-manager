@@ -50,14 +50,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
-exports.updateRound = exports.reverseSide = exports.getMaps = exports.updateMatchRoute = exports.deleteMatchRoute = exports.addMatchRoute = exports.updateMatch = exports.setCurrent = exports.deleteMatch = exports.addMatch = exports.updateMatches = exports.setMatches = exports.getMatchById = exports.getMatchesRoute = exports.getMatches = void 0;
-var sockets_1 = require("./../sockets");
-var database_1 = __importDefault(require("./../../init/database"));
-var teams_1 = require("./teams");
-var electron_1 = require("electron");
+exports.updateRound = exports.reverseSide = exports.updateMatch = exports.deleteMatch = exports.addMatch = exports.updateMatches = exports.setMatches = exports.getMatchById = exports.getMatches = void 0;
+var sockets_1 = require("./../../sockets");
+var database_1 = __importDefault(require("./../../../init/database"));
+var teams_1 = require("./../teams");
 var v4_1 = __importDefault(require("uuid/v4"));
-var path_1 = __importDefault(require("path"));
-var fs_1 = __importDefault(require("fs"));
 var matchesDb = database_1["default"].matches;
 exports.getMatches = function () {
     return new Promise(function (res) {
@@ -69,17 +66,6 @@ exports.getMatches = function () {
         });
     });
 };
-exports.getMatchesRoute = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var matches;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4 /*yield*/, exports.getMatches()];
-            case 1:
-                matches = _a.sent();
-                return [2 /*return*/, res.json(matches)];
-        }
-    });
-}); };
 function getMatchById(id) {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
@@ -181,19 +167,18 @@ exports.deleteMatch = function (id) {
         });
     });
 };
-exports.setCurrent = function (id) {
-    return new Promise(function (res) {
-        matchesDb.update({}, { current: false }, { multi: true }, function (err) {
-            if (err)
-                return res(null);
-            matchesDb.update({ id: id }, { current: true }, {}, function (err) {
-                if (err)
-                    return res(null);
-                return res();
-            });
+/*
+export const setCurrent = (id: string) =>
+new Promise(res => {
+    matchesDb.update({}, { current: false }, { multi: true }, err => {
+        if (err) return res(null);
+        matchesDb.update({ id }, { current: true }, {}, err => {
+            if (err) return res(null);
+            return res();
         });
     });
-};
+});
+*/
 exports.updateMatch = function (match) {
     return new Promise(function (res) {
         matchesDb.update({ id: match.id }, match, {}, function (err) {
@@ -241,54 +226,6 @@ exports.updateMatch = function (match) {
             }); });
         });
     });
-};
-exports.addMatchRoute = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var match;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4 /*yield*/, exports.addMatch(req.body)];
-            case 1:
-                match = _a.sent();
-                return [2 /*return*/, res.sendStatus(match ? 200 : 500)];
-        }
-    });
-}); };
-exports.deleteMatchRoute = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var match;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4 /*yield*/, exports.deleteMatch(req.params.id)];
-            case 1:
-                match = _a.sent();
-                return [2 /*return*/, res.sendStatus(match ? 200 : 500)];
-        }
-    });
-}); };
-exports.updateMatchRoute = function (io) { return function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var match;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4 /*yield*/, exports.updateMatch(req.body)];
-            case 1:
-                match = _a.sent();
-                io.emit('match');
-                return [2 /*return*/, res.sendStatus(match ? 200 : 500)];
-        }
-    });
-}); }; };
-exports.getMaps = function (req, res) {
-    var defaultMaps = ['de_mirage', 'de_dust2', 'de_inferno', 'de_nuke', 'de_train', 'de_overpass', 'de_vertigo'];
-    var mapFilePath = path_1["default"].join(electron_1.app.getPath('userData'), 'maps.json');
-    try {
-        var maps = JSON.parse(fs_1["default"].readFileSync(mapFilePath, 'utf8'));
-        if (Array.isArray(maps)) {
-            return res.json(maps);
-        }
-        return res.json(defaultMaps);
-    }
-    catch (_a) {
-        return res.json(defaultMaps);
-    }
 };
 exports.reverseSide = function (io) { return __awaiter(void 0, void 0, void 0, function () {
     var matches, current, currentVetoMap;

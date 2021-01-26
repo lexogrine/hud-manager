@@ -7,12 +7,18 @@ export interface Player {
 	country: string;
 	steamid: string;
 	team: string;
+	extra: Record<string, string>;
 }
 
 export interface CustomFieldEntry {
 	_id: string;
 	name: string;
 	type: 'text';
+}
+
+export interface CustomFieldStore {
+	teams: CustomFieldEntry[];
+	players: CustomFieldEntry[];
 }
 
 export interface CFG {

@@ -13,7 +13,8 @@ export type {
 	Config,
 	ExtendedConfig,
 	CFG,
-	CustomFieldEntry
+	CustomFieldEntry,
+	CustomFieldStore
 } from './../../types/interfaces';
 
 export interface Player {
@@ -25,6 +26,7 @@ export interface Player {
 	country: string;
 	steamid: string;
 	team: string;
+	extra: Record<string, string>;
 }
 
 export interface Team {

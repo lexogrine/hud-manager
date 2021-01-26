@@ -1,33 +1,12 @@
 import express from 'express';
-import db from './../../init/database';
-import { Team } from '../../types/interfaces';
-import { loadConfig, internalIP } from './config';
-import isSvg from './../../src/isSvg';
+import db from './../../../init/database';
+import { Team } from '../../../types/interfaces';
+import { loadConfig, internalIP } from './../config';
+import isSvg from './../../../src/isSvg';
+import { getTeamsList, getTeamById, getTeamFields, updateTeamFields } from './index';
 
 const teams = db.teams;
 const players = db.players;
-
-export async function getTeamById(id: string, logo = false): Promise<Team | null> {
-	return new Promise(res => {
-		teams.findOne({ _id: id }, (err, team) => {
-			if (err) {
-				return res(null);
-			}
-			if (!logo && team && team.logo) delete team.logo;
-			return res(team);
-		});
-	});
-}
-
-export const getTeamsList = (query: any) =>
-	new Promise<Team[]>(res => {
-		teams.find(query, (err, teams) => {
-			if (err) {
-				return res([]);
-			}
-			return res(teams);
-		});
-	});
 
 export const getTeams: express.RequestHandler = async (req, res) => {
 	const teams = await getTeamsList({});
@@ -59,7 +38,8 @@ export const addTeam: express.RequestHandler = (req, res) => {
 		name: req.body.name,
 		shortName: req.body.shortName,
 		logo: req.body.logo,
-		country: req.body.country
+		country: req.body.country,
+		extra: req.body.extra
 	};
 	teams.insert(newTeam, (err, team) => {
 		if (err) {
@@ -81,7 +61,8 @@ export const updateTeam: express.RequestHandler = async (req, res) => {
 		name: req.body.name,
 		shortName: req.body.shortName,
 		logo: req.body.logo,
-		country: req.body.country
+		country: req.body.country,
+		extra: req.body.extra
 	};
 
 	if (req.body.logo === undefined) {
@@ -132,4 +113,18 @@ export const getLogoFile: express.RequestHandler = async (req, res) => {
 		'Content-Length': imgBuffer.length
 	});
 	res.end(imgBuffer);
+};
+
+export const getFields: express.RequestHandler = async (req, res) => {
+	const fields = await getTeamFields();
+	return res.json(fields);
+};
+
+
+export const updateFields: express.RequestHandler = async (req, res) => {
+    if(!req.body) {
+        return res.sendStatus(422);
+    }
+	const newFields = await updateTeamFields(req.body);
+	return res.json(newFields);
 };

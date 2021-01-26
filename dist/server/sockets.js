@@ -58,7 +58,7 @@ var path_1 = __importDefault(require("path"));
 var node_fetch_1 = __importDefault(require("node-fetch"));
 var request_1 = __importDefault(require("request"));
 var huds_1 = require("./../server/api/huds");
-var match_1 = require("./api/match");
+var matches_1 = require("./api/matches");
 var fs_1 = __importDefault(require("fs"));
 var portscanner_1 = __importDefault(require("portscanner"));
 var config_1 = require("./api/config");
@@ -173,7 +173,7 @@ var HUDStateManager = /** @class */ (function () {
                         case 'team': return [3 /*break*/, 7];
                     }
                     return [3 /*break*/, 9];
-                case 3: return [4 /*yield*/, match_1.getMatchById(entry.id)];
+                case 3: return [4 /*yield*/, matches_1.getMatchById(entry.id)];
                 case 4:
                     extraData = _d.sent();
                     return [3 /*break*/, 10];
@@ -214,6 +214,12 @@ var lastUpdate = new Date().getTime();
 exports.Sockets = new SocketManager();
 exports.HUDState = new HUDStateManager();
 exports.GSI = new csgogsi_1["default"]();
+var assertUser = function (req, res, next) {
+    if (!api_1.customer.customer) {
+        return res.sendStatus(403);
+    }
+    return next();
+};
 function default_1(server, app) {
     var _this = this;
     function getJSONArray(url) {
@@ -430,7 +436,10 @@ function default_1(server, app) {
         });
     }); });
     radar.startRadar(app, io);
-    app.post('/', function (req, res) {
+    app.post('/', assertUser, function (req, res) {
+        if (!api_1.customer.customer) {
+            return res.sendStatus(200);
+        }
         runtimeConfig.last = req.body;
         if (intervalId) {
             clearInterval(intervalId);
@@ -442,7 +451,7 @@ function default_1(server, app) {
         radar.digestRadar(req.body);
         res.sendStatus(200);
     });
-    app.post('/api/test', function (_req, res) {
+    app.post('/api/test', assertUser, function (_req, res) {
         res.sendStatus(200);
         if (intervalId)
             stopSendingTestData();
@@ -453,6 +462,7 @@ function default_1(server, app) {
         var _a, _b;
         var ref = ((_b = (_a = socket.request) === null || _a === void 0 ? void 0 : _a.headers) === null || _b === void 0 ? void 0 : _b.referer) || '';
         config_1.verifyUrl(ref).then(function (status) {
+            console.log(ref, status);
             if (status) {
                 socket.join('csgo');
             }
@@ -467,7 +477,7 @@ function default_1(server, app) {
                 io.to(dir).emit('keybindAction', action);
             });
             socket.on('readerReverseSide', function () {
-                match_1.reverseSide(io);
+                matches_1.reverseSide(io);
             });
         });
         socket.emit('readyToRegister');
@@ -547,7 +557,7 @@ function default_1(server, app) {
                     if (score.winner && score.winner.logo) {
                         delete score.winner.logo;
                     }
-                    return [4 /*yield*/, match_1.getMatches()];
+                    return [4 /*yield*/, matches_1.getMatches()];
                 case 1:
                     matches = _a.sent();
                     match = matches.filter(function (match) { return match.current; })[0];
@@ -571,7 +581,7 @@ function default_1(server, app) {
                         return veto;
                     });
                     match.vetos = vetos;
-                    return [4 /*yield*/, match_1.updateMatch(match)];
+                    return [4 /*yield*/, matches_1.updateMatch(match)];
                 case 2:
                     _a.sent();
                     io.emit('match', true);
@@ -583,7 +593,7 @@ function default_1(server, app) {
         var matches, match, mapName, vetos, isReversed_1;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, match_1.getMatches()];
+                case 0: return [4 /*yield*/, matches_1.getMatches()];
                 case 1:
                     matches = _a.sent();
                     match = matches.filter(function (match) { return match.current; })[0];
@@ -624,7 +634,7 @@ function default_1(server, app) {
                         }
                     }
                     match.vetos = vetos;
-                    return [4 /*yield*/, match_1.updateMatch(match)];
+                    return [4 /*yield*/, matches_1.updateMatch(match)];
                 case 2:
                     _a.sent();
                     return [4 /*yield*/, tournaments_1.createNextMatch(match.id)];
@@ -641,7 +651,7 @@ function default_1(server, app) {
         var round, winner, loser, final, now, payload;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, match_1.updateRound(data)];
+                case 0: return [4 /*yield*/, matches_1.updateRound(data)];
                 case 1:
                     _a.sent();
                     if (((last === null || last === void 0 ? void 0 : last.map.team_ct.score) !== data.map.team_ct.score) !==

@@ -1,6 +1,6 @@
 import * as I from './../../../types/interfaces';
 import * as Formats from './formats';
-import * as M from './../match';
+import * as M from './../matches';
 import uuidv4 from 'uuid/v4';
 import db from './../../../init/database';
 

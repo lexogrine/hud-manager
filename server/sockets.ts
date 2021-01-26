@@ -8,7 +8,7 @@ import fetch from 'node-fetch';
 import * as I from './../types/interfaces';
 import request from 'request';
 import { getHUDData } from './../server/api/huds';
-import { getMatches, updateRound, getMatchById, updateMatch, reverseSide } from './api/match';
+import { getMatches, updateRound, getMatchById, updateMatch, reverseSide } from './api/matches';
 import fs from 'fs';
 import portscanner from 'portscanner';
 import { loadConfig, verifyUrl } from './api/config';

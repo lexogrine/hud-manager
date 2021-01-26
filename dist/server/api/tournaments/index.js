@@ -60,7 +60,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 exports.__esModule = true;
 exports.deleteTournament = exports.createNextMatch = exports.fillNextMatch = exports.bindMatch = exports.updateTournament = exports.getTournament = exports.addTournament = exports.getTournamentByMatchId = exports.createTournament = exports.getTournaments = void 0;
 var Formats = __importStar(require("./formats"));
-var M = __importStar(require("./../match"));
+var M = __importStar(require("./../matches"));
 var v4_1 = __importDefault(require("uuid/v4"));
 var database_1 = __importDefault(require("./../../../init/database"));
 var tournaments = database_1["default"].tournaments;

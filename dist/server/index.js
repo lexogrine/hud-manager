@@ -80,6 +80,7 @@ var path_1 = __importDefault(require("path"));
 var electron_1 = require("electron");
 var fs_1 = __importDefault(require("fs"));
 var config_1 = require("./api/config");
+var index_1 = require("./api/teams/index");
 function init() {
     return __awaiter(this, void 0, void 0, function () {
         var config, app, server, port, io;
@@ -88,21 +89,24 @@ function init() {
                 case 0: return [4 /*yield*/, config_1.loadConfig()];
                 case 1:
                     config = _a.sent();
+                    return [4 /*yield*/, index_1.initiateCustomFields()];
+                case 2:
+                    _a.sent();
                     app = express_1["default"]();
                     server = http_1["default"].createServer(app);
                     return [4 /*yield*/, get_port_1["default"]({ port: config.port })];
-                case 2:
-                    port = _a.sent();
-                    if (!(port !== config.port)) return [3 /*break*/, 5];
-                    return [4 /*yield*/, get_port_1["default"]({ port: get_port_1.makeRange(1300, 50000) })];
                 case 3:
+                    port = _a.sent();
+                    if (!(port !== config.port)) return [3 /*break*/, 6];
+                    return [4 /*yield*/, get_port_1["default"]({ port: get_port_1.makeRange(1300, 50000) })];
+                case 4:
                     port = _a.sent();
                     console.log("Port " + config.port + " is not available, changing to " + port);
                     return [4 /*yield*/, config_1.setConfig(__assign(__assign({}, config), { port: port }))];
-                case 4:
-                    config = _a.sent();
-                    _a.label = 5;
                 case 5:
+                    config = _a.sent();
+                    _a.label = 6;
+                case 6:
                     console.log("Server listening on " + port);
                     app.use(express_1["default"].urlencoded({ extended: true }));
                     app.use(express_1["default"].raw({ limit: '100Mb', type: 'application/json' }));

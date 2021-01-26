@@ -25,10 +25,7 @@ exports.__esModule = true;
 exports.customer = void 0;
 var express_1 = __importDefault(require("express"));
 var electron_1 = require("electron");
-var players = __importStar(require("./players"));
 var steam_game_path_1 = require("steam-game-path");
-var teams = __importStar(require("./teams"));
-var match = __importStar(require("./match"));
 var config = __importStar(require("./config"));
 var huds = __importStar(require("./huds"));
 var path = __importStar(require("path"));
@@ -38,31 +35,24 @@ var sync = __importStar(require("./sync"));
 var machine = __importStar(require("./machine"));
 var user = __importStar(require("./user"));
 var routes_1 = __importDefault(require("./tournaments/routes"));
+var routes_2 = __importDefault(require("./matches/routes"));
+var routes_3 = __importDefault(require("./players/routes"));
+var routes_4 = __importDefault(require("./teams/routes"));
 exports.customer = {
     customer: null
 };
 function default_1(router, io) {
     router.route('/api/auth').get(user.getCurrent)["delete"](user.logout);
-    router.route('/api/players').get(players.getPlayers).post(players.addPlayer);
-    router.route('/api/players/:id').get(players.getPlayers).patch(players.updatePlayer)["delete"](players.deletePlayer);
-    router.route('/api/players/avatar/:id').get(players.getAvatarFile);
-    router.route('/api/players/avatar/steamid/:steamid').get(players.getAvatarURLBySteamID);
-    router.route('/api/teams').get(teams.getTeams).post(teams.addTeam);
-    router.route('/api/teams/:id').get(teams.getTeam).patch(teams.updateTeam)["delete"](teams.deleteTeam);
-    router.route('/api/teams/logo/:id').get(teams.getLogoFile);
     router.route('/api/config').get(config.getConfig).patch(config.updateConfig(io));
     router.route('/api/version').get(function (req, res) { return res.json({ version: electron_1.app.getVersion() }); });
-    router.route('/api/match').get(match.getMatchesRoute).post(match.addMatchRoute);
-    router
-        .route('/api/match/:id')
-        //.get(teams.getTeam)
-        .patch(match.updateMatchRoute(io))["delete"](match.deleteMatchRoute);
     routes_1["default"](router);
+    routes_2["default"](router, io);
+    routes_3["default"](router);
+    routes_4["default"](router);
     router.route('/api/huds').get(huds.getHUDs).post(huds.openHUDsDirectory)["delete"](huds.deleteHUD(io));
     router.route('/api/huds/add').post(huds.uploadHUD);
     router.route('/api/huds/close').post(huds.closeHUD);
     router.route('/api/huds/:hudDir/start').post(huds.showHUD(io));
-    router.route('/api/maps').get(match.getMaps);
     router.route('/api/gsi').get(gsi.checkGSIFile).put(gsi.createGSIFile);
     router.route('/api/import').post(sync.importDb);
     router.route('/api/steam').get(function (req, res) { return res.json({ gamePath: steam_game_path_1.getGamePath(730) }); });

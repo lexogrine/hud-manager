@@ -1,10 +1,7 @@
 import express from 'express';
 import socketio from 'socket.io';
 import { globalShortcut, app } from 'electron';
-import * as players from './players';
 import { getGamePath } from 'steam-game-path';
-import * as teams from './teams';
-import * as match from './match';
 import * as config from './config';
 import * as huds from './huds';
 import * as path from 'path';
@@ -14,7 +11,10 @@ import * as sync from './sync';
 import * as machine from './machine';
 import * as user from './user';
 import * as I from './../../types/interfaces';
-import T from './tournaments/routes';
+import TournamentHandler from './tournaments/routes';
+import MatchHandler from './matches/routes';
+import PlayerHandler from './players/routes';
+import TeamHandler from './teams/routes';
 
 export const customer: I.CustomerData = {
 	customer: null
@@ -23,33 +23,18 @@ export const customer: I.CustomerData = {
 export default function (router: express.Router, io: socketio.Server) {
 	router.route('/api/auth').get(user.getCurrent).delete(user.logout);
 
-	router.route('/api/players').get(players.getPlayers).post(players.addPlayer);
-
-	router.route('/api/players/:id').get(players.getPlayers).patch(players.updatePlayer).delete(players.deletePlayer);
-
-	router.route('/api/players/avatar/:id').get(players.getAvatarFile);
-
-	router.route('/api/players/avatar/steamid/:steamid').get(players.getAvatarURLBySteamID);
-
-	router.route('/api/teams').get(teams.getTeams).post(teams.addTeam);
-
-	router.route('/api/teams/:id').get(teams.getTeam).patch(teams.updateTeam).delete(teams.deleteTeam);
-
-	router.route('/api/teams/logo/:id').get(teams.getLogoFile);
 
 	router.route('/api/config').get(config.getConfig).patch(config.updateConfig(io));
 
 	router.route('/api/version').get((req, res) => res.json({ version: app.getVersion() }));
 
-	router.route('/api/match').get(match.getMatchesRoute).post(match.addMatchRoute);
+	TournamentHandler(router);
 
-	router
-		.route('/api/match/:id')
-		//.get(teams.getTeam)
-		.patch(match.updateMatchRoute(io))
-		.delete(match.deleteMatchRoute);
+	MatchHandler(router, io);
 
-	T(router);
+	PlayerHandler(router);
+
+	TeamHandler(router);
 
 	router.route('/api/huds').get(huds.getHUDs).post(huds.openHUDsDirectory).delete(huds.deleteHUD(io));
 
@@ -58,8 +43,6 @@ export default function (router: express.Router, io: socketio.Server) {
 	router.route('/api/huds/close').post(huds.closeHUD);
 
 	router.route('/api/huds/:hudDir/start').post(huds.showHUD(io));
-
-	router.route('/api/maps').get(match.getMaps);
 
 	router.route('/api/gsi').get(gsi.checkGSIFile).put(gsi.createGSIFile);
 

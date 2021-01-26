@@ -11,12 +11,14 @@ interface IProps {
 	toggle: () => void;
 	team: I.Team;
 	onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+	onExtraChange: (field: string) => (event: React.ChangeEvent<HTMLInputElement>) => void;
 	onFileChange: (files: FileList) => void;
 	save: () => void;
+	fields: I.CustomFieldEntry[];
 	deleteTeam: () => void;
 }
 
-const TeamEditModal = ({ open, toggle, team, onChange, onFileChange, save, deleteTeam }: IProps) => {
+const TeamEditModal = ({ open, toggle, team, onChange, onFileChange, save, deleteTeam, onExtraChange, fields }: IProps) => {
 	let logo = '';
 	if (team.logo) {
 		if (team.logo.includes('api/teams/logo')) {
@@ -26,6 +28,23 @@ const TeamEditModal = ({ open, toggle, team, onChange, onFileChange, save, delet
 			logo = `data:image/${encoding};base64,${team.logo}`;
 		}
 	}
+	const extraForm = () => (
+		fields.map(field => (
+			<Row key={field._id}>
+				<Col md="12">
+					<FormGroup>
+						<Input
+							type="text"
+							name={field.name}
+							onChange={onExtraChange(field.name)}
+							value={team.extra[field.name]}
+							placeholder={`Field: ${field.name}`}
+						/>
+					</FormGroup>
+				</Col>
+			</Row>
+		))
+	)
 	return (
 		<Modal isOpen={open} toggle={toggle} className="veto_modal">
 			<ModalHeader toggle={toggle}>Edit a team</ModalHeader>
@@ -89,6 +108,7 @@ const TeamEditModal = ({ open, toggle, team, onChange, onFileChange, save, delet
 						</FormGroup>
 					</Col>
 				</Row>
+				{extraForm()}
 				{team._id !== 'empty' ? (
 					<Row className="centered">
 						<Button className="purple-btn round-btn" onClick={deleteTeam}>

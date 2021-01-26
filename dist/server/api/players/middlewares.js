@@ -50,62 +50,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
-exports.getAvatarURLBySteamID = exports.getAvatarFile = exports.deletePlayer = exports.addPlayer = exports.updatePlayer = exports.getPlayer = exports.getPlayers = exports.getPlayersList = exports.getPlayerById = void 0;
-var database_1 = __importDefault(require("./../../init/database"));
-var config_1 = require("./config");
+exports.updateFields = exports.getFields = exports.getAvatarURLBySteamID = exports.getAvatarFile = exports.deletePlayer = exports.addPlayer = exports.updatePlayer = exports.getPlayer = exports.getPlayers = void 0;
+var database_1 = __importDefault(require("./../../../init/database"));
+var config_1 = require("./../config");
 var node_fetch_1 = __importDefault(require("node-fetch"));
-var isSvg_1 = __importDefault(require("./../../src/isSvg"));
+var isSvg_1 = __importDefault(require("./../../../src/isSvg"));
+var index_1 = require("./index");
 var players = database_1["default"].players;
-function getPlayerById(id, avatar) {
-    if (avatar === void 0) { avatar = false; }
-    return __awaiter(this, void 0, void 0, function () {
-        return __generator(this, function (_a) {
-            return [2 /*return*/, new Promise(function (res) {
-                    players.findOne({ _id: id }, function (err, player) {
-                        if (err) {
-                            return res(null);
-                        }
-                        if (!avatar && player && player.avatar)
-                            delete player.avatar;
-                        return res(player);
-                    });
-                })];
-        });
-    });
-}
-exports.getPlayerById = getPlayerById;
-function getPlayerBySteamId(steamid, avatar) {
-    if (avatar === void 0) { avatar = false; }
-    return __awaiter(this, void 0, void 0, function () {
-        return __generator(this, function (_a) {
-            return [2 /*return*/, new Promise(function (res) {
-                    players.findOne({ steamid: steamid }, function (err, player) {
-                        if (err) {
-                            return res(null);
-                        }
-                        if (!avatar && player && player.avatar)
-                            delete player.avatar;
-                        return res(player);
-                    });
-                })];
-        });
-    });
-}
-exports.getPlayersList = function (query) {
-    return new Promise(function (res) {
-        players.find(query, function (err, players) {
-            if (err) {
-                return res([]);
-            }
-            return res(players);
-        });
-    });
-};
 exports.getPlayers = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var players, config;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, exports.getPlayersList({})];
+            case 0: return [4 /*yield*/, index_1.getPlayersList({})];
             case 1:
                 players = _a.sent();
                 return [4 /*yield*/, config_1.loadConfig()];
@@ -125,7 +81,7 @@ exports.getPlayer = function (req, res) { return __awaiter(void 0, void 0, void 
                 if (!req.params.id) {
                     return [2 /*return*/, res.sendStatus(422)];
                 }
-                return [4 /*yield*/, getPlayerById(req.params.id)];
+                return [4 /*yield*/, index_1.getPlayerById(req.params.id)];
             case 1:
                 player = _a.sent();
                 if (!player) {
@@ -143,7 +99,7 @@ exports.updatePlayer = function (req, res) { return __awaiter(void 0, void 0, vo
                 if (!req.params.id) {
                     return [2 /*return*/, res.sendStatus(422)];
                 }
-                return [4 /*yield*/, getPlayerById(req.params.id, true)];
+                return [4 /*yield*/, index_1.getPlayerById(req.params.id, true)];
             case 1:
                 player = _a.sent();
                 if (!player) {
@@ -156,7 +112,8 @@ exports.updatePlayer = function (req, res) { return __awaiter(void 0, void 0, vo
                     avatar: req.body.avatar,
                     country: req.body.country,
                     steamid: req.body.steamid,
-                    team: req.body.team
+                    team: req.body.team,
+                    extra: req.body.extra
                 };
                 if (req.body.avatar === undefined) {
                     updated.avatar = player.avatar;
@@ -169,7 +126,7 @@ exports.updatePlayer = function (req, res) { return __awaiter(void 0, void 0, vo
                                 if (err) {
                                     return [2 /*return*/, res.sendStatus(500)];
                                 }
-                                return [4 /*yield*/, getPlayerById(req.params.id)];
+                                return [4 /*yield*/, index_1.getPlayerById(req.params.id)];
                             case 1:
                                 player = _a.sent();
                                 return [2 /*return*/, res.json(player)];
@@ -188,7 +145,8 @@ exports.addPlayer = function (req, res) {
         avatar: req.body.avatar,
         country: req.body.country,
         steamid: req.body.steamid,
-        team: req.body.team
+        team: req.body.team,
+        extra: req.body.extra
     };
     players.insert(newPlayer, function (err, player) {
         if (err) {
@@ -205,7 +163,7 @@ exports.deletePlayer = function (req, res) { return __awaiter(void 0, void 0, vo
                 if (!req.params.id) {
                     return [2 /*return*/, res.sendStatus(422)];
                 }
-                return [4 /*yield*/, getPlayerById(req.params.id)];
+                return [4 /*yield*/, index_1.getPlayerById(req.params.id)];
             case 1:
                 player = _a.sent();
                 if (!player) {
@@ -229,7 +187,7 @@ exports.getAvatarFile = function (req, res) { return __awaiter(void 0, void 0, v
                 if (!req.params.id) {
                     return [2 /*return*/, res.sendStatus(422)];
                 }
-                return [4 /*yield*/, getPlayerById(req.params.id, true)];
+                return [4 /*yield*/, index_1.getPlayerById(req.params.id, true)];
             case 1:
                 team = _a.sent();
                 if (!team || !team.avatar || !team.avatar.length) {
@@ -260,7 +218,7 @@ exports.getAvatarURLBySteamID = function (req, res) { return __awaiter(void 0, v
                     custom: '',
                     steam: ''
                 };
-                return [4 /*yield*/, getPlayerBySteamId(req.params.steamid, true)];
+                return [4 /*yield*/, index_1.getPlayerBySteamId(req.params.steamid, true)];
             case 2:
                 player = _b.sent();
                 if (player && player.avatar && player.avatar.length && player._id) {
@@ -283,6 +241,32 @@ exports.getAvatarURLBySteamID = function (req, res) { return __awaiter(void 0, v
                 _a = _b.sent();
                 return [3 /*break*/, 6];
             case 6: return [2 /*return*/, res.json(response)];
+        }
+    });
+}); };
+exports.getFields = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var fields;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, index_1.getPlayerFields()];
+            case 1:
+                fields = _a.sent();
+                return [2 /*return*/, res.json(fields)];
+        }
+    });
+}); };
+exports.updateFields = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var newFields;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                if (!req.body) {
+                    return [2 /*return*/, res.sendStatus(422)];
+                }
+                return [4 /*yield*/, index_1.updatePlayerFields(req.body)];
+            case 1:
+                newFields = _a.sent();
+                return [2 /*return*/, res.json(newFields)];
         }
     });
 }); };

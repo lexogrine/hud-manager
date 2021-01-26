@@ -1,6 +1,6 @@
 import { BrowserWindow, Tray, Menu, globalShortcut } from 'electron';
 import { getHUDData } from './../server/api/huds';
-import * as match from './../server/api/match';
+import * as match from './../server/api/matches';
 import * as path from 'path';
 //import ip from 'ip';
 import socketio from 'socket.io';
