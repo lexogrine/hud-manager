@@ -320,10 +320,8 @@ export default class ActionPanel extends React.Component<IProps, IState> {
 						<Row key={`${index}_${inputs.map(inp => inp.name).join()}`}>
 							{inputs.map(input => (
 								<Col s={6} key={input.name}>
-									<FormGroup  className="color-segment">
-										<Label check>
-											{input.label}
-										</Label>
+									<FormGroup className="color-segment">
+										<Label check>{input.label}</Label>
 										<ColorPicker
 											hex={(form[section.name] && form[section.name][input.name]) || ''}
 											setHex={this.changeForm(section.name, input.name, input.type)}

@@ -43,16 +43,19 @@ export default class HudEntry extends Component<IProps, IState> {
 	delete = async () => {
 		try {
 			await api.huds.delete(this.props.hud.dir);
-		} catch { }
+		} catch {}
 		this.toggleModal();
 	};
 	copy = (hud: I.HUD) => {
-		navigator.permissions.query({ name: "clipboard-write" as PermissionName }).then(result => {
-			if (result.state == "granted" || result.state == "prompt") {
-				navigator.clipboard.writeText(hud.url);
-			}
-		}).catch()
-	}
+		navigator.permissions
+			.query({ name: 'clipboard-write' as PermissionName })
+			.then(result => {
+				if (result.state == 'granted' || result.state == 'prompt') {
+					navigator.clipboard.writeText(hud.url);
+				}
+			})
+			.catch();
+	};
 	render() {
 		const { hud, toggleConfig, isActive } = this.props;
 		return (
@@ -95,8 +98,8 @@ export default class HudEntry extends Component<IProps, IState> {
 												Includes Boltgolt&apos;s radar
 											</Tip>
 										) : (
-												''
-											)}
+											''
+										)}
 										{hud.killfeed ? (
 											<Tip
 												id={`killfeed_support_${hud.dir}`}
@@ -112,13 +115,13 @@ export default class HudEntry extends Component<IProps, IState> {
 												Includes custom killfeed
 											</Tip>
 										) : (
-												''
-											)}
+											''
+										)}
 									</Col>
 								</Row>
 							) : (
-									''
-								)}
+								''
+							)}
 						</Col>
 						<Col style={{ flex: 1 }} className="hud-options">
 							<div className="centered">
@@ -136,8 +139,8 @@ export default class HudEntry extends Component<IProps, IState> {
 										alt="HUD panel"
 									/>
 								) : (
-										''
-									)}
+									''
+								)}
 								{Config.isElectron ? (
 									<img
 										src={Display}
@@ -165,7 +168,13 @@ export default class HudEntry extends Component<IProps, IState> {
 						<Col s={12}>
 							<div className="match_data">
 								<UncontrolledCollapse toggler={`#hud_link_${hashCode(hud.dir)}`}>
-									<code onClick={() => { navigator.clipboard.writeText(hud.url) }}>{hud.url}</code>
+									<code
+										onClick={() => {
+											navigator.clipboard.writeText(hud.url);
+										}}
+									>
+										{hud.url}
+									</code>
 								</UncontrolledCollapse>
 							</div>
 						</Col>
