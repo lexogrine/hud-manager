@@ -41,7 +41,7 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 	};
 
 	const saveFields = async () => {
-		await api.players.fields.update(customFieldForm);
+		await api.players.fields.update(customFieldForm.filter(fieldEntry => fieldEntry.name));
 		cxt.reload();
 		setFieldsState(false);
 	};
@@ -164,10 +164,36 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 		setEditState(true);
 	};
 
-	const extraChangeHandler = (field: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
-		const value = event.target.value;
-		return setForm({ ...form, extra: { ...form.extra, [field]: value } });
-	};
+	const extraChangeHandler = (field: string, type: Exclude<I.PanelInputType, 'select' | 'action' | 'checkbox'>) => {
+		const fileHandler = (files: FileList) => {
+			if (!files) return;
+			const file = files[0];
+			if (!file) {
+				setForm(prevForm => ({ ...prevForm, logo: '' }));
+				return;
+			}
+			if (!file.type.startsWith('image')) {
+				return;
+			}
+			const reader: any = new FileReader();
+			reader.readAsDataURL(file);
+			reader.onload = () => {
+				setForm({ ...form, extra: { ...form.extra, [field]: reader.result.replace(/^data:([a-z]+)\/(.+);base64,/, '') } });
+			};
+		};
+		if (type === 'image') {
+			return fileHandler;
+		}
+		if (type === "color") {
+			return (hex: string) => {
+				setForm({ ...form, extra: { ...form.extra, [field]: hex } });
+			}
+		}
+		return (event: React.ChangeEvent<HTMLInputElement>) => {
+			setForm({ ...form, extra: { ...form.extra, [field]: event.target.value } });
+		}
+
+	}
 
 	useEffect(() => {
 		loadEmpty();
@@ -205,11 +231,12 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 				player={form}
 				teams={cxt.teams}
 				onChange={changeHandler}
-				onExtraChange={extraChangeHandler}
+				onExtraChange={extraChangeHandler as I.onExtraChangeFunction}
 				onFileChange={fileHandler}
 				save={save}
 				deletePlayer={deletePlayer}
 				fields={cxt.fields.players}
+				cxt={cxt}
 			/>
 			<CustomFieldsModal
 				fields={customFieldForm}

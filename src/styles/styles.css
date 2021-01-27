@@ -1335,10 +1335,9 @@ input:checked ~ .customCheckbox {
 }
 .color-picker-container .pop-over {
     position: absolute;
-    z-index: 2;
-    top: calc(100% + 15px);
-    left: 50%;
-    transform: translateX(-50%);
+    z-index: 25;
+    top: -200%;
+    transform: translateX(75%);
 }
 .color-picker-container .cover {
     position: fixed;

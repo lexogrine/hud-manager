@@ -462,7 +462,6 @@ function default_1(server, app) {
         var _a, _b;
         var ref = ((_b = (_a = socket.request) === null || _a === void 0 ? void 0 : _a.headers) === null || _b === void 0 ? void 0 : _b.referer) || '';
         config_1.verifyUrl(ref).then(function (status) {
-            console.log(ref, status);
             if (status) {
                 socket.join('csgo');
             }

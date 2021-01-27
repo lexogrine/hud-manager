@@ -169,15 +169,15 @@ exports.deleteMatch = function (id) {
 };
 /*
 export const setCurrent = (id: string) =>
-new Promise(res => {
-    matchesDb.update({}, { current: false }, { multi: true }, err => {
-        if (err) return res(null);
-        matchesDb.update({ id }, { current: true }, {}, err => {
+    new Promise(res => {
+        matchesDb.update({}, { current: false }, { multi: true }, err => {
             if (err) return res(null);
-            return res();
+            matchesDb.update({ id }, { current: true }, {}, err => {
+                if (err) return res(null);
+                return res();
+            });
         });
     });
-});
 */
 exports.updateMatch = function (match) {
     return new Promise(function (res) {

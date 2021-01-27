@@ -14,7 +14,8 @@ export type {
 	ExtendedConfig,
 	CFG,
 	CustomFieldEntry,
-	CustomFieldStore
+	CustomFieldStore,
+	onExtraChangeFunction
 } from './../../types/interfaces';
 
 export interface Player {

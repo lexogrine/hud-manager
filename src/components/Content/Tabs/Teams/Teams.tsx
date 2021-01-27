@@ -91,11 +91,36 @@ const TeamsTab = ({ cxt }: IProps) => {
 		return fileHandler(event.target.files);
 	};
 
-	const extraChangeHandler = (field: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
-		const value = event.target.value;
-		return setForm({ ...form, extra: { ...form.extra, [field]: value } });
-	};
+	const extraChangeHandler = (field: string, type: Exclude<I.PanelInputType, 'select' | 'action' | 'checkbox'>) => {
+		const fileHandler = (files: FileList) => {
+			if (!files) return;
+			const file = files[0];
+			if (!file) {
+				setForm(prevForm => ({ ...prevForm, logo: '' }));
+				return;
+			}
+			if (!file.type.startsWith('image')) {
+				return;
+			}
+			const reader: any = new FileReader();
+			reader.readAsDataURL(file);
+			reader.onload = () => {
+				setForm({ ...form, extra: { ...form.extra, [field]: reader.result.replace(/^data:([a-z]+)\/(.+);base64,/, '') } });
+			};
+		};
+		if (type === 'image') {
+			return fileHandler;
+		}
+		if (type === "color") {
+			return (hex: string) => {
+				setForm({ ...form, extra: { ...form.extra, [field]: hex } });
+			}
+		}
+		return (event: React.ChangeEvent<HTMLInputElement>) => {
+			setForm({ ...form, extra: { ...form.extra, [field]: event.target.value } });
+		}
 
+	}
 	const save = async () => {
 		let response: any;
 		if (form._id === 'empty') {
@@ -149,7 +174,7 @@ const TeamsTab = ({ cxt }: IProps) => {
 	};
 
 	const saveFields = async () => {
-		await api.teams.fields.update(customFieldForm);
+		await api.teams.fields.update(customFieldForm.filter(fieldEntry => fieldEntry.name));
 		cxt.reload();
 		setFieldsState(false);
 	};
@@ -175,10 +200,11 @@ const TeamsTab = ({ cxt }: IProps) => {
 				team={form}
 				onChange={changeHandler}
 				onFileChange={fileHandler}
-				onExtraChange={extraChangeHandler}
+				onExtraChange={extraChangeHandler as I.onExtraChangeFunction}
 				save={save}
 				deleteTeam={deleteTeam}
 				fields={cxt.fields.teams}
+				cxt={cxt}
 			/>
 			<CustomFieldsModal
 				fields={customFieldForm}

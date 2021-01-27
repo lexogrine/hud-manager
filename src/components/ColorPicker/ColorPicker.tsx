@@ -42,17 +42,6 @@ export const Block = ({ onChange, hex, width, className = '' }: any) => {
 			color: color.getContrastingColor(hex),
 			position: 'relative'
 		},
-		triangle: {
-			width: '0px',
-			height: '0px',
-			borderStyle: 'solid',
-			borderWidth: '0 10px 10px 10px',
-			borderColor: `transparent transparent ${hex} transparent`,
-			position: 'absolute',
-			top: '-10px',
-			left: '50%',
-			marginLeft: '-10px'
-		},
 		input: {
 			width: '100%',
 			fontSize: '12px',
@@ -69,7 +58,6 @@ export const Block = ({ onChange, hex, width, className = '' }: any) => {
 
 	return (
 		<div style={styles.card as React.CSSProperties} className={`block-picker ${className}`}>
-			<div style={styles.triangle as React.CSSProperties} />
 
 			<div style={styles.head as React.CSSProperties}>
 				{transparent && <Checkboard borderRadius="6px 6px 0 0" />}

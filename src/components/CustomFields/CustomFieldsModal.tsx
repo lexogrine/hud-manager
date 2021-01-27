@@ -26,31 +26,44 @@ const CustomFieldRow = ({
 	onChange
 }: {
 	field: I.CustomFieldEntry;
-	onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
+	onChange: (type: 'name' | 'type') => (event: React.ChangeEvent<HTMLInputElement>) => void;
 }) => (
 	<Row key={field._id}>
-		<Col md="12">
+		<Col md="6">
 			<FormGroup>
 				<Input
-					type={field.type}
+					type="text"
 					name={field._id}
 					value={field.name}
-					onChange={onChange}
+					onChange={onChange('name')}
 					placeholder="Field's name"
 				/>
+			</FormGroup>
+		</Col>
+		<Col md="6">
+			<FormGroup>
+				<Input type="select" name={field._id} value={field.type} onChange={onChange('type')}>
+					<option value="" disabled>Input type</option>
+					<option value="text">Text</option>
+					<option value="team">Team</option>
+					<option value="image">Image</option>
+					<option value="match">Match</option>
+					<option value="player">Player</option>
+					<option value="color">Color</option>
+				</Input>
 			</FormGroup>
 		</Col>
 	</Row>
 );
 
 const CustomFieldsModal = ({ open, toggle, setForm, fields, save }: Props) => {
-	const onChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+	const onChange = (type: 'name' | 'type') => (event: React.ChangeEvent<HTMLInputElement>) => {
 		event.persist();
 		const id = event.target.name;
 		const newFields = fields
 			.map(field => {
 				if (field._id !== id) return field;
-				field.name = event.target.value.replace(/[^a-zA-Z_]/g, '');
+				field[type] = event.target.value.replace(/[^a-zA-Z_]/g, '') as any;
 				return field;
 			})
 			.filter(field => field.name);

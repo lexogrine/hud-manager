@@ -70,17 +70,19 @@ exports.getTeamsList = function (query) {
         });
     });
 };
-exports.initiateCustomFields = function () { return new Promise(function (res) {
-    custom.findOne({}, function (err, store) {
-        if (store) {
-            return res(store);
-        }
-        var customFields = { players: [], teams: [] };
-        custom.insert(customFields, function (err, entry) {
-            return res(entry);
+exports.initiateCustomFields = function () {
+    return new Promise(function (res) {
+        custom.findOne({}, function (err, store) {
+            if (store) {
+                return res(store);
+            }
+            var customFields = { players: [], teams: [] };
+            custom.insert(customFields, function (err, entry) {
+                return res(entry);
+            });
         });
     });
-}); };
+};
 exports.getTeamFields = function () { return __awaiter(void 0, void 0, void 0, function () {
     var store;
     return __generator(this, function (_a) {
