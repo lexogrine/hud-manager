@@ -43,7 +43,9 @@ const CustomFieldRow = ({
 		<Col md="6">
 			<FormGroup>
 				<Input type="select" name={field._id} value={field.type} onChange={onChange('type')}>
-					<option value="" disabled>Input type</option>
+					<option value="" disabled>
+						Input type
+					</option>
 					<option value="text">Text</option>
 					<option value="team">Team</option>
 					<option value="image">Image</option>

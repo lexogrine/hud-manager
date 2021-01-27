@@ -105,22 +105,24 @@ const TeamsTab = ({ cxt }: IProps) => {
 			const reader: any = new FileReader();
 			reader.readAsDataURL(file);
 			reader.onload = () => {
-				setForm({ ...form, extra: { ...form.extra, [field]: reader.result.replace(/^data:([a-z]+)\/(.+);base64,/, '') } });
+				setForm({
+					...form,
+					extra: { ...form.extra, [field]: reader.result.replace(/^data:([a-z]+)\/(.+);base64,/, '') }
+				});
 			};
 		};
 		if (type === 'image') {
 			return fileHandler;
 		}
-		if (type === "color") {
+		if (type === 'color') {
 			return (hex: string) => {
 				setForm({ ...form, extra: { ...form.extra, [field]: hex } });
-			}
+			};
 		}
 		return (event: React.ChangeEvent<HTMLInputElement>) => {
 			setForm({ ...form, extra: { ...form.extra, [field]: event.target.value } });
-		}
-
-	}
+		};
+	};
 	const save = async () => {
 		let response: any;
 		if (form._id === 'empty') {

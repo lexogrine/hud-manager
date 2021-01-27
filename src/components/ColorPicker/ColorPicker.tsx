@@ -58,7 +58,6 @@ export const Block = ({ onChange, hex, width, className = '' }: any) => {
 
 	return (
 		<div style={styles.card as React.CSSProperties} className={`block-picker ${className}`}>
-
 			<div style={styles.head as React.CSSProperties}>
 				{transparent && <Checkboard borderRadius="6px 6px 0 0" />}
 				<div style={styles.label as React.CSSProperties}>{hex}</div>

@@ -19,8 +19,10 @@ export interface CustomFieldEntry {
 export type onExtraChangeFunction = {
 	(field: string, type: 'image'): (files: FileList) => void;
 	(field: string, type: 'color'): (hex: string) => void;
-	(field: string, type: Exclude<PanelInputType, 'select' | 'action' | 'checkbox'>): (event: React.ChangeEvent<HTMLInputElement>) => void;
-}
+	(field: string, type: Exclude<PanelInputType, 'select' | 'action' | 'checkbox'>): (
+		event: React.ChangeEvent<HTMLInputElement>
+	) => void;
+};
 
 export interface CustomFieldStore {
 	teams: CustomFieldEntry[];

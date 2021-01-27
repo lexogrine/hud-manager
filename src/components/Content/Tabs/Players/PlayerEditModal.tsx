@@ -44,61 +44,67 @@ const PlayerEditModal = ({
 			avatar = `data:image/${encoding};base64,${player.avatar}`;
 		}
 	}
-	const renderInput = (field: string, type: Exclude<I.PanelInputType, 'select' | 'action' | 'checkbox'>, value: any) => {
+	const renderInput = (
+		field: string,
+		type: Exclude<I.PanelInputType, 'select' | 'action' | 'checkbox'>,
+		value: any
+	) => {
 		const getSelects = (type: 'match' | 'team' | 'player') => {
-			if (type === "team") {
-				return cxt.teams.concat().sort((a, b) => (a.name < b.name ? -1 : 1)).map(team => <option key={team._id}>{team.name}</option>)
+			if (type === 'team') {
+				return cxt.teams
+					.concat()
+					.sort((a, b) => (a.name < b.name ? -1 : 1))
+					.map(team => <option key={team._id}>{team.name}</option>);
 			} else if (type === 'match') {
-				return cxt.matches.map(match => <option key={match.id}>{match.id}</option>)
+				return cxt.matches.map(match => <option key={match.id}>{match.id}</option>);
 			}
-			return cxt.players.concat().sort((a, b) => (a.username < b.username ? -1 : 1)).map(player => <option key={player._id}>{player.username}</option>)
-		}
+			return cxt.players
+				.concat()
+				.sort((a, b) => (a.username < b.username ? -1 : 1))
+				.map(player => <option key={player._id}>{player.username}</option>);
+		};
 		switch (type) {
 			case 'match':
 			case 'team':
 			case 'player':
-				return (<Input
-					type="select"
-					name={field}
-					value={value}
-					onChange={onExtraChange(field, type)}
-				>
-					<option value="">Field: {field}</option>
-					{getSelects(type)}
-				</Input>);
+				return (
+					<Input type="select" name={field} value={value} onChange={onExtraChange(field, type)}>
+						<option value="">Field: {field}</option>
+						{getSelects(type)}
+					</Input>
+				);
 			case 'text':
-				return <Input
-					type="text"
-					name={field}
-					onChange={onExtraChange(field, type)}
-					value={value}
-					placeholder={`Field: ${field}`}
-				/>
+				return (
+					<Input
+						type="text"
+						name={field}
+						onChange={onExtraChange(field, type)}
+						value={value}
+						placeholder={`Field: ${field}`}
+					/>
+				);
 			case 'image': {
 				const encoding = isSvg(Buffer.from(value, 'base64')) ? 'svg+xml' : 'png';
-				return <DragFileInput
-					image
-					removable
-					id={`file_${field}`}
-					onChange={onExtraChange(field, type)}
-					label={`Field: ${field}`}
-					imgSrc={`data:image/${encoding};base64,${value}`}
-				/>
+				return (
+					<DragFileInput
+						image
+						removable
+						id={`file_${field}`}
+						onChange={onExtraChange(field, type)}
+						label={`Field: ${field}`}
+						imgSrc={`data:image/${encoding};base64,${value}`}
+					/>
+				);
 			}
 			case 'color':
-				return <ColorPicker
-					hex={value}
-					setHex={onExtraChange(field, type)}
-				/>
+				return <ColorPicker hex={value} setHex={onExtraChange(field, type)} />;
 		}
-	}
+	};
 	const extraForm = () =>
 		fields.map(field => (
 			<Row key={field._id}>
 				<Col md="12">
-					<FormGroup>
-					{renderInput(field.name, field.type, player.extra[field.name])}
-					</FormGroup>
+					<FormGroup>{renderInput(field.name, field.type, player.extra[field.name])}</FormGroup>
 				</Col>
 			</Row>
 		));
