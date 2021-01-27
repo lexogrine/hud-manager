@@ -1,6 +1,6 @@
 {
   "name": "hud-manager",
-  "version": "1.9.0",
+  "version": "1.9.2",
   "homepage": "./",
   "description": "Lexogrine HUD Manager",
   "author": "Lexogrine",
@@ -31,6 +31,7 @@
     "pug": "^2.0.4",
     "query-string": "^6.12.1",
     "react": "^16.13.1",
+    "react-color": "^2.19.3",
     "react-dom": "^16.13.1",
     "react-scripts": "^4.0.0",
     "react-select-country-list": "^2.1.2",
@@ -127,6 +128,7 @@
     "@types/nedb": "^1.8.9",
     "@types/node": "^12.12.37",
     "@types/react": "^17.0.0",
+    "@types/react-color": "^3.0.4",
     "@types/react-dom": "^17.0.0",
     "@types/reactstrap": "^8.4.2",
     "@types/request": "^2.48.4",

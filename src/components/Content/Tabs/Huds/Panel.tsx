@@ -6,6 +6,7 @@ import { socket } from './../Live/Live';
 import { Row, Col, FormGroup, Input, Form, Button, Label } from 'reactstrap';
 import FileInput from './../../../DragFileInput';
 import isSvg from './../../../../isSvg';
+import ColorPicker from '../../../ColorPicker/ColorPicker';
 interface IProps {
 	cxt: IContextData;
 	hud: I.HUD;
@@ -33,6 +34,9 @@ export default class ActionPanel extends React.Component<IProps, IState> {
 				break;
 			case 'checkbox':
 				form[section][name] = e.target.checked;
+				break;
+			case 'color':
+				form[section][name] = e;
 				break;
 			default:
 				form[section][name] = e.target.value;
@@ -102,6 +106,21 @@ export default class ActionPanel extends React.Component<IProps, IState> {
 		const layout: I.PanelInput[][] = [];
 		const texts = this.filterInputs(panel, 'text');
 		texts.map((input, ind) => {
+			const i = Math.floor(ind / 2);
+			if (!layout[i]) {
+				layout[i] = [];
+			}
+			layout[i].push(input);
+			return input;
+		});
+
+		return layout;
+	};
+
+	getColors = (panel: I.PanelTemplate) => {
+		const layout: I.PanelInput[][] = [];
+		const colors = this.filterInputs(panel, 'color');
+		colors.map((input, ind) => {
 			const i = Math.floor(ind / 2);
 			if (!layout[i]) {
 				layout[i] = [];
@@ -297,6 +316,21 @@ export default class ActionPanel extends React.Component<IProps, IState> {
 							</Row>
 						) : null
 					)}
+					{this.getColors(section).map((inputs, index) => (
+						<Row key={`${index}_${inputs.map(inp => inp.name).join()}`}>
+							{inputs.map(input => (
+								<Col s={6} key={input.name}>
+									<FormGroup className="color-segment">
+										<Label check>{input.label}</Label>
+										<ColorPicker
+											hex={(form[section.name] && form[section.name][input.name]) || ''}
+											setHex={this.changeForm(section.name, input.name, input.type)}
+										/>
+									</FormGroup>
+								</Col>
+							))}
+						</Row>
+					))}
 					{this.getImageInputs(section).map(input => (
 						<Row key={input.name}>
 							<Col s={12}>

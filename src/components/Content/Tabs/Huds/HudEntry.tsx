@@ -46,6 +46,16 @@ export default class HudEntry extends Component<IProps, IState> {
 		} catch {}
 		this.toggleModal();
 	};
+	copy = (hud: I.HUD) => {
+		navigator.permissions
+			.query({ name: 'clipboard-write' as PermissionName })
+			.then(result => {
+				if (result.state == 'granted' || result.state == 'prompt') {
+					navigator.clipboard.writeText(hud.url);
+				}
+			})
+			.catch();
+	};
 	render() {
 		const { hud, toggleConfig, isActive } = this.props;
 		return (
@@ -158,7 +168,13 @@ export default class HudEntry extends Component<IProps, IState> {
 						<Col s={12}>
 							<div className="match_data">
 								<UncontrolledCollapse toggler={`#hud_link_${hashCode(hud.dir)}`}>
-									<code onClick={() => navigator.clipboard.writeText(hud.url)}>{hud.url}</code>
+									<code
+										onClick={() => {
+											navigator.clipboard.writeText(hud.url);
+										}}
+									>
+										{hud.url}
+									</code>
 								</UncontrolledCollapse>
 							</div>
 						</Col>

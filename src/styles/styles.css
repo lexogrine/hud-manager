@@ -1329,3 +1329,23 @@ input:checked ~ .customCheckbox {
     top:0;
     position: sticky;
 }
+.color-picker-container {
+    position: relative;
+    display: inline-block;
+}
+.color-picker-container .pop-over {
+    position: absolute;
+    z-index: 2;
+    top: calc(100% + 15px);
+    left: 50%;
+    transform: translateX(-50%);
+}
+.color-picker-container .cover {
+    position: fixed;
+    inset: 0px;
+}
+.color-segment {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
+}

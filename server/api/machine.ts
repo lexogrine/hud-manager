@@ -10,6 +10,10 @@ export const getMachineId: express.RequestHandler = async (req, res) => {
 
 	const machineOldPath = path.join(app.getPath('userData'), 'machine.hm');
 
+	if (!fs.existsSync(machinePathDirectory)) {
+		fs.mkdirSync(machinePathDirectory, { recursive: true });
+	}
+
 	let id = (Math.random() * 1000 + 1)
 		.toString(36)
 		.replace(/[^a-z]+/g, '')
@@ -21,9 +25,6 @@ export const getMachineId: express.RequestHandler = async (req, res) => {
 	}
 
 	if (fs.existsSync(machineOldPath)) {
-		if (!fs.existsSync(machinePathDirectory)) {
-			fs.mkdirSync(machinePathDirectory, { recursive: true });
-		}
 		id = fs.readFileSync(machineOldPath, 'UTF-8');
 		fs.renameSync(machineOldPath, machinePath);
 		return res.json({ id });
