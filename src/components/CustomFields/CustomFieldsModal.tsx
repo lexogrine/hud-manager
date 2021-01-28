@@ -8,7 +8,8 @@ import {
 	FormGroup,
 	Input,
 	/*FormText,*/ Button,
-	ModalFooter
+	ModalFooter,
+	Label
 } from 'reactstrap';
 import uuidv4 from 'uuid/v4';
 import * as I from '../../api/interfaces';
@@ -26,10 +27,10 @@ const CustomFieldRow = ({
 	onChange
 }: {
 	field: I.CustomFieldEntry;
-	onChange: (type: 'name' | 'type') => (event: React.ChangeEvent<HTMLInputElement>) => void;
+	onChange: (type: 'name' | 'type' | 'visible') => (event: React.ChangeEvent<HTMLInputElement>) => void;
 }) => (
 	<Row key={field._id}>
-		<Col md="6">
+		<Col md="5">
 			<FormGroup>
 				<Input
 					type="text"
@@ -40,7 +41,7 @@ const CustomFieldRow = ({
 				/>
 			</FormGroup>
 		</Col>
-		<Col md="6">
+		<Col md="4">
 			<FormGroup>
 				<Input type="select" name={field._id} value={field.type} onChange={onChange('type')}>
 					<option value="" disabled>
@@ -55,27 +56,46 @@ const CustomFieldRow = ({
 				</Input>
 			</FormGroup>
 		</Col>
+		<Col md="3">
+			<FormGroup check>
+				<Label check style={{marginTop:'7px'}}>
+					<Input
+						type="checkbox"
+						checked={field.visible}
+						onChange={onChange('visible')}
+						name={field._id}
+					/>{' '}
+					<div className="customCheckbox"></div>
+					Visible
+				</Label>
+			</FormGroup>
+		</Col>
 	</Row>
 );
 
 const CustomFieldsModal = ({ open, toggle, setForm, fields, save }: Props) => {
-	const onChange = (type: 'name' | 'type') => (event: React.ChangeEvent<HTMLInputElement>) => {
+	const onChange = (type: 'name' | 'type' | 'visible') => (event: React.ChangeEvent<HTMLInputElement>) => {
 		event.persist();
 		const id = event.target.name;
 		const newFields = fields
 			.map(field => {
 				if (field._id !== id) return field;
+				if(type === 'visible'){
+					field[type] = event.target.checked;
+					return field;
+				}
 				field[type] = event.target.value.replace(/[^a-zA-Z_]/g, '') as any;
 				return field;
 			})
-			.filter(field => field.name);
+			.filter(field => type !== "name" || field.name);
 		setForm(newFields);
 	};
 	const addNewField = () => {
 		const newField: I.CustomFieldEntry = {
 			_id: uuidv4(),
 			name: '',
-			type: 'text'
+			type: 'text',
+			visible: false
 		};
 		setForm([...fields, newField]);
 	};
