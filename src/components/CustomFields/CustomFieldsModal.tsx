@@ -58,13 +58,8 @@ const CustomFieldRow = ({
 		</Col>
 		<Col md="3">
 			<FormGroup check>
-				<Label check style={{marginTop:'7px'}}>
-					<Input
-						type="checkbox"
-						checked={field.visible}
-						onChange={onChange('visible')}
-						name={field._id}
-					/>{' '}
+				<Label check style={{ marginTop: '7px' }}>
+					<Input type="checkbox" checked={field.visible} onChange={onChange('visible')} name={field._id} />{' '}
 					<div className="customCheckbox"></div>
 					Visible
 				</Label>
@@ -80,14 +75,14 @@ const CustomFieldsModal = ({ open, toggle, setForm, fields, save }: Props) => {
 		const newFields = fields
 			.map(field => {
 				if (field._id !== id) return field;
-				if(type === 'visible'){
+				if (type === 'visible') {
 					field[type] = event.target.checked;
 					return field;
 				}
 				field[type] = event.target.value.replace(/[^a-zA-Z_]/g, '') as any;
 				return field;
 			})
-			.filter(field => type !== "name" || field.name);
+			.filter(field => type !== 'name' || field.name);
 		setForm(newFields);
 	};
 	const addNewField = () => {
