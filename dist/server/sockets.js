@@ -263,7 +263,7 @@ function default_1(server, app) {
                 testDataIndex = 0;
                 return;
             }
-            io.emit('update', testing_1.testData[testDataIndex]);
+            io.to('csgo').emit('update', testing_1.testData[testDataIndex]);
             testDataIndex++;
         }, 16);
     };
@@ -437,7 +437,7 @@ function default_1(server, app) {
             intervalId = null;
             io.emit('enableTest', true);
         }
-        io.emit('update', req.body);
+        io.to('csgo').emit('update', req.body);
         exports.GSI.digest(req.body);
         radar.digestRadar(req.body);
         res.sendStatus(200);
@@ -450,6 +450,13 @@ function default_1(server, app) {
             startSendingTestData();
     });
     io.on('connection', function (socket) {
+        var _a, _b;
+        var ref = ((_b = (_a = socket.request) === null || _a === void 0 ? void 0 : _a.headers) === null || _b === void 0 ? void 0 : _b.referer) || '';
+        config_1.verifyUrl(ref).then(function (status) {
+            if (status) {
+                socket.join('csgo');
+            }
+        });
         socket.on('started', function () {
             if (runtimeConfig.last) {
                 socket.emit('update', runtimeConfig.last);
@@ -526,7 +533,7 @@ function default_1(server, app) {
         });
     });
     mirv(function (data) {
-        io.emit('update_mirv', data);
+        io.to('csgo').emit('update_mirv', data);
     });
     //GSI.on('data', updateRound);
     var onRoundEnd = function (score) { return __awaiter(_this, void 0, void 0, function () {

@@ -53,7 +53,6 @@ exports.__esModule = true;
 exports.getLogoFile = exports.deleteTeam = exports.updateTeam = exports.addTeam = exports.getTeam = exports.getTeams = exports.getTeamsList = exports.getTeamById = void 0;
 var database_1 = __importDefault(require("./../../init/database"));
 var config_1 = require("./config");
-var ip_1 = __importDefault(require("ip"));
 var isSvg_1 = __importDefault(require("./../../src/isSvg"));
 var teams = database_1["default"].teams;
 var players = database_1["default"].players;
@@ -95,9 +94,7 @@ exports.getTeams = function (req, res) { return __awaiter(void 0, void 0, void 0
                 return [4 /*yield*/, config_1.loadConfig()];
             case 2:
                 config = _a.sent();
-                return [2 /*return*/, res.json(teams.map(function (team) { return (__assign(__assign({}, team), { logo: team.logo && team.logo.length
-                            ? "http://" + ip_1["default"].address() + ":" + config.port + "/api/teams/logo/" + team._id
-                            : null })); }))];
+                return [2 /*return*/, res.json(teams.map(function (team) { return (__assign(__assign({}, team), { logo: team.logo && team.logo.length ? "http://" + config_1.internalIP + ":" + config.port + "/api/teams/logo/" + team._id : null })); }))];
         }
     });
 }); };

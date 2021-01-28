@@ -98,7 +98,8 @@ export type PanelInputType =
 	| 'player'
 	| 'select'
 	| 'action'
-	| 'checkbox';
+	| 'checkbox'
+	| 'color';
 
 export interface GeneralInput {
 	type: Exclude<PanelInputType, 'select' | 'action' | 'checkbox'>;

@@ -7,6 +7,7 @@ import config from './../api/config';
 import { socket } from './../components/Content/Tabs/Live/Live';
 import LoginRegisterModal from './LoginRegisterModal';
 import ElectronOnly from './../components/ElectronOnly';
+import { hash } from '../hash';
 
 declare let window: any;
 const isElectron = config.isElectron;
@@ -38,8 +39,9 @@ export default class Layout extends React.Component<{}, IState> {
 						this.loadTeams(),
 						this.loadMatch(),
 						this.loadTournaments()
-					]);
-				}
+					]).then(this.rehash);
+				},
+				hash: ''
 			},
 			loginError: '',
 			loadingLogin: false,
@@ -55,6 +57,12 @@ export default class Layout extends React.Component<{}, IState> {
 			if (fromVeto) this.loadMatch();
 		});
 	}
+	rehash = () => {
+		this.setState(state => {
+			state.data.hash = hash();
+			return state;
+		});
+	};
 	getVersion = async () => {
 		const response = await api.config.getVersion();
 		this.setState({ version: response.version });
@@ -154,7 +162,9 @@ export default class Layout extends React.Component<{}, IState> {
 			<Provider value={this.state.data}>
 				<div className={`loaded ${isElectron ? 'electron' : ''}`}>
 					<div className="window-bar">
-						<div className="window-drag-bar"></div>
+						<div className="window-drag-bar">
+							<div className="title-bar">Lexogrine HUD Manager</div>
+						</div>
 						<div onClick={this.minimize} className="app-control minimize"></div>
 						<div onClick={this.maximize} className="app-control maximize"></div>
 						<div onClick={this.close} className="app-control close"></div>

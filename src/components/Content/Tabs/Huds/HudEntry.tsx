@@ -13,15 +13,7 @@ import Map from './../../../../styles/Map.png';
 import Killfeed from './../../../../styles/Killfeed.png';
 import { socket } from '../Live/Live';
 import RemoveHUDModal from './RemoveModal';
-
-const hashCode = (s: string) =>
-	s
-		.split('')
-		.reduce((a, b) => {
-			a = (a << 5) - a + b.charCodeAt(0);
-			return a & a;
-		}, 0)
-		.toString();
+import { hashCode } from '../../../../hash';
 
 interface IProps {
 	hud: I.HUD;
@@ -53,6 +45,16 @@ export default class HudEntry extends Component<IProps, IState> {
 			await api.huds.delete(this.props.hud.dir);
 		} catch {}
 		this.toggleModal();
+	};
+	copy = (hud: I.HUD) => {
+		navigator.permissions
+			.query({ name: 'clipboard-write' as PermissionName })
+			.then(result => {
+				if (result.state == 'granted' || result.state == 'prompt') {
+					navigator.clipboard.writeText(hud.url);
+				}
+			})
+			.catch();
 	};
 	render() {
 		const { hud, toggleConfig, isActive } = this.props;
@@ -166,7 +168,13 @@ export default class HudEntry extends Component<IProps, IState> {
 						<Col s={12}>
 							<div className="match_data">
 								<UncontrolledCollapse toggler={`#hud_link_${hashCode(hud.dir)}`}>
-									<code onClick={() => navigator.clipboard.writeText(hud.url)}>{hud.url}</code>
+									<code
+										onClick={() => {
+											navigator.clipboard.writeText(hud.url);
+										}}
+									>
+										{hud.url}
+									</code>
 								</UncontrolledCollapse>
 							</div>
 						</Col>

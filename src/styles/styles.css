@@ -48,7 +48,6 @@ body {
 }
 .navbar-container > li:nth-last-child(2) > a:hover{
     border-color: transparent !important;
-    border-bottom: none !important;
 }
 
 .main-container {
@@ -122,6 +121,13 @@ body {
     padding-right: 43px;
     margin-right: 10px;
     margin-left: 10px;
+}
+.tab-content-container.list-padding {
+    padding-top:0;
+    margin-top: 188px;
+}
+.loaded.electron .tab-content-container.list-padding {
+    height: calc(100vh - 135px - 64px - 53px);
 }
 .event-container {
     display: flex;
@@ -338,6 +344,122 @@ img.smallLogo {
     align-items: center;
     justify-content: center;
 }
+.veto-menu {
+    margin-left:auto;
+    display: flex;
+    position: relative;
+    right: 0;
+    width:325px;
+}
+.veto-menu .toggler{
+    height: 29px;
+    cursor: pointer;
+    width:29px;
+    background-color: #6b1cff;
+    border-radius: 50%;
+    background-image: url('./more.png');
+    background-repeat: no-repeat;
+    background-position: center;
+    transition: all 1s;
+}
+.veto-main .preview {
+    width: 90px;
+    height:50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-repeat: no-repeat;
+    background-position: center;
+    font-weight: 700;
+    text-shadow: 2px 2px black;
+    background-size: cover;
+    border: 2px solid #54f2f2;
+    cursor: pointer;
+    user-select: none;
+}
+.veto-main .preview.ban {
+    border: 2px solid #dc3545;
+}
+.veto-main .preview.decider {
+    border: 2px solid #6c757d;
+}
+.veto-main .preview.mirage {
+    background-image: url('./maps/mirage.jpg');
+}
+.veto-main .preview.inferno {
+    background-image: url('./maps/inferno.jpg');
+}
+.veto-main .preview.overpass {
+    background-image: url('./maps/overpass.jpg');
+}
+.veto-main .preview.train {
+    background-image: url('./maps/train.jpg');
+}
+.veto-main .preview.dust2 {
+    background-image: url('./maps/dust2.jpg');
+}
+.veto-main .preview.nuke {
+    background-image: url('./maps/nuke.jpg');
+}
+.veto-main .preview.vertigo {
+    background-image: url('./maps/vertigo.jpg');
+}
+.veto-menu-container.expanded .veto-menu .toggler {
+    background-color: #7ad9f5;
+    background-image: url('./collapse.png');
+}
+.veto-summary {
+    width:175px;
+}
+.veto-title {
+    width: 52px;
+}
+.veto-title, .veto-summary {
+    white-space: nowrap;
+    word-wrap: none;
+    transition: width 0.75s, opacity 0.5s;
+}
+.veto-title.hide, .veto-summary.hide {
+    opacity: 0;
+    width:0;
+}
+.veto-score {
+    display: flex;
+    font-size: 12px;
+    align-items: center;
+}
+.veto-description {
+    display: flex;
+    flex-direction: row;
+}
+.veto-menu-container {
+    width:29px;
+    transition: width 1s;
+}
+.veto-menu-container.expanded {
+    width:325px;
+}
+.veto-score .win-icon {
+    color: #f2cb54;
+    font-size: 10px;
+    font-weight: 700;
+}
+.veto-score .win-icon:not(.active){
+    opacity: 0;
+}
+.veto-score .score {
+    font-weight: 600;
+}
+.veto-score .team-logo {
+    max-height: 25px;
+    margin: 0 15px;
+}
+.veto-score .versus {
+    margin: 0 14px;
+}
+.veto-container .edit-veto:first-of-type{
+    margin-left: 16px;
+}
 .veto-container:nth-child(2n) {
     background-color:#2f3238;
 }
@@ -348,14 +470,14 @@ img.smallLogo {
     text-transform: uppercase;
     align-items: center;
     width:100%;
+    justify-content: space-between;
+    overflow: hidden;
 }
 .veto-container .veto-title {
     font-weight: 700;
     padding-right:5px;
 }
-.veto-container .edit-veto:first-of-type {
-    margin-left:auto;
-}
+
 .veto-container .edit-veto:last-of-type {
     margin-right: 0;
 }
@@ -857,6 +979,21 @@ form .card > .card-body > button.btn {
 .dropArea.hightlight .background, .dropArea:hover .background {
     display: block;
 }
+.dropArea .removeButton {
+
+    position: absolute;
+    top: 6px;
+    right: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 14px;
+    height: 14px;
+    font-size: 8px;
+    z-index: 999;
+    background-color: #ff000059;
+    border-radius: 50%;
+}
 .dropArea.path_selector {
     height: 37px;
     width: 200px
@@ -901,6 +1038,9 @@ form .card > .card-body > button.btn {
     flex-direction: column;
     font-size: 12px;
     font-weight: 600;
+}
+.nav-tabs .nav-item {
+    margin-bottom: unset;
 }
 .nav-tabs .nav-link div {
     margin-top: 17px;
@@ -1102,6 +1242,17 @@ input:checked ~ .customCheckbox {
     height: 63px;
     margin-top: 1px;
 }
+.window-bar .window-drag-bar .title-bar {
+    width: 100%;
+    height:100%;
+    display: flex;
+    align-items: center;
+    font-size: 11px;
+    font-weight: 600;
+    padding-left: 99px;
+    text-transform: uppercase;
+    letter-spacing: 2.5px;
+}
 .veto_modal .modal-save:hover {
     background-color: #4a7f8f !important;
 }
@@ -1118,4 +1269,77 @@ input:checked ~ .customCheckbox {
 .no-padding-col {
     padding-left:0 !important;
     padding-right:0 !important;
+}
+
+.player-list-entry {
+    display: flex;
+    height: 49px;
+    padding: 0 15px;
+    font-size: 12px;
+}
+.player-list-entry.heading {
+    height: 42px;
+    font-weight: 300;
+}
+.player-list-entry .position, .player-list-entry .picture {
+    width: 96px;
+    justify-content: center;
+    flex: unset;
+}
+.player-list-entry > div {
+    display: flex;
+    align-items: center;
+    flex:1;
+}
+.player-list-entry .username {
+    flex: 0.75;
+}
+.player-list-entry:nth-child(2n) {
+    background-color: #ffffff0d;
+}
+.player-list-entry .picture img {
+    max-height:32px;
+    border-radius:50%;
+}
+.player-list-entry .team img {
+    max-height: 38.4px;
+    max-width: 48px;
+    margin-right: 8px;
+}
+.player-list-entry .country {
+    width: 100px;
+    flex: unset;
+}
+.player-list-entry .country img {
+    max-height: 38.4px;
+}
+.player-list-entry .options {
+    flex: unset;
+    width:96px;
+}
+.player-list-entry.heading {
+    cursor: default;
+    background-color: #15171b;
+    top:0;
+    position: sticky;
+}
+.color-picker-container {
+    position: relative;
+    display: inline-block;
+}
+.color-picker-container .pop-over {
+    position: absolute;
+    z-index: 2;
+    top: calc(100% + 15px);
+    left: 50%;
+    transform: translateX(-50%);
+}
+.color-picker-container .cover {
+    position: fixed;
+    inset: 0px;
+}
+.color-segment {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 1rem;
 }

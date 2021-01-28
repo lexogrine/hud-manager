@@ -11,7 +11,7 @@ import { getHUDData } from './../server/api/huds';
 import { getMatches, updateRound, getMatchById, updateMatch, reverseSide } from './api/match';
 import fs from 'fs';
 import portscanner from 'portscanner';
-import { loadConfig } from './api/config';
+import { loadConfig, verifyUrl } from './api/config';
 import { testData } from './api/testing';
 import { getTeamById } from './api/teams';
 import { getPlayerById } from './api/players';
@@ -189,7 +189,7 @@ export default function (server: http.Server, app: express.Router) {
 				testDataIndex = 0;
 				return;
 			}
-			io.emit('update', testData[testDataIndex]);
+			io.to('csgo').emit('update', testData[testDataIndex]);
 			testDataIndex++;
 		}, 16);
 	};
@@ -316,7 +316,7 @@ export default function (server: http.Server, app: express.Router) {
 			io.emit('enableTest', true);
 		}
 
-		io.emit('update', req.body);
+		io.to('csgo').emit('update', req.body);
 		GSI.digest(req.body);
 		radar.digestRadar(req.body);
 		res.sendStatus(200);
@@ -329,6 +329,12 @@ export default function (server: http.Server, app: express.Router) {
 	});
 
 	io.on('connection', socket => {
+		const ref = socket.request?.headers?.referer || '';
+		verifyUrl(ref).then(status => {
+			if (status) {
+				socket.join('csgo');
+			}
+		});
 		socket.on('started', () => {
 			if (runtimeConfig.last) {
 				socket.emit('update', runtimeConfig.last);
@@ -387,7 +393,7 @@ export default function (server: http.Server, app: express.Router) {
 	});
 
 	mirv(data => {
-		io.emit('update_mirv', data);
+		io.to('csgo').emit('update_mirv', data);
 	});
 
 	//GSI.on('data', updateRound);

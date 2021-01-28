@@ -4,22 +4,11 @@ import { app, shell, Notification } from 'electron';
 import express from 'express';
 import * as I from './../../types/interfaces';
 import socketio from 'socket.io';
-import { loadConfig } from './config';
-import ip from 'ip';
+import { loadConfig, publicIP, internalIP } from './config';
 import { HUDState } from './../sockets';
 import HUDWindow from './../../init/huds';
 import DecompressZip from 'decompress-zip';
 import overlay from './overlay';
-import publicIp from 'public-ip';
-
-let publicIP: string | null = null;
-
-publicIp
-	.v4()
-	.then(ip => {
-		publicIP = ip;
-	})
-	.catch();
 
 const remove = (pathToRemove: string) => {
 	if (!fs.existsSync(pathToRemove)) {
@@ -86,7 +75,7 @@ export const getHUDData = async (dirName: string): Promise<I.HUD> => {
 			config.keybinds = keybinds;
 		}
 
-		config.url = `http://${ip.address()}:${globalConfig.port}/hud/${dirName}/`;
+		config.url = `http://${internalIP}:${globalConfig.port}/hud/${dirName}/`;
 		config.isDev = false;
 
 		return config;
@@ -135,7 +124,7 @@ export const openHUDsDirectory: express.RequestHandler = async (_req, res) => {
 export const renderHUD: express.RequestHandler = async (req, res) => {
 	const cfg = await loadConfig();
 	const availableUrls = [
-		`http://${ip.address()}:${cfg.port}/hud/${req.params.dir}/`,
+		`http://${internalIP}:${cfg.port}/hud/${req.params.dir}/`,
 		`http://${publicIP}:${cfg.port}/hud/${req.params.dir}/`
 	];
 	if (!req.params.dir) {
@@ -165,7 +154,7 @@ export const render: express.RequestHandler = (req, res) => {
 
 export const renderOverlay: express.RequestHandler = async (req, res) => {
 	const cfg = await loadConfig();
-	const url = `http://${ip.address()}:${cfg.port}/huds/${req.params.dir}/?port=${cfg.port}&isProd=true`;
+	const url = `http://${internalIP}:${cfg.port}/huds/${req.params.dir}/?port=${cfg.port}&isProd=true`;
 	res.send(overlay(url));
 };
 

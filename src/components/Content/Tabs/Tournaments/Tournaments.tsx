@@ -161,9 +161,15 @@ export default class Teams extends React.Component<{ cxt: IContextData }, State>
 		this.setState({ isOpen: false });
 	};
 	fileHandler = (files: FileList) => {
-		if (!files || !files[0]) return;
+		if (!files) return;
 		const file = files[0];
-
+		if (!file) {
+			this.setState(state => {
+				state.form.logo = '';
+				return state;
+			});
+			return;
+		}
 		if (!file.type.startsWith('image')) {
 			return;
 		}
@@ -227,14 +233,18 @@ export default class Teams extends React.Component<{ cxt: IContextData }, State>
 					<div className="match-details" onClick={this.openModal(matchup._id, matchup.matchId || '')}>
 						<div className="team-data">
 							<div className="team-logo">
-								{match.left.logo ? <img src={match.left.logo} alt="Logo" /> : null}
+								{match.left.logo ? (
+									<img src={`${match.left.logo}?hash=${this.props.cxt.hash}`} alt="Logo" />
+								) : null}
 							</div>
 							<div className="team-name">{match.left.name}</div>
 							<div className="team-score">{match.left.score}</div>
 						</div>
 						<div className="team-data">
 							<div className="team-logo">
-								{match.right.logo ? <img src={match.right.logo} alt="Logo" /> : null}
+								{match.right.logo ? (
+									<img src={`${match.right.logo}?hash=${this.props.cxt.hash}`} alt="Logo" />
+								) : null}
 							</div>
 							<div className="team-name">{match.right.name}</div>
 							<div className="team-score">{match.right.score}</div>

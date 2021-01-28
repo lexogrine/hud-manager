@@ -54,7 +54,6 @@ exports.getAvatarURLBySteamID = exports.getAvatarFile = exports.deletePlayer = e
 var database_1 = __importDefault(require("./../../init/database"));
 var config_1 = require("./config");
 var node_fetch_1 = __importDefault(require("node-fetch"));
-var ip_1 = __importDefault(require("ip"));
 var isSvg_1 = __importDefault(require("./../../src/isSvg"));
 var players = database_1["default"].players;
 function getPlayerById(id, avatar) {
@@ -113,7 +112,7 @@ exports.getPlayers = function (req, res) { return __awaiter(void 0, void 0, void
             case 2:
                 config = _a.sent();
                 return [2 /*return*/, res.json(players.map(function (player) { return (__assign(__assign({}, player), { avatar: player.avatar && player.avatar.length
-                            ? "http://" + ip_1["default"].address() + ":" + config.port + "/api/players/avatar/" + player._id
+                            ? "http://" + config_1.internalIP + ":" + config.port + "/api/players/avatar/" + player._id
                             : null })); }))];
         }
     });
@@ -265,7 +264,7 @@ exports.getAvatarURLBySteamID = function (req, res) { return __awaiter(void 0, v
             case 2:
                 player = _b.sent();
                 if (player && player.avatar && player.avatar.length && player._id) {
-                    response.custom = "http://" + ip_1["default"].address() + ":" + config.port + "/api/players/avatar/" + player._id;
+                    response.custom = "http://" + config_1.internalIP + ":" + config.port + "/api/players/avatar/" + player._id;
                 }
                 _b.label = 3;
             case 3:

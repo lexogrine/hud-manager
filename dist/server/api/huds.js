@@ -64,18 +64,10 @@ var path = __importStar(require("path"));
 var electron_1 = require("electron");
 var express_1 = __importDefault(require("express"));
 var config_1 = require("./config");
-var ip_1 = __importDefault(require("ip"));
 var sockets_1 = require("./../sockets");
 var huds_1 = __importDefault(require("./../../init/huds"));
 var decompress_zip_1 = __importDefault(require("decompress-zip"));
 var overlay_1 = __importDefault(require("./overlay"));
-var public_ip_1 = __importDefault(require("public-ip"));
-var publicIP = null;
-public_ip_1["default"]
-    .v4()
-    .then(function (ip) {
-    publicIP = ip;
-})["catch"]();
 var remove = function (pathToRemove) {
     if (!fs.existsSync(pathToRemove)) {
         return;
@@ -163,7 +155,7 @@ exports.getHUDData = function (dirName) { return __awaiter(void 0, void 0, void 
                     if (keybinds) {
                         config.keybinds = keybinds;
                     }
-                    config.url = "http://" + ip_1["default"].address() + ":" + globalConfig.port + "/hud/" + dirName + "/";
+                    config.url = "http://" + config_1.internalIP + ":" + globalConfig.port + "/hud/" + dirName + "/";
                     config.isDev = false;
                     return [2 /*return*/, config];
                 }
@@ -221,8 +213,8 @@ exports.renderHUD = function (req, res) { return __awaiter(void 0, void 0, void 
             case 1:
                 cfg = _a.sent();
                 availableUrls = [
-                    "http://" + ip_1["default"].address() + ":" + cfg.port + "/hud/" + req.params.dir + "/",
-                    "http://" + publicIP + ":" + cfg.port + "/hud/" + req.params.dir + "/"
+                    "http://" + config_1.internalIP + ":" + cfg.port + "/hud/" + req.params.dir + "/",
+                    "http://" + config_1.publicIP + ":" + cfg.port + "/hud/" + req.params.dir + "/"
                 ];
                 if (!req.params.dir) {
                     return [2 /*return*/, res.sendStatus(404)];
@@ -257,7 +249,7 @@ exports.renderOverlay = function (req, res) { return __awaiter(void 0, void 0, v
             case 0: return [4 /*yield*/, config_1.loadConfig()];
             case 1:
                 cfg = _a.sent();
-                url = "http://" + ip_1["default"].address() + ":" + cfg.port + "/huds/" + req.params.dir + "/?port=" + cfg.port + "&isProd=true";
+                url = "http://" + config_1.internalIP + ":" + cfg.port + "/huds/" + req.params.dir + "/?port=" + cfg.port + "&isProd=true";
                 res.send(overlay_1["default"](url));
                 return [2 /*return*/];
         }
