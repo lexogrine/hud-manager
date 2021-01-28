@@ -111,37 +111,46 @@ exports.updatePlayerFields = function (playerFields) { return __awaiter(void 0, 
                 store = _a.sent();
                 deletedFields = store.players.filter(function (field) { return !playerFields.find(function (newField) { return newField.name === field.name; }); });
                 createdFields = playerFields.filter(function (newField) { return !store.players.find(function (field) { return field.name === newField.name; }); });
-                if (!deletedFields.length && !createdFields.length) {
-                    return [2 /*return*/, store];
-                }
                 return [2 /*return*/, new Promise(function (res) {
-                        custom.update({}, { $set: { players: playerFields } }, { multi: true }, function () {
-                            var updateQuery = {
-                                $unset: {},
-                                $set: {}
-                            };
-                            for (var _i = 0, deletedFields_1 = deletedFields; _i < deletedFields_1.length; _i++) {
-                                var deletedField = deletedFields_1[_i];
-                                updateQuery.$unset["extra." + deletedField.name] = true;
-                            }
-                            for (var _a = 0, createdFields_1 = createdFields; _a < createdFields_1.length; _a++) {
-                                var createdField = createdFields_1[_a];
-                                updateQuery.$set["extra." + createdField.name] = '';
-                            }
-                            players.update({}, updateQuery, { multi: true }, function () { return __awaiter(void 0, void 0, void 0, function () {
-                                var _a;
-                                return __generator(this, function (_b) {
-                                    switch (_b.label) {
-                                        case 0:
-                                            _a = res;
-                                            return [4 /*yield*/, teams_1.initiateCustomFields()];
-                                        case 1:
-                                            _a.apply(void 0, [_b.sent()]);
-                                            return [2 /*return*/];
-                                    }
-                                });
-                            }); });
-                        });
+                        custom.update({}, { $set: { players: playerFields } }, { multi: true }, function () { return __awaiter(void 0, void 0, void 0, function () {
+                            var _a, updateQuery, _i, deletedFields_1, deletedField, _b, createdFields_1, createdField;
+                            return __generator(this, function (_c) {
+                                switch (_c.label) {
+                                    case 0:
+                                        if (!(!deletedFields.length && !createdFields.length)) return [3 /*break*/, 2];
+                                        _a = res;
+                                        return [4 /*yield*/, teams_1.initiateCustomFields()];
+                                    case 1: return [2 /*return*/, _a.apply(void 0, [_c.sent()])];
+                                    case 2:
+                                        updateQuery = {
+                                            $unset: {},
+                                            $set: {}
+                                        };
+                                        for (_i = 0, deletedFields_1 = deletedFields; _i < deletedFields_1.length; _i++) {
+                                            deletedField = deletedFields_1[_i];
+                                            updateQuery.$unset["extra." + deletedField.name] = true;
+                                        }
+                                        for (_b = 0, createdFields_1 = createdFields; _b < createdFields_1.length; _b++) {
+                                            createdField = createdFields_1[_b];
+                                            updateQuery.$set["extra." + createdField.name] = '';
+                                        }
+                                        players.update({}, updateQuery, { multi: true }, function () { return __awaiter(void 0, void 0, void 0, function () {
+                                            var _a;
+                                            return __generator(this, function (_b) {
+                                                switch (_b.label) {
+                                                    case 0:
+                                                        _a = res;
+                                                        return [4 /*yield*/, teams_1.initiateCustomFields()];
+                                                    case 1:
+                                                        _a.apply(void 0, [_b.sent()]);
+                                                        return [2 /*return*/];
+                                                }
+                                            });
+                                        }); });
+                                        return [2 /*return*/];
+                                }
+                            });
+                        }); });
                     })];
         }
     });
