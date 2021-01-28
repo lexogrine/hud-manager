@@ -1,8 +1,7 @@
 import db from './../../../init/database';
-import { CustomFieldEntry, CustomFieldStore, Player } from '../../../types/interfaces';
-import { initiateCustomFields } from '../teams';
+import { Player } from '../../../types/interfaces';
 
-const { players, custom } = db;
+const { players } = db;
 
 export async function getPlayerById(id: string, avatar = false): Promise<Player | null> {
 	return new Promise(res => {
@@ -36,37 +35,3 @@ export const getPlayersList = (query: any) =>
 			return res(players);
 		});
 	});
-
-export const getPlayerFields = async () => {
-	const store = await initiateCustomFields();
-	if (!store) return [];
-	return store.players;
-};
-
-export const updatePlayerFields = async (playerFields: CustomFieldEntry[]) => {
-	const store = await initiateCustomFields();
-
-	const deletedFields = store.players.filter(field => !playerFields.find(newField => newField.name === field.name));
-	const createdFields = playerFields.filter(newField => !store.players.find(field => field.name === newField.name));
-
-	return new Promise<CustomFieldStore>(res => {
-		custom.update({}, { $set: { players: playerFields } }, { multi: true }, async () => {
-			if (!deletedFields.length && !createdFields.length) {
-				return res(await initiateCustomFields());
-			}
-			const updateQuery = {
-				$unset: {},
-				$set: {}
-			};
-			for (const deletedField of deletedFields) {
-				updateQuery.$unset[`extra.${deletedField.name}`] = true;
-			}
-			for (const createdField of createdFields) {
-				updateQuery.$set[`extra.${createdField.name}`] = '';
-			}
-			players.update({}, updateQuery, { multi: true }, async () => {
-				res(await initiateCustomFields());
-			});
-		});
-	});
-};

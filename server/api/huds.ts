@@ -160,12 +160,6 @@ export const renderOverlay: express.RequestHandler = async (req, res) => {
 
 export const renderThumbnail: express.RequestHandler = (req, res) => {
 	return res.sendFile(getThumbPath(req.params.dir));
-	/*
-    const thumbPath = path.join(app.getPath('home'), 'HUDs', req.params.dir, "thumb.png");
-    if(fs.existsSync(thumbPath)){
-        return res.sendFile(thumbPath);
-    }
-    return res.sendFile(path.join(__dirname, '../../assets/icon.png'));*/
 };
 
 export const getThumbPath = (dir: string) => {

@@ -9,7 +9,7 @@ import path from 'path';
 import { app as application } from 'electron';
 import fs from 'fs';
 import { loadConfig, setConfig } from './api/config';
-import { initiateCustomFields } from './api/teams/index';
+import { initiateCustomFields } from './api/fields';
 
 export default async function init() {
 	let config = await loadConfig();

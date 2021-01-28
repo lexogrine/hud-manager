@@ -3,7 +3,8 @@ import db from './../../../init/database';
 import { Team } from '../../../types/interfaces';
 import { loadConfig, internalIP } from './../config';
 import isSvg from './../../../src/isSvg';
-import { getTeamsList, getTeamById, getTeamFields, updateTeamFields } from './index';
+import { getTeamsList, getTeamById } from './index';
+import * as F from './../fields';
 
 const teams = db.teams;
 const players = db.players;
@@ -116,7 +117,7 @@ export const getLogoFile: express.RequestHandler = async (req, res) => {
 };
 
 export const getFields: express.RequestHandler = async (req, res) => {
-	const fields = await getTeamFields();
+	const fields = await F.getFields("teams");
 	return res.json(fields);
 };
 
@@ -124,6 +125,6 @@ export const updateFields: express.RequestHandler = async (req, res) => {
 	if (!req.body) {
 		return res.sendStatus(422);
 	}
-	const newFields = await updateTeamFields(req.body);
+	const newFields = await F.updateFields(req.body, "teams");
 	return res.json(newFields);
 };

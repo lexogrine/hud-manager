@@ -4,7 +4,8 @@ import { Player } from '../../../types/interfaces';
 import { loadConfig, internalIP } from './../config';
 import fetch from 'node-fetch';
 import isSvg from './../../../src/isSvg';
-import { getPlayersList, getPlayerById, getPlayerBySteamId, getPlayerFields, updatePlayerFields } from './index';
+import { getPlayersList, getPlayerById, getPlayerBySteamId } from './index';
+import * as F from './../fields';
 
 const players = db.players;
 
@@ -146,7 +147,7 @@ export const getAvatarURLBySteamID: express.RequestHandler = async (req, res) =>
 };
 
 export const getFields: express.RequestHandler = async (req, res) => {
-	const fields = await getPlayerFields();
+	const fields = await F.getFields("players");
 	return res.json(fields);
 };
 
@@ -154,6 +155,6 @@ export const updateFields: express.RequestHandler = async (req, res) => {
 	if (!req.body) {
 		return res.sendStatus(422);
 	}
-	const newFields = await updatePlayerFields(req.body);
+	const newFields = await F.updateFields(req.body, "players");
 	return res.json(newFields);
 };
