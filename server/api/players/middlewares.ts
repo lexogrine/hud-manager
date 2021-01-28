@@ -147,7 +147,7 @@ export const getAvatarURLBySteamID: express.RequestHandler = async (req, res) =>
 };
 
 export const getFields: express.RequestHandler = async (req, res) => {
-	const fields = await F.getFields("players");
+	const fields = await F.getFields('players');
 	return res.json(fields);
 };
 
@@ -155,6 +155,6 @@ export const updateFields: express.RequestHandler = async (req, res) => {
 	if (!req.body) {
 		return res.sendStatus(422);
 	}
-	const newFields = await F.updateFields(req.body, "players");
+	const newFields = await F.updateFields(req.body, 'players');
 	return res.json(newFields);
 };

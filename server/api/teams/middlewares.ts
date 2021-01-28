@@ -117,7 +117,7 @@ export const getLogoFile: express.RequestHandler = async (req, res) => {
 };
 
 export const getFields: express.RequestHandler = async (req, res) => {
-	const fields = await F.getFields("teams");
+	const fields = await F.getFields('teams');
 	return res.json(fields);
 };
 
@@ -125,6 +125,6 @@ export const updateFields: express.RequestHandler = async (req, res) => {
 	if (!req.body) {
 		return res.sendStatus(422);
 	}
-	const newFields = await F.updateFields(req.body, "teams");
+	const newFields = await F.updateFields(req.body, 'teams');
 	return res.json(newFields);
 };
