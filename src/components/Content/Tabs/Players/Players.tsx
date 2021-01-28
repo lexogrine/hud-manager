@@ -212,6 +212,8 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 		setEditState(true);
 	}, [data]);
 
+	const visibleFields = cxt.fields.players.filter(field => field.visible);
+
 	return (
 		<Form>
 			<div className="tab-title-container">
@@ -256,6 +258,11 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 					<div className="username">Username</div>
 					<div className="team">Team</div>
 					<div className="country">Country</div>
+					{visibleFields.map(field => (
+						<div className="custom-field" key={field._id}>
+							{field.name}
+						</div>
+					))}
 					<div className="options">
 						<Button className="purple-btn round-btn" onClick={openCustomFields}>
 							Manage
@@ -269,6 +276,8 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 						player={player}
 						edit={() => edit(player)}
 						team={cxt.teams.find(team => team._id === player.team)}
+						cxt={cxt}
+						fields={visibleFields}
 					/>
 				))}
 				<Row>

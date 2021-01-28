@@ -3,14 +3,18 @@ import { Button } from 'reactstrap';
 import * as I from './../../../../api/interfaces';
 import { countries } from './../../../../api/countries';
 import config from './../../../../api/config';
+import CustomFieldValue from '../../../CustomFields/CustomFieldValue';
+import { IContextData } from '../../../Context';
 
 interface Props {
 	team: I.Team;
 	edit: () => void;
 	hash: string;
+	fields: I.CustomFieldEntry[];
+	cxt: IContextData;
 }
 
-const TeamListEntry = ({ team, edit, hash }: Props) => {
+const TeamListEntry = ({ team, edit, hash, fields, cxt }: Props) => {
 	const country = !team.country ? null : countries[team.country] || null;
 
 	return (
@@ -28,6 +32,11 @@ const TeamListEntry = ({ team, edit, hash }: Props) => {
 					/>
 				) : null}
 			</div>
+			{fields.map(field => (
+				<div className="custom-field" key={field._id}>
+					<CustomFieldValue cxt={cxt} field={field} value={team.extra[field.name]} />
+				</div>
+			))}
 			<div className="options">
 				<Button className="purple-btn round-btn" onClick={edit}>
 					Edit

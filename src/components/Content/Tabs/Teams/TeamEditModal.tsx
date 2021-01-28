@@ -7,6 +7,7 @@ import * as I from './../../../../api/interfaces';
 import countries from './../../countries';
 import { IContextData } from './../../../../components/Context';
 import ColorPicker from '../../../ColorPicker/ColorPicker';
+import { getMatchName } from '../../../../utils';
 
 interface IProps {
 	open: boolean;
@@ -52,14 +53,26 @@ const TeamEditModal = ({
 				return cxt.teams
 					.concat()
 					.sort((a, b) => (a.name < b.name ? -1 : 1))
-					.map(team => <option key={team._id}>{team.name}</option>);
+					.map(team => (
+						<option key={team._id} value={team._id}>
+							{team.name}
+						</option>
+					));
 			} else if (type === 'match') {
-				return cxt.matches.map(match => <option key={match.id}>{match.id}</option>);
+				return cxt.matches.map(match => (
+					<option key={match.id} value={match.id}>
+						{getMatchName(match, cxt.teams, true)}
+					</option>
+				));
 			}
 			return cxt.players
 				.concat()
 				.sort((a, b) => (a.username < b.username ? -1 : 1))
-				.map(player => <option key={player._id}>{player.username}</option>);
+				.map(player => (
+					<option key={player._id} value={player._id}>
+						{player.username}
+					</option>
+				));
 		};
 		switch (type) {
 			case 'match':
@@ -82,7 +95,6 @@ const TeamEditModal = ({
 					/>
 				);
 			case 'image': {
-				const encoding = isSvg(Buffer.from(value, 'base64')) ? 'svg+xml' : 'png';
 				return (
 					<DragFileInput
 						image
@@ -90,7 +102,13 @@ const TeamEditModal = ({
 						id={`file_${field}`}
 						onChange={onExtraChange(field, type)}
 						label={`Field: ${field}`}
-						imgSrc={`data:image/${encoding};base64,${value}`}
+						imgSrc={
+							value
+								? `data:image/${
+										isSvg(Buffer.from(value, 'base64')) ? 'svg+xml' : 'png'
+								  };base64,${value}`
+								: value
+						}
 					/>
 				);
 			}

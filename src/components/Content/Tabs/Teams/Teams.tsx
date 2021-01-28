@@ -180,7 +180,7 @@ const TeamsTab = ({ cxt }: IProps) => {
 		cxt.reload();
 		setFieldsState(false);
 	};
-
+	const visibleFields = cxt.fields.teams.filter(field => field.visible);
 	return (
 		<Form>
 			<div className="tab-title-container">
@@ -223,6 +223,11 @@ const TeamsTab = ({ cxt }: IProps) => {
 					<div className="name">Name</div>
 					<div className="shortname">Short name</div>
 					<div className="country">Country</div>
+					{visibleFields.map(field => (
+						<div className="custom-field" key={field._id}>
+							{field.name}
+						</div>
+					))}
 					<div className="options">
 						<Button className="purple-btn round-btn" onClick={openCustomFields}>
 							Manage
@@ -230,7 +235,14 @@ const TeamsTab = ({ cxt }: IProps) => {
 					</div>
 				</div>
 				{cxt.teams.filter(filterTeams).map(team => (
-					<TeamListEntry hash={cxt.hash} key={team._id} team={team} edit={() => edit(team)} />
+					<TeamListEntry
+						hash={cxt.hash}
+						key={team._id}
+						team={team}
+						edit={() => edit(team)}
+						fields={visibleFields}
+						cxt={cxt}
+					/>
 				))}
 				<Row>
 					<Col className="main-buttons-container">
