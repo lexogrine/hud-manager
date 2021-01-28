@@ -1300,6 +1300,9 @@ input:checked ~ .customCheckbox {
 .player-list-entry .custom-field {
     flex: 0.65;
 }
+.player-list-entry .custom-field img {
+    max-height: 35px;
+}
 .player-list-entry .username {
     flex: 0.75;
 }

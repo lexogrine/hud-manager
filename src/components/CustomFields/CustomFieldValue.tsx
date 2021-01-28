@@ -1,5 +1,6 @@
 import React from 'react';
 import * as I from '../../api/interfaces';
+import isSvg from '../../isSvg';
 import { getMatchName } from '../../utils';
 import { IContextData } from '../Context';
 
@@ -37,7 +38,13 @@ const CustomFieldValue = ({ field, value, cxt }: Props) => {
 				</div>
 			);
 		}
-		return 'imaż';
+		const imgSrc = value
+		? `data:image/${
+				isSvg(Buffer.from(value, 'base64')) ? 'svg+xml' : 'png'
+		  };base64,${value}`
+		: value;
+		
+		return <img src={imgSrc} />;
 	};
 	return <div>{getValue()}</div>;
 };

@@ -55,14 +55,26 @@ const PlayerEditModal = ({
 				return cxt.teams
 					.concat()
 					.sort((a, b) => (a.name < b.name ? -1 : 1))
-					.map(team => <option key={team._id} value={team._id}>{team.name}</option>);
+					.map(team => (
+						<option key={team._id} value={team._id}>
+							{team.name}
+						</option>
+					));
 			} else if (type === 'match') {
-				return cxt.matches.map(match => <option key={match.id} value={match.id}>{getMatchName(match, cxt.teams, true)}</option>);
+				return cxt.matches.map(match => (
+					<option key={match.id} value={match.id}>
+						{getMatchName(match, cxt.teams, true)}
+					</option>
+				));
 			}
 			return cxt.players
 				.concat()
 				.sort((a, b) => (a.username < b.username ? -1 : 1))
-				.map(player => <option key={player._id} value={player._id}>{player.username}</option>);
+				.map(player => (
+					<option key={player._id} value={player._id}>
+						{player.username}
+					</option>
+				));
 		};
 		switch (type) {
 			case 'match':
