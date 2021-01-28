@@ -39,11 +39,9 @@ const CustomFieldValue = ({ field, value, cxt }: Props) => {
 			);
 		}
 		const imgSrc = value
-		? `data:image/${
-				isSvg(Buffer.from(value, 'base64')) ? 'svg+xml' : 'png'
-		  };base64,${value}`
-		: value;
-		
+			? `data:image/${isSvg(Buffer.from(value, 'base64')) ? 'svg+xml' : 'png'};base64,${value}`
+			: value;
+
 		return <img src={imgSrc} />;
 	};
 	return <div>{getValue()}</div>;
