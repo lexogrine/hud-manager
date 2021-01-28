@@ -13,6 +13,7 @@ export interface Player {
 export interface CustomFieldEntry {
 	_id: string;
 	name: string;
+	visible: boolean;
 	type: Exclude<PanelInputType, 'select' | 'action' | 'checkbox'>;
 }
 

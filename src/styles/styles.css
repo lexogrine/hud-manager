@@ -1297,6 +1297,9 @@ input:checked ~ .customCheckbox {
     align-items: center;
     flex:1;
 }
+.player-list-entry .custom-field {
+    flex: 0.65;
+}
 .player-list-entry .username {
     flex: 0.75;
 }
@@ -1305,7 +1308,6 @@ input:checked ~ .customCheckbox {
 }
 .player-list-entry .picture img {
     max-height:32px;
-    border-radius:50%;
 }
 .player-list-entry .team img {
     max-height: 38.4px;
@@ -1347,4 +1349,14 @@ input:checked ~ .customCheckbox {
     display: flex;
     flex-direction: column;
     margin-bottom: 1rem;
+}
+.color-value {
+    display: flex;
+    align-items: center;
+}
+.color-value .color-preview {
+    height: 12px;
+    width: 12px;
+    border: 1px solid rgba(0,0,0,0.6);
+    margin-right:5px;
 }
