@@ -31,7 +31,7 @@ export const updateFields = async (fields: CustomFieldEntry[], type: keyof Custo
 	const fieldNames = fields.map(field => field.name);
 
 	if (fieldNames.length !== [...new Set(fieldNames)].length) {
-		return [];
+		return await initiateCustomFields();
 	}
 
 	return new Promise<CustomFieldStore>(res => {
