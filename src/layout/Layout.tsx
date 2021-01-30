@@ -71,13 +71,12 @@ export default class Layout extends React.Component<{}, IState> {
 	loadUser = async () => {
 		try {
 			const appLoadedUser = await api.user.getCurrent();
-			if ("message" in appLoadedUser) {
+			if ('message' in appLoadedUser) {
 				this.setLoading(false, appLoadedUser.message);
 				return this.setState({ loading: false });
 			}
 			this.setUser(appLoadedUser);
 			return this.setState({ loading: false });
-
 		} catch {
 			this.setUser();
 			return this.setState({ loading: false });

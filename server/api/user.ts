@@ -19,7 +19,7 @@ const devServer = true;
 
 const baseUrl = devServer ? 'http://localhost:5000' : 'https://hmapi.lexogrine.com';
 
-const api = (url: string, method = 'GET', body?: any,) => {
+const api = (url: string, method = 'GET', body?: any) => {
 	const options: RequestInit = {
 		method,
 		headers: {
@@ -40,9 +40,10 @@ const api = (url: string, method = 'GET', body?: any,) => {
 
 const userHandlers = {
 	get: (machineId: string): Promise<{ token: string } | { error: string } | false> => api(`auth/${machineId}`),
-	login: (username: string, password: string, ver: string): Promise<{status: number, message: string}> => api('auth', 'POST', { username, password, ver }),
+	login: (username: string, password: string, ver: string): Promise<{ status: number; message: string }> =>
+		api('auth', 'POST', { username, password, ver }),
 	logout: () => api('auth', 'DELETE')
-}
+};
 
 const verifToken = (token: string) => {
 	try {
@@ -72,7 +73,7 @@ const loadUser = async () => {
 	}
 	customer.customer = userData;
 	return { success: true, message: '' };
-}
+};
 
 const login = async (username: string, password: string) => {
 	const ver = app.getVersion();
@@ -87,7 +88,7 @@ const login = async (username: string, password: string) => {
 export const loginHandler: express.RequestHandler = async (req, res) => {
 	const response = await login(req.body.username, req.body.password);
 	res.json(response);
-}
+};
 
 export const verifyToken: express.RequestHandler = async (req, res) => {
 	if (!req.body || !req.body.token) return res.sendStatus(422);

@@ -31,7 +31,7 @@ export const getMachineId = () => {
 	}
 	fs.writeFileSync(machinePath, id, { encoding: 'UTF-8' });
 	return id;
-}
+};
 
 export const getMachineIdRoute: express.RequestHandler = async (req, res) => {
 	return res.json({ id: getMachineId() });

@@ -125,7 +125,7 @@ export default {
 	user: {
 		login: (username: string, password: string): Promise<any> => apiV2('auth', 'POST', { username, password }),
 		logout: () => apiV2('auth', 'DELETE'),
-		getCurrent: (): Promise<I.Customer | {message: string, success: boolean}> => apiV2('auth')
+		getCurrent: (): Promise<I.Customer | { message: string; success: boolean }> => apiV2('auth')
 	},
 	files: {
 		imgToBase64: async (url: string) => {

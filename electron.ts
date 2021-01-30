@@ -18,7 +18,6 @@ export const AFXInterop: HLAEChild = {
 export const isDev = process.env.DEV === 'true';
 
 async function mainProcess(server: Server, forceDev = false, gui = true) {
-
 	app.on('window-all-closed', app.quit);
 
 	const RMTPServer = fork(require.resolve('./RMTPServer.js'));

@@ -32,7 +32,7 @@ export default class LoginRegisterModal extends React.Component<IProps, IState> 
 		setLoading(true);
 		try {
 			const loginResponse = await api.user.login(this.state.email, this.state.password);
-			if(!loginResponse.success){
+			if (!loginResponse.success) {
 				return setLoading(false, loginResponse.message);
 			}
 			loadUser();

@@ -64,7 +64,7 @@ export const createMainWindow = async (forceDev = false) => {
 
 	win.once('ready-to-show', () => {
 		if (win) {
-			if(isDev){
+			if (isDev) {
 				win.webContents.openDevTools();
 			}
 			win.show();
