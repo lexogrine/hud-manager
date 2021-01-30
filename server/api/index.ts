@@ -14,6 +14,7 @@ import * as I from './../../types/interfaces';
 import TournamentHandler from './tournaments/routes';
 import MatchHandler from './matches/routes';
 import PlayerHandler from './players/routes';
+import * as match from './matches';
 import TeamHandler from './teams/routes';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 
@@ -88,6 +89,10 @@ export default function (router: express.Router, io: socketio.Server) {
 	router.route('/api/user').post(user.verifyToken);
 
 	globalShortcut.register('Alt+Shift+F', () => io.emit('refreshHUD'));
+
+	globalShortcut.register('Alt+r', () => {
+		match.reverseSide(io);
+	});
 	/**
 	 * LEGACY ROUTING
 	 */
