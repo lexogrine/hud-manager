@@ -15,6 +15,7 @@ import TournamentHandler from './tournaments/routes';
 import MatchHandler from './matches/routes';
 import PlayerHandler from './players/routes';
 import TeamHandler from './teams/routes';
+import { createProxyMiddleware } from 'http-proxy-middleware';
 
 export const customer: I.CustomerData = {
 	customer: null
@@ -68,7 +69,11 @@ export default function (router: express.Router, io: socketio.Server) {
 
 	router.route('/huds/:dir/').get(huds.renderHUD);
 
-	router.route('/hud/:dir/').get(huds.renderOverlay);
+	router.route('/hud/:dir/').get(huds.renderOverlay());
+
+	router.route('/development/').get(huds.renderOverlay(true));
+
+	router.use('/dev', huds.verifyOverlay, createProxyMiddleware({ target: 'http://localhost:3500', ws: true, logLevel: 'silent' }));
 
 	router.route('/api/machine').get(machine.getMachineId);
 

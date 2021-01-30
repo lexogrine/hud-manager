@@ -96,7 +96,6 @@ export const setConfig = async (config: Config) =>
 
 export const verifyUrl = async (url: string) => {
 	if (!url || typeof url !== 'string') return false;
-	if (url.startsWith('http://localhost:3500/')) return true;
 	const cfg = await loadConfig();
 	const bases = [`http://${internalIP}:${cfg.port}`, `http://${publicIP}:${cfg.port}`];
 	if (process.env.DEV === 'true') {

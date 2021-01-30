@@ -6,12 +6,11 @@ import { app as Application } from 'electron';
 import path from 'path';
 import fetch from 'node-fetch';
 import * as I from './../types/interfaces';
-import request from 'request';
 import { getHUDData } from './../server/api/huds';
 import { getMatches, updateRound, getMatchById, updateMatch, reverseSide } from './api/matches';
 import fs from 'fs';
 import portscanner from 'portscanner';
-import { loadConfig, verifyUrl } from './api/config';
+import { internalIP, loadConfig, verifyUrl } from './api/config';
 import { testData } from './api/testing';
 import { getTeamById } from './api/teams';
 import { getPlayerById } from './api/players';
@@ -150,23 +149,16 @@ const assertUser: express.RequestHandler = (req, res, next) => {
 };
 
 export default function (server: http.Server, app: express.Router) {
-	async function getJSONArray<T>(url: string) {
-		return new Promise<T[]>(resolve => {
-			request.get(url, (err, res) => {
-				try {
-					if (err) {
-						resolve(undefined);
-						return;
-					}
-					const panel: T[] = JSON.parse(res.body);
-					if (!panel) return resolve(undefined);
-					if (!Array.isArray(panel)) return resolve(undefined);
-					resolve(panel);
-				} catch {
-					resolve(undefined);
-				}
-			});
-		});
+	const getJSONArray: <T>(url: string) => Promise<T> = (url) => {
+		return fetch(url).then(res => res.json()).then(panel => {
+			try {
+				if (!panel) return null;
+				if (!Array.isArray(panel)) return null;
+				return panel;
+			} catch {
+				return null;
+			}
+		}).catch(() => null);
 	}
 
 	const runtimeConfig: RuntimeConfig = {
@@ -218,31 +210,29 @@ export default function (server: http.Server, app: express.Router) {
 			return io.emit('reloadHUDs');
 		}
 		if (HUDState.devHUD) return;
-		request.get('http://localhost:3500/hud.json', async (err, res) => {
-			if (err) return io.emit('reloadHUDs', false);
+		fetch('http://localhost:3500/dev/hud.json').then(res => res.json()).then(async (hud: I.HUD) => {
 			try {
-				const hud: I.HUD = JSON.parse(res.body);
 				if (!hud) return;
 				if (!hud || !hud.version || !hud.author) return;
-				hud.keybinds = await getJSONArray('http://localhost:3500/keybinds.json');
-				hud.panel = await getJSONArray('http://localhost:3500/panel.json');
+				hud.keybinds = await getJSONArray('http://localhost:3500/dev/keybinds.json');
+				hud.panel = await getJSONArray('http://localhost:3500/dev/panel.json');
 				hud.isDev = true;
 				hud.dir = (Math.random() * 1000 + 1)
 					.toString(36)
 					.replace(/[^a-z]+/g, '')
 					.substr(0, 15);
 				const cfg = await loadConfig();
-				hud.url = `http://localhost:3500/?port=${cfg.port}`;
+				hud.url = `http://${internalIP}:${cfg.port}/development/`
 				HUDState.devHUD = hud;
 				if (runtimeConfig.devSocket) {
 					const hudData = HUDState.get(hud.dir);
 					const extended = await HUDStateManager.extend(hudData);
 					io.to(hud.dir).emit('hud_config', extended);
 				}
-				io.emit('reloadHUDs');
-			} catch {
-				io.emit('reloadHUDs');
-			}
+			} catch { }
+			io.emit('reloadHUDs');
+		}).catch(() => {
+			return io.emit('reloadHUDs');
 		});
 	});
 

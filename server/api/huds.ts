@@ -147,16 +147,34 @@ export const renderHUD: express.RequestHandler = async (req, res) => {
 	return render(req, res, null);
 };
 
+export const verifyOverlay: express.RequestHandler = async (req, res, next) => {
+	const cfg = await loadConfig();
+	const availableUrls = [
+		`http://${internalIP}:${cfg.port}/dev`,
+		`http://${publicIP}:${cfg.port}/dev`
+	];
+	if(availableUrls.every(url => !(req.headers.referer || '').startsWith(url))){
+		return res.status(403).json({
+			expected: availableUrls,
+			given: req.headers.referer
+		});
+	}
+
+	return next();
+}
+
 export const render: express.RequestHandler = (req, res) => {
 	const dir = path.join(app.getPath('home'), 'HUDs', req.params.dir);
 	return res.sendFile(path.join(dir, 'index.html'));
 };
 
-export const renderOverlay: express.RequestHandler = async (req, res) => {
+export const renderOverlay = (devHUD = false): express.RequestHandler => async (req, res) => {
 	const cfg = await loadConfig();
-	const url = `http://${internalIP}:${cfg.port}/huds/${req.params.dir}/?port=${cfg.port}&isProd=true`;
-	res.send(overlay(url));
-};
+	if(!devHUD) {
+		return res.send(overlay(`/huds/${req.params.dir}/?port=${cfg.port}&isProd=true`));
+	}
+	return res.send(overlay(`/dev/?port=${cfg.port}`));
+}
 
 export const renderThumbnail: express.RequestHandler = (req, res) => {
 	return res.sendFile(getThumbPath(req.params.dir));
@@ -274,7 +292,7 @@ function removeArchives() {
 				return;
 			}
 			if (fs.existsSync(file)) fs.unlinkSync(file);
-		} catch {}
+		} catch { }
 	});
 }
 

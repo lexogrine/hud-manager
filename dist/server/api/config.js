@@ -172,8 +172,6 @@ exports.verifyUrl = function (url) { return __awaiter(void 0, void 0, void 0, fu
             case 0:
                 if (!url || typeof url !== 'string')
                     return [2 /*return*/, false];
-                if (url.startsWith('http://localhost:3500/'))
-                    return [2 /*return*/, true];
                 return [4 /*yield*/, exports.loadConfig()];
             case 1:
                 cfg = _a.sent();

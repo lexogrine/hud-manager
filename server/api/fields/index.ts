@@ -30,7 +30,7 @@ export const updateFields = async (fields: CustomFieldEntry[], type: keyof Custo
 
 	const fieldNames = fields.map(field => field.name);
 
-	if (fieldNames.length !== [...new Set(fieldNames)].length) {
+	if (fieldNames.length !== [...Array.from(new Set(fieldNames))].length) {
 		return await initiateCustomFields();
 	}
 

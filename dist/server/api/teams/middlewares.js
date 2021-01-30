@@ -10,6 +10,25 @@ var __assign = (this && this.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -55,6 +74,7 @@ var database_1 = __importDefault(require("./../../../init/database"));
 var config_1 = require("./../config");
 var isSvg_1 = __importDefault(require("./../../../src/isSvg"));
 var index_1 = require("./index");
+var F = __importStar(require("./../fields"));
 var teams = database_1["default"].teams;
 var players = database_1["default"].players;
 exports.getTeams = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
@@ -205,7 +225,7 @@ exports.getFields = function (req, res) { return __awaiter(void 0, void 0, void 
     var fields;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, index_1.getTeamFields()];
+            case 0: return [4 /*yield*/, F.getFields('teams')];
             case 1:
                 fields = _a.sent();
                 return [2 /*return*/, res.json(fields)];
@@ -220,7 +240,7 @@ exports.updateFields = function (req, res) { return __awaiter(void 0, void 0, vo
                 if (!req.body) {
                     return [2 /*return*/, res.sendStatus(422)];
                 }
-                return [4 /*yield*/, index_1.updateTeamFields(req.body)];
+                return [4 /*yield*/, F.updateFields(req.body, 'teams')];
             case 1:
                 newFields = _a.sent();
                 return [2 /*return*/, res.json(newFields)];

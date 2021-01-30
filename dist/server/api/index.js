@@ -38,6 +38,7 @@ var routes_1 = __importDefault(require("./tournaments/routes"));
 var routes_2 = __importDefault(require("./matches/routes"));
 var routes_3 = __importDefault(require("./players/routes"));
 var routes_4 = __importDefault(require("./teams/routes"));
+var http_proxy_middleware_1 = require("http-proxy-middleware");
 exports.customer = {
     customer: null
 };
@@ -66,7 +67,9 @@ function default_1(router, io) {
     router.route('/api/cfg').get(game.checkCFGs).put(game.createCFGs);
     router.route('/api/cfgs/download').get(gsi.saveFile('configs.zip', gsi.cfgsZIPBase64, true));
     router.route('/huds/:dir/').get(huds.renderHUD);
-    router.route('/hud/:dir/').get(huds.renderOverlay);
+    router.route('/hud/:dir/').get(huds.renderOverlay());
+    router.route('/development/').get(huds.renderOverlay(true));
+    router.use('/dev', huds.verifyOverlay, http_proxy_middleware_1.createProxyMiddleware({ target: 'http://localhost:3500', ws: true, logLevel: 'silent' }));
     router.route('/api/machine').get(machine.getMachineId);
     router.use('/huds/:dir/', huds.renderAssets);
     router.route('/huds/:dir/thumbnail').get(huds.renderThumbnail);

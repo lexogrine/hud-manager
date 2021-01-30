@@ -56,7 +56,6 @@ var csgogsi_1 = __importDefault(require("csgogsi"));
 var electron_1 = require("electron");
 var path_1 = __importDefault(require("path"));
 var node_fetch_1 = __importDefault(require("node-fetch"));
-var request_1 = __importDefault(require("request"));
 var huds_1 = require("./../server/api/huds");
 var matches_1 = require("./api/matches");
 var fs_1 = __importDefault(require("fs"));
@@ -222,31 +221,20 @@ var assertUser = function (req, res, next) {
 };
 function default_1(server, app) {
     var _this = this;
-    function getJSONArray(url) {
-        return __awaiter(this, void 0, void 0, function () {
-            return __generator(this, function (_a) {
-                return [2 /*return*/, new Promise(function (resolve) {
-                        request_1["default"].get(url, function (err, res) {
-                            try {
-                                if (err) {
-                                    resolve(undefined);
-                                    return;
-                                }
-                                var panel = JSON.parse(res.body);
-                                if (!panel)
-                                    return resolve(undefined);
-                                if (!Array.isArray(panel))
-                                    return resolve(undefined);
-                                resolve(panel);
-                            }
-                            catch (_a) {
-                                resolve(undefined);
-                            }
-                        });
-                    })];
-            });
-        });
-    }
+    var getJSONArray = function (url) {
+        return node_fetch_1["default"](url).then(function (res) { return res.json(); }).then(function (panel) {
+            try {
+                if (!panel)
+                    return null;
+                if (!Array.isArray(panel))
+                    return null;
+                return panel;
+            }
+            catch (_a) {
+                return null;
+            }
+        })["catch"](function () { return null; });
+    };
     var runtimeConfig = {
         last: null,
         devSocket: null,
@@ -289,28 +277,23 @@ function default_1(server, app) {
         }
         if (exports.HUDState.devHUD)
             return;
-        request_1["default"].get('http://localhost:3500/hud.json', function (err, res) { return __awaiter(_this, void 0, void 0, function () {
-            var hud, _a, _b, cfg, hudData, extended, _c;
+        node_fetch_1["default"]('http://localhost:3500/dev/hud.json').then(function (res) { return res.json(); }).then(function (hud) { return __awaiter(_this, void 0, void 0, function () {
+            var _a, _b, cfg, hudData, extended, _c;
             return __generator(this, function (_d) {
                 switch (_d.label) {
                     case 0:
-                        if (err)
-                            return [2 /*return*/, io.emit('reloadHUDs', false)];
-                        _d.label = 1;
-                    case 1:
-                        _d.trys.push([1, 7, , 8]);
-                        hud = JSON.parse(res.body);
+                        _d.trys.push([0, 6, , 7]);
                         if (!hud)
                             return [2 /*return*/];
                         if (!hud || !hud.version || !hud.author)
                             return [2 /*return*/];
                         _a = hud;
-                        return [4 /*yield*/, getJSONArray('http://localhost:3500/keybinds.json')];
-                    case 2:
+                        return [4 /*yield*/, getJSONArray('http://localhost:3500/dev/keybinds.json')];
+                    case 1:
                         _a.keybinds = _d.sent();
                         _b = hud;
-                        return [4 /*yield*/, getJSONArray('http://localhost:3500/panel.json')];
-                    case 3:
+                        return [4 /*yield*/, getJSONArray('http://localhost:3500/dev/panel.json')];
+                    case 2:
                         _b.panel = _d.sent();
                         hud.isDev = true;
                         hud.dir = (Math.random() * 1000 + 1)
@@ -318,28 +301,29 @@ function default_1(server, app) {
                             .replace(/[^a-z]+/g, '')
                             .substr(0, 15);
                         return [4 /*yield*/, config_1.loadConfig()];
-                    case 4:
+                    case 3:
                         cfg = _d.sent();
-                        hud.url = "http://localhost:3500/?port=" + cfg.port;
+                        hud.url = "http://" + config_1.internalIP + ":" + cfg.port + "/development/";
                         exports.HUDState.devHUD = hud;
-                        if (!runtimeConfig.devSocket) return [3 /*break*/, 6];
+                        if (!runtimeConfig.devSocket) return [3 /*break*/, 5];
                         hudData = exports.HUDState.get(hud.dir);
                         return [4 /*yield*/, HUDStateManager.extend(hudData)];
-                    case 5:
+                    case 4:
                         extended = _d.sent();
                         io.to(hud.dir).emit('hud_config', extended);
-                        _d.label = 6;
+                        _d.label = 5;
+                    case 5: return [3 /*break*/, 7];
                     case 6:
-                        io.emit('reloadHUDs');
-                        return [3 /*break*/, 8];
-                    case 7:
                         _c = _d.sent();
+                        return [3 /*break*/, 7];
+                    case 7:
                         io.emit('reloadHUDs');
-                        return [3 /*break*/, 8];
-                    case 8: return [2 /*return*/];
+                        return [2 /*return*/];
                 }
             });
-        }); });
+        }); })["catch"](function () {
+            return io.emit('reloadHUDs');
+        });
     });
     portListener.start();
     var customRadarCSS = function (req, res) { return __awaiter(_this, void 0, void 0, function () {

@@ -58,7 +58,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
-exports.deleteHUD = exports.uploadHUD = exports.closeHUD = exports.showHUD = exports.legacyCSS = exports.legacyJS = exports.renderLegacy = exports.renderAssets = exports.getThumbPath = exports.renderThumbnail = exports.renderOverlay = exports.render = exports.renderHUD = exports.openHUDsDirectory = exports.getHUDPanelSetting = exports.getHUDKeyBinds = exports.getHUDData = exports.getHUDs = exports.listHUDs = void 0;
+exports.deleteHUD = exports.uploadHUD = exports.closeHUD = exports.showHUD = exports.legacyCSS = exports.legacyJS = exports.renderLegacy = exports.renderAssets = exports.getThumbPath = exports.renderThumbnail = exports.renderOverlay = exports.render = exports.verifyOverlay = exports.renderHUD = exports.openHUDsDirectory = exports.getHUDPanelSetting = exports.getHUDKeyBinds = exports.getHUDData = exports.getHUDs = exports.listHUDs = void 0;
 var fs = __importStar(require("fs"));
 var path = __importStar(require("path"));
 var electron_1 = require("electron");
@@ -238,31 +238,55 @@ exports.renderHUD = function (req, res) { return __awaiter(void 0, void 0, void 
         }
     });
 }); };
-exports.render = function (req, res) {
-    var dir = path.join(electron_1.app.getPath('home'), 'HUDs', req.params.dir);
-    return res.sendFile(path.join(dir, 'index.html'));
-};
-exports.renderOverlay = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var cfg, url;
+exports.verifyOverlay = function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var cfg, availableUrls;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0: return [4 /*yield*/, config_1.loadConfig()];
             case 1:
                 cfg = _a.sent();
-                url = "http://" + config_1.internalIP + ":" + cfg.port + "/huds/" + req.params.dir + "/?port=" + cfg.port + "&isProd=true";
-                res.send(overlay_1["default"](url));
-                return [2 /*return*/];
+                availableUrls = [
+                    "http://" + config_1.internalIP + ":" + cfg.port + "/dev",
+                    "http://" + config_1.publicIP + ":" + cfg.port + "/dev"
+                ];
+                if (availableUrls.every(function (url) { return !(req.headers.referer || '').startsWith(url); })) {
+                    return [2 /*return*/, res.status(403).json({
+                            expected: availableUrls,
+                            given: req.headers.referer
+                        })];
+                }
+                return [2 /*return*/, next()];
         }
     });
 }); };
+exports.render = function (req, res) {
+    var dir = path.join(electron_1.app.getPath('home'), 'HUDs', req.params.dir);
+    return res.sendFile(path.join(dir, 'index.html'));
+};
+/*export const renderOverlay: express.RequestHandler = async (req, res) => {
+    const cfg = await loadConfig();
+    const url = `http://${internalIP}:${cfg.port}/huds/${req.params.dir}/?port=${cfg.port}&isProd=true`;
+    res.send(overlay(url));
+};*/
+exports.renderOverlay = function (devHUD) {
+    if (devHUD === void 0) { devHUD = false; }
+    return function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+        var cfg;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, config_1.loadConfig()];
+                case 1:
+                    cfg = _a.sent();
+                    if (!devHUD) {
+                        return [2 /*return*/, res.send(overlay_1["default"]("/huds/" + req.params.dir + "/?port=" + cfg.port + "&isProd=true"))];
+                    }
+                    return [2 /*return*/, res.send(overlay_1["default"]("/dev/?port=" + cfg.port))];
+            }
+        });
+    }); };
+};
 exports.renderThumbnail = function (req, res) {
     return res.sendFile(exports.getThumbPath(req.params.dir));
-    /*
-    const thumbPath = path.join(app.getPath('home'), 'HUDs', req.params.dir, "thumb.png");
-    if(fs.existsSync(thumbPath)){
-        return res.sendFile(thumbPath);
-    }
-    return res.sendFile(path.join(__dirname, '../../assets/icon.png'));*/
 };
 exports.getThumbPath = function (dir) {
     var thumbPath = path.join(electron_1.app.getPath('home'), 'HUDs', dir, 'thumb.png');
