@@ -80,7 +80,6 @@ function default_1(router, io) {
     router.route('/api/machine').get(machine.getMachineIdRoute);
     router.use('/huds/:dir/', huds.renderAssets);
     router.route('/huds/:dir/thumbnail').get(huds.renderThumbnail);
-    router.route('/api/user').post(user.verifyToken);
     electron_1.globalShortcut.register('Alt+Shift+F', function () { return io.emit('refreshHUD'); });
     /**
      * LEGACY ROUTING

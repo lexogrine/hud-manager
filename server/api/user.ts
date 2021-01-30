@@ -53,12 +53,12 @@ const verifyToken = (token: string) => {
 	}
 };
 
-const loadUser = async () => {
+const loadUser = async (loggedIn = false) => {
 	const machineId = getMachineId();
 	const userToken = await userHandlers.get(machineId);
 
 	if (!userToken) {
-		return { success: false, message: 'Your session has expired - try restarting the application' };
+		return { success: false, message: loggedIn ? 'Your session has expired - try restarting the application' : '' };
 	}
 	if ('error' in userToken) {
 		return { success: false, message: userToken.error };
@@ -78,7 +78,7 @@ const login = async (username: string, password: string) => {
 	if (response.status === 404 || response.status === 401) {
 		return { success: false, message: 'Incorrect username or password.' };
 	}
-	return await loadUser();
+	return await loadUser(true);
 };
 
 export const loginHandler: express.RequestHandler = async (req, res) => {

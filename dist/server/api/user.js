@@ -39,7 +39,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
-exports.logout = exports.getCurrent = exports.verifyToken = exports.loginHandler = void 0;
+exports.logout = exports.getCurrent = exports.loginHandler = void 0;
 var electron_1 = require("electron");
 var jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 var node_fetch_1 = __importDefault(require("node-fetch"));
@@ -53,8 +53,6 @@ var machine_1 = require("./machine");
 var cookiePath = path_1["default"].join(electron_1.app.getPath('userData'), 'cookie.json');
 var cookieJar = new tough_cookie_1.CookieJar(new tough_cookie_file_store_1.FileCookieStore(cookiePath));
 var fetch = fetch_cookie_1["default"](node_fetch_1["default"], cookieJar);
-var devServer = true;
-var baseUrl = devServer ? 'http://localhost:5000' : 'https://hmapi.lexogrine.com';
 var api = function (url, method, body) {
     if (method === void 0) { method = 'GET'; }
     var options = {
@@ -69,17 +67,19 @@ var api = function (url, method, body) {
         options.body = JSON.stringify(body);
     }
     var data = null;
-    return fetch(baseUrl + "/" + url, options).then(function (res) {
+    return fetch("https://hmapi.lexogrine.com/" + url, options).then(function (res) {
         data = res;
         return res.json()["catch"](function () { return data && data.status < 300; });
     });
 };
 var userHandlers = {
     get: function (machineId) { return api("auth/" + machineId); },
-    login: function (username, password, ver) { return api('auth', 'POST', { username: username, password: password, ver: ver }); },
+    login: function (username, password, ver) {
+        return api('auth', 'POST', { username: username, password: password, ver: ver });
+    },
     logout: function () { return api('auth', 'DELETE'); }
 };
-var verifToken = function (token) {
+var verifyToken = function (token) {
     try {
         var result = jsonwebtoken_1["default"].verify(token, publickey_1.publicKey, { algorithms: ['RS256'] });
         if (result.user && result.license) {
@@ -91,30 +91,33 @@ var verifToken = function (token) {
         return false;
     }
 };
-var loadUser = function () { return __awaiter(void 0, void 0, void 0, function () {
-    var machineId, userToken, userData;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0:
-                machineId = machine_1.getMachineId();
-                return [4 /*yield*/, userHandlers.get(machineId)];
-            case 1:
-                userToken = _a.sent();
-                if (!userToken) {
-                    return [2 /*return*/, { success: false, message: 'Your session has expired - try restarting the application' }];
-                }
-                if ('error' in userToken) {
-                    return [2 /*return*/, { success: false, message: userToken.error }];
-                }
-                userData = verifToken(userToken.token);
-                if (!userData) {
-                    return [2 /*return*/, { success: false, message: 'Your session has expired - try restarting the application' }];
-                }
-                api_1.customer.customer = userData;
-                return [2 /*return*/, { success: true, message: '' }];
-        }
+var loadUser = function (loggedIn) {
+    if (loggedIn === void 0) { loggedIn = false; }
+    return __awaiter(void 0, void 0, void 0, function () {
+        var machineId, userToken, userData;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    machineId = machine_1.getMachineId();
+                    return [4 /*yield*/, userHandlers.get(machineId)];
+                case 1:
+                    userToken = _a.sent();
+                    if (!userToken) {
+                        return [2 /*return*/, { success: false, message: loggedIn ? 'Your session has expired - try restarting the application' : '' }];
+                    }
+                    if ('error' in userToken) {
+                        return [2 /*return*/, { success: false, message: userToken.error }];
+                    }
+                    userData = verifyToken(userToken.token);
+                    if (!userData) {
+                        return [2 /*return*/, { success: false, message: 'Your session has expired - try restarting the application' }];
+                    }
+                    api_1.customer.customer = userData;
+                    return [2 /*return*/, { success: true, message: '' }];
+            }
+        });
     });
-}); };
+};
 var login = function (username, password) { return __awaiter(void 0, void 0, void 0, function () {
     var ver, response;
     return __generator(this, function (_a) {
@@ -127,7 +130,7 @@ var login = function (username, password) { return __awaiter(void 0, void 0, voi
                 if (response.status === 404 || response.status === 401) {
                     return [2 /*return*/, { success: false, message: 'Incorrect username or password.' }];
                 }
-                return [4 /*yield*/, loadUser()];
+                return [4 /*yield*/, loadUser(true)];
             case 2: return [2 /*return*/, _a.sent()];
         }
     });
@@ -142,19 +145,6 @@ exports.loginHandler = function (req, res) { return __awaiter(void 0, void 0, vo
                 res.json(response);
                 return [2 /*return*/];
         }
-    });
-}); };
-exports.verifyToken = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var tokenResult;
-    return __generator(this, function (_a) {
-        if (!req.body || !req.body.token)
-            return [2 /*return*/, res.sendStatus(422)];
-        tokenResult = verifToken(req.body.token);
-        if (!tokenResult) {
-            return [2 /*return*/, res.sendStatus(403)];
-        }
-        api_1.customer.customer = tokenResult;
-        return [2 /*return*/, res.json(tokenResult)];
     });
 }); };
 exports.getCurrent = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
