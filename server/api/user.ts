@@ -91,6 +91,10 @@ export const getCurrent: express.RequestHandler = async (req, res) => {
 		return res.json(customer.customer);
 	}
 	const response = await loadUser();
+	
+	if (customer.customer) {
+		return res.json(customer.customer);
+	}
 	return res.status(403).json(response);
 };
 export const logout: express.RequestHandler = async (req, res) => {

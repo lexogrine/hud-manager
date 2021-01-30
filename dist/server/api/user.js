@@ -158,6 +158,9 @@ exports.getCurrent = function (req, res) { return __awaiter(void 0, void 0, void
                 return [4 /*yield*/, loadUser()];
             case 1:
                 response = _a.sent();
+                if (api_1.customer.customer) {
+                    return [2 /*return*/, res.json(api_1.customer.customer)];
+                }
                 return [2 /*return*/, res.status(403).json(response)];
         }
     });
