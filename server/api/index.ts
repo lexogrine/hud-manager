@@ -73,7 +73,11 @@ export default function (router: express.Router, io: socketio.Server) {
 
 	router.route('/development/').get(huds.renderOverlay(true));
 
-	router.use('/dev', huds.verifyOverlay, createProxyMiddleware({ target: 'http://localhost:3500', ws: true, logLevel: 'silent' }));
+	router.use(
+		'/dev',
+		huds.verifyOverlay,
+		createProxyMiddleware({ target: 'http://localhost:3500', ws: true, logLevel: 'silent' })
+	);
 
 	router.route('/api/machine').get(machine.getMachineId);
 
