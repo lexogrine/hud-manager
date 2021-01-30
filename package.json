@@ -17,6 +17,7 @@
     "decompress-zip": "^0.2.2",
     "electron-updater": "^4.3.5",
     "express": "^4.17.1",
+    "fetch-cookie": "^0.11.0",
     "get-port": "^5.1.1",
     "internal-ip": "^6.2.0",
     "ip": "^1.1.5",
@@ -41,6 +42,8 @@
     "socket.io": "^2.3.0",
     "socket.io-client": "^2.3.0",
     "steam-game-path": "^1.1.1",
+    "tough-cookie": "^4.0.0",
+    "tough-cookie-file-store": "^2.0.2",
     "typescript": "^3.8.3",
     "uuid": "^3.4.0",
     "ws": "^7.2.5",
@@ -54,6 +57,7 @@
       "target": "NSIS"
     },
     "linux": {
+      "icon": "icon.png",
       "target": "tar.xz"
     },
     "directories": {

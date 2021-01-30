@@ -32,11 +32,6 @@ const apiHandler = (url: string, method = 'GET', body?: any, credentials?: boole
 		return res.json().catch(() => data && data.status < 300);
 	});
 };
-
-const sessionAPI = async (url: string, method = 'GET', body?: any) => {
-	return apiHandler(`https://hmapi.lexogrine.com/${url}`, method, body, true);
-};
-
 export async function apiV2(url: string, method = 'GET', body?: any) {
 	return apiHandler(`${config.isDev ? apiUrl : '/'}api/${url}`, method, body);
 	/*const options: RequestInit = {
@@ -128,13 +123,9 @@ export default {
 			apiV2(`tournaments/${tournamentId}`, 'PATCH', data)
 	},
 	user: {
-		get: async (machineId: string): Promise<{ token: string } | { error: string } | false> =>
-			await sessionAPI(`auth/${machineId}`),
-		login: async (username: string, password: string, ver: string): Promise<any> =>
-			await sessionAPI('auth', 'POST', { username, password, ver }),
-		logout: async () => await Promise.all([sessionAPI('auth', 'DELETE'), apiV2('auth', 'DELETE')]),
-		verify: async (token: string): Promise<I.Customer | false> => await apiV2('user', 'POST', { token }),
-		getCurrent: async (): Promise<I.Customer | false> => await apiV2('auth')
+		login: (username: string, password: string): Promise<any> => apiV2('auth', 'POST', { username, password }),
+		logout: () => apiV2('auth', 'DELETE'),
+		getCurrent: (): Promise<I.Customer | { message: string; success: boolean }> => apiV2('auth')
 	},
 	files: {
 		imgToBase64: async (url: string) => {

@@ -21,7 +21,7 @@ export const customer: I.CustomerData = {
 };
 
 export default function (router: express.Router, io: socketio.Server) {
-	router.route('/api/auth').get(user.getCurrent).delete(user.logout);
+	router.route('/api/auth').get(user.getCurrent).post(user.loginHandler).delete(user.logout);
 
 	router.route('/api/players').get(players.getPlayers).post(players.addPlayer);
 
@@ -88,13 +88,11 @@ export default function (router: express.Router, io: socketio.Server) {
 
 	router.route('/hud/:dir/').get(huds.renderOverlay);
 
-	router.route('/api/machine').get(machine.getMachineId);
+	router.route('/api/machine').get(machine.getMachineIdRoute);
 
 	router.use('/huds/:dir/', huds.renderAssets);
 
 	router.route('/huds/:dir/thumbnail').get(huds.renderThumbnail);
-
-	router.route('/api/user').post(user.verifyToken);
 
 	globalShortcut.register('Alt+Shift+F', () => io.emit('refreshHUD'));
 	/**

@@ -71,32 +71,15 @@ export default class Layout extends React.Component<{}, IState> {
 	loadUser = async () => {
 		try {
 			const appLoadedUser = await api.user.getCurrent();
-			if (appLoadedUser) {
-				this.setUser(appLoadedUser);
+			if ('message' in appLoadedUser) {
+				this.setLoading(false, appLoadedUser.message);
+				this.setUser();
 				return this.setState({ loading: false });
 			}
-
-			const machine = await api.machine.get();
-
-			const user = await api.user.get(machine.id);
-			if (!user) return this.setState({ loading: false }, () => this.setUser());
-
-			if ('error' in user) {
-				return this.setState({ loading: false, loginError: user.error }, () => this.setUser());
-			}
-
-			const userData = await api.user.verify(user.token);
-			if (!userData)
-				return this.setState(
-					{
-						loading: false,
-						loginError: 'It seems that your session has expired - please restart & login again'
-					},
-					() => this.setUser()
-				);
-			this.setUser(userData);
-			this.setState({ loading: false });
+			this.setUser(appLoadedUser);
+			return this.setState({ loading: false });
 		} catch {
+			this.setUser();
 			return this.setState({ loading: false });
 		}
 	};
@@ -184,7 +167,7 @@ export default class Layout extends React.Component<{}, IState> {
 						isOpen={!data.customer}
 						loading={loadingLogin}
 						setLoading={this.setLoading}
-						setUser={this.setUser}
+						loadUser={this.loadUser}
 						error={loginError}
 						version={version}
 					/>

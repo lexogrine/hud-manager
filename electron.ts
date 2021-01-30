@@ -17,8 +17,12 @@ export const AFXInterop: HLAEChild = {
 
 export const isDev = process.env.DEV === 'true';
 
-async function createRenderer(server: Server, forceDev = false) {
+async function mainProcess(server: Server, forceDev = false, gui = true) {
+	app.on('window-all-closed', app.quit);
+
 	const RMTPServer = fork(require.resolve('./RMTPServer.js'));
+
+	let renderer: ChildProcess = null;
 
 	const closeManager = () => {
 		if (server) {
@@ -32,13 +36,19 @@ async function createRenderer(server: Server, forceDev = false) {
 		}
 		app.quit();
 	};
-	const args = ['./', '--renderer'];
-	if (forceDev) args.push('--dev');
-	const renderer = spawn(process.execPath, args, {
-		stdio: forceDev ? ['pipe', 'pipe', 'pipe', 'ipc'] : ['ignore', 'ignore', 'ignore', 'ipc']
+
+	app.on('quit', () => {
+		if (renderer) renderer.kill();
+		closeManager();
 	});
 
-	app.on('window-all-closed', () => {});
+	if (!gui) return;
+
+	const args = ['./', '--renderer'];
+	if (forceDev) args.push('--dev');
+	renderer = spawn(process.execPath, args, {
+		stdio: forceDev ? ['pipe', 'pipe', 'pipe', 'ipc'] : ['ignore', 'ignore', 'ignore', 'ipc']
+	});
 
 	app.on('second-instance', () => {
 		if (renderer.send) {
@@ -50,10 +60,6 @@ async function createRenderer(server: Server, forceDev = false) {
 
 	renderer.on('exit', closeManager);
 	renderer.on('close', closeManager);
-
-	app.on('quit', () => {
-		renderer.kill();
-	});
 }
 
 async function startManager() {
@@ -65,9 +71,7 @@ async function startManager() {
 	directories.checkDirectories();
 	const server = await init();
 	const argv = args(process.argv);
-	if (!argv.noGUI) {
-		createRenderer(server, argv.dev);
-	}
+	mainProcess(server, argv.dev, !argv.noGUI);
 }
 
 const lock = app.requestSingleInstanceLock();
