@@ -42,7 +42,7 @@ exports.customer = {
     customer: null
 };
 function default_1(router, io) {
-    router.route('/api/auth').get(user.getCurrent)["delete"](user.logout);
+    router.route('/api/auth').get(user.getCurrent).post(user.loginHandler)["delete"](user.logout);
     router.route('/api/players').get(players.getPlayers).post(players.addPlayer);
     router.route('/api/players/:id').get(players.getPlayers).patch(players.updatePlayer)["delete"](players.deletePlayer);
     router.route('/api/players/avatar/:id').get(players.getAvatarFile);
@@ -77,7 +77,7 @@ function default_1(router, io) {
     router.route('/api/cfgs/download').get(gsi.saveFile('configs.zip', gsi.cfgsZIPBase64, true));
     router.route('/huds/:dir/').get(huds.renderHUD);
     router.route('/hud/:dir/').get(huds.renderOverlay);
-    router.route('/api/machine').get(machine.getMachineId);
+    router.route('/api/machine').get(machine.getMachineIdRoute);
     router.use('/huds/:dir/', huds.renderAssets);
     router.route('/huds/:dir/thumbnail').get(huds.renderThumbnail);
     router.route('/api/user').post(user.verifyToken);

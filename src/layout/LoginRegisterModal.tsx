@@ -1,12 +1,11 @@
 import React from 'react';
 import { Modal, ModalHeader, ModalBody, FormGroup, Input, Button, ModalFooter } from 'reactstrap';
 import api from './../api/api';
-import * as I from './../api/interfaces';
 interface IProps {
 	isOpen: boolean;
 	loading: boolean;
 	setLoading: (loading: boolean, error?: string) => void;
-	setUser: (user: I.Customer) => void;
+	loadUser: () => void;
 	error: string;
 	version: string;
 }
@@ -29,28 +28,14 @@ export default class LoginRegisterModal extends React.Component<IProps, IState> 
 		this.setState({ [field]: e.target.value } as any);
 	};
 	login = async () => {
-		const { setLoading, setUser, version } = this.props;
+		const { setLoading, loadUser } = this.props;
 		setLoading(true);
 		try {
-			const loginResponse = await api.user.login(this.state.email, this.state.password, version);
-			if (loginResponse !== true) return setLoading(false, 'Incorrect email or password');
-
-			const machine = await api.machine.get();
-			const userToken = await api.user.get(machine.id);
-
-			if (!userToken)
-				return setLoading(false, 'It seems that your session has expired - please restart & login again');
-
-			if ('error' in userToken) {
-				return setLoading(false, userToken.error);
+			const loginResponse = await api.user.login(this.state.email, this.state.password);
+			if(!loginResponse.success){
+				return setLoading(false, loginResponse.message);
 			}
-
-			const userData = await api.user.verify(userToken.token);
-
-			if (!userData)
-				return setLoading(false, 'It seems that your session has expired - please restart & login again');
-
-			setUser(userData);
+			loadUser();
 			setLoading(false);
 		} catch {
 			return setLoading(false, 'It seems that our servers are unreachable. Please try again in a few minutes');

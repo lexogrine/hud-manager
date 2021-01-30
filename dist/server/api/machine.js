@@ -39,33 +39,35 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
-exports.getMachineId = void 0;
+exports.getMachineIdRoute = exports.getMachineId = void 0;
 var fs_1 = __importDefault(require("fs"));
 var electron_1 = require("electron");
 var path_1 = __importDefault(require("path"));
-exports.getMachineId = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
-    var machinePathDirectory, machinePath, machineOldPath, id;
+exports.getMachineId = function () {
+    var machinePathDirectory = path_1["default"].join(electron_1.app.getPath('appData'), '.lexogrine');
+    var machinePath = path_1["default"].join(machinePathDirectory, 'machine.hm');
+    var machineOldPath = path_1["default"].join(electron_1.app.getPath('userData'), 'machine.hm');
+    if (!fs_1["default"].existsSync(machinePathDirectory)) {
+        fs_1["default"].mkdirSync(machinePathDirectory, { recursive: true });
+    }
+    var id = (Math.random() * 1000 + 1)
+        .toString(36)
+        .replace(/[^a-z]+/g, '')
+        .substr(0, 15);
+    if (fs_1["default"].existsSync(machinePath)) {
+        id = fs_1["default"].readFileSync(machinePath, 'UTF-8');
+        return id;
+    }
+    if (fs_1["default"].existsSync(machineOldPath)) {
+        id = fs_1["default"].readFileSync(machineOldPath, 'UTF-8');
+        fs_1["default"].renameSync(machineOldPath, machinePath);
+        return id;
+    }
+    fs_1["default"].writeFileSync(machinePath, id, { encoding: 'UTF-8' });
+    return id;
+};
+exports.getMachineIdRoute = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     return __generator(this, function (_a) {
-        machinePathDirectory = path_1["default"].join(electron_1.app.getPath('appData'), '.lexogrine');
-        machinePath = path_1["default"].join(machinePathDirectory, 'machine.hm');
-        machineOldPath = path_1["default"].join(electron_1.app.getPath('userData'), 'machine.hm');
-        if (!fs_1["default"].existsSync(machinePathDirectory)) {
-            fs_1["default"].mkdirSync(machinePathDirectory, { recursive: true });
-        }
-        id = (Math.random() * 1000 + 1)
-            .toString(36)
-            .replace(/[^a-z]+/g, '')
-            .substr(0, 15);
-        if (fs_1["default"].existsSync(machinePath)) {
-            id = fs_1["default"].readFileSync(machinePath, 'UTF-8');
-            return [2 /*return*/, res.json({ id: id })];
-        }
-        if (fs_1["default"].existsSync(machineOldPath)) {
-            id = fs_1["default"].readFileSync(machineOldPath, 'UTF-8');
-            fs_1["default"].renameSync(machineOldPath, machinePath);
-            return [2 /*return*/, res.json({ id: id })];
-        }
-        fs_1["default"].writeFileSync(machinePath, id, { encoding: 'UTF-8' });
-        return [2 /*return*/, res.json({ id: id })];
+        return [2 /*return*/, res.json({ id: exports.getMachineId() })];
     });
 }); };

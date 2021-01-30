@@ -105,6 +105,9 @@ exports.createMainWindow = function (forceDev) {
                     });
                     win.once('ready-to-show', function () {
                         if (win) {
+                            if (isDev) {
+                                win.webContents.openDevTools();
+                            }
                             win.show();
                         }
                     });

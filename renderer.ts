@@ -1,8 +1,6 @@
-import { app, BrowserWindow, shell, session, ipcMain } from 'electron';
+import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import path from 'path';
-import fs from 'fs';
 import autoUpdater from './autoUpdater';
-import ip from 'ip';
 import { loadConfig, internalIP } from './server/api/config';
 
 const isDev = process.env.DEV === 'true';
@@ -66,6 +64,9 @@ export const createMainWindow = async (forceDev = false) => {
 
 	win.once('ready-to-show', () => {
 		if (win) {
+			if(isDev){
+				win.webContents.openDevTools();
+			}
 			win.show();
 		}
 	});

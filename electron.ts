@@ -4,9 +4,7 @@ import { Server } from 'http';
 import * as directories from './init/directories';
 import { ChildProcess, spawn, fork } from 'child_process';
 import args from './init/args';
-import path from 'path';
-import fs from 'fs';
-import { app, session } from 'electron';
+import { app } from 'electron';
 import { createMainWindow } from './renderer';
 
 interface HLAEChild {
@@ -20,26 +18,8 @@ export const AFXInterop: HLAEChild = {
 export const isDev = process.env.DEV === 'true';
 
 async function mainProcess(server: Server, forceDev = false, gui = true) {
-	const cookieFile = path.join(app.getPath('userData'), 'databases', 'cookie');
-
-	const cookie = fs.readFileSync(cookieFile, 'utf8');
-	try {
-		const cookies = JSON.parse(cookie);
-		if (Array.isArray(cookies)) {
-			for (const cookie of cookies) {
-				cookie.url = 'https://hmapi.lexogrine.com/';
-				await session.defaultSession.cookies.set(cookie);
-			}
-		}
-	} catch (e) {}
 
 	app.on('window-all-closed', app.quit);
-
-	app.on('before-quit', async () => {
-		const cookies = await session.defaultSession.cookies.get({ url: 'https://hmapi.lexogrine.com/' });
-
-		fs.writeFileSync(cookieFile, JSON.stringify(cookies), 'utf8');
-	});
 
 	const RMTPServer = fork(require.resolve('./RMTPServer.js'));
 
