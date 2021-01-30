@@ -15,10 +15,6 @@ const cookiePath = path.join(app.getPath('userData'), 'cookie.json');
 const cookieJar = new CookieJar(new FileCookieStore(cookiePath));
 const fetch = fetchHandler(nodeFetch, cookieJar);
 
-const devServer = true;
-
-const baseUrl = devServer ? 'http://localhost:5000' : 'https://hmapi.lexogrine.com';
-
 const api = (url: string, method = 'GET', body?: any) => {
 	const options: RequestInit = {
 		method,
@@ -32,7 +28,7 @@ const api = (url: string, method = 'GET', body?: any) => {
 		options.body = JSON.stringify(body);
 	}
 	let data: any = null;
-	return fetch(`${baseUrl}/${url}`, options).then(res => {
+	return fetch(`https://hmapi.lexogrine.com/${url}`, options).then(res => {
 		data = res;
 		return res.json().catch(() => data && data.status < 300);
 	});
@@ -45,7 +41,7 @@ const userHandlers = {
 	logout: () => api('auth', 'DELETE')
 };
 
-const verifToken = (token: string) => {
+const verifyToken = (token: string) => {
 	try {
 		const result = jwt.verify(token, publicKey, { algorithms: ['RS256'] }) as I.Customer;
 		if (result.user && result.license) {
@@ -67,7 +63,7 @@ const loadUser = async () => {
 	if ('error' in userToken) {
 		return { success: false, message: userToken.error };
 	}
-	const userData = verifToken(userToken.token);
+	const userData = verifyToken(userToken.token);
 	if (!userData) {
 		return { success: false, message: 'Your session has expired - try restarting the application' };
 	}
@@ -88,16 +84,6 @@ const login = async (username: string, password: string) => {
 export const loginHandler: express.RequestHandler = async (req, res) => {
 	const response = await login(req.body.username, req.body.password);
 	res.json(response);
-};
-
-export const verifyToken: express.RequestHandler = async (req, res) => {
-	if (!req.body || !req.body.token) return res.sendStatus(422);
-	const tokenResult = verifToken(req.body.token);
-	if (!tokenResult) {
-		return res.sendStatus(403);
-	}
-	customer.customer = tokenResult;
-	return res.json(tokenResult);
 };
 
 export const getCurrent: express.RequestHandler = async (req, res) => {

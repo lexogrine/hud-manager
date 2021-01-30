@@ -94,8 +94,6 @@ export default function (router: express.Router, io: socketio.Server) {
 
 	router.route('/huds/:dir/thumbnail').get(huds.renderThumbnail);
 
-	router.route('/api/user').post(user.verifyToken);
-
 	globalShortcut.register('Alt+Shift+F', () => io.emit('refreshHUD'));
 	/**
 	 * LEGACY ROUTING
