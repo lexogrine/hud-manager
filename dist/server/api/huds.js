@@ -245,10 +245,7 @@ exports.verifyOverlay = function (req, res, next) { return __awaiter(void 0, voi
             case 0: return [4 /*yield*/, config_1.loadConfig()];
             case 1:
                 cfg = _a.sent();
-                availableUrls = [
-                    "http://" + config_1.internalIP + ":" + cfg.port + "/dev",
-                    "http://" + config_1.publicIP + ":" + cfg.port + "/dev"
-                ];
+                availableUrls = ["http://" + config_1.internalIP + ":" + cfg.port + "/dev", "http://" + config_1.publicIP + ":" + cfg.port + "/dev"];
                 if (availableUrls.every(function (url) { return !(req.headers.referer || '').startsWith(url); })) {
                     return [2 /*return*/, res.status(403).json({
                             expected: availableUrls,
@@ -263,11 +260,6 @@ exports.render = function (req, res) {
     var dir = path.join(electron_1.app.getPath('home'), 'HUDs', req.params.dir);
     return res.sendFile(path.join(dir, 'index.html'));
 };
-/*export const renderOverlay: express.RequestHandler = async (req, res) => {
-    const cfg = await loadConfig();
-    const url = `http://${internalIP}:${cfg.port}/huds/${req.params.dir}/?port=${cfg.port}&isProd=true`;
-    res.send(overlay(url));
-};*/
 exports.renderOverlay = function (devHUD) {
     if (devHUD === void 0) { devHUD = false; }
     return function (req, res) { return __awaiter(void 0, void 0, void 0, function () {

@@ -222,7 +222,9 @@ var assertUser = function (req, res, next) {
 function default_1(server, app) {
     var _this = this;
     var getJSONArray = function (url) {
-        return node_fetch_1["default"](url).then(function (res) { return res.json(); }).then(function (panel) {
+        return node_fetch_1["default"](url)
+            .then(function (res) { return res.json(); })
+            .then(function (panel) {
             try {
                 if (!panel)
                     return null;
@@ -277,7 +279,9 @@ function default_1(server, app) {
         }
         if (exports.HUDState.devHUD)
             return;
-        node_fetch_1["default"]('http://localhost:3500/dev/hud.json').then(function (res) { return res.json(); }).then(function (hud) { return __awaiter(_this, void 0, void 0, function () {
+        node_fetch_1["default"]('http://localhost:3500/dev/hud.json')
+            .then(function (res) { return res.json(); })
+            .then(function (hud) { return __awaiter(_this, void 0, void 0, function () {
             var _a, _b, cfg, hudData, extended, _c;
             return __generator(this, function (_d) {
                 switch (_d.label) {

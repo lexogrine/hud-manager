@@ -57,7 +57,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 exports.__esModule = true;
 var electron_1 = require("electron");
 var huds_1 = require("./../server/api/huds");
-var match = __importStar(require("./../server/api/matches"));
 var path = __importStar(require("path"));
 var HUD = /** @class */ (function () {
     function HUD() {
@@ -120,7 +119,6 @@ var HUD = /** @class */ (function () {
                                     electron_1.globalShortcut.unregister(keybind.bind);
                                 }
                             }
-                            electron_1.globalShortcut.unregister('Alt+r');
                             electron_1.globalShortcut.unregister('Alt+F');
                             _this.hud = null;
                             _this.current = null;
@@ -139,9 +137,6 @@ var HUD = /** @class */ (function () {
             return;
         this.current.setOpacity(1);
         this.current.show();
-        electron_1.globalShortcut.register('Alt+r', function () {
-            match.reverseSide(io);
-        });
         electron_1.globalShortcut.register('Alt+F', function () {
             if (!_this.current || !hud || !hud.url)
                 return;

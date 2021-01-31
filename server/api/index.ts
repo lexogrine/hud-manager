@@ -90,7 +90,7 @@ export default function (router: express.Router, io: socketio.Server) {
 
 	globalShortcut.register('Alt+Shift+F', () => io.emit('refreshHUD'));
 
-	globalShortcut.register('Alt+r', () => {
+	globalShortcut.register('Alt+R', () => {
 		match.reverseSide(io);
 	});
 	/**

@@ -179,6 +179,9 @@ exports.verifyUrl = function (url) { return __awaiter(void 0, void 0, void 0, fu
                 if (process.env.DEV === 'true') {
                     bases.push("http://localhost:3000/?port=" + cfg.port);
                 }
+                if (bases.find(function (base) { return url.startsWith(base + "/dev"); })) {
+                    return [2 /*return*/, true];
+                }
                 base = bases.find(function (base) { return url.startsWith(base); });
                 if (!base)
                     return [2 /*return*/, false];

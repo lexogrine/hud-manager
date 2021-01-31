@@ -37,6 +37,7 @@ var user = __importStar(require("./user"));
 var routes_1 = __importDefault(require("./tournaments/routes"));
 var routes_2 = __importDefault(require("./matches/routes"));
 var routes_3 = __importDefault(require("./players/routes"));
+var match = __importStar(require("./matches"));
 var routes_4 = __importDefault(require("./teams/routes"));
 var http_proxy_middleware_1 = require("http-proxy-middleware");
 exports.customer = {
@@ -75,6 +76,9 @@ function default_1(router, io) {
     router.route('/huds/:dir/thumbnail').get(huds.renderThumbnail);
     router.route('/api/user').post(user.verifyToken);
     electron_1.globalShortcut.register('Alt+Shift+F', function () { return io.emit('refreshHUD'); });
+    electron_1.globalShortcut.register('Alt+R', function () {
+        match.reverseSide(io);
+    });
     /**
      * LEGACY ROUTING
      */
