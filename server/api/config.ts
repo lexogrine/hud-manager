@@ -101,7 +101,7 @@ export const verifyUrl = async (url: string) => {
 	if (process.env.DEV === 'true') {
 		bases.push(`http://localhost:3000/?port=${cfg.port}`);
 	}
-	if(bases.find(base => url.startsWith(`${base}/dev`))){
+	if (bases.find(base => url.startsWith(`${base}/dev`))) {
 		return true;
 	}
 	const base = bases.find(base => url.startsWith(base));
