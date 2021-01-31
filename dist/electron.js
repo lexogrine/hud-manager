@@ -70,12 +70,15 @@ exports.AFXInterop = {
     process: null
 };
 exports.isDev = process.env.DEV === 'true';
-function createRenderer(server, forceDev) {
+function mainProcess(server, forceDev, gui) {
     if (forceDev === void 0) { forceDev = false; }
+    if (gui === void 0) { gui = true; }
     return __awaiter(this, void 0, void 0, function () {
-        var RMTPServer, closeManager, args, renderer;
+        var RMTPServer, renderer, closeManager, args;
         return __generator(this, function (_a) {
+            electron_1.app.on('window-all-closed', electron_1.app.quit);
             RMTPServer = child_process_1.fork(require.resolve('./RMTPServer.js'));
+            renderer = null;
             closeManager = function () {
                 if (server) {
                     server.close();
@@ -88,13 +91,19 @@ function createRenderer(server, forceDev) {
                 }
                 electron_1.app.quit();
             };
+            electron_1.app.on('quit', function () {
+                if (renderer)
+                    renderer.kill();
+                closeManager();
+            });
+            if (!gui)
+                return [2 /*return*/];
             args = ['./', '--renderer'];
             if (forceDev)
                 args.push('--dev');
             renderer = child_process_1.spawn(process.execPath, args, {
                 stdio: forceDev ? ['pipe', 'pipe', 'pipe', 'ipc'] : ['ignore', 'ignore', 'ignore', 'ipc']
             });
-            electron_1.app.on('window-all-closed', function () { });
             electron_1.app.on('second-instance', function () {
                 if (renderer.send) {
                     renderer.send('refocus');
@@ -104,9 +113,6 @@ function createRenderer(server, forceDev) {
                 renderer.stdout.on('data', function (data) { return console.log(data.toString()); });
             renderer.on('exit', closeManager);
             renderer.on('close', closeManager);
-            electron_1.app.on('quit', function () {
-                renderer.kill();
-            });
             return [2 /*return*/];
         });
     });
@@ -127,9 +133,7 @@ function startManager() {
                 case 1:
                     server = _a.sent();
                     argv = args_1["default"](process.argv);
-                    if (!argv.noGUI) {
-                        createRenderer(server, argv.dev);
-                    }
+                    mainProcess(server, argv.dev, !argv.noGUI);
                     return [2 /*return*/];
             }
         });

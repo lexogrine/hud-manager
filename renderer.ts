@@ -1,6 +1,5 @@
-import { app, BrowserWindow, shell, session, ipcMain } from 'electron';
+import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import path from 'path';
-import fs from 'fs';
 import autoUpdater from './autoUpdater';
 import { loadConfig, internalIP } from './server/api/config';
 
@@ -8,19 +7,6 @@ const isDev = process.env.DEV === 'true';
 
 export const createMainWindow = async (forceDev = false) => {
 	let win: BrowserWindow | null;
-
-	const cookieFile = path.join(app.getPath('userData'), 'databases', 'cookie');
-
-	const cookie = fs.readFileSync(cookieFile, 'utf8');
-	try {
-		const cookies = JSON.parse(cookie);
-		if (Array.isArray(cookies)) {
-			for (const cookie of cookies) {
-				cookie.url = 'https://hmapi.lexogrine.com/';
-				await session.defaultSession.cookies.set(cookie);
-			}
-		}
-	} catch (e) {}
 
 	process.on('message', msg => {
 		if (msg === 'refocus' && win) {
@@ -33,10 +19,6 @@ export const createMainWindow = async (forceDev = false) => {
 		app.on('window-all-closed', app.quit);
 
 		app.on('before-quit', async () => {
-			const cookies = await session.defaultSession.cookies.get({ url: 'https://hmapi.lexogrine.com/' });
-
-			fs.writeFileSync(cookieFile, JSON.stringify(cookies), 'utf8');
-
 			if (!win) return;
 
 			win.removeAllListeners('close');

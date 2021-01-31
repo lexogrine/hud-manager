@@ -44,7 +44,7 @@ exports.customer = {
     customer: null
 };
 function default_1(router, io) {
-    router.route('/api/auth').get(user.getCurrent)["delete"](user.logout);
+    router.route('/api/auth').get(user.getCurrent).post(user.loginHandler)["delete"](user.logout);
     router.route('/api/config').get(config.getConfig).patch(config.updateConfig(io));
     router.route('/api/version').get(function (req, res) { return res.json({ version: electron_1.app.getVersion() }); });
     routes_1["default"](router);
@@ -71,10 +71,9 @@ function default_1(router, io) {
     router.route('/hud/:dir/').get(huds.renderOverlay());
     router.route('/development/').get(huds.renderOverlay(true));
     router.use('/dev', huds.verifyOverlay, http_proxy_middleware_1.createProxyMiddleware({ target: 'http://localhost:3500', ws: true, logLevel: 'silent' }));
-    router.route('/api/machine').get(machine.getMachineId);
+    router.route('/api/machine').get(machine.getMachineIdRoute);
     router.use('/huds/:dir/', huds.renderAssets);
     router.route('/huds/:dir/thumbnail').get(huds.renderThumbnail);
-    router.route('/api/user').post(user.verifyToken);
     electron_1.globalShortcut.register('Alt+Shift+F', function () { return io.emit('refreshHUD'); });
     electron_1.globalShortcut.register('Alt+R', function () {
         match.reverseSide(io);
