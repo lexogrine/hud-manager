@@ -13,6 +13,9 @@ If you are in the business of broadcasting professional CS:GO matches, the Lexog
   * [Players](#players)
   * [Matches](#matches)
   * [HUDs](#huds)
+  * [Testing](#testing)
+  * [Player cam feed](#player-cam-feed)
+  * [Custom database fields](#custom-database-fields)
 * [Settings](#settings)
 * [AFX Mode](#built-in-hud---afx-experimental-mode)
 * [HUD API](#hud-api)
@@ -26,7 +29,6 @@ If you are in the business of broadcasting professional CS:GO matches, the Lexog
   * [thumb.png](#thumbpng)
 * [Technicalities](#technicalities)
   * [Build](#build)
-  * [Sockets](#sockets)
 * [REST API](#rest-api)
 * [Credits](#credits)
 
@@ -38,7 +40,9 @@ If you are in the business of broadcasting professional CS:GO matches, the Lexog
 - Killfeed API
 - Boltobserv minimap support
 - Tournament ladder
+- Custom database fields
 - Custom HUD support
+- Player cam feed support (experimental)
 - Keybinding API
   
 ## Installation
@@ -91,9 +95,18 @@ There is available an experimental mode to render HUD, which uses afx_interop. U
 >Note #1 - to use the killfeed you need to run CS:GO through HLAE. If you check the "Use custom killfeed" option you will have to specify the path to HLAE.exe in the Settings section.
 
 
->Note #2 - to use AFX (experimental) mode, beside specifying the path to the newest version of HLAE you are also required to set the path to the afx-cefhud-interop.exe file, which you will find in the [Release.7z and Release-Base.7z archive](https://drive.google.com/drive/folders/1CQFGMYhmz4x9DxunmwhWMp37ow6YOBON). You need to copy the .exe file from Release.7z to files from Release-Base.7z.
+>Note #2 - to use AFX mode, beside specifying the path to the newest version of HLAE you are also required to set the path to the afx-cefhud-interop.exe file, which you will find in the [Release.7z and Release-Base.7z archive](https://drive.google.com/drive/folders/1CQFGMYhmz4x9DxunmwhWMp37ow6YOBON). You need to copy the .exe file from Release.7z to files from Release-Base.7z.
 
 >Note #3 - it's impossible to set a custom loader/settings for HLAE, if you launch HLAE CS:GO through the Lexogrine HUD Manager, so in that case you still need to do it manually with HLAE. If you run CS:GO manually through HLAE and still want to use AFX mode, you need to add `-afxInteropLight` to launch options and once in the game execute `exec hud_interop` in the console.
+
+
+### Testing
+
+To not have too many applications opened at once to develop the HUD, or just to see how the HUD is looking, you can click `RUN TEST DATA` button in HUDs tab. It will start playing ~40s of data from memory to all connected HUDs, simulating basically one round of live match (killfeed won't work in this mode though).
+
+![Testing](assets/examples/testData.png?raw=true)
+
+>Note #1 - if during testing LHM will pick data stream from real match, it will automatically stop
 
 ### Live
 
@@ -113,13 +126,28 @@ Moreover, you don't need to bother your head with copying the config files. You 
 
 In a situation when config installation doesn't succeed or the Lexogrine HUD Manager is unable to locate CS:GO, you can download the GSI config and an archive with all of the required cfg files using two buttons at the bottom of this section.
 
-## Built-in HUD - AFX experimental mode
+
+## Player cam feed
+
+Lexogrine HUD Manager exposes RTMP server on port 8000 (rmtp://localhost/live, stream key HUD_MANAGER). The Manager expects 750x300 stream, which is divided in 10 150x150 squares, each corresponding to the player face camera. The stream is later accessible on /rmtp.html (in example HUD iframe is used to put feed in the avatar place). Full tutorial on how to setup cam feed is accessible here:
+
+[![Lexogrine HUD Manager - Player cam feed](https://img.youtube.com/vi/uOapWMPVtwQ/0.jpg)](https://www.youtube.com/watch?v=uOapWMPVtwQ)
+
+>Note - this feature is in experimental phase. In good condition there is ~1.5-2s delay, for better results it's recommended to use software dedicated to this, ex. vMix.
+
+## Custom database fields
+
+In case usual database structure is not enough, from 1.10 it is possible to expand structure. LHM provides option to add text, match, player, team, color and image field to players and teams database. Values of the specific fields are attached on `extra` object, so if we wanted to add `theme` property with `color` type on the team, in-HUD the value would accessible by `team.extra.color`. If you rely on those custom fields on a day-to-day basis, you can show them next to the other properties as an additional column.
+
+
+## Embedded HUD
 
 At this point there is an option to embedd any HUD in CS:GO using HLAE and afx_interop. It gives the advantage of being able to use CS:GO in fullscreen mode while using the custom HUDs. It must be noted however, that this mode may affect the framerate.
 
-If you want to use this mode, you need to get HLAE, Release.7z and Release-Base.7z archive from here: https://drive.google.com/drive/folders/1CQFGMYhmz4x9DxunmwhWMp37ow6YOBON and set path to the afx-cefhud-interop.exe in the Lexogrine HUD Manager's settings. At this point the setup is completed - you just need to switch to the experimental mode in HUDs tab, toggle which HUD you intend to use and click RUN GAME (if you already have installed the config files of course).
+If you want to use this mode, you need to get HLAE, Release.7z and Release-Base.7z archive from here: https://drive.google.com/drive/folders/1CQFGMYhmz4x9DxunmwhWMp37ow6YOBON and set path to the afx-cefhud-interop.exe in the Lexogrine HUD Manager's settings. At this point the setup is completed - you just need to switch to the embedded mode in HUDs tab, toggle which HUD you intend to use and click RUN GAME (if you already have installed the config files of course).
 
 
+![Custom fields in Teams tab](assets/examples/customField.png?raw=true)
 ## HUD API
 ### Structure
 A HUD **must have** a valid `hud.json` to be considered legitimate. For optional functionalities, there are `panel.json` and `keybinds.json` files.
@@ -267,13 +295,13 @@ Lexogrine HUD Manager uses, among others, Express.js for its REST API and GSI en
 
 Lexogrine HUD Manager exposes the port specified in settings as entry point for WebSockets, and sends `update` event that comes with CSGOParsed object, which definition you can find here: https://www.npmjs.com/package/csgogsi
 
-In the background, Lexogrine HUD Manager also regularly checks if the port 3500 is taken, and if yes - it tries to see if a HUD in dev mode is running there. If it does, it will show it in the HUDs tab and allow to use it locally as any other HUD.
+In the background, Lexogrine HUD Manager also regularly checks if the port 3500 is taken, and if yes - it tries to see if a HUD in dev mode is running on /dev address. If it does, it will show it in the HUDs tab and allow to use it locally as any other HUD.
 
 Local data is stored in a NeDB.js database locally at `%HOME%\hud_manager`. It includes config, teams, players and match data.
 
 For looking up the Steam's and CS:GO's directory the `steam-game-path` package is used.
 
-Lexogrine HUD Manager was written with Windows environment in mind. It probably works on Linux and Mac after compilation, however this isn't supported at the moment.
+Lexogrine HUD Manager was written with Windows & Linux environment in mind. It probably works on Mac after compilation, however this isn't supported at the moment.
 
 ### Build
 
