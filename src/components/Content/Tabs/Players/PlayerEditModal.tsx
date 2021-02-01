@@ -122,7 +122,7 @@ const PlayerEditModal = ({
 		fields.map(field => (
 			<Row key={field._id}>
 				<Col md="12">
-					<FormGroup>{renderInput(field.name, field.type, player.extra[field.name])}</FormGroup>
+					<FormGroup>{renderInput(field.name, field.type, player.extra?.[field.name])}</FormGroup>
 				</Col>
 			</Row>
 		));

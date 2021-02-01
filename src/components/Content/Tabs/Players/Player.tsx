@@ -40,7 +40,7 @@ const PlayerListEntry = ({ player, team, edit, hash, cxt, fields }: Props) => {
 			</div>
 			{fields.map(field => (
 				<div className="custom-field" key={field._id}>
-					<CustomFieldValue cxt={cxt} field={field} value={player.extra[field.name]} />
+					<CustomFieldValue cxt={cxt} field={field} value={player.extra?.[field.name]} />
 				</div>
 			))}
 			<div className="options">

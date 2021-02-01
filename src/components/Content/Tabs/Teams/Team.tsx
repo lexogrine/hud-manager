@@ -34,7 +34,7 @@ const TeamListEntry = ({ team, edit, hash, fields, cxt }: Props) => {
 			</div>
 			{fields.map(field => (
 				<div className="custom-field" key={field._id}>
-					<CustomFieldValue cxt={cxt} field={field} value={team.extra[field.name]} />
+					<CustomFieldValue cxt={cxt} field={field} value={team.extra?.[field.name]} />
 				</div>
 			))}
 			<div className="options">
