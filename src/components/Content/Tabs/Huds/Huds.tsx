@@ -155,33 +155,39 @@ export default class Huds extends React.Component<IProps, IState> {
 				<div className="tab-title-container">HUDs</div>
 				<div className={`tab-content-container no-padding ${!isElectron ? 'full-scroll' : ''}`}>
 					<Row className="config-container">
-						<Col md="12" className="config-entry">
-							<div className="config-description">Use custom radar</div>
-							<Switch
-								isOn={this.state.form.radar}
-								id="radar-toggle"
-								handleToggle={this.changeForm('radar')}
-							/>
-						</Col>
-						<Col md="12" className="config-entry">
-							<div className="config-description">Use custom killfeed</div>
-							<Switch
-								isOn={this.state.form.killfeed}
-								id="killfeed-toggle"
-								handleToggle={this.changeForm('killfeed')}
-							/>
-						</Col>
-						<Col md="12" className="config-entry">
-							<div className="config-description">Use embedded HUD</div>
-							<Switch isOn={this.state.form.afx} id="afx-toggle" handleToggle={this.changeForm('afx')} />
-						</Col>
-						<Col md="12" className="config-entry">
-							<div className="config-description">Auto-execute</div>
-							<Switch
-								isOn={this.state.form.autoexec}
-								id="autoexec-toggle"
-								handleToggle={this.changeForm('autoexec')}
-							/>
+						<Col md="12" className="config-entry wrap">
+							<div className="config-area">
+								<div className="config-description">Custom radar</div>
+								<Switch
+									isOn={this.state.form.radar}
+									id="radar-toggle"
+									handleToggle={this.changeForm('radar')}
+								/>
+							</div>
+							<div className="config-area">
+								<div className="config-description">Custom killfeed</div>
+								<Switch
+									isOn={this.state.form.killfeed}
+									id="killfeed-toggle"
+									handleToggle={this.changeForm('killfeed')}
+								/>
+							</div>
+							<div className="config-area">
+								<div className="config-description">Embedded HUD</div>
+								<Switch
+									isOn={this.state.form.afx}
+									id="afx-toggle"
+									handleToggle={this.changeForm('afx')}
+								/>
+							</div>
+							<div className="config-area">
+								<div className="config-description">Auto-execute</div>
+								<Switch
+									isOn={this.state.form.autoexec}
+									id="autoexec-toggle"
+									handleToggle={this.changeForm('autoexec')}
+								/>
+							</div>
 						</Col>
 						<Col md="12" className="config-entry">
 							<div className="running-game-container">

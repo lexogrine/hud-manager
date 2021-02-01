@@ -23,10 +23,7 @@ var M = __importStar(require("./middlewares"));
 var initRoute = function (router, io) {
     router.route('/api/match').get(M.getMatchesRoute).post(M.addMatchRoute);
     router.route('/api/match/current').get(M.getCurrentMatchRoute);
-    router
-        .route('/api/match/:id')
-        .get(M.getMatchRoute)
-        .patch(M.updateMatchRoute(io))["delete"](M.deleteMatchRoute);
+    router.route('/api/match/:id').get(M.getMatchRoute).patch(M.updateMatchRoute(io))["delete"](M.deleteMatchRoute);
     router.route('/api/maps').get(M.getMaps);
 };
 exports["default"] = initRoute;

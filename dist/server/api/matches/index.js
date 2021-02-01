@@ -167,14 +167,16 @@ exports.deleteMatch = function (id) {
         });
     });
 };
-exports.getCurrent = function () { return new Promise(function (res) {
-    matchesDb.findOne({ current: true }, function (err, match) {
-        if (err || !match) {
-            return res(null);
-        }
-        return res(match);
+exports.getCurrent = function () {
+    return new Promise(function (res) {
+        matchesDb.findOne({ current: true }, function (err, match) {
+            if (err || !match) {
+                return res(null);
+            }
+            return res(match);
+        });
     });
-}); };
+};
 /*
 export const setCurrent = (id: string) =>
     new Promise(res => {

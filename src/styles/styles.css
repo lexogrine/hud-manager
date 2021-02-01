@@ -27,7 +27,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #f4f4f4;
+    color: #fff;
     text-transform: uppercase;
     border-bottom: 1px solid #373a40 !important;
 }
@@ -609,7 +609,7 @@ img.smallLogo {
 }
 .config-entry {
     padding:0;
-    background-color: #2f3238;
+    background-color: #24272d;
     /*min-height: 82px;*/
     padding-top: 29px;
     padding-bottom: 29px;
@@ -627,11 +627,28 @@ img.smallLogo {
     font-weight:600;
 }
 .config-entry:nth-child(2n) {
-    background-color:#202328;
+    background-color:#2f3238;
 }
 .config-entry .config-description {
     text-transform: uppercase;
     font-weight: 600;
+}
+.config-entry.wrap {
+    flex-wrap: wrap;
+}
+.config-entry .config-area {
+    height: 50px;
+    padding: 0 15px;
+    display: flex;
+    background-color: #2f3238;
+    align-items: center;
+    min-width: 215px;
+    flex: 1;
+    justify-content: space-between;
+    margin: 7.5px 10px;
+}
+.config-entry .config-area .config-description {
+    margin-right: 15px;
 }
 .image-view {
     height:94px;
