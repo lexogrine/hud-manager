@@ -3,24 +3,48 @@ import socketio from 'socket.io';
 import { app } from 'electron';
 import path from 'path';
 import fs from 'fs';
-import { getMatches, addMatch, deleteMatch, updateMatch } from './index';
+import * as M from './index';
 
 export const getMatchesRoute: express.RequestHandler = async (req, res) => {
-	const matches = await getMatches();
+	const matches = await M.getMatches();
 	return res.json(matches);
 };
 
+export const getMatchRoute: express.RequestHandler = async (req, res) => {
+	if (!req.params.id) {
+		return res.sendStatus(422);
+	}
+	const match = await M.getMatchById(req.params.id);
+
+	if (!match) {
+		return res.sendStatus(404);
+	}
+
+	return res.json(match);
+};
+
 export const addMatchRoute: RequestHandler = async (req, res) => {
-	const match = await addMatch(req.body);
+	const match = await M.addMatch(req.body);
 	return res.sendStatus(match ? 200 : 500);
 };
+
+export const getCurrentMatchRoute: RequestHandler = async (req, res) => {
+	const match = await M.getCurrent();
+
+	if (!match) {
+		return res.sendStatus(404);
+	}
+
+	return res.json(match);
+}
+
 export const deleteMatchRoute: RequestHandler = async (req, res) => {
-	const match = await deleteMatch(req.params.id);
+	const match = await M.deleteMatch(req.params.id);
 	return res.sendStatus(match ? 200 : 500);
 };
 
 export const updateMatchRoute = (io: socketio.Server): RequestHandler => async (req, res) => {
-	const match = await updateMatch(req.body);
+	const match = await M.updateMatch(req.body);
 	io.emit('match');
 	return res.sendStatus(match ? 200 : 500);
 };

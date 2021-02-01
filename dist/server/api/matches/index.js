@@ -50,7 +50,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
-exports.updateRound = exports.reverseSide = exports.updateMatch = exports.deleteMatch = exports.addMatch = exports.updateMatches = exports.setMatches = exports.getMatchById = exports.getMatches = void 0;
+exports.updateRound = exports.reverseSide = exports.updateMatch = exports.getCurrent = exports.deleteMatch = exports.addMatch = exports.updateMatches = exports.setMatches = exports.getMatchById = exports.getMatches = void 0;
 var sockets_1 = require("./../../sockets");
 var database_1 = __importDefault(require("./../../../init/database"));
 var teams_1 = require("./../teams");
@@ -167,6 +167,14 @@ exports.deleteMatch = function (id) {
         });
     });
 };
+exports.getCurrent = function () { return new Promise(function (res) {
+    matchesDb.findOne({ current: true }, function (err, match) {
+        if (err || !match) {
+            return res(null);
+        }
+        return res(match);
+    });
+}); };
 /*
 export const setCurrent = (id: string) =>
     new Promise(res => {

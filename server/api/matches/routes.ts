@@ -4,9 +4,11 @@ import * as M from './middlewares';
 const initRoute = (router: express.Router, io: SocketIO.Server) => {
 	router.route('/api/match').get(M.getMatchesRoute).post(M.addMatchRoute);
 
+	router.route('/api/match/current').get(M.getCurrentMatchRoute);
+
 	router
 		.route('/api/match/:id')
-		//.get(teams.getTeam)
+		.get(M.getMatchRoute)
 		.patch(M.updateMatchRoute(io))
 		.delete(M.deleteMatchRoute);
 

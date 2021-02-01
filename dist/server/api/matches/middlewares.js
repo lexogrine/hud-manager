@@ -1,4 +1,23 @@
 "use strict";
+var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+}) : (function(o, m, k, k2) {
+    if (k2 === undefined) k2 = k;
+    o[k2] = m[k];
+}));
+var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
+    Object.defineProperty(o, "default", { enumerable: true, value: v });
+}) : function(o, v) {
+    o["default"] = v;
+});
+var __importStar = (this && this.__importStar) || function (mod) {
+    if (mod && mod.__esModule) return mod;
+    var result = {};
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    __setModuleDefault(result, mod);
+    return result;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -39,19 +58,37 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 exports.__esModule = true;
-exports.getMaps = exports.updateMatchRoute = exports.deleteMatchRoute = exports.addMatchRoute = exports.getMatchesRoute = void 0;
+exports.getMaps = exports.updateMatchRoute = exports.deleteMatchRoute = exports.getCurrentMatchRoute = exports.addMatchRoute = exports.getMatchRoute = exports.getMatchesRoute = void 0;
 var electron_1 = require("electron");
 var path_1 = __importDefault(require("path"));
 var fs_1 = __importDefault(require("fs"));
-var index_1 = require("./index");
+var M = __importStar(require("./index"));
 exports.getMatchesRoute = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
     var matches;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, index_1.getMatches()];
+            case 0: return [4 /*yield*/, M.getMatches()];
             case 1:
                 matches = _a.sent();
                 return [2 /*return*/, res.json(matches)];
+        }
+    });
+}); };
+exports.getMatchRoute = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var match;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0:
+                if (!req.params.id) {
+                    return [2 /*return*/, res.sendStatus(422)];
+                }
+                return [4 /*yield*/, M.getMatchById(req.params.id)];
+            case 1:
+                match = _a.sent();
+                if (!match) {
+                    return [2 /*return*/, res.sendStatus(404)];
+                }
+                return [2 /*return*/, res.json(match)];
         }
     });
 }); };
@@ -59,10 +96,24 @@ exports.addMatchRoute = function (req, res) { return __awaiter(void 0, void 0, v
     var match;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, index_1.addMatch(req.body)];
+            case 0: return [4 /*yield*/, M.addMatch(req.body)];
             case 1:
                 match = _a.sent();
                 return [2 /*return*/, res.sendStatus(match ? 200 : 500)];
+        }
+    });
+}); };
+exports.getCurrentMatchRoute = function (req, res) { return __awaiter(void 0, void 0, void 0, function () {
+    var match;
+    return __generator(this, function (_a) {
+        switch (_a.label) {
+            case 0: return [4 /*yield*/, M.getCurrent()];
+            case 1:
+                match = _a.sent();
+                if (!match) {
+                    return [2 /*return*/, res.sendStatus(404)];
+                }
+                return [2 /*return*/, res.json(match)];
         }
     });
 }); };
@@ -70,7 +121,7 @@ exports.deleteMatchRoute = function (req, res) { return __awaiter(void 0, void 0
     var match;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, index_1.deleteMatch(req.params.id)];
+            case 0: return [4 /*yield*/, M.deleteMatch(req.params.id)];
             case 1:
                 match = _a.sent();
                 return [2 /*return*/, res.sendStatus(match ? 200 : 500)];
@@ -81,7 +132,7 @@ exports.updateMatchRoute = function (io) { return function (req, res) { return _
     var match;
     return __generator(this, function (_a) {
         switch (_a.label) {
-            case 0: return [4 /*yield*/, index_1.updateMatch(req.body)];
+            case 0: return [4 /*yield*/, M.updateMatch(req.body)];
             case 1:
                 match = _a.sent();
                 io.emit('match');
