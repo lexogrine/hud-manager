@@ -36,7 +36,7 @@ export const getCurrentMatchRoute: RequestHandler = async (req, res) => {
 	}
 
 	return res.json(match);
-}
+};
 
 export const deleteMatchRoute: RequestHandler = async (req, res) => {
 	const match = await M.deleteMatch(req.params.id);

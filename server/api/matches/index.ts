@@ -104,14 +104,15 @@ export const deleteMatch = (id: string) =>
 		});
 	});
 
-export const getCurrent = () => new Promise<Match>(res => {
-	matchesDb.findOne({ current: true }, (err, match) => {
-		if (err || !match) {
-			return res(null);
-		}
-		return res(match);
+export const getCurrent = () =>
+	new Promise<Match>(res => {
+		matchesDb.findOne({ current: true }, (err, match) => {
+			if (err || !match) {
+				return res(null);
+			}
+			return res(match);
+		});
 	});
-});
 /*
 export const setCurrent = (id: string) =>
 	new Promise(res => {
