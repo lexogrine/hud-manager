@@ -4,76 +4,13 @@ import * as I from './../../../../api/interfaces';
 import { Row, Button, Col } from 'reactstrap';
 //import Match from './Match';
 import MatchEdit from './EditMatch';
+import MatchEntry from './MatchEntry';
 import uuidv4 from 'uuid/v4';
 
 import { IContextData } from '../../../Context';
 
 import goBack from './../../../../styles/goBack.png';
 import { socket } from '../Live/Live';
-
-class MatchRow extends Component<{
-	match: I.Match;
-	teams: I.Team[];
-	cxt: IContextData;
-	edit: Function;
-	setCurrent: Function;
-}> {
-	delete = async () => {
-		await api.match.delete(this.props.match.id);
-		this.props.cxt.reload();
-	};
-	render() {
-		const { match, teams, cxt } = this.props;
-		const left = teams.filter(team => team._id === match.left.id)[0];
-		const right = teams.filter(team => team._id === match.right.id)[0];
-		return (
-			<div className={`match_row ${match.current ? 'live' : ''}`}>
-				<div className="live-indicator">Live</div>
-				<div className="main_data">
-					<div className="left team">
-						<div className="score">
-							{match.left.wins}
-							{left && left.logo ? (
-								<img src={`${left.logo}?hash=${cxt.hash}`} alt={`${left.name} logo`} />
-							) : (
-								''
-							)}
-						</div>
-						<div className="name">{(left && left.name) || 'Team One'}</div>
-					</div>
-					<div className="versus">VS</div>
-					<div className="right team">
-						<div className="score">
-							{match.right.wins}
-							{right && right.logo ? (
-								<img src={`${right.logo}?hash=${cxt.hash}`} alt={`${right.name} logo`} />
-							) : (
-								''
-							)}
-						</div>
-						<div className="name">{(right && right.name) || 'Team Two'}</div>
-					</div>
-				</div>
-				<div className="vetos"></div>
-				<div className="options">
-					<Button className="round-btn " onClick={this.delete}>
-						Delete
-					</Button>
-					<Button
-						className="round-btn lightblue-btn"
-						id={`match_id_${match.id}`}
-						onClick={() => this.props.edit(match)}
-					>
-						Edit
-					</Button>
-					<Button className="purple-btn round-btn" onClick={() => this.props.setCurrent()}>
-						Set as current
-					</Button>
-				</div>
-			</div>
-		);
-	}
-}
 
 export default class Matches extends Component<{ cxt: IContextData }, { match: I.Match | null; maps: string[] }> {
 	constructor(props: { cxt: IContextData }) {
@@ -165,18 +102,23 @@ export default class Matches extends Component<{ cxt: IContextData }, { match: I
 						/>
 					) : (
 						<>
-							<Row className="matches_container">
-								{this.props.cxt.matches.map(match => (
-									<MatchRow
-										key={match.id}
-										edit={this.startEdit}
-										setCurrent={this.setCurrent(match.id)}
-										match={match}
-										teams={this.props.cxt.teams}
-										cxt={this.props.cxt}
-									/>
-								))}
-							</Row>
+							<div className="item-list-entry heading matches">
+								<div className="match-name">Match</div>
+								<div className="map-score">Score</div>
+								<div className="match-date">Date</div>
+								<div className="match-time">Time</div>
+								<div className="options"></div>
+							</div>
+							{this.props.cxt.matches.map(match => (
+								<MatchEntry
+									key={match.id}
+									edit={this.startEdit}
+									setCurrent={this.setCurrent(match.id)}
+									match={match}
+									teams={this.props.cxt.teams}
+									cxt={this.props.cxt}
+								/>
+							))}
 							<Row>
 								<Col className="main-buttons-container">
 									<Button onClick={this.add} color="primary">

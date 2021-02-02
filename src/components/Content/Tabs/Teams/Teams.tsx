@@ -218,7 +218,7 @@ const TeamsTab = ({ cxt }: IProps) => {
 				save={saveFields}
 			/>
 			<div className="tab-content-container no-padding">
-				<div className="player-list-entry heading">
+				<div className="item-list-entry heading">
 					<div className="picture">Logo</div>
 					<div className="name">Name</div>
 					<div className="shortname">Short name</div>

@@ -18,7 +18,7 @@ const TeamListEntry = ({ team, edit, hash, fields, cxt }: Props) => {
 	const country = !team.country ? null : countries[team.country] || null;
 
 	return (
-		<div className="player-list-entry">
+		<div className="item-list-entry">
 			<div className="picture">{team.logo ? <img src={`${team.logo}?hash=${hash}`} /> : null}</div>
 			<div className="name">{team.name}</div>
 			<div className="shortname">{team.shortName}</div>

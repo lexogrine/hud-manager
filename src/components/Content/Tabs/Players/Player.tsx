@@ -18,7 +18,7 @@ interface Props {
 const PlayerListEntry = ({ player, team, edit, hash, cxt, fields }: Props) => {
 	const country = !player.country ? null : countries[player.country] || null;
 	return (
-		<div className="player-list-entry">
+		<div className="item-list-entry">
 			<div className="picture">{player.avatar ? <img src={`${player.avatar}?hash=${hash}`} /> : null}</div>
 			<div className="realName">
 				{player.firstName} {player.lastName}

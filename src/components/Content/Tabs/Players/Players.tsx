@@ -252,7 +252,7 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 				save={saveFields}
 			/>
 			<div className="tab-content-container no-padding">
-				<div className="player-list-entry heading">
+				<div className="item-list-entry heading">
 					<div className="picture">Avatar</div>
 					<div className="realName">Real Name</div>
 					<div className="username">Username</div>

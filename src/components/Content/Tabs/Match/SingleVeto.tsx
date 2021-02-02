@@ -21,7 +21,7 @@ interface State {
 const VetoScore = ({ veto, left, right }: { veto: I.Veto; left: I.Team | null; right: I.Team | null }) => {
 	if (!left || !right || !veto.score) return null;
 	return (
-		<div className="veto-score">
+		<div className="map-score">
 			<div className={`win-icon ${veto.winner === left._id ? 'active' : ''}`}>WINS</div>
 
 			{left.logo ? (
@@ -117,27 +117,19 @@ class SingleVeto extends React.Component<Props, State> {
 			secTeam = vetoTeams[1];
 		}
 		return (
-			<div className={`veto-container ${veto.teamId === '' ? 'empty' : ''} ${veto.teamId ? veto.type : ''}`}>
+			<div className={`entry-container ${veto.teamId === '' ? 'empty' : ''} ${veto.teamId ? veto.type : ''}`}>
 				{vetoTeams.length !== 2 ? (
 					'Pick both teams to set vetos'
 				) : (
 					<>
-						<div className="veto-main">
-							<div className="veto-description">
-								<div
-									className={`veto-title ${
-										isMenuExpanded && team && secTeam && veto.score ? 'hide' : ''
-									}`}
-								>
-									VETO {map + 1}:
-								</div>
-								<div
-									className={`veto-summary ${
-										isMenuExpanded && team && secTeam && veto.score ? 'hide' : ''
-									}`}
-								>
-									{generateDescription(veto, team, secTeam)}
-								</div>
+						<div className="entry-main">
+							<div
+								className={`veto-description force-no-break ${
+									isMenuExpanded && team && secTeam && veto.score ? 'hide' : ''
+								} `}
+							>
+								<div className={`veto-title`}>VETO {map + 1}:</div>
+								<div className={`veto-summary`}>{generateDescription(veto, team, secTeam)}</div>
 							</div>
 							<VetoScore veto={veto} left={team} right={secTeam} />
 							{veto.mapName ? (
@@ -148,8 +140,8 @@ class SingleVeto extends React.Component<Props, State> {
 									{veto.mapName.replace('de_', '')}
 								</div>
 							) : null}
-							<div className={`veto-menu-container ${isMenuExpanded ? 'expanded' : 'collapsed'}`}>
-								<div className={`veto-menu`}>
+							<div className={`side-menu-container ${isMenuExpanded ? 'expanded' : 'collapsed'}`}>
+								<div className={`side-menu`}>
 									<div className="toggler" onClick={this.toggleMenu}></div>
 									<Button onClick={this.resetScore} className="edit-veto purple-btn">
 										Reset score
