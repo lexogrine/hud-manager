@@ -15,7 +15,7 @@ export default class Content extends React.Component<{}, IState> {
 	constructor(props: {}) {
 		super(props);
 		this.state = {
-			activeTab: 'create_match',
+			activeTab: 'huds',
 			data: null,
 			gsi: true,
 			configs: true
