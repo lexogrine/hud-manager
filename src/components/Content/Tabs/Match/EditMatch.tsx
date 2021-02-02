@@ -7,7 +7,7 @@ import { socket } from '../Live/Live';
 
 import { IContextData } from '../../../Context';
 import { Form, Row, Col, FormGroup, Input } from 'reactstrap';
-import SingleVeto from './SingleVeto';
+import VetoEntry from './VetoEntry';
 
 /*class EditTeam extends Component {
     render() {
@@ -161,7 +161,7 @@ export default class MatchEdit extends Component<IProps, I.Match> {
 					</Row>
 					<Row>
 						{this.state.vetos.map((veto, i) => (
-							<SingleVeto
+							<VetoEntry
 								vetoTeams={vetoTeams}
 								key={i}
 								map={i}
