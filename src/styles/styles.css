@@ -352,7 +352,7 @@ img.smallLogo {
     width:325px;
 }
 .match-entry .side-menu {
-    width:355px;
+    width:315px;
 }
 .side-menu .toggler{
     height: 29px;
@@ -466,7 +466,7 @@ img.smallLogo {
 }
 .match-entry {
     padding-left: 22px;
-    padding-right: 22px;
+    padding-right: 66px;
 }
 .match-entry .map-score {
     flex: 1.5;
@@ -677,15 +677,18 @@ img.smallLogo {
     flex: 1;
     flex-direction: column;
 }
+::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+}
 #match_form .row {
     margin-left: 0;
     margin-right: 0;
 }
-#match_form > .row:first-child {
+#match_form > .row:not(:last-child) {
     padding-left:58px;
     padding-right:58px;
 }
-#match_form > .row:first-child > div {
+#match_form > .row:not(:last-child) > div {
     padding-left: 0;
     padding-right:0;
 }
@@ -742,10 +745,15 @@ img.smallLogo {
     background-color: #7ad9f5 !important;
     color: #24272d;
 }
+input, select.form-control {
+    font-size:12px !important;
+    height:44px !important;
+}
+/*
 #teams, select, #team_name, #short_name, #country, #players, #first_name, #nick, #last_name, #steamid, #matchType, #type, #side, input[type="text"], input[type="number"], input[type="email"], input[type="password"], select.form-control {
     font-size:12px;
     height:44px;
-}
+}*/
 .config-container.no-margin{
     margin-left:0;
     margin-right:0;
@@ -1372,7 +1380,26 @@ input:checked ~ .customCheckbox {
 }
 .item-list-entry.matches {
     padding-left: 22px;
-    padding-right: 22px;
+    padding-right: 66px;
+}
+.match-type-menu {
+    display: flex;
+    height: 37px;
+}
+.match-type-menu .match-type-entry {
+    flex:1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #24272d;
+    font-size: 12px;
+    font-weight: 700;
+    background-color: #7ad9f5;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+.match-type-menu .match-type-entry.active {
+    background-color: #bdf2d5;
 }
 .color-picker-container {
     position: relative;

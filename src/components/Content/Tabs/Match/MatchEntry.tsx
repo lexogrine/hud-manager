@@ -4,6 +4,7 @@ import * as I from './../../../../api/interfaces';
 import { Button } from 'reactstrap';
 import { IContextData } from '../../../Context';
 import { hash } from '../../../../hash';
+import moment from 'moment';
 
 interface Props {
 	match: I.Match;
@@ -46,8 +47,8 @@ const MatchEntry = ({ match, teams, cxt, edit, setCurrent }: Props) => {
 						''
 					)}
 				</div>
-				<div className="match-date force-no-break">01.02.2021</div>
-				<div className="match-time force-no-break">14:25</div>
+				<div className="match-date force-no-break">{match.startTime ? moment(match.startTime).format(moment.HTML5_FMT.DATE) : '-'}</div>
+				<div className="match-time force-no-break">{match.startTime ? moment(match.startTime).format("LT") : '-'}</div>
 				<div className={`side-menu-container ${isExpanded ? 'expanded' : 'collapsed'}`}>
 					<div className={`side-menu`}>
 						<div
@@ -67,7 +68,7 @@ const MatchEntry = ({ match, teams, cxt, edit, setCurrent }: Props) => {
 							Edit
 						</Button>
 						<Button className="purple-btn round-btn edit-veto" onClick={() => setCurrent()}>
-							Set as current
+							Set live
 						</Button>
 					</div>
 				</div>

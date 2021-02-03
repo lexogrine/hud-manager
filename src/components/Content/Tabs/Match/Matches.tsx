@@ -11,13 +11,15 @@ import { IContextData } from '../../../Context';
 
 import goBack from './../../../../styles/goBack.png';
 import { socket } from '../Live/Live';
+import moment from 'moment';
 
-export default class Matches extends Component<{ cxt: IContextData }, { match: I.Match | null; maps: string[] }> {
+export default class Matches extends Component<{ cxt: IContextData }, { match: I.Match | null; maps: string[], activeTab: string }> {
 	constructor(props: { cxt: IContextData }) {
 		super(props);
 		this.state = {
 			match: null,
-			maps: []
+			maps: [],
+			activeTab: 'current'
 		};
 	}
 	add = async () => {
@@ -27,7 +29,8 @@ export default class Matches extends Component<{ cxt: IContextData }, { match: I
 			left: { id: null, wins: 0 },
 			right: { id: null, wins: 0 },
 			matchType: 'bo1',
-			vetos: []
+			vetos: [],
+			startTime: 0
 		};
 
 		for (let i = 0; i < 7; i++) {
@@ -50,6 +53,10 @@ export default class Matches extends Component<{ cxt: IContextData }, { match: I
 		//lawait api.match.set(newMatches);
 		this.props.cxt.reload();
 	};
+
+	handleTabToggle = (activeTab: string) => () => {
+		this.setState({ activeTab });
+	}
 
 	startEdit = (match?: I.Match) => {
 		this.setState({ match: match || null });
@@ -79,7 +86,40 @@ export default class Matches extends Component<{ cxt: IContextData }, { match: I
 		});
 	}
 
+	renderTab = (tab: string) => (
+		<div className={`match-type-entry ${tab === this.state.activeTab ? 'active' : ''}`} onClick={() => this.setState({ activeTab: tab })}>{tab}</div>
+	)
+
+	filterMatches = (match: I.Match) => {
+		const boToWinsMap = {
+			1:1,
+			3:2,
+			5:3
+		}
+		const { activeTab } = this.state;
+		const picks = match.vetos.filter(veto => veto.type !== "ban");
+		let isEnded = false;
+		const bo = parseInt(match.matchType.replace("bo","")) as 1 | 2 | 3 | 5;
+
+		if(bo === 2) {
+			isEnded = picks.filter(pick => pick.mapEnd).length === 2 || match.left.wins + match.right.wins >= 2;
+		} else {
+			isEnded = match.left.wins === boToWinsMap[bo] || match.right.wins === boToWinsMap[bo];
+		}
+		if(activeTab === "ended"){
+			return isEnded;
+		}
+		if(isEnded){
+			return false;
+		}
+
+		const isInFuture = match.startTime && moment(match.startTime).isAfter(moment(), "day");
+
+		return isInFuture === (activeTab === "future");
+	}
+
 	render() {
+		const { matches } = this.props.cxt;
 		const { match, maps } = this.state;
 		return (
 			<React.Fragment>
@@ -102,6 +142,11 @@ export default class Matches extends Component<{ cxt: IContextData }, { match: I
 						/>
 					) : (
 						<>
+							<div className="match-type-menu">
+								{ this.renderTab('ended') }
+								{ this.renderTab('current') }
+								{ this.renderTab('future') }
+							</div>
 							<div className="item-list-entry heading matches">
 								<div className="match-name">Match</div>
 								<div className="map-score">Score</div>
@@ -109,7 +154,7 @@ export default class Matches extends Component<{ cxt: IContextData }, { match: I
 								<div className="match-time">Time</div>
 								<div className="options"></div>
 							</div>
-							{this.props.cxt.matches.map(match => (
+							{matches.filter(this.filterMatches).map(match => (
 								<MatchEntry
 									key={match.id}
 									edit={this.startEdit}

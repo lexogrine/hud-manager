@@ -62,19 +62,19 @@ export interface Veto {
 
 export type BOTypes = 'bo1' | 'bo2' | 'bo3' | 'bo5';
 
+export interface MatchTeam {
+	id: string | null;
+	wins: number;
+}
+
 export interface Match {
 	id: string;
 	current: boolean;
-	left: {
-		id: string | null;
-		wins: number;
-	};
-	right: {
-		id: string | null;
-		wins: number;
-	};
+	left: MatchTeam;
+	right: MatchTeam;
 	matchType: BOTypes;
 	vetos: Veto[];
+	startTime: number;
 }
 
 export interface TournamentMatchup {

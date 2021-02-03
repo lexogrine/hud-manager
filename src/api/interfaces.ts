@@ -7,6 +7,7 @@ export type {
 	PanelTemplate,
 	HUD,
 	Match,
+	MatchTeam,
 	Veto,
 	VetoType,
 	Tournament,

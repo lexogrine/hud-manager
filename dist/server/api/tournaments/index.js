@@ -133,7 +133,8 @@ exports.fillNextMatch = (matchId, type) => new Promise(res => {
                 left: { id: type === 'winner' ? winnerId : loserId, wins: 0 },
                 right: { id: null, wins: 0 },
                 matchType: 'bo1',
-                vetos: []
+                vetos: [],
+                startTime: 0
             };
             for (let i = 0; i < 7; i++) {
                 newMatch.vetos.push({
