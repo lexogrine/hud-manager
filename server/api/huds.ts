@@ -54,7 +54,7 @@ export const getHUDData = async (dirName: string): Promise<I.HUD | null> => {
 	const dir = path.join(app.getPath('home'), 'HUDs', dirName);
 	const configFileDir = path.join(dir, 'hud.json');
 	const globalConfig = await loadConfig();
-	if(!globalConfig) return null;
+	if (!globalConfig) return null;
 	if (!fs.existsSync(configFileDir)) {
 		if (!HUDState.devHUD) return null;
 		if (HUDState.devHUD.dir === dirName) {
@@ -136,7 +136,7 @@ export const renderHUD: express.RequestHandler = async (req, res, next) => {
 		return res.sendStatus(404);
 	}
 
-	if(!req.headers?.referer){
+	if (!req.headers?.referer) {
 		return res.sendStatus(403);
 	}
 

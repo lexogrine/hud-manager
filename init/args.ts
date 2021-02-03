@@ -7,6 +7,5 @@ interface Args {
 
 export default function (argv: any): Args {
 	const args = yargs(argv).boolean('noGUI').boolean('dev').argv;
-	console.log("SHIOOET")
 	return args;
 }

@@ -19,7 +19,7 @@ publicIp
 	})
 	.catch();
 
-const defaultConfig: Config = { steamApiKey: '', token: '', port: 1349, hlaePath: '', afxCEFHudInteropPath: '' }
+const defaultConfig: Config = { steamApiKey: '', token: '', port: 1349, hlaePath: '', afxCEFHudInteropPath: '' };
 
 export const loadConfig = async (): Promise<Config> => {
 	return new Promise(res => {
@@ -44,15 +44,12 @@ export const loadConfig = async (): Promise<Config> => {
 
 				return res(await setConfig(config[0]));
 			}
-			configs.insert(
-				defaultConfig,
-				(err, config) => {
-					if (err) {
-						return res(defaultConfig);
-					}
-					return res(config);
+			configs.insert(defaultConfig, (err, config) => {
+				if (err) {
+					return res(defaultConfig);
 				}
-			);
+				return res(config);
+			});
 		});
 	});
 };
@@ -99,7 +96,7 @@ export const setConfig = async (config: Config) =>
 export const verifyUrl = async (url: string) => {
 	if (!url || typeof url !== 'string') return false;
 	const cfg = await loadConfig();
-	if(!cfg){
+	if (!cfg) {
 		return false;
 	}
 	const bases = [`http://${internalIP}:${cfg.port}`, `http://${publicIP}:${cfg.port}`];

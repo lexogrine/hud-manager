@@ -227,7 +227,7 @@ export default function (server: http.Server, app: express.Router) {
 						.replace(/[^a-z]+/g, '')
 						.substr(0, 15);
 					const cfg = await loadConfig();
-					if(!cfg){
+					if (!cfg) {
 						return;
 					}
 					hud.url = `http://${internalIP}:${cfg.port}/development/`;
