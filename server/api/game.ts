@@ -5,7 +5,7 @@ import express from 'express';
 import { loadConfig } from './config';
 import { GSI } from '../sockets';
 import { spawn } from 'child_process';
-import { Config, CFG } from '../../types/interfaces';
+import { CFG } from '../../types/interfaces';
 import { AFXInterop } from '../../electron';
 
 function createCFG(customRadar: boolean, customKillfeed: boolean, afx: boolean, autoexec = true): CFG {
@@ -59,15 +59,12 @@ function isCorrect(cfg: CFG) {
 }
 
 export const checkCFGs: express.RequestHandler = async (req, res) => {
-	let config: Config;
-	let GamePath;
-	try {
-		config = await loadConfig();
-		GamePath = getGamePath(730);
-	} catch {
-		return res.json({ success: false, message: "Game path couldn't be found", accessible: false });
-	}
-	if (!config || !GamePath || !GamePath.game || !GamePath.game.path) {
+	const config = await loadConfig();
+	const SteamGamePath = getGamePath(730);
+
+	const gamePath = SteamGamePath?.game?.path;
+
+	if (!config || !gamePath) {
 		return res.json({ success: false, message: "Game path couldn't be found", accessible: false });
 	}
 
@@ -87,7 +84,7 @@ export const checkCFGs: express.RequestHandler = async (req, res) => {
 	});
 	const files = cfgs.map(cfg => cfg.file);
 
-	if (!files.map(file => path.join(GamePath.game.path, 'csgo', 'cfg', file)).every(exists)) {
+	if (!files.map(file => path.join(gamePath, 'csgo', 'cfg', file)).every(exists)) {
 		return res.json({ success: false, message: 'Files are missing', accessible: true });
 	}
 	if (!cfgs.every(isCorrect)) {

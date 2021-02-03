@@ -35,8 +35,8 @@ class DevHUDListener {
 		this.callback = callback;
 	}
 	checkPort = () => {
-		portscanner.checkPortStatus(this.port, '127.0.0.1', (err, status) => {
-			status = status === 'open';
+		portscanner.checkPortStatus(this.port, '127.0.0.1', (err, portStatus) => {
+			const status = portStatus === 'open';
 			if (status !== this.status) {
 				this.callback(status);
 			}
@@ -66,7 +66,7 @@ class HUDStateManager {
 		if (!fs.existsSync(hudPath)) return;
 		fs.writeFileSync(path.join(hudPath, 'config.hm'), JSON.stringify(data));
 	}
-	set(hud: string, section: string, data) {
+	set(hud: string, section: string, data: any) {
 		const form = this.get(hud);
 		const newForm = { ...form, [section]: data };
 		this.save(hud, newForm);
@@ -89,7 +89,7 @@ class HUDStateManager {
 
 	static extend = async (hudData: any) => {
 		if (!hudData || typeof hudData !== 'object') return hudData;
-		for (const data of Object.values(hudData)) {
+		for (const data of Object.values(hudData) as any[]) {
 			if (!data || typeof data !== 'object') return hudData;
 			const entries: any[] = Object.values(data);
 			for (const entry of entries) {
@@ -149,19 +149,19 @@ const assertUser: express.RequestHandler = (req, res, next) => {
 };
 
 export default function (server: http.Server, app: express.Router) {
-	const getJSONArray: <T>(url: string) => Promise<T> = url => {
+	const getJSONArray: <T>(url: string) => Promise<T[]> = url => {
 		return fetch(url)
 			.then(res => res.json())
 			.then(panel => {
 				try {
-					if (!panel) return null;
-					if (!Array.isArray(panel)) return null;
+					if (!panel) return [];
+					if (!Array.isArray(panel)) return [];
 					return panel;
 				} catch {
-					return null;
+					return [];
 				}
 			})
-			.catch(() => null);
+			.catch(() => []);
 	};
 
 	const runtimeConfig: RuntimeConfig = {
@@ -227,6 +227,9 @@ export default function (server: http.Server, app: express.Router) {
 						.replace(/[^a-z]+/g, '')
 						.substr(0, 15);
 					const cfg = await loadConfig();
+					if (!cfg) {
+						return;
+					}
 					hud.url = `http://${internalIP}:${cfg.port}/development/`;
 					HUDState.devHUD = hud;
 					if (runtimeConfig.devSocket) {
@@ -398,7 +401,7 @@ export default function (server: http.Server, app: express.Router) {
 		});
 	});
 
-	mirv(data => {
+	mirv((data: any) => {
 		io.to('csgo').emit('update_mirv', data);
 	});
 
@@ -484,29 +487,27 @@ export default function (server: http.Server, app: express.Router) {
 
 	GSI.on('data', async data => {
 		await updateRound(data);
-		let round: Score;
 		if (
 			(last?.map.team_ct.score !== data.map.team_ct.score) !==
 			(last?.map.team_t.score !== data.map.team_t.score)
 		) {
 			if (last?.map.team_ct.score !== data.map.team_ct.score) {
-				round = {
+				const round = {
 					winner: data.map.team_ct,
 					loser: data.map.team_t,
 					map: data.map,
 					mapEnd: false
 				};
+				await onRoundEnd(round);
 			} else {
-				round = {
+				const round = {
 					winner: data.map.team_t,
 					loser: data.map.team_ct,
 					map: data.map,
 					mapEnd: false
 				};
+				await onRoundEnd(round);
 			}
-		}
-		if (round) {
-			await onRoundEnd(round);
 		}
 		if (data.map.phase === 'gameover' && last.map.phase !== 'gameover') {
 			const winner = data.map.team_ct.score > data.map.team_t.score ? data.map.team_ct : data.map.team_t;
@@ -521,7 +522,7 @@ export default function (server: http.Server, app: express.Router) {
 
 			await onMatchEnd(final);
 		}
-		last = GSI.last;
+		last = GSI.last as CSGO;
 		const now = new Date().getTime();
 		if (now - lastUpdate > 300000 && customer.customer) {
 			lastUpdate = new Date().getTime();

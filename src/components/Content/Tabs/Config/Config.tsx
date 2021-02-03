@@ -15,7 +15,7 @@ interface ConfigStatus extends I.CFGGSIResponse {
 }
 
 interface ExtendedFile extends File {
-	path?: string;
+	path: string;
 }
 
 interface IProps {

@@ -18,12 +18,12 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-exports.__esModule = true;
-var M = __importStar(require("./middlewares"));
-var initRoute = function (router, io) {
+Object.defineProperty(exports, "__esModule", { value: true });
+const M = __importStar(require("./middlewares"));
+const initRoute = (router, io) => {
     router.route('/api/match').get(M.getMatchesRoute).post(M.addMatchRoute);
     router.route('/api/match/current').get(M.getCurrentMatchRoute);
-    router.route('/api/match/:id').get(M.getMatchRoute).patch(M.updateMatchRoute(io))["delete"](M.deleteMatchRoute);
+    router.route('/api/match/:id').get(M.getMatchRoute).patch(M.updateMatchRoute(io)).delete(M.deleteMatchRoute);
     router.route('/api/maps').get(M.getMaps);
 };
-exports["default"] = initRoute;
+exports.default = initRoute;

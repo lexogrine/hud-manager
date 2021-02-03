@@ -18,13 +18,13 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-exports.__esModule = true;
-var P = __importStar(require("./middlewares"));
-var initRoute = function (router) {
+Object.defineProperty(exports, "__esModule", { value: true });
+const P = __importStar(require("./middlewares"));
+const initRoute = (router) => {
     router.route('/api/players').get(P.getPlayers).post(P.addPlayer);
     router.route('/api/players/fields').get(P.getFields).patch(P.updateFields);
-    router.route('/api/players/:id').get(P.getPlayers).patch(P.updatePlayer)["delete"](P.deletePlayer);
+    router.route('/api/players/:id').get(P.getPlayers).patch(P.updatePlayer).delete(P.deletePlayer);
     router.route('/api/players/avatar/:id').get(P.getAvatarFile);
     router.route('/api/players/avatar/steamid/:steamid').get(P.getAvatarURLBySteamID);
 };
-exports["default"] = initRoute;
+exports.default = initRoute;

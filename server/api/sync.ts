@@ -36,7 +36,7 @@ async function importTeams(teams: I.Team[]) {
 
 export async function exportDatabase() {
 	const pl = new Promise<I.Player[]>(res => {
-		playersDb.find({}, (err, players) => {
+		playersDb.find({}, (err: any, players: I.Player[]) => {
 			if (err) {
 				return res([]);
 			}
@@ -44,7 +44,7 @@ export async function exportDatabase() {
 		});
 	});
 	const tm = new Promise<I.Team[]>(res => {
-		teamsDb.find({}, (err, teams) => {
+		teamsDb.find({}, (err: any, teams: I.Team[]) => {
 			if (err) {
 				return res([]);
 			}

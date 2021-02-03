@@ -7,8 +7,9 @@ import socketio from 'socket.io';
 import { loadConfig, publicIP, internalIP } from './config';
 import { HUDState } from './../sockets';
 import HUDWindow from './../../init/huds';
-import DecompressZip from 'decompress-zip';
 import overlay from './overlay';
+
+const DecompressZip = require('decompress-zip');
 
 const remove = (pathToRemove: string) => {
 	if (!fs.existsSync(pathToRemove)) {
@@ -49,10 +50,11 @@ export const getHUDs: express.RequestHandler = async (req, res) => {
 	return res.json(await listHUDs());
 };
 
-export const getHUDData = async (dirName: string): Promise<I.HUD> => {
+export const getHUDData = async (dirName: string): Promise<I.HUD | null> => {
 	const dir = path.join(app.getPath('home'), 'HUDs', dirName);
 	const configFileDir = path.join(dir, 'hud.json');
 	const globalConfig = await loadConfig();
+	if (!globalConfig) return null;
 	if (!fs.existsSync(configFileDir)) {
 		if (!HUDState.devHUD) return null;
 		if (HUDState.devHUD.dir === dirName) {
@@ -121,14 +123,21 @@ export const openHUDsDirectory: express.RequestHandler = async (_req, res) => {
 	return res.sendStatus(200);
 };
 
-export const renderHUD: express.RequestHandler = async (req, res) => {
+export const renderHUD: express.RequestHandler = async (req, res, next) => {
 	const cfg = await loadConfig();
+	if (!cfg) {
+		return res.sendStatus(500);
+	}
 	const availableUrls = [
 		`http://${internalIP}:${cfg.port}/hud/${req.params.dir}/`,
 		`http://${publicIP}:${cfg.port}/hud/${req.params.dir}/`
 	];
 	if (!req.params.dir) {
 		return res.sendStatus(404);
+	}
+
+	if (!req.headers?.referer) {
+		return res.sendStatus(403);
 	}
 
 	if (!availableUrls.includes(req.headers.referer)) {
@@ -142,13 +151,16 @@ export const renderHUD: express.RequestHandler = async (req, res) => {
 		return res.sendStatus(404);
 	}
 	if (data.legacy) {
-		return renderLegacy(req, res, null);
+		return renderLegacy(req, res, next);
 	}
-	return render(req, res, null);
+	return render(req, res, next);
 };
 
 export const verifyOverlay: express.RequestHandler = async (req, res, next) => {
 	const cfg = await loadConfig();
+	if (!cfg) {
+		return res.sendStatus(500);
+	}
 	const availableUrls = [`http://${internalIP}:${cfg.port}/dev`, `http://${publicIP}:${cfg.port}/dev`];
 	if (availableUrls.every(url => !(req.headers.referer || '').startsWith(url))) {
 		return res.status(403).json({
@@ -167,6 +179,9 @@ export const render: express.RequestHandler = (req, res) => {
 
 export const renderOverlay = (devHUD = false): express.RequestHandler => async (req, res) => {
 	const cfg = await loadConfig();
+	if (!cfg) {
+		return res.sendStatus(500);
+	}
 	if (!devHUD) {
 		return res.send(overlay(`/huds/${req.params.dir}/?port=${cfg.port}&isProd=true`));
 	}
@@ -198,6 +213,9 @@ export const renderAssets: express.RequestHandler = async (req, res, next) => {
 
 export const renderLegacy: express.RequestHandler = async (req, res) => {
 	const cfg = await loadConfig();
+	if (!cfg) {
+		return res.sendStatus(500);
+	}
 	const dir = path.join(app.getPath('home'), 'HUDs', req.params.dir);
 	return res.render(path.join(dir, 'template.pug'), {
 		ip: 'localhost',
@@ -236,7 +254,7 @@ export const legacyCSS: express.RequestHandler = (req, res) => {
 	}
 };
 
-export const showHUD = (io: socketio.Server) => async (req, res) => {
+export const showHUD = (io: socketio.Server): express.RequestHandler => async (req, res) => {
 	const response = await HUDWindow.open(req.params.hudDir, io);
 	if (response) {
 		return res.sendStatus(200);

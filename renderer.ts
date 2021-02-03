@@ -45,21 +45,21 @@ export const createMainWindow = async (forceDev = false) => {
 	});
 
 	ipcMain.on('min', () => {
-		win.minimize();
+		win?.minimize();
 	});
 
 	ipcMain.on('max', () => {
-		if (win.isMaximized()) {
-			win.restore();
+		if (win?.isMaximized()) {
+			win?.restore();
 		} else {
-			win.maximize();
+			win?.maximize();
 		}
 	});
 
 	autoUpdater(win);
 
 	ipcMain.on('close', () => {
-		win.close();
+		win?.close();
 	});
 
 	win.once('ready-to-show', () => {

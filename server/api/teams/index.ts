@@ -17,7 +17,7 @@ export async function getTeamById(id: string, logo = false): Promise<Team | null
 
 export const getTeamsList = (query: any) =>
 	new Promise<Team[]>(res => {
-		teams.find(query, (err, teams) => {
+		teams.find(query, (err: Error, teams: Team[]) => {
 			if (err) {
 				return res([]);
 			}

@@ -10,7 +10,7 @@ const matchesDb = db.matches;
 
 export const getMatches = (): Promise<Match[]> => {
 	return new Promise(res => {
-		matchesDb.find({}, (err, matches) => {
+		matchesDb.find({}, (err: Error, matches: Match[]) => {
 			if (err) {
 				return res([]);
 			}
@@ -52,8 +52,8 @@ export const updateMatches = async (updateMatches: Match[]) => {
 		updateMatches = updateMatches.map(match => ({ ...match, current: false }));
 	}
 	if (currents.length) {
-		const left = await getTeamById(currents[0].left.id);
-		const right = await getTeamById(currents[0].right.id);
+		const left = await getTeamById(currents[0].left.id || '');
+		const right = await getTeamById(currents[0].right.id || '');
 
 		if (left && left._id) {
 			GSI.setTeamOne({
@@ -105,7 +105,7 @@ export const deleteMatch = (id: string) =>
 	});
 
 export const getCurrent = () =>
-	new Promise<Match>(res => {
+	new Promise<Match | null>(res => {
 		matchesDb.findOne({ current: true }, (err, match) => {
 			if (err || !match) {
 				return res(null);
@@ -139,8 +139,8 @@ export const updateMatch = (match: Match) =>
 				{ $set: { current: false } },
 				{ multi: true },
 				async err => {
-					const left = await getTeamById(match.left.id);
-					const right = await getTeamById(match.right.id);
+					const left = await getTeamById(match.left.id || '');
+					const right = await getTeamById(match.right.id || '');
 
 					if (left && left._id) {
 						GSI.setTeamOne({
@@ -179,7 +179,7 @@ export const reverseSide = async (io: socketio.Server) => {
 		await updateMatch(current);
 		return io.emit('match', true);
 	}
-	const currentVetoMap = current.vetos.find(veto => GSI.last.map.name.includes(veto.mapName));
+	const currentVetoMap = current.vetos.find(veto => GSI.last?.map.name.includes(veto.mapName));
 	if (!currentVetoMap) return;
 	currentVetoMap.reverseSide = !currentVetoMap.reverseSide;
 	await updateMatch(current);
@@ -215,7 +215,7 @@ export const updateRound = async (game: CSGO) => {
 		round,
 		players: {},
 		winner: null,
-		win_type: null
+		win_type: 'bomb'
 	};
 
 	if (game.round && game.round.win_team && game.map.round_wins && game.map.round_wins[round]) {
