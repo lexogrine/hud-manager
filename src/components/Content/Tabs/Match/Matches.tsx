@@ -13,7 +13,10 @@ import goBack from './../../../../styles/goBack.png';
 import { socket } from '../Live/Live';
 import moment from 'moment';
 
-export default class Matches extends Component<{ cxt: IContextData }, { match: I.Match | null; maps: string[], activeTab: string }> {
+export default class Matches extends Component<
+	{ cxt: IContextData },
+	{ match: I.Match | null; maps: string[]; activeTab: string }
+> {
 	constructor(props: { cxt: IContextData }) {
 		super(props);
 		this.state = {
@@ -56,7 +59,7 @@ export default class Matches extends Component<{ cxt: IContextData }, { match: I
 
 	handleTabToggle = (activeTab: string) => () => {
 		this.setState({ activeTab });
-	}
+	};
 
 	startEdit = (match?: I.Match) => {
 		this.setState({ match: match || null });
@@ -87,36 +90,41 @@ export default class Matches extends Component<{ cxt: IContextData }, { match: I
 	}
 
 	renderTab = (tab: string) => (
-		<div className={`match-type-entry ${tab === this.state.activeTab ? 'active' : ''}`} onClick={() => this.setState({ activeTab: tab })}>{tab}</div>
-	)
+		<div
+			className={`match-type-entry ${tab === this.state.activeTab ? 'active' : ''}`}
+			onClick={() => this.setState({ activeTab: tab })}
+		>
+			{tab}
+		</div>
+	);
 
 	filterMatches = (match: I.Match) => {
 		const boToWinsMap = {
-			1:1,
-			3:2,
-			5:3
-		}
+			1: 1,
+			3: 2,
+			5: 3
+		};
 		const { activeTab } = this.state;
-		const picks = match.vetos.filter(veto => veto.type !== "ban");
+		const picks = match.vetos.filter(veto => veto.type !== 'ban');
 		let isEnded = false;
-		const bo = parseInt(match.matchType.replace("bo","")) as 1 | 2 | 3 | 5;
+		const bo = parseInt(match.matchType.replace('bo', '')) as 1 | 2 | 3 | 5;
 
-		if(bo === 2) {
+		if (bo === 2) {
 			isEnded = picks.filter(pick => pick.mapEnd).length === 2 || match.left.wins + match.right.wins >= 2;
 		} else {
 			isEnded = match.left.wins === boToWinsMap[bo] || match.right.wins === boToWinsMap[bo];
 		}
-		if(activeTab === "ended"){
+		if (activeTab === 'ended') {
 			return isEnded;
 		}
-		if(isEnded){
+		if (isEnded) {
 			return false;
 		}
 
-		const isInFuture = match.startTime && moment(match.startTime).isAfter(moment(), "day");
+		const isInFuture = match.startTime && moment(match.startTime).isAfter(moment(), 'day');
 
-		return isInFuture === (activeTab === "future");
-	}
+		return isInFuture === (activeTab === 'future');
+	};
 
 	render() {
 		const { matches } = this.props.cxt;
@@ -143,9 +151,9 @@ export default class Matches extends Component<{ cxt: IContextData }, { match: I
 					) : (
 						<>
 							<div className="match-type-menu">
-								{ this.renderTab('ended') }
-								{ this.renderTab('current') }
-								{ this.renderTab('future') }
+								{this.renderTab('ended')}
+								{this.renderTab('current')}
+								{this.renderTab('future')}
 							</div>
 							<div className="item-list-entry heading matches">
 								<div className="match-name">Match</div>

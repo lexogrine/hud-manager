@@ -47,8 +47,12 @@ const MatchEntry = ({ match, teams, cxt, edit, setCurrent }: Props) => {
 						''
 					)}
 				</div>
-				<div className="match-date force-no-break">{match.startTime ? moment(match.startTime).format(moment.HTML5_FMT.DATE) : '-'}</div>
-				<div className="match-time force-no-break">{match.startTime ? moment(match.startTime).format("LT") : '-'}</div>
+				<div className="match-date force-no-break">
+					{match.startTime ? moment(match.startTime).format(moment.HTML5_FMT.DATE) : '-'}
+				</div>
+				<div className="match-time force-no-break">
+					{match.startTime ? moment(match.startTime).format('LT') : '-'}
+				</div>
 				<div className={`side-menu-container ${isExpanded ? 'expanded' : 'collapsed'}`}>
 					<div className={`side-menu`}>
 						<div

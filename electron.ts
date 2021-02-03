@@ -32,17 +32,16 @@ async function mainProcess(server: Server, forceDev = false, gui = true) {
 		}
 		app.quit();
 	};
-	
+
 	app.on('window-all-closed', () => {});
 
-	if(!gui) return;
+	if (!gui) return;
 
 	const args = ['./', '--renderer'];
 	if (forceDev) args.push('--dev');
 	const renderer = spawn(process.execPath, args, {
 		stdio: forceDev ? ['pipe', 'pipe', 'pipe', 'ipc'] : ['ignore', 'ignore', 'ignore', 'ipc']
 	});
-
 
 	app.on('second-instance', () => {
 		if (renderer.send) {

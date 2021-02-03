@@ -10,7 +10,6 @@ import { Form, Row, Col, FormGroup, Input } from 'reactstrap';
 import moment from 'moment';
 import VetoEntry from './VetoEntry';
 
-
 const EditTeam = () => {
 	return (
 		<div className="edit-team-button">
@@ -23,34 +22,24 @@ interface TeamScoreProps {
 	cxt: IContextData;
 	team: I.Team | null;
 	teamState: I.MatchTeam;
-	side: "left" | "right";
+	side: 'left' | 'right';
 	onSave: any;
 }
 
-const TeamScore = ({ cxt, team, onSave, teamState, side}: TeamScoreProps) => {
+const TeamScore = ({ cxt, team, onSave, teamState, side }: TeamScoreProps) => {
 	return (
 		<div className={`${side} team`}>
 			<div className="score">
 				{teamState.wins}
-				{team && team.logo ? (
-					<img src={`${team.logo}?hash=${cxt.hash}`} alt={`${team.name} logo`} />
-				) : (
-						''
-					)}
+				{team && team.logo ? <img src={`${team.logo}?hash=${cxt.hash}`} alt={`${team.name} logo`} /> : ''}
 			</div>
 			<div className="name">
 				{(team && team.name) || 'Team One'}
-				<TeamModal
-					side={side}
-					button={EditTeam()}
-					teams={cxt.teams}
-					team={teamState}
-					onSave={onSave}
-				/>
+				<TeamModal side={side} button={EditTeam()} teams={cxt.teams} team={teamState} onSave={onSave} />
 			</div>
 		</div>
-	)
-}
+	);
+};
 
 interface IProps {
 	cxt: IContextData;
@@ -81,7 +70,7 @@ const EditMatch = ({ cxt, match, teams, edit, maps }: IProps) => {
 			veto.side = 'NO';
 		}
 		vetos[map] = veto;
-		setMatchState({ ...matchState, vetos })
+		setMatchState({ ...matchState, vetos });
 		save();
 	};
 	const changeMatchType = (event: any) => {
@@ -96,9 +85,8 @@ const EditMatch = ({ cxt, match, teams, edit, maps }: IProps) => {
 		const val = ev.target.value;
 		setMatchState({ ...matchState, startTime: moment(val).valueOf() });
 		save();
-	}
+	};
 	const getData = (side: 'right' | 'left', id: string, wins: number) => {
-
 		setMatchState(prevMatchState => {
 			prevMatchState[side].id = id;
 			prevMatchState[side].wins = wins || 0;
@@ -114,9 +102,9 @@ const EditMatch = ({ cxt, match, teams, edit, maps }: IProps) => {
 				const matches = await api.match.get();
 				const current = matches.find(match => match.id === matchState.id);
 				if (!current) return;
-				setMatchState({ ...current })
+				setMatchState({ ...current });
 			});
-		}
+		};
 		initiateSocket();
 	}, []);
 
@@ -131,21 +119,9 @@ const EditMatch = ({ cxt, match, teams, edit, maps }: IProps) => {
 			<div className={`match_row editing ${match.current ? 'live' : ''}`}>
 				<div className="live-indicator">Live</div>
 				<div className="main_data">
-					<TeamScore
-						cxt={cxt}
-						side="left"
-						team={left}
-						teamState={matchState.left}
-						onSave={getData}
-					/>
+					<TeamScore cxt={cxt} side="left" team={left} teamState={matchState.left} onSave={getData} />
 					<div className="versus">VS</div>
-					<TeamScore
-						cxt={cxt}
-						side="right"
-						team={right}
-						teamState={matchState.right}
-						onSave={getData}
-					/>
+					<TeamScore cxt={cxt} side="right" team={right} teamState={matchState.right} onSave={getData} />
 				</div>
 				<div className="vetos"></div>
 			</div>
@@ -171,7 +147,15 @@ const EditMatch = ({ cxt, match, teams, edit, maps }: IProps) => {
 				<Row>
 					<Col md="12">
 						<FormGroup>
-							<Input type="datetime-local" value={matchState.startTime ? moment(matchState.startTime).format(moment.HTML5_FMT.DATETIME_LOCAL) : ''} onChange={changeStartTime} />
+							<Input
+								type="datetime-local"
+								value={
+									matchState.startTime
+										? moment(matchState.startTime).format(moment.HTML5_FMT.DATETIME_LOCAL)
+										: ''
+								}
+								onChange={changeStartTime}
+							/>
 						</FormGroup>
 					</Col>
 				</Row>
@@ -191,5 +175,5 @@ const EditMatch = ({ cxt, match, teams, edit, maps }: IProps) => {
 			</Form>
 		</>
 	);
-}
+};
 export default EditMatch;
