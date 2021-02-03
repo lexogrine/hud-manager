@@ -49,6 +49,7 @@ export default class Matches extends Component<
 		await api.match.add(newMatch);
 		//await api.match.set(matches);
 		this.props.cxt.reload();
+		this.setState({activeTab:'current'})
 	};
 
 	edit = async (id: string, match: I.Match) => {
@@ -101,6 +102,7 @@ export default class Matches extends Component<
 	filterMatches = (match: I.Match) => {
 		const boToWinsMap = {
 			1: 1,
+			2: 2,
 			3: 2,
 			5: 3
 		};
@@ -121,7 +123,7 @@ export default class Matches extends Component<
 			return false;
 		}
 
-		const isInFuture = match.startTime && moment(match.startTime).isAfter(moment(), 'day');
+		const isInFuture = Boolean(match.startTime && moment(match.startTime).isAfter(moment(), 'day'));
 
 		return isInFuture === (activeTab === 'future');
 	};
