@@ -1,4 +1,4 @@
-import NodeMediaServer from 'node-media-server';
+const NodeMediaServer = require('node-media-server');
 
 const nmsConfig = {
 	logType: 0,
@@ -17,3 +17,5 @@ const nmsConfig = {
 
 const nms = new NodeMediaServer(nmsConfig);
 nms.run();
+
+export {};

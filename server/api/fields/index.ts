@@ -42,7 +42,7 @@ export const updateFields = async (fields: CustomFieldEntry[], type: keyof Custo
 			const updateQuery = {
 				$unset: {},
 				$set: {}
-			};
+			} as any;
 			for (const deletedField of deletedFields) {
 				updateQuery.$unset[`extra.${deletedField.name}`] = true;
 			}

@@ -28,7 +28,7 @@ export async function getPlayerBySteamId(steamid: string, avatar = false): Promi
 
 export const getPlayersList = (query: any) =>
 	new Promise<Player[]>(res => {
-		players.find(query, (err, players) => {
+		players.find(query, (err: Error, players: Player[]) => {
 			if (err) {
 				return res([]);
 			}

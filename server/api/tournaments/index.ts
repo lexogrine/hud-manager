@@ -8,14 +8,14 @@ const { tournaments } = db;
 
 export const getTournaments = (): Promise<I.Tournament[]> =>
 	new Promise(res => {
-		tournaments.find({}, (err, docs) => {
+		tournaments.find({}, (err: any, docs: I.Tournament[]) => {
 			if (err) return res([]);
 			return res(docs);
 		});
 	});
 
 export const createTournament = (type: string, teams: number): I.Tournament => {
-	const tournament = {
+	const tournament: I.Tournament = {
 		_id: '',
 		name: '',
 		logo: '',
@@ -42,7 +42,7 @@ export const getTournamentByMatchId = async (matchId: string) => {
 	return tournament || null;
 };
 
-export const addTournament = (tournament: I.Tournament): Promise<I.Tournament> =>
+export const addTournament = (tournament: I.Tournament): Promise<I.Tournament | null> =>
 	new Promise(res => {
 		tournaments.insert(tournament, (err, newTournament) => {
 			if (err) return res(null);
@@ -98,7 +98,7 @@ export const fillNextMatch = (matchId: string, type: 'winner' | 'loser') =>
 		tournaments.findOne(
 			{
 				$where: function () {
-					return !!this.matchups.find(matchup => matchup.matchId === matchId);
+					return !!this.matchups.find((matchup: I.TournamentMatchup) => matchup.matchId === matchId);
 				}
 			},
 			async (err, tournament) => {

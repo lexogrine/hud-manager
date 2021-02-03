@@ -14,10 +14,6 @@ interface ConfigStatus extends I.CFGGSIResponse {
 	loading: boolean;
 }
 
-interface ExtendedFile extends File {
-	path?: string;
-}
-
 interface IProps {
 	cxt: IContextData;
 	toggle: Function;
@@ -81,7 +77,7 @@ export default class Config extends React.Component<IProps, IState> {
 	}
 	loadEXE = (type: 'hlaePath' | 'afxCEFHudInteropPath') => (files: FileList) => {
 		if (!files) return;
-		const file = files[0] as ExtendedFile;
+		const file = files[0];
 		if (!file) {
 			this.setState(state => {
 				state.config[type] = '';
@@ -104,7 +100,7 @@ export default class Config extends React.Component<IProps, IState> {
 	};
 	importCheck = (callback: any) => (files: FileList) => {
 		if (!files) return;
-		const file = files[0] as ExtendedFile;
+		const file = files[0];
 		if (!file) {
 			return;
 		}

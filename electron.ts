@@ -22,7 +22,8 @@ async function mainProcess(server: Server, forceDev = false, gui = true) {
 
 	const RMTPServer = fork(require.resolve('./RMTPServer.js'));
 
-	let renderer: ChildProcess = null;
+	// eslint-disable-next-line prefer-const
+	let renderer: ChildProcess;
 
 	const closeManager = () => {
 		if (server) {
@@ -56,7 +57,7 @@ async function mainProcess(server: Server, forceDev = false, gui = true) {
 		}
 	});
 
-	if (forceDev) renderer.stdout.on('data', data => console.log(data.toString()));
+	if (forceDev) renderer.stdout?.on('data', data => console.log(data.toString()));
 
 	renderer.on('exit', closeManager);
 	renderer.on('close', closeManager);
