@@ -37,11 +37,10 @@ export default class MatchEdit extends Component<IProps, I.Match> {
 		this.state = this.props.match;
 	}
 
-	vetoHandler = (name: string, map: number) => (event: any) => {
+	vetoHandler = (name: string, map: number, value: any) => {
 		const { vetos }: any = this.state;
 		const veto = { teamId: '', mapName: '', side: 'NO', ...vetos[map] };
-		veto[name] = event.target.value;
-		if (name === 'reverseSide') veto[name] = event.target.checked;
+		veto[name] = value;
 		if (veto.teamId === '' && veto.type !== 'decider') {
 			veto.mapName = '';
 		}

@@ -10,7 +10,7 @@ interface Props {
 	veto: I.Veto;
 	vetoTeams: I.Team[];
 	match: I.Match;
-	onSave: (name: string, map: number) => any;
+	onSave: (name: string, map: number, value: any) => void;
 	maps: string[];
 }
 interface State {
@@ -67,20 +67,20 @@ function generateDescription(veto: I.Veto, team?: I.Team, secTeam?: I.Team) {
 	);
 }
 
-const VetoEntry = ({ map, veto, vetoTeams, match, onSave, maps}: Props) => {
-	const [ isVetoModalOpen, setVetoModal ] = useState(false);
-	const [ isScoreOpen, setScoreOpen ] = useState(false);
-	const [ isMenuExpanded, setMenuExpanded ] = useState(false);
+const VetoEntry = ({ map, veto, vetoTeams, onSave, maps }: Props) => {
+	const [isVetoModalOpen, setVetoModal] = useState(false);
+	const [isScoreOpen, setScoreOpen] = useState(false);
+	const [isMenuExpanded, setMenuExpanded] = useState(false);
 
 	const resetScore = () => {
-		onSave('winner', map)({ target: { value: undefined } });
-		onSave('mapEnd', map)({ target: { value: false } });
-		onSave('score', map)({ target: { value: {} } });
-	}
+		onSave('winner', map, undefined);
+		onSave('mapEnd', map, false);
+		onSave('score', map, {});
+	};
 
 	const setWinner = (team?: string) => () => {
-		onSave('winner', map)({ target: { value: team } });
-		onSave('mapEnd', map)({ target: { value: !!team } });
+		onSave('winner', map, team);
+		onSave('mapEnd', map, !!team);
 	};
 	const setScore = (teamId: string, score: number) => () => {
 		let scores: { [key: string]: number } = {};
@@ -91,12 +91,12 @@ const VetoEntry = ({ map, veto, vetoTeams, match, onSave, maps}: Props) => {
 		if (!scores[vetoTeams[1]._id]) scores[vetoTeams[1]._id] = 0;
 		if (score < 0) score = 0;
 		scores[teamId] = score;
-		onSave('score', map)({ target: { value: scores } });
+		onSave('score', map, scores);
 	};
 
 	let team = vetoTeams.filter(team => team._id === veto.teamId)[0];
 	let secTeam = vetoTeams.filter(team => team._id !== veto.teamId)[0];
-	
+
 	if (!veto.teamId) {
 		team = vetoTeams[0];
 		secTeam = vetoTeams[1];
@@ -165,6 +165,6 @@ const VetoEntry = ({ map, veto, vetoTeams, match, onSave, maps}: Props) => {
 			)}
 		</div>
 	);
-}
+};
 
 export default VetoEntry;

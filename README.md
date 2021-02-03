@@ -315,7 +315,7 @@ npm install registry-js
 If the build has been successful, an `app` directory should appear with the installer and the unpacked version of the Lexogrine HUD Manager.
 
 ## REST API
-|Endpoint| Method | Returned|
+|Endpoint| Method | Returns|
 |--|--|--|
 | `/api/teams` | GET | Array of teams
 |`/api/players`| GET | Array of players
@@ -326,6 +326,8 @@ If the build has been successful, an `app` directory should appear with the inst
 |`/api/teams/logo/:id`|GET|Find team logo by ID|
 |`/api/config`|GET|Get manager config|
 |`/api/match`|GET|Array of matches|
+|`/api/match/current`|GET|Current match|
+|`/api/match/:id`|GET|Find match by ID|
 |`/api/huds`|GET|Array of available HUDs|
 |`/api/maps`|GET|Map pool array|
 |`/api/gsi`|GET|Check if GSI file is loaded|
