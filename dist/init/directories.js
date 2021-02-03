@@ -18,24 +18,24 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.checkDirectories = void 0;
-var fs = __importStar(require("fs"));
-var path = __importStar(require("path"));
-var electron_1 = require("electron");
+const fs = __importStar(require("fs"));
+const path = __importStar(require("path"));
+const electron_1 = require("electron");
 function createIfMissing(directory) {
     if (!fs.existsSync(directory)) {
         fs.mkdirSync(directory);
     }
 }
 function checkDirectories() {
-    var hudsData = path.join(electron_1.app.getPath('home'), 'HUDs');
-    var userData = electron_1.app.getPath('userData');
-    var database = path.join(userData, 'databases');
+    const hudsData = path.join(electron_1.app.getPath('home'), 'HUDs');
+    const userData = electron_1.app.getPath('userData');
+    const database = path.join(userData, 'databases');
     [hudsData, userData, database].forEach(createIfMissing);
-    var mapFile = path.join(electron_1.app.getPath('userData'), 'maps.json');
+    const mapFile = path.join(electron_1.app.getPath('userData'), 'maps.json');
     if (!fs.existsSync(mapFile)) {
-        var maps = ['de_mirage', 'de_dust2', 'de_inferno', 'de_nuke', 'de_train', 'de_overpass', 'de_vertigo'];
+        const maps = ['de_mirage', 'de_dust2', 'de_inferno', 'de_nuke', 'de_train', 'de_overpass', 'de_vertigo'];
         fs.writeFileSync(mapFile, JSON.stringify(maps));
     }
 }

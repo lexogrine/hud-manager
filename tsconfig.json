@@ -14,11 +14,12 @@
     "allowSyntheticDefaultImports": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
-    "module": "commonjs",
+    "module": "esnext",
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "react"
+    "jsx": "react",
+    "noEmit": true
   },
   "exclude": [
     ".git",
@@ -31,6 +32,9 @@
     "subfolder/dist",
     "subfolder/node_modules",
     "**/dist/*",
-    "**/node_modules/*",
+    "**/node_modules/*"
+  ],
+  "include": [
+    "src"
   ]
 }

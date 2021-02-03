@@ -18,12 +18,12 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-exports.__esModule = true;
-var T = __importStar(require("./middlewares"));
-var initRoute = function (router) {
+Object.defineProperty(exports, "__esModule", { value: true });
+const T = __importStar(require("./middlewares"));
+const initRoute = (router) => {
     router.route('/api/teams').get(T.getTeams).post(T.addTeam);
     router.route('/api/teams/fields').get(T.getFields).patch(T.updateFields);
-    router.route('/api/teams/:id').get(T.getTeam).patch(T.updateTeam)["delete"](T.deleteTeam);
+    router.route('/api/teams/:id').get(T.getTeam).patch(T.updateTeam).delete(T.deleteTeam);
     router.route('/api/teams/logo/:id').get(T.getLogoFile);
 };
-exports["default"] = initRoute;
+exports.default = initRoute;
