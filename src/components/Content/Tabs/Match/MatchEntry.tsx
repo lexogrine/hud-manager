@@ -21,12 +21,12 @@ const MatchEntry = ({ match, teams, cxt, edit, setCurrent }: Props) => {
 		await api.match.delete(match.id);
 		cxt.reload();
 	};
-	
+
 	const boToWinsMap = {
-		'bo1': 1,
-		'bo2': 2,
-		'bo3': 2,
-		'bo5': 3
+		bo1: 1,
+		bo2: 2,
+		bo3: 2,
+		bo5: 3
 	};
 
 	const left = teams.filter(team => team._id === match.left.id)[0];
@@ -40,7 +40,9 @@ const MatchEntry = ({ match, teams, cxt, edit, setCurrent }: Props) => {
 				</div>
 
 				<div className="map-score">
-					<div className={`win-icon ${match.left.wins === boToWinsMap[match.matchType] ? 'active' : ''}`}>WINS</div>
+					<div className={`win-icon ${match.left.wins === boToWinsMap[match.matchType] ? 'active' : ''}`}>
+						WINS
+					</div>
 					{left?.logo ? (
 						<img src={`${left.logo}?hash=${hash()}`} alt={`${left.name} logo`} className="team-logo" />
 					) : (
@@ -54,7 +56,9 @@ const MatchEntry = ({ match, teams, cxt, edit, setCurrent }: Props) => {
 					) : (
 						''
 					)}
-					<div className={`win-icon ${match.right.wins === boToWinsMap[match.matchType] ? 'active' : ''}`}>WINS</div>
+					<div className={`win-icon ${match.right.wins === boToWinsMap[match.matchType] ? 'active' : ''}`}>
+						WINS
+					</div>
 				</div>
 				<div className="match-date force-no-break">
 					{match.startTime ? moment(match.startTime).format(moment.HTML5_FMT.DATE) : '-'}

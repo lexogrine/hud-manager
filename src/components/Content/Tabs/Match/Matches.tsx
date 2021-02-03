@@ -49,7 +49,7 @@ export default class Matches extends Component<
 		await api.match.add(newMatch);
 		//await api.match.set(matches);
 		this.props.cxt.reload();
-		this.setState({activeTab:'current'})
+		this.setState({ activeTab: 'current' });
 	};
 
 	edit = async (id: string, match: I.Match) => {
