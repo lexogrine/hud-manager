@@ -9,7 +9,32 @@ import path from 'path';
 import { app as application } from 'electron';
 import fs from 'fs';
 import { loadConfig, setConfig } from './api/config';
+import { Config } from '../types/interfaces';
 import { initiateCustomFields } from './api/fields';
+
+const parsePayload = (config: Config): express.RequestHandler => (req, res, next) => {
+	try {
+		if (req.body) {
+			const payload = req.body.toString();
+			const obj = JSON.parse(payload);
+			if (obj.provider && obj.provider.appid === 730) {
+				if (config.token && (!obj.auth || !obj.auth.token)) {
+					return res.sendStatus(200);
+				}
+				if (config.token && config.token !== obj.auth.token) {
+					return res.sendStatus(200);
+				}
+			}
+			const text = payload
+				.replace(/"(player|owner)":([ ]*)([0-9]+)/gm, '"$1": "$3"')
+				.replace(/(player|owner):([ ]*)([0-9]+)/gm, '"$1": "$3"');
+			req.body = JSON.parse(text);
+		}
+		next();
+	} catch (e) {
+		next();
+	}
+}
 
 export default async function init() {
 	let config = await loadConfig();
@@ -29,29 +54,9 @@ export default async function init() {
 
 	app.use(express.urlencoded({ extended: true }));
 	app.use(express.raw({ limit: '100Mb', type: 'application/json' }));
-	app.use((req, res, next) => {
-		try {
-			if (req.body) {
-				const payload = req.body.toString();
-				const obj = JSON.parse(payload);
-				if (obj.provider && obj.provider.appid === 730) {
-					if (config.token && (!obj.auth || !obj.auth.token)) {
-						return res.sendStatus(200);
-					}
-					if (config.token && config.token !== obj.auth.token) {
-						return res.sendStatus(200);
-					}
-				}
-				const text = payload
-					.replace(/"(player|owner)":([ ]*)([0-9]+)/gm, '"$1": "$3"')
-					.replace(/(player|owner):([ ]*)([0-9]+)/gm, '"$1": "$3"');
-				req.body = JSON.parse(text);
-			}
-			next();
-		} catch (e) {
-			next();
-		}
-	});
+
+	app.use(parsePayload(config));
+
 	app.use(cors({ origin: '*', credentials: true }));
 
 	const io = sockets(server, app);

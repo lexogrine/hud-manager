@@ -1448,3 +1448,15 @@ input:checked ~ .customCheckbox {
     opacity: 0;
     width:0;
 }
+.hud-status{
+    display: flex;
+}
+.hud-status .missing_fields {
+    display: flex;
+    align-items: center;
+}
+.hud-status .missing_fields i {
+    font-size: 17px;
+    margin: 0 6px;
+    cursor: pointer;
+}

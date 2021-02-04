@@ -34,6 +34,30 @@ const electron_1 = require("electron");
 const fs_1 = __importDefault(require("fs"));
 const config_1 = require("./api/config");
 const fields_1 = require("./api/fields");
+const parsePayload = (config) => (req, res, next) => {
+    try {
+        if (req.body) {
+            const payload = req.body.toString();
+            const obj = JSON.parse(payload);
+            if (obj.provider && obj.provider.appid === 730) {
+                if (config.token && (!obj.auth || !obj.auth.token)) {
+                    return res.sendStatus(200);
+                }
+                if (config.token && config.token !== obj.auth.token) {
+                    return res.sendStatus(200);
+                }
+            }
+            const text = payload
+                .replace(/"(player|owner)":([ ]*)([0-9]+)/gm, '"$1": "$3"')
+                .replace(/(player|owner):([ ]*)([0-9]+)/gm, '"$1": "$3"');
+            req.body = JSON.parse(text);
+        }
+        next();
+    }
+    catch (e) {
+        next();
+    }
+};
 async function init() {
     let config = await config_1.loadConfig();
     await fields_1.initiateCustomFields();
@@ -48,30 +72,7 @@ async function init() {
     console.log(`Server listening on ${port}`);
     app.use(express_1.default.urlencoded({ extended: true }));
     app.use(express_1.default.raw({ limit: '100Mb', type: 'application/json' }));
-    app.use((req, res, next) => {
-        try {
-            if (req.body) {
-                const payload = req.body.toString();
-                const obj = JSON.parse(payload);
-                if (obj.provider && obj.provider.appid === 730) {
-                    if (config.token && (!obj.auth || !obj.auth.token)) {
-                        return res.sendStatus(200);
-                    }
-                    if (config.token && config.token !== obj.auth.token) {
-                        return res.sendStatus(200);
-                    }
-                }
-                const text = payload
-                    .replace(/"(player|owner)":([ ]*)([0-9]+)/gm, '"$1": "$3"')
-                    .replace(/(player|owner):([ ]*)([0-9]+)/gm, '"$1": "$3"');
-                req.body = JSON.parse(text);
-            }
-            next();
-        }
-        catch (e) {
-            next();
-        }
-    });
+    app.use(parsePayload(config));
     app.use(cors_1.default({ origin: '*', credentials: true }));
     const io = sockets_1.default(server, app);
     api_1.default(app, io);

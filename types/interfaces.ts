@@ -10,17 +10,22 @@ export interface Player {
 	extra: Record<string, string>;
 }
 
-export interface CustomFieldEntry {
-	_id: string;
+export type CustomFieldInputType = Exclude<PanelInputType, 'select' | 'action' | 'checkbox'>;
+
+export interface CustomFieldData {
 	name: string;
+	type: CustomFieldInputType;
+}
+
+export interface CustomFieldEntry extends CustomFieldData {
+	_id: string;
 	visible: boolean;
-	type: Exclude<PanelInputType, 'select' | 'action' | 'checkbox'>;
 }
 
 export type onExtraChangeFunction = {
 	(field: string, type: 'image'): (files: FileList) => void;
 	(field: string, type: 'color'): (hex: string) => void;
-	(field: string, type: Exclude<PanelInputType, 'select' | 'action' | 'checkbox'>): (
+	(field: string, type: CustomFieldInputType): (
 		event: React.ChangeEvent<HTMLInputElement>
 	) => void;
 };
@@ -123,7 +128,7 @@ export type PanelInputType =
 	| 'color';
 
 export interface GeneralInput {
-	type: Exclude<PanelInputType, 'select' | 'action' | 'checkbox'>;
+	type: CustomFieldInputType;
 	name: string;
 	label: string;
 }
@@ -172,6 +177,11 @@ export interface PlayerRoundData {
 	damage: number;
 }
 
+export type RequiredFields = {
+	[type in keyof CustomFieldStore]?: {
+		[key: string]: CustomFieldInputType
+	}
+}
 export interface HUD {
 	name: string;
 	version: string;
@@ -183,6 +193,7 @@ export interface HUD {
 	panel?: PanelTemplate[];
 	keybinds?: KeyBind[];
 	url: string;
+	requiredFields?: RequiredFields,
 	boltobserv?: {
 		css?: boolean;
 		maps?: boolean;

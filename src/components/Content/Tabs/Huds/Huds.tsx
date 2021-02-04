@@ -246,6 +246,7 @@ export default class Huds extends React.Component<IProps, IState> {
 									hud={hud}
 									toggleConfig={this.toggleConfig}
 									isActive={hud.url === this.state.currentHUD}
+									customFields={this.props.cxt.fields}
 								/>
 							))}
 						</Col>

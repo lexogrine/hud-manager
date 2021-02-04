@@ -28,14 +28,8 @@ export const updateFields = async (fields: CustomFieldEntry[], type: keyof Custo
 	const deletedFields = store[type].filter(field => !fields.find(newField => newField.name === field.name));
 	const createdFields = fields.filter(newField => !store[type].find(field => field.name === newField.name));
 
-	const fieldNames = fields.map(field => field.name);
-
-	if (fieldNames.length !== [...Array.from(new Set(fieldNames))].length) {
-		return await initiateCustomFields();
-	}
-
 	return new Promise<CustomFieldStore>(res => {
-		custom.update({}, { $set: { teams: fields } }, { multi: true }, async () => {
+		custom.update({}, { $set: { [type]: fields } }, { multi: true }, async () => {
 			if (!deletedFields.length && !createdFields.length) {
 				return res(await initiateCustomFields());
 			}
