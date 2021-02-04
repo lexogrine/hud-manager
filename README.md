@@ -282,11 +282,9 @@ This file is basically another way to communicate with the HUD. Let's look at th
 ```
 Again, ot is just an array of actions. Each bind only has `bind` and `action` properties. Bind is the keybind you want to use, and action is the identifier of an action. What differentiates it from the `panel.json` action input, is that here we don't have additional data packed with the action name.
 #### Radar
-A radar is hosted by the Lexogrine HUD Manager, so you don't have to include it yourself. You can access it at `/radar`. To load a HUD's custom radar.css you should add a `?hud=` query with the directory name of the HUD to the URL, unless you're working on the dev mode of the HUD - in this case you should add `?devCSS=true` if you have `custom.css`, and `devMaps=true` if you have custom radar backgrounds. If you are using the `csgo-react-hud` repo you don't have to think about those things, as it adds query params by itself.
-#### radar.css
-This file works as a `custom.css` file from `boltobserv` and loads itself into the radar for any given HUD. It requires for the `css` property in `hud.json` to be set to `true`.
-#### Radar files
-Radar background files have the same structure as in `boltobserv`. You should have a `maps` folder, and in it a directory for each map with the name of this map. Inside, place a `radar.png` with the background for the given map.
+
+Lexogrine HUD has its own radar, which is much more customizable than embedded Boltobserv, therefore using Boltobserv is discouraged, as we will be removing support for it in the future.
+
 #### thumb.png	
 You should include this file for a nice display in the HUDs tab in the Lexogrine HUD Manager, as it will be displayed next to its name. Recommended size: 64px x 64px.
 ## Technicalities
@@ -333,6 +331,15 @@ If the build has been successful, an `app` directory should appear with the inst
 |`/api/gsi`|GET|Check if GSI file is loaded|
 |`/api/cfg`|GET|Check if config files are loaded|
 |`/api/game`|GET|Get latest data from CS:GO|
+
+
+## Boltobserv
+
+Boltobserv radar is hosted by the Lexogrine HUD Manager, so you don't have to include it yourself. You can access it at `/radar`. To load a HUD's custom radar.css you should add a `?hud=` query with the directory name of the HUD to the URL, unless you're working on the dev mode of the HUD - in this case you should add `?devCSS=true` if you have `custom.css`, and `devMaps=true` if you have custom radar backgrounds. If you are using the `csgo-react-hud` repo you don't have to think about those things, as it adds query params by itself.
+#### radar.css
+This file works as a `custom.css` file from `boltobserv` and loads itself into the radar for any given HUD. It requires for the `css` property in `hud.json` to be set to `true`.
+#### Radar files
+Radar background files have the same structure as in `boltobserv`. You should have a `maps` folder, and in it a directory for each map with the name of this map. Inside, place a `radar.png` with the background for the given map.
 
 # Special credits
 Big shout out to Loxar, for providing his set of a brand new weapon icons!
