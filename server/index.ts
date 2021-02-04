@@ -34,7 +34,7 @@ const parsePayload = (config: Config): express.RequestHandler => (req, res, next
 	} catch (e) {
 		next();
 	}
-}
+};
 
 export default async function init() {
 	let config = await loadConfig();

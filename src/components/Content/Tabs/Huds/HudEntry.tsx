@@ -62,13 +62,27 @@ export default class HudEntry extends Component<IProps, IState> {
 		const { hud, toggleConfig, isActive, customFields } = this.props;
 		const missingFieldsText = [];
 		const missingFields = getMissingFields(customFields, hud.requiredFields);
-		if(missingFields){
+		if (missingFields) {
 			missingFieldsText.push(<div>Missing fields</div>);
-			if(missingFields.players) {
-				missingFieldsText.push(<div>Players: {Object.entries(missingFields.players).map(([field, type]) => `Field "${field}" of type "${type}"`).join(", ")}</div>);
+			if (missingFields.players) {
+				missingFieldsText.push(
+					<div>
+						Players:{' '}
+						{Object.entries(missingFields.players)
+							.map(([field, type]) => `Field "${field}" of type "${type}"`)
+							.join(', ')}
+					</div>
+				);
 			}
-			if(missingFields.teams) {
-				missingFieldsText.push(<div>Teams: {Object.entries(missingFields.teams).map(([field, type]) => `Field "${field}" of type "${type}"`).join(", ")}</div>);
+			if (missingFields.teams) {
+				missingFieldsText.push(
+					<div>
+						Teams:{' '}
+						{Object.entries(missingFields.teams)
+							.map(([field, type]) => `Field "${field}" of type "${type}"`)
+							.join(', ')}
+					</div>
+				);
 			}
 		}
 		return (
@@ -104,15 +118,11 @@ export default class HudEntry extends Component<IProps, IState> {
 											<Tip
 												id={`radar_support_${hud.dir}`}
 												className="radar_support"
-												label={
-													<img src={Map} className="action" alt="Supports custom radar" />
-												}
+												label={<img src={Map} className="action" alt="Supports custom radar" />}
 											>
 												Includes custom radar
 											</Tip>
-										) : (
-											null
-										)}
+										) : null}
 										{hud.killfeed ? (
 											<Tip
 												id={`killfeed_support_${hud.dir}`}
@@ -127,22 +137,16 @@ export default class HudEntry extends Component<IProps, IState> {
 											>
 												Includes custom killfeed
 											</Tip>
-										) : (
-											null
-										)}
+										) : null}
 										{missingFieldsText.length ? (
 											<Tip
 												id={`missing_fields_${hud.dir}`}
 												className="missing_fields"
-												label={
-													<i className="material-icons">warning</i>
-												}
+												label={<i className="material-icons">warning</i>}
 											>
 												{missingFieldsText}
 											</Tip>
-										) : (
-											null
-										)}
+										) : null}
 									</Col>
 								</Row>
 							) : (

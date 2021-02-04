@@ -25,9 +25,7 @@ export interface CustomFieldEntry extends CustomFieldData {
 export type onExtraChangeFunction = {
 	(field: string, type: 'image'): (files: FileList) => void;
 	(field: string, type: 'color'): (hex: string) => void;
-	(field: string, type: CustomFieldInputType): (
-		event: React.ChangeEvent<HTMLInputElement>
-	) => void;
+	(field: string, type: CustomFieldInputType): (event: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
 export interface CustomFieldStore {
@@ -179,9 +177,9 @@ export interface PlayerRoundData {
 
 export type RequiredFields = {
 	[type in keyof CustomFieldStore]?: {
-		[key: string]: CustomFieldInputType
-	}
-}
+		[key: string]: CustomFieldInputType;
+	};
+};
 export interface HUD {
 	name: string;
 	version: string;
@@ -193,7 +191,7 @@ export interface HUD {
 	panel?: PanelTemplate[];
 	keybinds?: KeyBind[];
 	url: string;
-	requiredFields?: RequiredFields,
+	requiredFields?: RequiredFields;
 	boltobserv?: {
 		css?: boolean;
 		maps?: boolean;
