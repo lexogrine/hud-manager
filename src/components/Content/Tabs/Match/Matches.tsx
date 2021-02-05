@@ -54,7 +54,6 @@ export default class Matches extends Component<
 
 	edit = async (id: string, match: I.Match) => {
 		await api.match.update(id, match);
-		//lawait api.match.set(newMatches);
 		this.props.cxt.reload();
 	};
 

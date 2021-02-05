@@ -71,7 +71,6 @@ const EditMatch = ({ cxt, match, teams, edit, maps }: IProps) => {
 		}
 		vetos[map] = veto;
 		setMatchState({ ...matchState, vetos });
-		save();
 	};
 	const changeMatchType = (event: any) => {
 		const vetos: I.Veto[] = [];
@@ -79,12 +78,10 @@ const EditMatch = ({ cxt, match, teams, edit, maps }: IProps) => {
 			vetos.push({ teamId: '', mapName: '', side: 'NO', type: 'pick', mapEnd: false });
 		}
 		setMatchState({ ...matchState, matchType: event.target.value, vetos });
-		save();
 	};
 	const changeStartTime = (ev: any) => {
 		const val = ev.target.value;
 		setMatchState({ ...matchState, startTime: moment(val).valueOf() });
-		save();
 	};
 	const getData = (side: 'right' | 'left', id: string, wins: number) => {
 		setMatchState(prevMatchState => {
@@ -92,7 +89,6 @@ const EditMatch = ({ cxt, match, teams, edit, maps }: IProps) => {
 			prevMatchState[side].wins = wins || 0;
 			return { ...prevMatchState };
 		});
-		save();
 	};
 	useEffect(() => {
 		const initiateSocket = async () => {
@@ -107,6 +103,10 @@ const EditMatch = ({ cxt, match, teams, edit, maps }: IProps) => {
 		};
 		initiateSocket();
 	}, []);
+
+	useEffect(() => {
+		save();
+	}, [matchState])
 
 	const left = teams.find(team => team._id === match.left.id) || null;
 	const right = teams.find(team => team._id === match.right.id) || null;
