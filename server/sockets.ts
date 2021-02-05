@@ -170,20 +170,17 @@ export default async function (server: http.Server, app: express.Router) {
 		devSocket: null,
 		currentHUD: null
 	};
-	
+
 	const cfg = await loadConfig();
 
-	const corsOrigins = [
-		`http://${internalIP}:${cfg.port}`
-	];
+	const corsOrigins = [`http://${internalIP}:${cfg.port}`];
 
-
-	if(publicIP){
+	if (publicIP) {
 		corsOrigins.push(`http://${publicIP}:${cfg.port}`);
 	}
 
-	if(isDev){
-		corsOrigins.push("http://localhost:3000");
+	if (isDev) {
+		corsOrigins.push('http://localhost:3000');
 	}
 
 	const io = new Server(server, {
@@ -191,7 +188,7 @@ export default async function (server: http.Server, app: express.Router) {
 		cors: {
 			origin: corsOrigins,
 			credentials: true
-		},
+		}
 	});
 
 	let intervalId: NodeJS.Timeout | null = null;

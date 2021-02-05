@@ -23,12 +23,10 @@ publicIp
 const defaultConfig: Config = { steamApiKey: '', token: '', port: 1349, hlaePath: '', afxCEFHudInteropPath: '' };
 
 export const loadConfig = async (): Promise<Config> => {
-	if(!publicIP){
+	if (!publicIP) {
 		try {
 			publicIP = await publicIp.v4();
-		} catch {
-
-		}
+		} catch {}
 	}
 	return new Promise(res => {
 		configs.find({}, async (err: any, config: Config[]) => {
