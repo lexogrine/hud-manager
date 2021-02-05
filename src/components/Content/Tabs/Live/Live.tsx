@@ -17,7 +17,8 @@ class Teamboard extends Component<{ players: Player[]; team: Team; toggle: Funct
 				steamid: player.steamid,
 				realName: null,
 				country: null,
-				avatar: null
+				avatar: null,
+				extra: {}
 			};
 		}
 		return {
@@ -26,7 +27,8 @@ class Teamboard extends Component<{ players: Player[]; team: Team; toggle: Funct
 			steamid: data.steamid,
 			realName: data.firstName + ' ' + data.lastName,
 			country: data.country,
-			avatar: data.avatar
+			avatar: data.avatar,
+			extra: {}
 		};
 	};
 

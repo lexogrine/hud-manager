@@ -61,7 +61,8 @@ export const updateMatches = async (updateMatches: Match[]) => {
 				name: left.name,
 				country: left.country,
 				logo: left.logo,
-				map_score: currents[0].left.wins
+				map_score: currents[0].left.wins,
+				extra: left.extra
 			});
 		}
 		if (right && right._id) {
@@ -70,7 +71,8 @@ export const updateMatches = async (updateMatches: Match[]) => {
 				name: right.name,
 				country: right.country,
 				logo: right.logo,
-				map_score: currents[0].right.wins
+				map_score: currents[0].right.wins,
+				extra: right.extra
 			});
 		}
 	}
@@ -148,7 +150,8 @@ export const updateMatch = (match: Match) =>
 							name: left.name,
 							country: left.country,
 							logo: left.logo,
-							map_score: match.left.wins
+							map_score: match.left.wins,
+							extra: left.extra
 						});
 					}
 					if (right && right._id) {
@@ -157,7 +160,8 @@ export const updateMatch = (match: Match) =>
 							name: right.name,
 							country: right.country,
 							logo: right.logo,
-							map_score: match.right.wins
+							map_score: match.right.wins,
+							extra: right.extra
 						});
 					}
 					if (err) return res(false);

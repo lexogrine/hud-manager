@@ -59,7 +59,8 @@ exports.updateMatches = async (updateMatches) => {
                 name: left.name,
                 country: left.country,
                 logo: left.logo,
-                map_score: currents[0].left.wins
+                map_score: currents[0].left.wins,
+                extra: left.extra
             });
         }
         if (right && right._id) {
@@ -68,7 +69,8 @@ exports.updateMatches = async (updateMatches) => {
                 name: right.name,
                 country: right.country,
                 logo: right.logo,
-                map_score: currents[0].right.wins
+                map_score: currents[0].right.wins,
+                extra: right.extra
             });
         }
     }
@@ -137,7 +139,8 @@ exports.updateMatch = (match) => new Promise(res => {
                     name: left.name,
                     country: left.country,
                     logo: left.logo,
-                    map_score: match.left.wins
+                    map_score: match.left.wins,
+                    extra: left.extra
                 });
             }
             if (right && right._id) {
@@ -146,7 +149,8 @@ exports.updateMatch = (match) => new Promise(res => {
                     name: right.name,
                     country: right.country,
                     logo: right.logo,
-                    map_score: match.right.wins
+                    map_score: match.right.wins,
+                    extra: right.extra
                 });
             }
             if (err)
