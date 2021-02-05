@@ -6,6 +6,7 @@ import socketio from 'socket.io';
 import { Config, ExtendedConfig } from '../../types/interfaces';
 import publicIp from 'public-ip';
 import internalIp from 'internal-ip';
+import { isDev } from '../../electron';
 
 const configs = db.config;
 
@@ -22,6 +23,13 @@ publicIp
 const defaultConfig: Config = { steamApiKey: '', token: '', port: 1349, hlaePath: '', afxCEFHudInteropPath: '' };
 
 export const loadConfig = async (): Promise<Config> => {
+	if(!publicIP){
+		try {
+			publicIP = await publicIp.v4();
+		} catch {
+
+		}
+	}
 	return new Promise(res => {
 		configs.find({}, async (err: any, config: Config[]) => {
 			if (err) {
@@ -100,7 +108,7 @@ export const verifyUrl = async (url: string) => {
 		return false;
 	}
 	const bases = [`http://${internalIP}:${cfg.port}`, `http://${publicIP}:${cfg.port}`];
-	if (process.env.DEV === 'true') {
+	if (isDev) {
 		bases.push(`http://localhost:3000/?port=${cfg.port}`);
 	}
 	if (bases.find(base => url.startsWith(`${base}/dev`))) {

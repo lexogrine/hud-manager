@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GSI = exports.HUDState = exports.Sockets = void 0;
-const socket_io_1 = __importDefault(require("socket.io"));
+const socket_io_1 = require("socket.io");
 const csgogsi_1 = __importDefault(require("csgogsi"));
 const electron_1 = require("electron");
 const path_1 = __importDefault(require("path"));
@@ -19,6 +19,7 @@ const teams_1 = require("./api/teams");
 const players_1 = require("./api/players");
 const tournaments_1 = require("./api/tournaments");
 const api_1 = require("./api");
+const electron_2 = require("../electron");
 const radar = require('./../boltobserv/index.js');
 const mirv = require('./server').default;
 class DevHUDListener {
@@ -133,7 +134,7 @@ const assertUser = (req, res, next) => {
     }
     return next();
 };
-function default_1(server, app) {
+async function default_1(server, app) {
     const getJSONArray = url => {
         return node_fetch_1.default(url)
             .then(res => res.json())
@@ -156,7 +157,24 @@ function default_1(server, app) {
         devSocket: null,
         currentHUD: null
     };
-    const io = socket_io_1.default(server);
+    const cfg = await config_1.loadConfig();
+    const corsOrigins = [
+        `http://${config_1.internalIP}:${cfg.port}`
+    ];
+    if (config_1.publicIP) {
+        corsOrigins.push(`http://${config_1.publicIP}:${cfg.port}`);
+    }
+    if (electron_2.isDev) {
+        corsOrigins.push("http://localhost:3000");
+    }
+    console.log(corsOrigins);
+    const io = new socket_io_1.Server(server, {
+        allowEIO3: true,
+        cors: {
+            origin: corsOrigins,
+            credentials: true
+        },
+    });
     let intervalId = null;
     let testDataIndex = 0;
     const startSendingTestData = () => {

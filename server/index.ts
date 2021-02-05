@@ -59,7 +59,7 @@ export default async function init() {
 
 	app.use(cors({ origin: '*', credentials: true }));
 
-	const io = sockets(server, app);
+	const io = await sockets(server, app);
 
 	router(app, io);
 

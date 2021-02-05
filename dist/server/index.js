@@ -74,7 +74,7 @@ async function init() {
     app.use(express_1.default.raw({ limit: '100Mb', type: 'application/json' }));
     app.use(parsePayload(config));
     app.use(cors_1.default({ origin: '*', credentials: true }));
-    const io = sockets_1.default(server, app);
+    const io = await sockets_1.default(server, app);
     api_1.default(app, io);
     fs_1.default.watch(path_1.default.join(electron_1.app.getPath('home'), 'HUDs'), () => {
         io.emit('reloadHUDs');

@@ -1,4 +1,4 @@
-import socketio from 'socket.io';
+import { Server, Socket } from 'socket.io';
 import http from 'http';
 import express from 'express';
 import CSGOGSI, { CSGORaw, Score, CSGO } from 'csgogsi';
@@ -10,12 +10,13 @@ import { getHUDData } from './../server/api/huds';
 import { getMatches, updateRound, getMatchById, updateMatch, reverseSide } from './api/matches';
 import fs from 'fs';
 import portscanner from 'portscanner';
-import { internalIP, loadConfig, verifyUrl } from './api/config';
+import { internalIP, loadConfig, verifyUrl, publicIP } from './api/config';
 import { testData } from './api/testing';
 import { getTeamById } from './api/teams';
 import { getPlayerById } from './api/players';
 import { createNextMatch } from './api/tournaments';
 import { customer } from './api';
+import { isDev } from '../electron';
 
 const radar = require('./../boltobserv/index.js');
 const mirv = require('./server').default;
@@ -118,18 +119,18 @@ class HUDStateManager {
 }
 
 class SocketManager {
-	io: SocketIO.Server | null;
-	constructor(io?: SocketIO.Server) {
+	io: Server | null;
+	constructor(io?: Server) {
 		this.io = io || null;
 	}
-	set(io: SocketIO.Server) {
+	set(io: Server) {
 		this.io = io;
 	}
 }
 
 interface RuntimeConfig {
 	last: CSGORaw | null;
-	devSocket: socketio.Socket | null;
+	devSocket: Socket | null;
 	currentHUD: string | null;
 }
 
@@ -148,7 +149,7 @@ const assertUser: express.RequestHandler = (req, res, next) => {
 	return next();
 };
 
-export default function (server: http.Server, app: express.Router) {
+export default async function (server: http.Server, app: express.Router) {
 	const getJSONArray: <T>(url: string) => Promise<T[]> = url => {
 		return fetch(url)
 			.then(res => res.json())
@@ -169,8 +170,29 @@ export default function (server: http.Server, app: express.Router) {
 		devSocket: null,
 		currentHUD: null
 	};
+	
+	const cfg = await loadConfig();
 
-	const io = socketio(server);
+	const corsOrigins = [
+		`http://${internalIP}:${cfg.port}`
+	];
+
+
+	if(publicIP){
+		corsOrigins.push(`http://${publicIP}:${cfg.port}`);
+	}
+
+	if(isDev){
+		corsOrigins.push("http://localhost:3000");
+	}
+
+	const io = new Server(server, {
+		allowEIO3: true,
+		cors: {
+			origin: corsOrigins,
+			credentials: true
+		},
+	});
 
 	let intervalId: NodeJS.Timeout | null = null;
 	let testDataIndex = 0;
