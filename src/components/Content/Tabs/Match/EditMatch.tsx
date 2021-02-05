@@ -106,7 +106,7 @@ const EditMatch = ({ cxt, match, teams, edit, maps }: IProps) => {
 
 	useEffect(() => {
 		save();
-	}, [matchState])
+	}, [matchState]);
 
 	const left = teams.find(team => team._id === match.left.id) || null;
 	const right = teams.find(team => team._id === match.right.id) || null;
