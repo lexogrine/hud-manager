@@ -8,7 +8,7 @@ interface Props {
 	teams: I.Team[];
 	isOpen: boolean;
 	toggle: () => void;
-	onChange: (name: string, map: number) => any;
+	onChange: (name: string, map: number, value: any) => void;
 	maps: string[];
 }
 export default class VetoModal extends React.Component<Props, { isOpen: boolean }> {
@@ -17,7 +17,7 @@ export default class VetoModal extends React.Component<Props, { isOpen: boolean 
 	};
 	save = () => {};
 	changeTypeHandler = (type: I.VetoType) => () => {
-		this.props.onChange('type', this.props.map)({ target: { value: type } });
+		this.props.onChange('type', this.props.map, type);
 	};
 	render() {
 		return (
@@ -52,7 +52,7 @@ export default class VetoModal extends React.Component<Props, { isOpen: boolean 
 									name="teams"
 									id="teams"
 									value={this.props.veto.teamId}
-									onChange={this.props.onChange('teamId', this.props.map)}
+									onChange={e => this.props.onChange('teamId', this.props.map, e.target.value)}
 								>
 									<option value="">No team</option>
 									{this.props.teams.map(teams => (
@@ -68,7 +68,7 @@ export default class VetoModal extends React.Component<Props, { isOpen: boolean 
 									name="side"
 									id="side"
 									value={this.props.veto.side}
-									onChange={this.props.onChange('side', this.props.map)}
+									onChange={e => this.props.onChange('side', this.props.map, e.target.value)}
 								>
 									<option value={'NO'} disabled defaultChecked>
 										Does the opponent pick a side?
@@ -86,7 +86,7 @@ export default class VetoModal extends React.Component<Props, { isOpen: boolean 
 							name="type"
 							id="type"
 							value={this.props.veto.mapName}
-							onChange={this.props.onChange('mapName', this.props.map)}
+							onChange={e => this.props.onChange('mapName', this.props.map, e.target.value)}
 						>
 							<option value="" disabled defaultChecked>
 								Map
@@ -103,7 +103,7 @@ export default class VetoModal extends React.Component<Props, { isOpen: boolean 
 						<Label check>
 							<Input
 								type="checkbox"
-								onChange={this.props.onChange('reverseSide', this.props.map)}
+								onChange={e => this.props.onChange('reverseSide', this.props.map, e.target.checked)}
 								checked={this.props.veto.reverseSide || false}
 							/>{' '}
 							<div className="customCheckbox"></div>

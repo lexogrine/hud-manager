@@ -6,11 +6,14 @@ import * as I from './../../../../api/interfaces';
 import { IContextData } from './../../../../components/Context';
 import PlayerEntry from './Player';
 import PlayerEditModal from './PlayerEditModal';
+import CustomFieldsModal from '../../../CustomFields/CustomFieldsModal';
 
 interface IProps {
 	cxt: IContextData;
 	data: any;
 }
+
+const quickClone: <T>(obj: T) => T = obj => JSON.parse(JSON.stringify(obj));
 
 const PlayersTab = ({ cxt, data }: IProps) => {
 	const emptyPlayer: I.Player = {
@@ -21,12 +24,27 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 		avatar: '',
 		country: '',
 		steamid: '',
-		team: ''
+		team: '',
+		extra: {}
 	};
 	const [form, setForm] = useState(emptyPlayer);
-	// const [forceLoad, setForceLoad] = useState(false);
-	const [openModalState, setOpenState] = useState(false);
 	const [search, setSearch] = useState('');
+
+	const [editModalState, setEditState] = useState(false);
+	const [fieldsModalState, setFieldsState] = useState(false);
+
+	const [customFieldForm, setCustomFieldForm] = useState<I.CustomFieldEntry[]>(quickClone(cxt.fields.players));
+
+	const openCustomFields = () => {
+		setCustomFieldForm(quickClone(cxt.fields.players));
+		setFieldsState(true);
+	};
+
+	const saveFields = async () => {
+		await api.players.fields.update(customFieldForm.filter(fieldEntry => fieldEntry.name));
+		cxt.reload();
+		setFieldsState(false);
+	};
 
 	const clearAvatar = () => {
 		const avatarInput: any = document.getElementById('avatar');
@@ -115,7 +133,7 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 		if (form._id === 'empty') return;
 		const response = await api.players.delete(form._id);
 		if (response) {
-			setOpenState(false);
+			setEditState(false);
 			await loadPlayers();
 			return loadEmpty();
 		}
@@ -123,7 +141,7 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 
 	const edit = (player: I.Player) => {
 		setForm(player);
-		setOpenState(true);
+		setEditState(true);
 	};
 
 	const filterPlayers = (player: I.Player): boolean => {
@@ -143,13 +161,46 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 
 	const add = () => {
 		loadEmpty();
-		setOpenState(true);
+		setEditState(true);
+	};
+
+	const extraChangeHandler = (field: string, type: Exclude<I.PanelInputType, 'select' | 'action' | 'checkbox'>) => {
+		const fileHandler = (files: FileList) => {
+			if (!files) return;
+			const file = files[0];
+			if (!file) {
+				setForm(prevForm => ({ ...prevForm, logo: '' }));
+				return;
+			}
+			if (!file.type.startsWith('image')) {
+				return;
+			}
+			const reader: any = new FileReader();
+			reader.readAsDataURL(file);
+			reader.onload = () => {
+				setForm({
+					...form,
+					extra: { ...form.extra, [field]: reader.result.replace(/^data:([a-z]+)\/(.+);base64,/, '') }
+				});
+			};
+		};
+		if (type === 'image') {
+			return fileHandler;
+		}
+		if (type === 'color') {
+			return (hex: string) => {
+				setForm({ ...form, extra: { ...form.extra, [field]: hex } });
+			};
+		}
+		return (event: React.ChangeEvent<HTMLInputElement>) => {
+			setForm({ ...form, extra: { ...form.extra, [field]: event.target.value } });
+		};
 	};
 
 	useEffect(() => {
 		loadEmpty();
 		if (!data || !data.steamid) {
-			setOpenState(false);
+			setEditState(false);
 			return;
 		}
 		const player = cxt.players.find(player => player.steamid === data.steamid);
@@ -158,8 +209,10 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 		} else {
 			setForm({ ...emptyPlayer, ...player });
 		}
-		setOpenState(true);
+		setEditState(true);
 	}, [data]);
+
+	const visibleFields = cxt.fields.players.filter(field => field.visible);
 
 	return (
 		<Form>
@@ -175,25 +228,46 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 				/>
 			</div>
 			<PlayerEditModal
-				open={openModalState}
+				open={editModalState}
 				toggle={() => {
-					setOpenState(!openModalState);
+					setEditState(!editModalState);
 				}}
 				player={form}
 				teams={cxt.teams}
 				onChange={changeHandler}
+				onExtraChange={extraChangeHandler as I.onExtraChangeFunction}
 				onFileChange={fileHandler}
 				save={save}
 				deletePlayer={deletePlayer}
+				fields={cxt.fields.players}
+				cxt={cxt}
+			/>
+			<CustomFieldsModal
+				fields={customFieldForm}
+				open={fieldsModalState}
+				toggle={() => {
+					setFieldsState(!fieldsModalState);
+				}}
+				setForm={setCustomFieldForm}
+				save={saveFields}
 			/>
 			<div className="tab-content-container no-padding">
-				<div className="player-list-entry heading">
+				<div className="item-list-entry heading">
 					<div className="picture">Avatar</div>
 					<div className="realName">Real Name</div>
 					<div className="username">Username</div>
 					<div className="team">Team</div>
 					<div className="country">Country</div>
-					<div className="options"></div>
+					{visibleFields.map(field => (
+						<div className="custom-field" key={field._id}>
+							{field.name}
+						</div>
+					))}
+					<div className="options">
+						<Button className="purple-btn round-btn" onClick={openCustomFields}>
+							Manage
+						</Button>
+					</div>
 				</div>
 				{cxt.players.filter(filterPlayers).map(player => (
 					<PlayerEntry
@@ -202,6 +276,8 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 						player={player}
 						edit={() => edit(player)}
 						team={cxt.teams.find(team => team._id === player.team)}
+						cxt={cxt}
+						fields={visibleFields}
 					/>
 				))}
 				<Row>

@@ -18,63 +18,25 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-var __generator = (this && this.__generator) || function (thisArg, body) {
-    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
-    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
-    function verb(n) { return function (v) { return step([n, v]); }; }
-    function step(op) {
-        if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
-            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
-            if (y = 0, t) op = [op[0] & 2, t.value];
-            switch (op[0]) {
-                case 0: case 1: t = op; break;
-                case 4: _.label++; return { value: op[1], done: false };
-                case 5: _.label++; y = op[1]; op = [0]; continue;
-                case 7: op = _.ops.pop(); _.trys.pop(); continue;
-                default:
-                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
-                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
-                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
-                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
-                    if (t[2]) _.ops.pop();
-                    _.trys.pop(); continue;
-            }
-            op = body.call(thisArg, _);
-        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
-        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
-    }
-};
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
-exports.__esModule = true;
+Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteTournament = exports.createNextMatch = exports.fillNextMatch = exports.bindMatch = exports.updateTournament = exports.getTournament = exports.addTournament = exports.getTournamentByMatchId = exports.createTournament = exports.getTournaments = void 0;
-var Formats = __importStar(require("./formats"));
-var M = __importStar(require("./../match"));
-var v4_1 = __importDefault(require("uuid/v4"));
-var database_1 = __importDefault(require("./../../../init/database"));
-var tournaments = database_1["default"].tournaments;
-exports.getTournaments = function () {
-    return new Promise(function (res) {
-        tournaments.find({}, function (err, docs) {
-            if (err)
-                return res([]);
-            return res(docs);
-        });
+const Formats = __importStar(require("./formats"));
+const M = __importStar(require("./../matches"));
+const v4_1 = __importDefault(require("uuid/v4"));
+const database_1 = __importDefault(require("./../../../init/database"));
+const { tournaments } = database_1.default;
+exports.getTournaments = () => new Promise(res => {
+    tournaments.find({}, (err, docs) => {
+        if (err)
+            return res([]);
+        return res(docs);
     });
-};
-exports.createTournament = function (type, teams) {
-    var tournament = {
+});
+exports.createTournament = (type, teams) => {
+    const tournament = {
         _id: '',
         name: '',
         logo: '',
@@ -93,186 +55,135 @@ exports.createTournament = function (type, teams) {
     }
     return tournament;
 };
-exports.getTournamentByMatchId = function (matchId) { return __awaiter(void 0, void 0, void 0, function () {
-    var tournaments, tournament;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4 /*yield*/, exports.getTournaments()];
-            case 1:
-                tournaments = _a.sent();
-                tournament = tournaments.find(function (trnm) { return !!trnm.matchups.find(function (matchup) { return matchup.matchId === matchId; }); });
-                return [2 /*return*/, tournament || null];
+exports.getTournamentByMatchId = async (matchId) => {
+    const tournaments = await exports.getTournaments();
+    const tournament = tournaments.find(trnm => !!trnm.matchups.find(matchup => matchup.matchId === matchId));
+    return tournament || null;
+};
+exports.addTournament = (tournament) => new Promise(res => {
+    tournaments.insert(tournament, (err, newTournament) => {
+        if (err)
+            return res(null);
+        return res(newTournament);
+    });
+});
+exports.getTournament = (tournamentId) => new Promise(res => {
+    tournaments.findOne({ _id: tournamentId }, (err, tournament) => {
+        if (err || !tournament)
+            return res(null);
+        return res(tournament);
+    });
+});
+exports.updateTournament = (tournament) => new Promise(res => {
+    tournaments.update({ _id: tournament._id }, tournament, {}, err => {
+        if (err)
+            return res(null);
+        return res(tournament);
+    });
+});
+exports.bindMatch = async (matchId, matchupId, tournamentId) => {
+    const tournament = await exports.getTournament(tournamentId);
+    if (!tournament)
+        return null;
+    const matchup = tournament.matchups.find(matchup => matchup._id === matchupId);
+    if (!matchup)
+        return null;
+    matchup.matchId = matchId;
+    return await exports.updateTournament(tournament);
+};
+exports.fillNextMatch = (matchId, type) => new Promise(res => {
+    const maxWins = (type) => {
+        switch (type) {
+            case 'bo1':
+                return 1;
+            case 'bo3':
+                return 2;
+            case 'bo5':
+                return 3;
+            default:
+                return 2;
         }
-    });
-}); };
-exports.addTournament = function (tournament) {
-    return new Promise(function (res) {
-        tournaments.insert(tournament, function (err, newTournament) {
-            if (err)
-                return res(null);
-            return res(newTournament);
-        });
-    });
-};
-exports.getTournament = function (tournamentId) {
-    return new Promise(function (res) {
-        tournaments.findOne({ _id: tournamentId }, function (err, tournament) {
-            if (err || !tournament)
-                return res(null);
-            return res(tournament);
-        });
-    });
-};
-exports.updateTournament = function (tournament) {
-    return new Promise(function (res) {
-        tournaments.update({ _id: tournament._id }, tournament, {}, function (err) {
-            if (err)
-                return res(null);
-            return res(tournament);
-        });
-    });
-};
-exports.bindMatch = function (matchId, matchupId, tournamentId) { return __awaiter(void 0, void 0, void 0, function () {
-    var tournament, matchup;
-    return __generator(this, function (_a) {
-        switch (_a.label) {
-            case 0: return [4 /*yield*/, exports.getTournament(tournamentId)];
-            case 1:
-                tournament = _a.sent();
-                if (!tournament)
-                    return [2 /*return*/, null];
-                matchup = tournament.matchups.find(function (matchup) { return matchup._id === matchupId; });
-                if (!matchup)
-                    return [2 /*return*/, null];
-                matchup.matchId = matchId;
-                return [4 /*yield*/, exports.updateTournament(tournament)];
-            case 2: return [2 /*return*/, _a.sent()];
+    };
+    tournaments.findOne({
+        $where: function () {
+            return !!this.matchups.find((matchup) => matchup.matchId === matchId);
         }
-    });
-}); };
-exports.fillNextMatch = function (matchId, type) {
-    return new Promise(function (res) {
-        var maxWins = function (type) {
-            switch (type) {
-                case 'bo1':
-                    return 1;
-                case 'bo3':
-                    return 2;
-                case 'bo5':
-                    return 3;
-                default:
-                    return 2;
+    }, async (err, tournament) => {
+        if (err || !tournament)
+            return res(null);
+        const matchup = tournament.matchups.find(matchup => matchup.matchId === matchId);
+        if (!matchup || (!matchup.winner_to && type === 'winner') || (!matchup.loser_to && type === 'loser'))
+            return res(null);
+        const nextMatchup = tournament.matchups.find(next => (next._id === matchup.winner_to && type === 'winner') ||
+            (next._id === matchup.loser_to && type === 'loser'));
+        if (!nextMatchup)
+            return res(null);
+        const match = await M.getMatchById(matchId);
+        if (!match)
+            return res(null);
+        const winsRequired = maxWins(match.matchType);
+        if (match.left.wins !== winsRequired && match.right.wins !== winsRequired)
+            return res(null);
+        const winnerId = match.left.wins > match.right.wins ? match.left.id : match.right.id;
+        const loserId = match.left.wins > match.right.wins ? match.right.id : match.left.id;
+        if (!nextMatchup.matchId) {
+            const newMatch = {
+                id: v4_1.default(),
+                current: false,
+                left: { id: type === 'winner' ? winnerId : loserId, wins: 0 },
+                right: { id: null, wins: 0 },
+                matchType: 'bo1',
+                vetos: [],
+                startTime: 0
+            };
+            for (let i = 0; i < 7; i++) {
+                newMatch.vetos.push({
+                    teamId: '',
+                    mapName: '',
+                    side: 'NO',
+                    type: 'pick',
+                    mapEnd: false,
+                    reverseSide: false
+                });
             }
-        };
-        tournaments.findOne({
-            $where: function () {
-                return !!this.matchups.find(function (matchup) { return matchup.matchId === matchId; });
-            }
-        }, function (err, tournament) { return __awaiter(void 0, void 0, void 0, function () {
-            var matchup, nextMatchup, match, winsRequired, winnerId, loserId, newMatch, i, resp, nextMatch, teamIds;
-            return __generator(this, function (_a) {
-                switch (_a.label) {
-                    case 0:
-                        if (err || !tournament)
-                            return [2 /*return*/, res(null)];
-                        matchup = tournament.matchups.find(function (matchup) { return matchup.matchId === matchId; });
-                        if (!matchup || (!matchup.winner_to && type === 'winner') || (!matchup.loser_to && type === 'loser'))
-                            return [2 /*return*/, res(null)];
-                        nextMatchup = tournament.matchups.find(function (next) {
-                            return (next._id === matchup.winner_to && type === 'winner') ||
-                                (next._id === matchup.loser_to && type === 'loser');
-                        });
-                        if (!nextMatchup)
-                            return [2 /*return*/, res(null)];
-                        return [4 /*yield*/, M.getMatchById(matchId)];
-                    case 1:
-                        match = _a.sent();
-                        if (!match)
-                            return [2 /*return*/, res(null)];
-                        winsRequired = maxWins(match.matchType);
-                        if (match.left.wins !== winsRequired && match.right.wins !== winsRequired)
-                            return [2 /*return*/, res(null)];
-                        winnerId = match.left.wins > match.right.wins ? match.left.id : match.right.id;
-                        loserId = match.left.wins > match.right.wins ? match.right.id : match.left.id;
-                        if (!!nextMatchup.matchId) return [3 /*break*/, 4];
-                        newMatch = {
-                            id: v4_1["default"](),
-                            current: false,
-                            left: { id: type === 'winner' ? winnerId : loserId, wins: 0 },
-                            right: { id: null, wins: 0 },
-                            matchType: 'bo1',
-                            vetos: []
-                        };
-                        for (i = 0; i < 7; i++) {
-                            newMatch.vetos.push({
-                                teamId: '',
-                                mapName: '',
-                                side: 'NO',
-                                type: 'pick',
-                                mapEnd: false,
-                                reverseSide: false
-                            });
-                        }
-                        return [4 /*yield*/, M.addMatch(newMatch)];
-                    case 2:
-                        resp = _a.sent();
-                        if (!resp)
-                            return [2 /*return*/, res(null)];
-                        nextMatchup.matchId = newMatch.id;
-                        return [4 /*yield*/, exports.updateTournament(tournament)];
-                    case 3:
-                        _a.sent();
-                        _a.label = 4;
-                    case 4: return [4 /*yield*/, M.getMatchById(nextMatchup.matchId)];
-                    case 5:
-                        nextMatch = _a.sent();
-                        if (!nextMatch)
-                            return [2 /*return*/, res(null)];
-                        teamIds = [nextMatch.left.id, nextMatch.right.id];
-                        if ((teamIds.includes(winnerId) && type === 'winner') ||
-                            (teamIds.includes(loserId) && type === 'loser'))
-                            return [2 /*return*/, res(nextMatch)];
-                        if (!nextMatch.left.id) {
-                            nextMatch.left.id = type === 'winner' ? winnerId : loserId;
-                        }
-                        else if (!nextMatch.right.id) {
-                            nextMatch.right.id = type === 'winner' ? winnerId : loserId;
-                        }
-                        else {
-                            return [2 /*return*/, res(null)];
-                        }
-                        return [4 /*yield*/, M.updateMatch(nextMatch)];
-                    case 6:
-                        _a.sent();
-                        return [2 /*return*/, res(nextMatch)];
-                }
-            });
-        }); });
-    });
-};
-exports.createNextMatch = function (matchId) { return __awaiter(void 0, void 0, void 0, function () {
-    var _a;
-    return __generator(this, function (_b) {
-        switch (_b.label) {
-            case 0:
-                _b.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, Promise.all([exports.fillNextMatch(matchId, 'winner'), exports.fillNextMatch(matchId, 'loser')])];
-            case 1:
-                _b.sent();
-                return [3 /*break*/, 3];
-            case 2:
-                _a = _b.sent();
-                return [2 /*return*/];
-            case 3: return [2 /*return*/];
-        }
-    });
-}); };
-exports.deleteTournament = function (tournamentId) {
-    return new Promise(function (res) {
-        tournaments.remove({ _id: tournamentId }, function (err) {
-            if (err)
+            const resp = await M.addMatch(newMatch);
+            if (!resp)
                 return res(null);
-            return res(true);
-        });
+            nextMatchup.matchId = newMatch.id;
+            await exports.updateTournament(tournament);
+        }
+        const nextMatch = await M.getMatchById(nextMatchup.matchId);
+        if (!nextMatch)
+            return res(null);
+        const teamIds = [nextMatch.left.id, nextMatch.right.id];
+        if ((teamIds.includes(winnerId) && type === 'winner') ||
+            (teamIds.includes(loserId) && type === 'loser'))
+            return res(nextMatch);
+        if (!nextMatch.left.id) {
+            nextMatch.left.id = type === 'winner' ? winnerId : loserId;
+        }
+        else if (!nextMatch.right.id) {
+            nextMatch.right.id = type === 'winner' ? winnerId : loserId;
+        }
+        else {
+            return res(null);
+        }
+        await M.updateMatch(nextMatch);
+        return res(nextMatch);
     });
+});
+exports.createNextMatch = async (matchId) => {
+    try {
+        await Promise.all([exports.fillNextMatch(matchId, 'winner'), exports.fillNextMatch(matchId, 'loser')]);
+    }
+    catch {
+        return;
+    }
 };
+exports.deleteTournament = (tournamentId) => new Promise(res => {
+    tournaments.remove({ _id: tournamentId }, err => {
+        if (err)
+            return res(null);
+        return res(true);
+    });
+});

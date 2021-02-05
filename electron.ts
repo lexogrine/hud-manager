@@ -18,11 +18,7 @@ export const AFXInterop: HLAEChild = {
 export const isDev = process.env.DEV === 'true';
 
 async function mainProcess(server: Server, forceDev = false, gui = true) {
-	app.on('window-all-closed', app.quit);
-
 	const RMTPServer = fork(require.resolve('./RMTPServer.js'));
-
-	let renderer: ChildProcess = null;
 
 	const closeManager = () => {
 		if (server) {
@@ -37,16 +33,13 @@ async function mainProcess(server: Server, forceDev = false, gui = true) {
 		app.quit();
 	};
 
-	app.on('quit', () => {
-		if (renderer) renderer.kill();
-		closeManager();
-	});
+	app.on('window-all-closed', () => {});
 
 	if (!gui) return;
 
 	const args = ['./', '--renderer'];
 	if (forceDev) args.push('--dev');
-	renderer = spawn(process.execPath, args, {
+	const renderer = spawn(process.execPath, args, {
 		stdio: forceDev ? ['pipe', 'pipe', 'pipe', 'ipc'] : ['ignore', 'ignore', 'ignore', 'ipc']
 	});
 
@@ -56,10 +49,14 @@ async function mainProcess(server: Server, forceDev = false, gui = true) {
 		}
 	});
 
-	if (forceDev) renderer.stdout.on('data', data => console.log(data.toString()));
+	if (forceDev) renderer.stdout?.on('data', data => console.log(data.toString()));
 
 	renderer.on('exit', closeManager);
 	renderer.on('close', closeManager);
+
+	app.on('quit', () => {
+		renderer.kill();
+	});
 }
 
 async function startManager() {

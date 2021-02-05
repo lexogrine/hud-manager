@@ -7,12 +7,16 @@ export type {
 	PanelTemplate,
 	HUD,
 	Match,
+	MatchTeam,
 	Veto,
 	VetoType,
 	Tournament,
 	Config,
 	ExtendedConfig,
-	CFG
+	CFG,
+	CustomFieldEntry,
+	CustomFieldStore,
+	onExtraChangeFunction
 } from './../../types/interfaces';
 
 export interface Player {
@@ -24,6 +28,7 @@ export interface Player {
 	country: string;
 	steamid: string;
 	team: string;
+	extra: Record<string, string>;
 }
 
 export interface Team {
@@ -32,6 +37,7 @@ export interface Team {
 	country: string;
 	shortName: string;
 	logo: string;
+	extra: Record<string, string>;
 }
 
 export interface CFGGSIResponse {

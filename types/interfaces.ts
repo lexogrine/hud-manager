@@ -7,6 +7,30 @@ export interface Player {
 	country: string;
 	steamid: string;
 	team: string;
+	extra: Record<string, string>;
+}
+
+export type CustomFieldInputType = Exclude<PanelInputType, 'select' | 'action' | 'checkbox'>;
+
+export interface CustomFieldData {
+	name: string;
+	type: CustomFieldInputType;
+}
+
+export interface CustomFieldEntry extends CustomFieldData {
+	_id: string;
+	visible: boolean;
+}
+
+export type onExtraChangeFunction = {
+	(field: string, type: 'image'): (files: FileList) => void;
+	(field: string, type: 'color'): (hex: string) => void;
+	(field: string, type: CustomFieldInputType): (event: React.ChangeEvent<HTMLInputElement>) => void;
+};
+
+export interface CustomFieldStore {
+	teams: CustomFieldEntry[];
+	players: CustomFieldEntry[];
 }
 
 export interface CFG {
@@ -20,6 +44,7 @@ export interface Team {
 	shortName: string;
 	country: string;
 	logo: string;
+	extra: Record<string, string>;
 }
 
 export type VetoType = 'ban' | 'pick' | 'decider';
@@ -40,19 +65,19 @@ export interface Veto {
 
 export type BOTypes = 'bo1' | 'bo2' | 'bo3' | 'bo5';
 
+export interface MatchTeam {
+	id: string | null;
+	wins: number;
+}
+
 export interface Match {
 	id: string;
 	current: boolean;
-	left: {
-		id: string | null;
-		wins: number;
-	};
-	right: {
-		id: string | null;
-		wins: number;
-	};
+	left: MatchTeam;
+	right: MatchTeam;
 	matchType: BOTypes;
 	vetos: Veto[];
+	startTime: number;
 }
 
 export interface TournamentMatchup {
@@ -91,7 +116,6 @@ export interface ExtendedConfig extends Config {
 
 export type PanelInputType =
 	| 'text'
-	| 'number'
 	| 'team'
 	| 'image'
 	| 'match'
@@ -102,7 +126,7 @@ export type PanelInputType =
 	| 'color';
 
 export interface GeneralInput {
-	type: Exclude<PanelInputType, 'select' | 'action' | 'checkbox'>;
+	type: CustomFieldInputType;
 	name: string;
 	label: string;
 }
@@ -151,6 +175,11 @@ export interface PlayerRoundData {
 	damage: number;
 }
 
+export type RequiredFields = {
+	[type in keyof CustomFieldStore]?: {
+		[key: string]: CustomFieldInputType;
+	};
+};
 export interface HUD {
 	name: string;
 	version: string;
@@ -162,6 +191,7 @@ export interface HUD {
 	panel?: PanelTemplate[];
 	keybinds?: KeyBind[];
 	url: string;
+	requiredFields?: RequiredFields;
 	boltobserv?: {
 		css?: boolean;
 		maps?: boolean;

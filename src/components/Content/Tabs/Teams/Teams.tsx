@@ -6,10 +6,13 @@ import * as I from './../../../../api/interfaces';
 import { IContextData } from './../../../../components/Context';
 import TeamEditModal from './TeamEditModal';
 import TeamListEntry from './Team';
+import CustomFieldsModal from '../../../CustomFields/CustomFieldsModal';
 
 interface IProps {
 	cxt: IContextData;
 }
+
+const quickClone: <T>(obj: T) => T = obj => JSON.parse(JSON.stringify(obj));
 
 const TeamsTab = ({ cxt }: IProps) => {
 	const emptyTeam: I.Team = {
@@ -17,11 +20,16 @@ const TeamsTab = ({ cxt }: IProps) => {
 		name: '',
 		shortName: '',
 		country: '',
-		logo: ''
+		logo: '',
+		extra: {}
 	};
 	const [form, setForm] = useState(emptyTeam);
-	const [openModalState, setOpenState] = useState(false);
 	const [search, setSearch] = useState('');
+
+	const [editModalState, setEditState] = useState(false);
+	const [fieldsModalState, setFieldsState] = useState(false);
+
+	const [customFieldForm, setCustomFieldForm] = useState<I.CustomFieldEntry[]>(quickClone(cxt.fields.teams));
 
 	const clearAvatar = () => {
 		const avatarInput: any = document.getElementById('avatar');
@@ -83,6 +91,38 @@ const TeamsTab = ({ cxt }: IProps) => {
 		return fileHandler(event.target.files);
 	};
 
+	const extraChangeHandler = (field: string, type: Exclude<I.PanelInputType, 'select' | 'action' | 'checkbox'>) => {
+		const fileHandler = (files: FileList) => {
+			if (!files) return;
+			const file = files[0];
+			if (!file) {
+				setForm(prevForm => ({ ...prevForm, logo: '' }));
+				return;
+			}
+			if (!file.type.startsWith('image')) {
+				return;
+			}
+			const reader: any = new FileReader();
+			reader.readAsDataURL(file);
+			reader.onload = () => {
+				setForm({
+					...form,
+					extra: { ...form.extra, [field]: reader.result.replace(/^data:([a-z]+)\/(.+);base64,/, '') }
+				});
+			};
+		};
+		if (type === 'image') {
+			return fileHandler;
+		}
+		if (type === 'color') {
+			return (hex: string) => {
+				setForm({ ...form, extra: { ...form.extra, [field]: hex } });
+			};
+		}
+		return (event: React.ChangeEvent<HTMLInputElement>) => {
+			setForm({ ...form, extra: { ...form.extra, [field]: event.target.value } });
+		};
+	};
 	const save = async () => {
 		let response: any;
 		if (form._id === 'empty') {
@@ -103,7 +143,7 @@ const TeamsTab = ({ cxt }: IProps) => {
 		if (form._id === 'empty') return;
 		const response = await api.teams.delete(form._id);
 		if (response) {
-			setOpenState(false);
+			setEditState(false);
 			await loadTeams();
 			return loadEmpty();
 		}
@@ -111,7 +151,7 @@ const TeamsTab = ({ cxt }: IProps) => {
 
 	const edit = (team: I.Team) => {
 		setForm(team);
-		setOpenState(true);
+		setEditState(true);
 	};
 
 	const filterTeams = (team: I.Team): boolean => {
@@ -125,11 +165,22 @@ const TeamsTab = ({ cxt }: IProps) => {
 		);
 	};
 
-	const add = () => {
-		loadEmpty();
-		setOpenState(true);
+	const openCustomFields = () => {
+		setCustomFieldForm(quickClone(cxt.fields.teams));
+		setFieldsState(true);
 	};
 
+	const add = () => {
+		loadEmpty();
+		setEditState(true);
+	};
+
+	const saveFields = async () => {
+		await api.teams.fields.update(customFieldForm.filter(fieldEntry => fieldEntry.name));
+		cxt.reload();
+		setFieldsState(false);
+	};
+	const visibleFields = cxt.fields.teams.filter(field => field.visible);
 	return (
 		<Form>
 			<div className="tab-title-container">
@@ -144,26 +195,54 @@ const TeamsTab = ({ cxt }: IProps) => {
 				/>
 			</div>
 			<TeamEditModal
-				open={openModalState}
+				open={editModalState}
 				toggle={() => {
-					setOpenState(!openModalState);
+					setEditState(!editModalState);
 				}}
 				team={form}
 				onChange={changeHandler}
 				onFileChange={fileHandler}
+				onExtraChange={extraChangeHandler as I.onExtraChangeFunction}
 				save={save}
 				deleteTeam={deleteTeam}
+				fields={cxt.fields.teams}
+				cxt={cxt}
+			/>
+			<CustomFieldsModal
+				fields={customFieldForm}
+				open={fieldsModalState}
+				toggle={() => {
+					setFieldsState(!fieldsModalState);
+				}}
+				setForm={setCustomFieldForm}
+				save={saveFields}
 			/>
 			<div className="tab-content-container no-padding">
-				<div className="player-list-entry heading">
+				<div className="item-list-entry heading">
 					<div className="picture">Logo</div>
 					<div className="name">Name</div>
 					<div className="shortname">Short name</div>
 					<div className="country">Country</div>
-					<div className="options"></div>
+					{visibleFields.map(field => (
+						<div className="custom-field" key={field._id}>
+							{field.name}
+						</div>
+					))}
+					<div className="options">
+						<Button className="purple-btn round-btn" onClick={openCustomFields}>
+							Manage
+						</Button>
+					</div>
 				</div>
 				{cxt.teams.filter(filterTeams).map(team => (
-					<TeamListEntry hash={cxt.hash} key={team._id} team={team} edit={() => edit(team)} />
+					<TeamListEntry
+						hash={cxt.hash}
+						key={team._id}
+						team={team}
+						edit={() => edit(team)}
+						fields={visibleFields}
+						cxt={cxt}
+					/>
 				))}
 				<Row>
 					<Col className="main-buttons-container">

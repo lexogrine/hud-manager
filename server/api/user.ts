@@ -1,7 +1,7 @@
 import express from 'express';
 import { app } from 'electron';
 import jwt from 'jsonwebtoken';
-import nodeFetch from 'node-fetch';
+import nodeFetch, { RequestInit } from 'node-fetch';
 import { publicKey } from './publickey';
 import * as I from '../../types/interfaces';
 import { customer } from './../api';
@@ -21,8 +21,7 @@ const api = (url: string, method = 'GET', body?: any) => {
 		headers: {
 			Accept: 'application/json',
 			'Content-Type': 'application/json'
-		},
-		credentials: 'include'
+		}
 	};
 	if (body) {
 		options.body = JSON.stringify(body);

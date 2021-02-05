@@ -53,9 +53,7 @@ export const checkGSIFile: express.RequestHandler = async (req, res) => {
 
 export const generateGSIFile = async () => {
 	const config = await loadConfig();
-	if (!config) {
-		return null;
-	}
+
 	const address = `http://localhost:${config.port}/`;
 
 	const text = generateGSI('HUDMANAGERGSI', address, config.token).vdf;

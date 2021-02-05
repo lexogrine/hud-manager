@@ -1,6 +1,6 @@
 import express from 'express';
 import * as T from './';
-import { getMatches } from '../match';
+import { getMatches } from '../matches';
 
 export const getCurrentTournament: express.RequestHandler = async (req, res) => {
 	const matches = await getMatches();

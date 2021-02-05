@@ -1,44 +1,13 @@
 import express from 'express';
-import db from './../../init/database';
-import { Player } from '../../types/interfaces';
-import { loadConfig, internalIP } from './config';
+import db from './../../../init/database';
+import { Player } from '../../../types/interfaces';
+import { loadConfig, internalIP } from './../config';
 import fetch from 'node-fetch';
-import isSvg from './../../src/isSvg';
+import isSvg from './../../../src/isSvg';
+import { getPlayersList, getPlayerById, getPlayerBySteamId } from './index';
+import * as F from './../fields';
 
 const players = db.players;
-
-export async function getPlayerById(id: string, avatar = false): Promise<Player | null> {
-	return new Promise(res => {
-		players.findOne({ _id: id }, (err, player) => {
-			if (err) {
-				return res(null);
-			}
-			if (!avatar && player && player.avatar) delete player.avatar;
-			return res(player);
-		});
-	});
-}
-async function getPlayerBySteamId(steamid: string, avatar = false): Promise<Player | null> {
-	return new Promise(res => {
-		players.findOne({ steamid }, (err, player) => {
-			if (err) {
-				return res(null);
-			}
-			if (!avatar && player && player.avatar) delete player.avatar;
-			return res(player);
-		});
-	});
-}
-
-export const getPlayersList = (query: any) =>
-	new Promise<Player[]>(res => {
-		players.find(query, (err, players) => {
-			if (err) {
-				return res([]);
-			}
-			return res(players);
-		});
-	});
 
 export const getPlayers: express.RequestHandler = async (req, res) => {
 	const players = await getPlayersList({});
@@ -82,7 +51,8 @@ export const updatePlayer: express.RequestHandler = async (req, res) => {
 		avatar: req.body.avatar,
 		country: req.body.country,
 		steamid: req.body.steamid,
-		team: req.body.team
+		team: req.body.team,
+		extra: req.body.extra
 	};
 
 	if (req.body.avatar === undefined) {
@@ -105,7 +75,8 @@ export const addPlayer: express.RequestHandler = (req, res) => {
 		avatar: req.body.avatar,
 		country: req.body.country,
 		steamid: req.body.steamid,
-		team: req.body.team
+		team: req.body.team,
+		extra: req.body.extra
 	};
 	players.insert(newPlayer, (err, player) => {
 		if (err) {
@@ -173,4 +144,17 @@ export const getAvatarURLBySteamID: express.RequestHandler = async (req, res) =>
 		}
 	} catch {}
 	return res.json(response);
+};
+
+export const getFields: express.RequestHandler = async (req, res) => {
+	const fields = await F.getFields('players');
+	return res.json(fields);
+};
+
+export const updateFields: express.RequestHandler = async (req, res) => {
+	if (!req.body) {
+		return res.sendStatus(422);
+	}
+	const newFields = await F.updateFields(req.body, 'players');
+	return res.json(newFields);
 };

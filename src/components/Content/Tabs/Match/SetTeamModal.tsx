@@ -37,7 +37,7 @@ class SetTeamModal extends React.Component<Props, State> {
 
 	changeHandler = (name: string) => (event: any) => {
 		const { form }: any = this.state;
-		form[name] = event.target.value;
+		form[name] = name === 'wins' ? Number(event.target.value) : event.target.value;
 		this.setState({ form });
 	};
 	render() {

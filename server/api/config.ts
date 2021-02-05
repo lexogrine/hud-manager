@@ -19,11 +19,13 @@ publicIp
 	})
 	.catch();
 
-export const loadConfig = async (): Promise<Config | null> => {
+const defaultConfig: Config = { steamApiKey: '', token: '', port: 1349, hlaePath: '', afxCEFHudInteropPath: '' };
+
+export const loadConfig = async (): Promise<Config> => {
 	return new Promise(res => {
-		configs.find({}, async (err, config) => {
+		configs.find({}, async (err: any, config: Config[]) => {
 			if (err) {
-				return res(null);
+				return res(defaultConfig);
 			}
 			if (config.length) {
 				if (
@@ -42,15 +44,12 @@ export const loadConfig = async (): Promise<Config | null> => {
 
 				return res(await setConfig(config[0]));
 			}
-			configs.insert(
-				{ steamApiKey: '', token: '', port: 1349, hlaePath: '', afxCEFHudInteropPath: '' },
-				(err, config) => {
-					if (err) {
-						return res(null);
-					}
-					return res(config);
+			configs.insert(defaultConfig, (err, config) => {
+				if (err) {
+					return res(defaultConfig);
 				}
-			);
+				return res(config);
+			});
 		});
 	});
 };
@@ -81,14 +80,14 @@ export const updateConfig = (io: socketio.Server): express.RequestHandler => asy
 };
 
 export const setConfig = async (config: Config) =>
-	new Promise<Config | null>(res => {
+	new Promise<Config>(res => {
 		configs.update({}, { $set: config }, {}, async err => {
 			if (err) {
-				return res(null);
+				return res(defaultConfig);
 			}
 			const newConfig = await loadConfig();
 			if (!newConfig) {
-				return res(null);
+				return res(defaultConfig);
 			}
 			return res(newConfig);
 		});
@@ -96,11 +95,16 @@ export const setConfig = async (config: Config) =>
 
 export const verifyUrl = async (url: string) => {
 	if (!url || typeof url !== 'string') return false;
-	if (url.startsWith('http://localhost:3500/')) return true;
 	const cfg = await loadConfig();
+	if (!cfg) {
+		return false;
+	}
 	const bases = [`http://${internalIP}:${cfg.port}`, `http://${publicIP}:${cfg.port}`];
 	if (process.env.DEV === 'true') {
 		bases.push(`http://localhost:3000/?port=${cfg.port}`);
+	}
+	if (bases.find(base => url.startsWith(`${base}/dev`))) {
+		return true;
 	}
 	const base = bases.find(base => url.startsWith(base));
 	if (!base) return false;

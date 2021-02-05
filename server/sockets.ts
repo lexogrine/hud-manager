@@ -6,12 +6,11 @@ import { app as Application } from 'electron';
 import path from 'path';
 import fetch from 'node-fetch';
 import * as I from './../types/interfaces';
-import request from 'request';
 import { getHUDData } from './../server/api/huds';
-import { getMatches, updateRound, getMatchById, updateMatch, reverseSide } from './api/match';
+import { getMatches, updateRound, getMatchById, updateMatch, reverseSide } from './api/matches';
 import fs from 'fs';
 import portscanner from 'portscanner';
-import { loadConfig, verifyUrl } from './api/config';
+import { internalIP, loadConfig, verifyUrl } from './api/config';
 import { testData } from './api/testing';
 import { getTeamById } from './api/teams';
 import { getPlayerById } from './api/players';
@@ -36,8 +35,8 @@ class DevHUDListener {
 		this.callback = callback;
 	}
 	checkPort = () => {
-		portscanner.checkPortStatus(this.port, '127.0.0.1', (err, status) => {
-			status = status === 'open';
+		portscanner.checkPortStatus(this.port, '127.0.0.1', (err, portStatus) => {
+			const status = portStatus === 'open';
 			if (status !== this.status) {
 				this.callback(status);
 			}
@@ -67,7 +66,7 @@ class HUDStateManager {
 		if (!fs.existsSync(hudPath)) return;
 		fs.writeFileSync(path.join(hudPath, 'config.hm'), JSON.stringify(data));
 	}
-	set(hud: string, section: string, data) {
+	set(hud: string, section: string, data: any) {
 		const form = this.get(hud);
 		const newForm = { ...form, [section]: data };
 		this.save(hud, newForm);
@@ -90,7 +89,7 @@ class HUDStateManager {
 
 	static extend = async (hudData: any) => {
 		if (!hudData || typeof hudData !== 'object') return hudData;
-		for (const data of Object.values(hudData)) {
+		for (const data of Object.values(hudData) as any[]) {
 			if (!data || typeof data !== 'object') return hudData;
 			const entries: any[] = Object.values(data);
 			for (const entry of entries) {
@@ -142,25 +141,28 @@ export const HUDState = new HUDStateManager();
 
 export const GSI = new CSGOGSI();
 
-export default function (server: http.Server, app: express.Router) {
-	async function getJSONArray<T>(url: string) {
-		return new Promise<T[]>(resolve => {
-			request.get(url, (err, res) => {
-				try {
-					if (err) {
-						resolve(undefined);
-						return;
-					}
-					const panel: T[] = JSON.parse(res.body);
-					if (!panel) return resolve(undefined);
-					if (!Array.isArray(panel)) return resolve(undefined);
-					resolve(panel);
-				} catch {
-					resolve(undefined);
-				}
-			});
-		});
+const assertUser: express.RequestHandler = (req, res, next) => {
+	if (!customer.customer) {
+		return res.sendStatus(403);
 	}
+	return next();
+};
+
+export default function (server: http.Server, app: express.Router) {
+	const getJSONArray: <T>(url: string) => Promise<T[]> = url => {
+		return fetch(url)
+			.then(res => res.json())
+			.then(panel => {
+				try {
+					if (!panel) return [];
+					if (!Array.isArray(panel)) return [];
+					return panel;
+				} catch {
+					return [];
+				}
+			})
+			.catch(() => []);
+	};
 
 	const runtimeConfig: RuntimeConfig = {
 		last: null,
@@ -211,32 +213,36 @@ export default function (server: http.Server, app: express.Router) {
 			return io.emit('reloadHUDs');
 		}
 		if (HUDState.devHUD) return;
-		request.get('http://localhost:3500/hud.json', async (err, res) => {
-			if (err) return io.emit('reloadHUDs', false);
-			try {
-				const hud: I.HUD = JSON.parse(res.body);
-				if (!hud) return;
-				if (!hud || !hud.version || !hud.author) return;
-				hud.keybinds = await getJSONArray('http://localhost:3500/keybinds.json');
-				hud.panel = await getJSONArray('http://localhost:3500/panel.json');
-				hud.isDev = true;
-				hud.dir = (Math.random() * 1000 + 1)
-					.toString(36)
-					.replace(/[^a-z]+/g, '')
-					.substr(0, 15);
-				const cfg = await loadConfig();
-				hud.url = `http://localhost:3500/?port=${cfg.port}`;
-				HUDState.devHUD = hud;
-				if (runtimeConfig.devSocket) {
-					const hudData = HUDState.get(hud.dir);
-					const extended = await HUDStateManager.extend(hudData);
-					io.to(hud.dir).emit('hud_config', extended);
-				}
+		fetch('http://localhost:3500/dev/hud.json')
+			.then(res => res.json())
+			.then(async (hud: I.HUD) => {
+				try {
+					if (!hud) return;
+					if (!hud || !hud.version || !hud.author) return;
+					hud.keybinds = await getJSONArray('http://localhost:3500/dev/keybinds.json');
+					hud.panel = await getJSONArray('http://localhost:3500/dev/panel.json');
+					hud.isDev = true;
+					hud.dir = (Math.random() * 1000 + 1)
+						.toString(36)
+						.replace(/[^a-z]+/g, '')
+						.substr(0, 15);
+					const cfg = await loadConfig();
+					if (!cfg) {
+						return;
+					}
+					hud.url = `http://${internalIP}:${cfg.port}/development/`;
+					HUDState.devHUD = hud;
+					if (runtimeConfig.devSocket) {
+						const hudData = HUDState.get(hud.dir);
+						const extended = await HUDStateManager.extend(hudData);
+						io.to(hud.dir).emit('hud_config', extended);
+					}
+				} catch {}
 				io.emit('reloadHUDs');
-			} catch {
-				io.emit('reloadHUDs');
-			}
-		});
+			})
+			.catch(() => {
+				return io.emit('reloadHUDs');
+			});
 	});
 
 	portListener.start();
@@ -307,7 +313,10 @@ export default function (server: http.Server, app: express.Router) {
 
 	radar.startRadar(app, io);
 
-	app.post('/', (req, res) => {
+	app.post('/', assertUser, (req, res) => {
+		if (!customer.customer) {
+			return res.sendStatus(200);
+		}
 		runtimeConfig.last = req.body;
 
 		if (intervalId) {
@@ -322,7 +331,7 @@ export default function (server: http.Server, app: express.Router) {
 		res.sendStatus(200);
 	});
 
-	app.post('/api/test', (_req, res) => {
+	app.post('/api/test', assertUser, (_req, res) => {
 		res.sendStatus(200);
 		if (intervalId) stopSendingTestData();
 		else startSendingTestData();
@@ -392,7 +401,7 @@ export default function (server: http.Server, app: express.Router) {
 		});
 	});
 
-	mirv(data => {
+	mirv((data: any) => {
 		io.to('csgo').emit('update_mirv', data);
 	});
 
@@ -478,29 +487,27 @@ export default function (server: http.Server, app: express.Router) {
 
 	GSI.on('data', async data => {
 		await updateRound(data);
-		let round: Score;
 		if (
 			(last?.map.team_ct.score !== data.map.team_ct.score) !==
 			(last?.map.team_t.score !== data.map.team_t.score)
 		) {
 			if (last?.map.team_ct.score !== data.map.team_ct.score) {
-				round = {
+				const round = {
 					winner: data.map.team_ct,
 					loser: data.map.team_t,
 					map: data.map,
 					mapEnd: false
 				};
+				await onRoundEnd(round);
 			} else {
-				round = {
+				const round = {
 					winner: data.map.team_t,
 					loser: data.map.team_ct,
 					map: data.map,
 					mapEnd: false
 				};
+				await onRoundEnd(round);
 			}
-		}
-		if (round) {
-			await onRoundEnd(round);
 		}
 		if (data.map.phase === 'gameover' && last.map.phase !== 'gameover') {
 			const winner = data.map.team_ct.score > data.map.team_t.score ? data.map.team_ct : data.map.team_t;
@@ -515,7 +522,7 @@ export default function (server: http.Server, app: express.Router) {
 
 			await onMatchEnd(final);
 		}
-		last = GSI.last;
+		last = GSI.last as CSGO;
 		const now = new Date().getTime();
 		if (now - lastUpdate > 300000 && customer.customer) {
 			lastUpdate = new Date().getTime();

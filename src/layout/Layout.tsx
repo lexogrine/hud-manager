@@ -38,9 +38,11 @@ export default class Layout extends React.Component<{}, IState> {
 						this.loadPlayers(),
 						this.loadTeams(),
 						this.loadMatch(),
-						this.loadTournaments()
+						this.loadTournaments(),
+						this.getCustomFields()
 					]).then(this.rehash);
 				},
+				fields: { players: [], teams: [] },
 				hash: ''
 			},
 			loginError: '',
@@ -60,6 +62,13 @@ export default class Layout extends React.Component<{}, IState> {
 	rehash = () => {
 		this.setState(state => {
 			state.data.hash = hash();
+			return state;
+		});
+	};
+	getCustomFields = async () => {
+		const [teams, players] = await Promise.all([api.teams.fields.get(), api.players.fields.get()]);
+		this.setState(state => {
+			state.data.fields = { teams, players };
 			return state;
 		});
 	};

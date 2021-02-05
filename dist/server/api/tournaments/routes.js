@@ -18,14 +18,15 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-exports.__esModule = true;
-var T = __importStar(require("./middlewares"));
-var initRoute = function (router) {
+Object.defineProperty(exports, "__esModule", { value: true });
+const T = __importStar(require("./middlewares"));
+const initRoute = (router) => {
     router.route('/api/tournaments').get(T.getTournaments).post(T.addTournament);
     router.route('/api/tournament').get(T.getCurrentTournament);
     router
         .route('/api/tournaments/:id')
         .post(T.bindMatchToMatchup)
-        .patch(T.updateTournament)["delete"](T.deleteTournament);
+        .patch(T.updateTournament)
+        .delete(T.deleteTournament);
 };
-exports["default"] = initRoute;
+exports.default = initRoute;

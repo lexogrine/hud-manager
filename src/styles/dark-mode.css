@@ -1,6 +1,6 @@
 body{
    background-color: transparent;
-    color: #f4f4f4;
+    color: #fff;
 }
 body.hlaegui {
     overflow: hidden;
@@ -16,7 +16,7 @@ button.btn-primary {
 .card {
     background-color:#6b00af;
 }
-.veto-container.empty .veto-title {
+.entry-container.empty .veto-title {
     color: #f4f4f4;
 }
 /*.hudRow {

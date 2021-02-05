@@ -1,3 +1,4 @@
+import { CustomFieldEntry } from '../../types/interfaces';
 import config from './config';
 import * as I from './interfaces';
 const apiUrl = config.apiAddress;
@@ -14,7 +15,12 @@ function arrayBufferToBase64(buffer: any) {
 	return window.btoa(binary);
 }
 
-const apiHandler = (url: string, method = 'GET', body?: any, credentials?: boolean) => {
+const apiHandler: <T>(url: string, method?: string, body?: any, credentials?: boolean) => Promise<T> = (
+	url,
+	method = 'GET',
+	body,
+	credentials
+) => {
 	const options: RequestInit = {
 		method,
 		headers: {
@@ -32,8 +38,9 @@ const apiHandler = (url: string, method = 'GET', body?: any, credentials?: boole
 		return res.json().catch(() => data && data.status < 300);
 	});
 };
-export async function apiV2(url: string, method = 'GET', body?: any) {
-	return apiHandler(`${config.isDev ? apiUrl : '/'}api/${url}`, method, body);
+
+export async function apiV2<T>(url: string, method = 'GET', body?: any) {
+	return apiHandler<T>(`${config.isDev ? apiUrl : '/'}api/${url}`, method, body);
 	/*const options: RequestInit = {
         method,
         headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
@@ -51,22 +58,30 @@ export async function apiV2(url: string, method = 'GET', body?: any) {
 
 export default {
 	players: {
-		get: async (): Promise<I.Player[]> => await apiV2('players'),
+		get: () => apiV2<I.Player[]>('players'),
 		add: async (player: any) => await apiV2('players', 'POST', player),
 		update: async (id: string, player: any) => await apiV2(`players/${id}`, 'PATCH', player),
 		delete: async (id: string) => await apiV2(`players/${id}`, 'DELETE'),
 		getAvatar: async (id: string) => {
 			fetch(`${apiUrl}api/players/avatar/${id}`);
+		},
+		fields: {
+			get: () => apiV2<CustomFieldEntry[]>('players/fields'),
+			update: (fields: CustomFieldEntry[]) => apiV2<CustomFieldEntry[]>('players/fields', 'PATCH', fields)
 		}
 	},
 	teams: {
-		get: async (): Promise<I.Team[]> => await apiV2('teams'),
+		get: async () => apiV2<I.Team[]>('teams'),
 		add: async (team: any) => await apiV2('teams', 'POST', team),
 		update: async (id: string, team: any) => await apiV2(`teams/${id}`, 'PATCH', team),
 		delete: async (id: string) => await apiV2(`teams/${id}`, 'DELETE'),
 		getLogo: async (id: string) => {
 			const response = await fetch(`${apiUrl}api/teams/logo/${id}`);
 			return response;
+		},
+		fields: {
+			get: () => apiV2<CustomFieldEntry[]>('teams/fields'),
+			update: (fields: CustomFieldEntry[]) => apiV2<CustomFieldEntry[]>('teams/fields', 'PATCH', fields)
 		}
 	},
 	config: {
@@ -140,7 +155,7 @@ export default {
 				return null;
 			}
 		},
-		sync: async (db: DB) => await apiV2('import', 'POST', db),
-		syncCheck: async (db: DB) => await apiV2('import/verify', 'POST', db)
+		sync: async (db: DB) => await apiV2<any>('import', 'POST', db),
+		syncCheck: async (db: DB) => await apiV2<any>('import/verify', 'POST', db)
 	}
 };

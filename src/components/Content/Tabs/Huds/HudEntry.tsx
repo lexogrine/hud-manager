@@ -14,11 +14,13 @@ import Killfeed from './../../../../styles/Killfeed.png';
 import { socket } from '../Live/Live';
 import RemoveHUDModal from './RemoveModal';
 import { hashCode } from '../../../../hash';
+import { getMissingFields } from '../../../../utils';
 
 interface IProps {
 	hud: I.HUD;
 	isActive: boolean;
 	toggleConfig: (hud: I.HUD) => any;
+	customFields: I.CustomFieldStore;
 }
 
 interface IState {
@@ -57,7 +59,32 @@ export default class HudEntry extends Component<IProps, IState> {
 			.catch();
 	};
 	render() {
-		const { hud, toggleConfig, isActive } = this.props;
+		const { hud, toggleConfig, isActive, customFields } = this.props;
+		const missingFieldsText = [];
+		const missingFields = getMissingFields(customFields, hud.requiredFields);
+		if (missingFields) {
+			missingFieldsText.push(<div>Missing fields</div>);
+			if (missingFields.players) {
+				missingFieldsText.push(
+					<div>
+						Players:{' '}
+						{Object.entries(missingFields.players)
+							.map(([field, type]) => `Field "${field}" of type "${type}"`)
+							.join(', ')}
+					</div>
+				);
+			}
+			if (missingFields.teams) {
+				missingFieldsText.push(
+					<div>
+						Teams:{' '}
+						{Object.entries(missingFields.teams)
+							.map(([field, type]) => `Field "${field}" of type "${type}"`)
+							.join(', ')}
+					</div>
+				);
+			}
+		}
 		return (
 			<Row key={hud.dir} className="hudRow">
 				<RemoveHUDModal isOpen={this.state.isOpen} toggle={this.toggleModal} hud={hud} remove={this.delete} />
@@ -86,20 +113,16 @@ export default class HudEntry extends Component<IProps, IState> {
 							</Row>
 							{hud.killfeed || hud.radar ? (
 								<Row>
-									<Col>
+									<Col className="hud-status">
 										{hud.radar ? (
 											<Tip
 												id={`radar_support_${hud.dir}`}
 												className="radar_support"
-												label={
-													<img src={Map} className="action" alt="Supports boltgolt's radar" />
-												}
+												label={<img src={Map} className="action" alt="Supports custom radar" />}
 											>
-												Includes Boltgolt&apos;s radar
+												Includes custom radar
 											</Tip>
-										) : (
-											''
-										)}
+										) : null}
 										{hud.killfeed ? (
 											<Tip
 												id={`killfeed_support_${hud.dir}`}
@@ -114,9 +137,16 @@ export default class HudEntry extends Component<IProps, IState> {
 											>
 												Includes custom killfeed
 											</Tip>
-										) : (
-											''
-										)}
+										) : null}
+										{missingFieldsText.length ? (
+											<Tip
+												id={`missing_fields_${hud.dir}`}
+												className="missing_fields"
+												label={<i className="material-icons">warning</i>}
+											>
+												{missingFieldsText}
+											</Tip>
+										) : null}
 									</Col>
 								</Row>
 							) : (

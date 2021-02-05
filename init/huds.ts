@@ -1,6 +1,5 @@
 import { BrowserWindow, Tray, Menu, globalShortcut } from 'electron';
 import { getHUDData } from './../server/api/huds';
-import * as match from './../server/api/match';
 import * as path from 'path';
 //import ip from 'ip';
 import socketio from 'socket.io';
@@ -67,7 +66,6 @@ class HUD {
 					globalShortcut.unregister(keybind.bind);
 				}
 			}
-			globalShortcut.unregister('Alt+r');
 			globalShortcut.unregister('Alt+F');
 
 			this.hud = null;
@@ -84,10 +82,6 @@ class HUD {
 		if (!this.current) return;
 		this.current.setOpacity(1);
 		this.current.show();
-
-		globalShortcut.register('Alt+r', () => {
-			match.reverseSide(io);
-		});
 
 		globalShortcut.register('Alt+F', () => {
 			if (!this.current || !hud || !hud.url) return;
