@@ -1,0 +1,163 @@
+{
+	"translation": {
+		"common": {
+			"or": "or",
+			"save": "Save",
+			"loadingSuccess": "Loaded successfully",
+			"loaded": "Loaded",
+			"notLoaded": "Not loaded",
+			"vs": "VS",
+			"noTeam": "No team",
+			"teamOne": "Team One",
+			"teamTwo": "Team Two",
+			"map": "Map",
+			"team1": "Team 1",
+			"team2": "Team 2",
+			"teamNumber": "TEAM #{{num}}",
+			"vetoNumber": "VETO {{num}}",
+			"delete": "Delete",
+			"edit": "Edit",
+			"live": "Live",
+			"goBack": "Go back",
+			"ct": "CT",
+			"t": "T",
+			"no": "No"
+		},
+		"live": {
+			"header": "Live",
+			"noGame": "No game is currently live.",
+			"tip": "Players currently in match, click to add a player to the player list."
+		},
+		"match": {
+			"matches": "Matches",
+			"live": "Live",
+			"edit": "Edit match",
+			"editTeam": "Edit team",
+			"emptyTeam": "Empty team",
+			"scoreModal": {
+				"unsetWin": "Unset win",
+				"setWin": "Set win",
+				"teamLogo": "Team Logo"
+			},
+			"setLive": "Set live",
+			"tabs": {
+				"ended": "ended",
+				"current": "current",
+				"future": "future"
+			},
+			"columns": {
+				"match": "Match",
+				"score": "Score",
+				"date": "Date",
+				"time": "Time"
+			},
+			"createNew": "Create New",
+			"wins": "WINS",
+			"wrongTeamSelected": "Wrong team selected",
+			"vetoType": {
+				"pick": "pick",
+				"ban": "ban",
+				"decider": "decider"
+			},
+			"vetoSide": {
+				"left": "left",
+				"right": "right"
+			},
+			"vetoDescription": "{{teamName}} {{vetoType}}s {{mapName}}",
+			"vetoSidepick": {
+				"normal": ", {{secondTeamName}} chooses {{side}} side",
+				"decider": "{{mapName}} decider"
+			},
+			"pickBothTeams": "Pick both teams to set vetos",
+			"setScore": "Set score",
+			"resetScore": "Reset score",
+			"questionOpponentPick": "Does the opponent pick a side?",
+			"reversedSides": "Reversed sides"
+		},
+		"credits": {
+			"header": "Credits",
+			"applicationAndAPI": "Application and HUD API",
+			"testingAndDebugging": "Testing and Debugging",
+			"customRadarBy": "Custom radar by",
+			"initialLayoutIdea": "Initial Layout Idea",
+			"feedbackAndIdeas": "Feedback & Ideas"
+		},
+		"settings": {
+			"header": "Settings",
+			"gsi": {
+				"loadingAbout": "Loading data about GameState files...",
+				"loadingData": "Loading GameState data...",
+				"loadingFileData": "Loading GameState file data..."
+			},
+			"config": {
+				"loadingAbout": "Loading data about cfg files...",
+				"loadingFileData": "Loading config file data..."
+			},
+			"input": {
+				"steamAPIKey": "Steam API Key",
+				"GSIPort": "GSI Port",
+				"GSIToken": "GSI Token"
+			},
+			"updater": {
+				"version": "Version",
+				"installing": "Installing...",
+				"install": "Install update",
+				"latest": "Latest"
+			},
+			"entry": {
+				"HLAE": {
+					"path": "HLAE Path:",
+					"setPath": "SET HLAE PATH"
+				},
+				"AFX": {
+					"path": "AFX CEF HUD Interop:",
+					"setPath": "SET AFX PATH"
+				},
+				"GSI": {
+					"status": "GameState Integration:",
+					"add": "Add GSI file"
+				},
+				"config": {
+					"status": "Configs:",
+					"add": "Add config files"
+				},
+				"credits": {
+					"credits": "Credits",
+					"seeNow": "See now"
+				},
+				"downloads": {
+					"downloads": "Downloads",
+					"GSIConfig": "GSI config",
+					"HUDConfigs": "HUD configs",
+					"exportDB": "Export DB"
+				},
+				"import": {
+					"import": "Import"
+				},
+				"readerCode": {
+					"readerCode": "Reader Code"
+				}
+			}
+		},
+		"huds": {
+			"header": "HUDs",
+			"config": {
+				"customRadar": "Custom radar",
+				"customKillfeed": "Custom killfeed",
+				"embeddedHUD": "Embedded HUD",
+				"autoexecute": "Auto-execute",
+				"console": "Console",
+				"add": "ADD HUD",
+				"runGame": "RUN GAME",
+				"pauseTestData": "PAUSE TEST DATA",
+				"runTestData": "RUN TEST DATA",
+				"openDirectory": "Open HUDs directory"
+			},
+			"warning": {
+				"specifyHLAEPath": "TODO: Put SpecifyHLAEPath here",
+				"specifyAFXInteropPath": "TODO: Put SpecifyAFXInteropPath here",
+				"specifyAFXModeInfo": "TODO: Put SpecifyAFXModeInfo here"
+			}
+		}
+	}
+}

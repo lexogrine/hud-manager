@@ -4,6 +4,7 @@ import * as I from '../../../../api/interfaces';
 import VetoModal from './VetoModal';
 import EditScoreModal from './EditScoreModal';
 import { hash } from '../../../../hash';
+import { withTranslation } from 'react-i18next';
 
 interface Props {
 	map: number;
@@ -12,17 +13,18 @@ interface Props {
 	match: I.Match;
 	onSave: (name: string, map: number, value: any) => void;
 	maps: string[];
+	t: any;
 }
 interface State {
 	isOpen: boolean;
 	isScoreOpen: boolean;
 	isMenuExpanded: boolean;
 }
-const VetoScore = ({ veto, left, right }: { veto: I.Veto; left: I.Team | null; right: I.Team | null }) => {
+const VetoScore = ({ veto, left, right, t }: { veto: I.Veto; left: I.Team | null; right: I.Team | null; t: any }) => {
 	if (!left || !right || !veto.score) return null;
 	return (
 		<div className="map-score">
-			<div className={`win-icon ${veto.winner === left._id ? 'active' : ''}`}>WINS</div>
+			<div className={`win-icon ${veto.winner === left._id ? 'active' : ''}`}>{t('match.wins')}</div>
 
 			{left.logo ? (
 				<img src={`${left.logo}?hash=${hash()}`} alt={`${left.name} logo`} className="team-logo" />
@@ -30,7 +32,7 @@ const VetoScore = ({ veto, left, right }: { veto: I.Veto; left: I.Team | null; r
 				''
 			)}
 			<div className="score">{veto.score[left._id] || 0}</div>
-			<div className="versus">VS</div>
+			<div className="versus">{t('common.vs')}</div>
 			<div className="score">{veto.score[right._id] || 0}</div>
 			{right.logo ? (
 				<img src={`${right.logo}?hash=${hash()}`} alt={`${right.name} logo`} className="team-logo" />
@@ -41,7 +43,7 @@ const VetoScore = ({ veto, left, right }: { veto: I.Veto; left: I.Team | null; r
 		</div>
 	);
 };
-function generateDescription(veto: I.Veto, team?: I.Team, secTeam?: I.Team) {
+function generateDescription(veto: I.Veto, t: any, team?: I.Team, secTeam?: I.Team) {
 	if (!veto.mapName) {
 		return '';
 	}
@@ -49,25 +51,29 @@ function generateDescription(veto: I.Veto, team?: I.Team, secTeam?: I.Team) {
 		//return `${veto.mapName} decider`;
 	}
 	if (!team || !team.name || !secTeam) {
-		return <strong>Wrong team selected</strong>;
+		return <strong>{t('match.wrongTeamSelected')}</strong>;
 	}
 	let text: string | null = `${team.name} ${veto.type}s ${veto.mapName}`;
 	let sidePick = '';
 	if (secTeam && secTeam.name && veto.side !== 'NO') {
-		sidePick = `, ${secTeam.name} chooses ${veto.side} side`;
+		sidePick = t('match.vetoSidepick.normal', {
+			secondTeamName: secTeam.name,
+			side: t('match.vetoSide.' + veto.side)
+		});
 	}
 	if (veto.type === 'decider') {
 		text = null;
-		sidePick = `${veto.mapName} decider`;
+		sidePick = t('match.vetoSidepick.decider', { mapName: veto.mapName });
 	}
 	return (
 		<div>
-			{text} {sidePick || null}
+			{text}
+			{sidePick || null}
 		</div>
 	);
 }
 
-const VetoEntry = ({ map, veto, vetoTeams, onSave, maps }: Props) => {
+const VetoEntry = ({ map, veto, vetoTeams, onSave, maps, t }: Props) => {
 	const [isVetoModalOpen, setVetoModal] = useState(false);
 	const [isScoreOpen, setScoreOpen] = useState(false);
 	const [isMenuExpanded, setMenuExpanded] = useState(false);
@@ -104,7 +110,7 @@ const VetoEntry = ({ map, veto, vetoTeams, onSave, maps }: Props) => {
 	return (
 		<div className={`entry-container ${veto.teamId === '' ? 'empty' : ''} ${veto.teamId ? veto.type : ''}`}>
 			{vetoTeams.length !== 2 ? (
-				'Pick both teams to set vetos'
+				t('match.pickBothTeams')
 			) : (
 				<>
 					<div className="entry-main">
@@ -113,10 +119,10 @@ const VetoEntry = ({ map, veto, vetoTeams, onSave, maps }: Props) => {
 								isMenuExpanded && team && secTeam && veto.score ? 'hide' : ''
 							} `}
 						>
-							<div className={`veto-title`}>VETO {map + 1}:</div>
-							<div className={`veto-summary`}>{generateDescription(veto, team, secTeam)}</div>
+							<div className={`veto-title`}>{t('common.vetoNumber', { num: map + 1 })}:</div>
+							<div className={`veto-summary`}>{generateDescription(veto, t, team, secTeam)}</div>
 						</div>
-						<VetoScore veto={veto} left={team} right={secTeam} />
+						<VetoScore veto={veto} left={team} right={secTeam} t={t} />
 						{veto.mapName ? (
 							<div
 								className={`preview ${veto.mapName.replace('de_', '')} ${veto.type}`}
@@ -129,15 +135,15 @@ const VetoEntry = ({ map, veto, vetoTeams, onSave, maps }: Props) => {
 							<div className={`side-menu`}>
 								<div className="toggler" onClick={() => setMenuExpanded(!isMenuExpanded)}></div>
 								<Button onClick={resetScore} className="edit-veto purple-btn">
-									Reset score
+									{t('match.resetScore')}
 								</Button>
 								{veto.mapName ? (
 									<Button onClick={() => setScoreOpen(!isScoreOpen)} className="edit-veto purple-btn">
-										Set score
+										{t('match.setScore')}
 									</Button>
 								) : null}
 								<Button onClick={() => setVetoModal(!isVetoModalOpen)} className="edit-veto purple-btn">
-									Edit
+									{t('common.edit')}
 								</Button>
 							</div>
 						</div>
@@ -167,4 +173,4 @@ const VetoEntry = ({ map, veto, vetoTeams, onSave, maps }: Props) => {
 	);
 };
 
-export default VetoEntry;
+export default withTranslation()(VetoEntry);

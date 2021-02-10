@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, FormGroup, Input } from 'reactstrap';
 import * as I from './../../../../api/interfaces';
+import { withTranslation } from 'react-i18next';
 
 interface Props {
 	isOpen: boolean;
@@ -9,6 +10,7 @@ interface Props {
 	teams: I.Team[];
 	team: any;
 	onSave: Function;
+	t: any;
 }
 
 interface State {
@@ -41,9 +43,12 @@ class SetTeamModal extends React.Component<Props, State> {
 		this.setState({ form });
 	};
 	render() {
+		const t = this.props.t;
 		return (
 			<Modal isOpen={this.props.isOpen} toggle={this.props.toggle} className={'veto_modal'}>
-				<ModalHeader toggle={this.props.toggle}>TEAM #{this.props.side === 'left' ? 1 : 2}</ModalHeader>
+				<ModalHeader toggle={this.props.toggle}>
+					{t('match.teamNumber', { num: this.props.side === 'left' ? 1 : 2 })}
+				</ModalHeader>
 				<ModalBody>
 					<FormGroup>
 						<Input
@@ -53,7 +58,7 @@ class SetTeamModal extends React.Component<Props, State> {
 							value={this.state.form.id}
 							onChange={this.changeHandler('id')}
 						>
-							<option value={'empty'}>Empty team</option>
+							<option value={'empty'}>{t('match.emptyTeam')}</option>
 							{this.props.teams.map(teams => (
 								<option key={teams._id} value={teams._id}>
 									{teams.name}
@@ -78,7 +83,7 @@ class SetTeamModal extends React.Component<Props, State> {
 				</ModalBody>
 				<ModalFooter className="no-padding">
 					<Button color="primary" onClick={this.save} className="modal-save">
-						Save
+						{t('common.save')}
 					</Button>
 				</ModalFooter>
 			</Modal>
@@ -87,7 +92,7 @@ class SetTeamModal extends React.Component<Props, State> {
 }
 
 class TeamModal extends React.Component<
-	{ button: JSX.Element; side: 'right' | 'left'; team: any; teams: I.Team[]; onSave: Function },
+	{ button: JSX.Element; side: 'right' | 'left'; team: any; teams: I.Team[]; onSave: Function; t: any },
 	{ isOpen: boolean }
 > {
 	state = {
@@ -110,10 +115,11 @@ class TeamModal extends React.Component<
 					team={this.props.team}
 					teams={this.props.teams}
 					onSave={this.props.onSave}
+					t={this.props.t}
 				/>
 			</React.Fragment>
 		);
 	}
 }
 
-export default TeamModal;
+export default withTranslation()(TeamModal);

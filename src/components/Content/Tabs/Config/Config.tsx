@@ -7,6 +7,7 @@ import DragInput from './../../../DragFileInput';
 import ImportModal from './ImportModal';
 import { IContextData } from '../../../Context';
 import ElectronOnly from '../../../ElectronOnly';
+import { withTranslation } from 'react-i18next';
 
 const { isElectron } = config;
 
@@ -22,6 +23,7 @@ interface IProps {
 	cxt: IContextData;
 	toggle: Function;
 	gsiCheck: Function;
+	t: any;
 }
 
 interface IState {
@@ -42,7 +44,7 @@ interface IState {
 	data: any;
 }
 
-export default class Config extends React.Component<IProps, IState> {
+class Config extends React.Component<IProps, IState> {
 	constructor(props: IProps) {
 		super(props);
 		this.state = {
@@ -260,11 +262,11 @@ export default class Config extends React.Component<IProps, IState> {
 		this.checkGSI();
 	};
 	render() {
-		const { cxt } = this.props;
+		const { cxt, t } = this.props;
 		const { gsi, cfg, importModalOpen, conflict, data, ip, config, update } = this.state;
 		return (
 			<Form>
-				<div className="tab-title-container">Settings</div>
+				<div className="tab-title-container">{t('settings.header')}</div>
 				<div className="tab-content-container no-padding">
 					<ImportModal
 						isOpen={importModalOpen}
@@ -282,7 +284,7 @@ export default class Config extends React.Component<IProps, IState> {
 									id="steamApiKey"
 									onChange={this.changeHandler}
 									value={this.state.config.steamApiKey}
-									placeholder="Steam API Key"
+									placeholder={t('settings.input.steamAPIKey')}
 								/>
 							</FormGroup>
 						</Col>
@@ -294,7 +296,7 @@ export default class Config extends React.Component<IProps, IState> {
 									id="port"
 									onChange={this.changeHandler}
 									value={this.state.config.port}
-									placeholder="GSI Port"
+									placeholder={t('settings.input.GSIPort')}
 								/>
 							</FormGroup>
 						</Col>
@@ -306,7 +308,7 @@ export default class Config extends React.Component<IProps, IState> {
 									id="token"
 									onChange={this.changeHandler}
 									value={this.state.config.token}
-									placeholder="GSI Token"
+									placeholder={t('settings.input.GSIToken')}
 								/>
 							</FormGroup>
 						</Col>
@@ -314,27 +316,28 @@ export default class Config extends React.Component<IProps, IState> {
 					<Row className="config-container bottom-margin">
 						<ElectronOnly>
 							<Col md="12" className="config-entry">
-								<div className="config-description">Version</div>
+								<div className="config-description">{t('settings.updater.version')}</div>
 								<Button
 									className="purple-btn round-btn"
 									disabled={update.installing || !update.available}
 									onClick={this.installUpdate}
 								>
 									{update.installing
-										? 'Installing...'
+										? t('settings.updater.installing')
 										: update.available
-										? 'Install update'
-										: 'Latest'}
+										? t('settings.updater.install')
+										: t('settings.updater.latest')}
 								</Button>
 							</Col>
 						</ElectronOnly>
 						<Col md="12" className="config-entry">
 							<div className="config-description">
-								HLAE Path: {this.state.config.hlaePath ? 'Loaded' : 'Not loaded'}
+								{t('settings.entry.HLAE.path')}{' '}
+								{this.state.config.hlaePath ? t('common.loaded') : t('common.notLoaded')}
 							</div>
 							<DragInput
 								id="hlae_input"
-								label="SET HLAE PATH"
+								label={t('settings.entry.HLAE.setPath')}
 								accept=".exe"
 								onChange={this.loadEXE('hlaePath')}
 								className="path_selector"
@@ -344,12 +347,14 @@ export default class Config extends React.Component<IProps, IState> {
 						{
 							<Col md="12" className="config-entry">
 								<div className="config-description">
-									AFX CEF HUD Interop:{' '}
-									{this.state.config.afxCEFHudInteropPath ? 'Loaded' : 'Not loaded'}
+									{t('settings.entry.AFX.path')}{' '}
+									{this.state.config.afxCEFHudInteropPath
+										? t('common.loaded')
+										: t('common.notLoaded')}
 								</div>
 								<DragInput
 									id="afx_input"
-									label="SET AFX PATH"
+									label={t('settings.entry.AFX.setPath')}
 									accept=".exe"
 									onChange={this.loadEXE('afxCEFHudInteropPath')}
 									className="path_selector"
@@ -359,50 +364,52 @@ export default class Config extends React.Component<IProps, IState> {
 						}
 						<Col md="12" className="config-entry">
 							<div className="config-description">
-								GameState Integration: {gsi.message || 'Loaded succesfully'}
+								{t('settings.entry.GSI.status')} {gsi.message || t('common.loadingSuccess')}
 							</div>
 							<Button
 								className="purple-btn round-btn"
 								disabled={gsi.loading || gsi.success || !gsi.accessible}
 								onClick={this.createGSI}
 							>
-								Add GSI file
+								{t('settings.entry.GSI.add')}
 							</Button>
 						</Col>
 						<Col md="12" className="config-entry">
-							<div className="config-description">Configs: {cfg.message || 'Loaded succesfully'}</div>
+							<div className="config-description">
+								{t('settings.entry.config.status')} {cfg.message || t('common.loadingSuccess')}
+							</div>
 							<Button
 								className="purple-btn round-btn"
 								disabled={cfg.loading || cfg.success || !cfg.accessible}
 								onClick={this.createCFG}
 							>
-								Add config files
+								{t('settings.entry.config.add')}
 							</Button>
 						</Col>
 						<Col md="12" className="config-entry">
-							<div className="config-description">Credits</div>
+							<div className="config-description">{t('settings.entry.credits.credits')}</div>
 							<Button className="lightblue-btn round-btn" onClick={() => this.props.toggle('credits')}>
-								See now
+								{t('settings.entry.credits.seeNow')}
 							</Button>
 						</Col>
 						{isElectron ? (
 							<Col md="12" className="config-entry">
-								<div className="config-description">Downloads</div>
+								<div className="config-description">{t('settings.entry.downloads.downloads')}</div>
 								<div className="download-container">
 									<Button onClick={() => this.download('gsi')} className="purple-btn round-btn">
-										GSI config
+										{t('settings.entry.downloads.GSIConfig')}
 									</Button>
 									<Button onClick={() => this.download('cfgs')} className="purple-btn round-btn">
-										HUD configs
+										{t('settings.entry.downloads.HUDConfigs')}
 									</Button>
 									<Button onClick={() => this.download('db')} className="purple-btn round-btn">
-										Export DB
+										{t('settings.entry.downloads.exportDB')}
 									</Button>
 								</div>
 							</Col>
 						) : null}
 						<Col md="12" className="config-entry">
-							<div className="config-description">Import</div>
+							<div className="config-description">{t('settings.entry.import.import')}</div>
 							<DragInput
 								id="import_file"
 								label="Import database"
@@ -412,7 +419,7 @@ export default class Config extends React.Component<IProps, IState> {
 							/>
 						</Col>
 						<Col md="12" className="config-entry">
-							<div className="config-description">Reader Code</div>
+							<div className="config-description">{t('settings.entry.readerCode.readerCode')}</div>
 							<p>
 								{ip
 									.split('.')
@@ -432,7 +439,7 @@ export default class Config extends React.Component<IProps, IState> {
 				<Row>
 					<Col className="main-buttons-container">
 						<Button onClick={this.save} color="primary">
-							Save
+							{t('common.save')}
 						</Button>
 					</Col>
 				</Row>
@@ -440,3 +447,5 @@ export default class Config extends React.Component<IProps, IState> {
 		);
 	}
 }
+
+export default withTranslation()(Config);

@@ -1,4 +1,5 @@
 import React from 'react';
+import { withTranslation } from 'react-i18next';
 import { Modal, ModalHeader, ModalBody, FormGroup, Label, Input } from 'reactstrap';
 import * as I from './../../../../api/interfaces';
 
@@ -10,8 +11,9 @@ interface Props {
 	toggle: () => void;
 	onChange: (name: string, map: number, value: any) => void;
 	maps: string[];
+	t: any;
 }
-export default class VetoModal extends React.Component<Props, { isOpen: boolean }> {
+class VetoModal extends React.Component<Props, { isOpen: boolean }> {
 	state = {
 		isOpen: false
 	};
@@ -20,6 +22,7 @@ export default class VetoModal extends React.Component<Props, { isOpen: boolean 
 		this.props.onChange('type', this.props.map, type);
 	};
 	render() {
+		const t = this.props.t;
 		return (
 			<Modal isOpen={this.props.isOpen} toggle={this.props.toggle} className="veto_modal">
 				<ModalHeader toggle={this.props.toggle}>Edit Veto {this.props.map + 1}</ModalHeader>
@@ -28,19 +31,19 @@ export default class VetoModal extends React.Component<Props, { isOpen: boolean 
 						className={`type pick ${this.props.veto.type === 'pick' ? 'active' : ''}`}
 						onClick={this.changeTypeHandler('pick')}
 					>
-						PICK
+						{t('match.vetoType.pick').toUpperCase()}
 					</div>
 					<div
 						className={`type ban ${this.props.veto.type === 'ban' ? 'active' : ''}`}
 						onClick={this.changeTypeHandler('ban')}
 					>
-						BAN
+						{t('match.vetoType.ban').toUpperCase()}
 					</div>
 					<div
 						className={`type decider ${this.props.veto.type === 'decider' ? 'active' : ''}`}
 						onClick={this.changeTypeHandler('decider')}
 					>
-						DECIDER
+						{t('match.vetoType.decider').toUpperCase()}
 					</div>
 				</div>
 				<ModalBody>
@@ -54,7 +57,7 @@ export default class VetoModal extends React.Component<Props, { isOpen: boolean 
 									value={this.props.veto.teamId}
 									onChange={e => this.props.onChange('teamId', this.props.map, e.target.value)}
 								>
-									<option value="">No team</option>
+									<option value="">{t('common.noTeam')}</option>
 									{this.props.teams.map(teams => (
 										<option key={teams._id} value={teams._id}>
 											{teams.name}
@@ -71,11 +74,11 @@ export default class VetoModal extends React.Component<Props, { isOpen: boolean 
 									onChange={e => this.props.onChange('side', this.props.map, e.target.value)}
 								>
 									<option value={'NO'} disabled defaultChecked>
-										Does the opponent pick a side?
+										{t('match.questionOpponentPick')}
 									</option>
-									<option value={'NO'}>No</option>
-									<option value={'CT'}>CT</option>
-									<option value={'T'}>T</option>
+									<option value={'NO'}>{t('common.no')}</option>
+									<option value={'CT'}>{t('common.ct')}</option>
+									<option value={'T'}>{t('common.t')}</option>
 								</Input>
 							</FormGroup>
 						</>
@@ -89,7 +92,7 @@ export default class VetoModal extends React.Component<Props, { isOpen: boolean 
 							onChange={e => this.props.onChange('mapName', this.props.map, e.target.value)}
 						>
 							<option value="" disabled defaultChecked>
-								Map
+								{t('common.map')}
 							</option>
 							{this.props.maps.map(map => (
 								<option value={map} key={map}>
@@ -107,7 +110,7 @@ export default class VetoModal extends React.Component<Props, { isOpen: boolean 
 								checked={this.props.veto.reverseSide || false}
 							/>{' '}
 							<div className="customCheckbox"></div>
-							Reversed sides
+							{t('match.reversedSides')}
 						</Label>
 					</FormGroup>
 				</ModalBody>
@@ -115,3 +118,5 @@ export default class VetoModal extends React.Component<Props, { isOpen: boolean 
 		);
 	}
 }
+
+export default withTranslation()(VetoModal);

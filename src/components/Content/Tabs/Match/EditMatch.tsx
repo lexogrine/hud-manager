@@ -9,11 +9,12 @@ import { IContextData } from '../../../Context';
 import { Form, Row, Col, FormGroup, Input } from 'reactstrap';
 import moment from 'moment';
 import VetoEntry from './VetoEntry';
+import { withTranslation } from 'react-i18next';
 
-const EditTeam = () => {
+const EditTeam = (t: any) => {
 	return (
 		<div className="edit-team-button">
-			<img src={editIcon} alt={`Edit Team`} />
+			<img src={editIcon} alt={t('match.editTeam')} />
 		</div>
 	);
 };
@@ -24,9 +25,10 @@ interface TeamScoreProps {
 	teamState: I.MatchTeam;
 	side: 'left' | 'right';
 	onSave: any;
+	t: any;
 }
 
-const TeamScore = ({ cxt, team, onSave, teamState, side }: TeamScoreProps) => {
+const TeamScore = ({ cxt, team, onSave, teamState, side, t }: TeamScoreProps) => {
 	return (
 		<div className={`${side} team`}>
 			<div className="score">
@@ -34,8 +36,8 @@ const TeamScore = ({ cxt, team, onSave, teamState, side }: TeamScoreProps) => {
 				{team && team.logo ? <img src={`${team.logo}?hash=${cxt.hash}`} alt={`${team.name} logo`} /> : ''}
 			</div>
 			<div className="name">
-				{(team && team.name) || 'Team One'}
-				<TeamModal side={side} button={EditTeam()} teams={cxt.teams} team={teamState} onSave={onSave} />
+				{(team && team.name) || t('common.teamOne')}
+				<TeamModal side={side} button={EditTeam(t)} teams={cxt.teams} team={teamState} onSave={onSave} />
 			</div>
 		</div>
 	);
@@ -47,9 +49,10 @@ interface IProps {
 	teams: I.Team[];
 	edit: Function;
 	maps: string[];
+	t: any;
 }
 
-const EditMatch = ({ cxt, match, teams, edit, maps }: IProps) => {
+const EditMatch = ({ cxt, match, teams, edit, maps, t }: IProps) => {
 	const [matchState, setMatchState] = useState(match);
 
 	const save = async () => {
@@ -117,11 +120,18 @@ const EditMatch = ({ cxt, match, teams, edit, maps }: IProps) => {
 	return (
 		<>
 			<div className={`match_row editing ${match.current ? 'live' : ''}`}>
-				<div className="live-indicator">Live</div>
+				<div className="live-indicator">{t('match.live')}</div>
 				<div className="main_data">
-					<TeamScore cxt={cxt} side="left" team={left} teamState={matchState.left} onSave={getData} />
-					<div className="versus">VS</div>
-					<TeamScore cxt={cxt} side="right" team={right} teamState={matchState.right} onSave={getData} />
+					<TeamScore cxt={cxt} side="left" team={left} teamState={matchState.left} onSave={getData} t={t} />
+					<div className="versus">{t('common.vs')}</div>
+					<TeamScore
+						cxt={cxt}
+						side="right"
+						team={right}
+						teamState={matchState.right}
+						onSave={getData}
+						t={t}
+					/>
 				</div>
 				<div className="vetos"></div>
 			</div>
@@ -176,4 +186,4 @@ const EditMatch = ({ cxt, match, teams, edit, maps }: IProps) => {
 		</>
 	);
 };
-export default EditMatch;
+export default withTranslation()(EditMatch);

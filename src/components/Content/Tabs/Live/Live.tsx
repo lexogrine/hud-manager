@@ -3,6 +3,7 @@ import config from './../../../../api/config';
 import { Col, Row } from 'reactstrap';
 import GSISocket, { CSGO, Player, Team, PlayerExtension } from 'csgogsi-socket';
 import { IContextData } from '../../../Context';
+import { withTranslation } from 'react-i18next';
 
 export const { GSI, socket } = GSISocket(`${config.isDev ? config.apiAddress : '/'}`, 'update');
 
@@ -68,8 +69,18 @@ class Teamboard extends Component<{ players: Player[]; team: Team; toggle: Funct
 	}
 }
 
-export default class Live extends Component<{ toggle: Function; cxt: IContextData }, { game: CSGO | null }> {
-	constructor(props: any) {
+interface IProps {
+	toggle: Function;
+	cxt: IContextData;
+	t: any;
+}
+
+interface IState {
+	game: CSGO | null;
+}
+
+class Live extends Component<IProps, IState> {
+	constructor(props: IProps) {
 		super(props);
 		this.state = {
 			game: null
@@ -82,11 +93,12 @@ export default class Live extends Component<{ toggle: Function; cxt: IContextDat
 	}
 	render() {
 		const { game } = this.state;
+		const t = this.props.t;
 		if (!game)
 			return (
 				<React.Fragment>
-					<div className="tab-title-container">Live</div>
-					<div className="tab-content-container full-scroll">No game is currently live.</div>
+					<div className="tab-title-container">{t('live.header')}</div>
+					<div className="tab-content-container full-scroll">{t('live.noGame')}</div>
 				</React.Fragment>
 			);
 		const teams = [game.map.team_ct, game.map.team_t];
@@ -94,11 +106,11 @@ export default class Live extends Component<{ toggle: Function; cxt: IContextDat
 		const right = teams.filter(team => team.orientation === 'right')[0];
 		return (
 			<React.Fragment>
-				<div className="tab-title-container">Live</div>
+				<div className="tab-title-container">{t('live.header')}</div>
 				<div className="tab-content-container full-scroll">
 					<Row>
 						<Col md="12" className="config-container no-margin" style={{ flexDirection: 'column' }}>
-							<div>Players currently in match, click to add a player to the player list.</div>
+							<div>{t('live.tip')}</div>
 						</Col>
 					</Row>
 					<Row>
@@ -120,3 +132,5 @@ export default class Live extends Component<{ toggle: Function; cxt: IContextDat
 		);
 	}
 }
+
+export default withTranslation()(Live);

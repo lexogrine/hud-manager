@@ -12,12 +12,13 @@ import { IContextData } from '../../../Context';
 import goBack from './../../../../styles/goBack.png';
 import { socket } from '../Live/Live';
 import moment from 'moment';
+import { withTranslation } from 'react-i18next';
 
-export default class Matches extends Component<
-	{ cxt: IContextData },
+class Matches extends Component<
+	{ cxt: IContextData; t: any },
 	{ match: I.Match | null; maps: string[]; activeTab: string }
 > {
-	constructor(props: { cxt: IContextData }) {
+	constructor(props: { cxt: IContextData; t: any }) {
 		super(props);
 		this.state = {
 			match: null,
@@ -94,7 +95,7 @@ export default class Matches extends Component<
 			className={`match-type-entry ${tab === this.state.activeTab ? 'active' : ''}`}
 			onClick={() => this.setState({ activeTab: tab })}
 		>
-			{tab}
+			{(tab && this.props.t('match.tabs.' + tab)) || ''}
 		</div>
 	);
 
@@ -129,16 +130,22 @@ export default class Matches extends Component<
 
 	render() {
 		const { matches } = this.props.cxt;
+		const t = this.props.t;
 		const { match, maps } = this.state;
 		return (
 			<React.Fragment>
 				{match ? (
 					<div className="tab-title-container">
-						<img src={goBack} onClick={() => this.startEdit()} className="go-back-button" alt="Go back" />
-						Edit match
+						<img
+							src={goBack}
+							onClick={() => this.startEdit()}
+							className="go-back-button"
+							alt={t('common.goBack')}
+						/>
+						{t('match.edit')}
 					</div>
 				) : (
-					<div className="tab-title-container">Matches</div>
+					<div className="tab-title-container">{t('match.matches')}</div>
 				)}
 				<div className={`tab-content-container no-padding ${match ? 'full-scroll' : ''}`}>
 					{match ? (
@@ -157,10 +164,10 @@ export default class Matches extends Component<
 								{this.renderTab('future')}
 							</div>
 							<div className="item-list-entry heading matches">
-								<div className="match-name">Match</div>
-								<div className="map-score">Score</div>
-								<div className="match-date">Date</div>
-								<div className="match-time">Time</div>
+								<div className="match-name">{t('match.columns.match')}</div>
+								<div className="map-score">{t('match.columns.score')}</div>
+								<div className="match-date">{t('match.columns.date')}</div>
+								<div className="match-time">{t('match.columns.time')}</div>
 								<div className="options"></div>
 							</div>
 							{matches.filter(this.filterMatches).map(match => (
@@ -176,7 +183,7 @@ export default class Matches extends Component<
 							<Row>
 								<Col className="main-buttons-container">
 									<Button onClick={this.add} color="primary">
-										+Create New
+										+{t('match.createNew')}
 									</Button>
 								</Col>
 							</Row>
@@ -187,3 +194,5 @@ export default class Matches extends Component<
 		);
 	}
 }
+
+export default withTranslation()(Matches);

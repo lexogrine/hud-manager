@@ -1,5 +1,6 @@
 import React from 'react';
 import { Row, Col } from 'reactstrap';
+import { withTranslation } from 'react-i18next';
 
 class CreditsEntry extends React.Component<{ title: string; people: string[] }> {
 	render() {
@@ -12,20 +13,27 @@ class CreditsEntry extends React.Component<{ title: string; people: string[] }> 
 	}
 }
 
-export default class Credits extends React.Component {
+class Credits extends React.Component<{ t: any }> {
 	render() {
+		const t = this.props.t;
 		return (
 			<React.Fragment>
-				<div className="tab-title-container">Credits</div>
+				<div className="tab-title-container">{t('credits.header')}</div>
 				<div className="tab-content-container full-scroll">
 					<Row>
 						<Col>
-							<CreditsEntry title="Application and HUD API" people={['osztenkurden']} />
-							<CreditsEntry title="Testing and Debugging" people={['osztenkurden', 'Komodo', 'Loxar']} />
-							<CreditsEntry title="Custom radar by" people={['boltgolt']} />
-							<CreditsEntry title="Initial Layout Idea" people={['Drożdżu']} />
 							<CreditsEntry
-								title="Feedback & Ideas"
+								title={t('credits.applicationAndAPI')}
+								people={['osztenkurden', 'kacperski1']}
+							/>
+							<CreditsEntry
+								title={t('credits.testingAndDebugging')}
+								people={['osztenkurden', 'Komodo', 'Loxar']}
+							/>
+							<CreditsEntry title={t('credits.customRadarBy')} people={['boltgolt']} />
+							<CreditsEntry title={t('credits.initialLayoutIdea')} people={['Drożdżu']} />
+							<CreditsEntry
+								title={t('credits.feedbackAndIdeas')}
 								people={['boltgolt', 'Komodo', 'TeDY', 'Wiethoofd', 'Laeye', 'Loxar']}
 							/>
 						</Col>
@@ -35,3 +43,5 @@ export default class Credits extends React.Component {
 		);
 	}
 }
+
+export default withTranslation()(Credits);

@@ -3,6 +3,8 @@ import Layout from './layout/Layout';
 import './styles/styles.css';
 import './styles/dark-mode.css';
 import { socket } from './components/Content/Tabs/Live/Live';
+import './i18n/i18n';
+
 interface IState {
 	hudURL: string | null;
 }

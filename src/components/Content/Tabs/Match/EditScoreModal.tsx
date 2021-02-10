@@ -3,6 +3,7 @@ import { Modal, ModalHeader, ModalBody, Button } from 'reactstrap';
 import { hash } from '../../../../hash';
 import * as I from './../../../../api/interfaces';
 import WinnerCrown from './../../../../styles/winnerCrown.png';
+import { withTranslation } from 'react-i18next';
 
 interface Props {
 	isOpen: boolean;
@@ -11,12 +12,13 @@ interface Props {
 	saveScore: any;
 	teams: I.Team[];
 	setWinner: any;
+	t: any;
 }
 
 class EditScoreModal extends React.Component<Props> {
 	renderTeamScore = (team: I.Team | undefined, score: number) => {
 		if (!team) return null;
-		const { veto, saveScore, setWinner } = this.props;
+		const { veto, saveScore, setWinner, t } = this.props;
 		const isWinner = veto && veto.winner && veto.winner === team._id;
 		return (
 			<div key={team._id} className="team-score-container">
@@ -24,7 +26,7 @@ class EditScoreModal extends React.Component<Props> {
 					<img src={WinnerCrown} />
 				</div>
 				<div className={`team-logo-container`}>
-					<img src={`${team.logo}?hash=${hash()}`} alt="Team Logo"></img>
+					<img src={`${team.logo}?hash=${hash()}`} alt={t('match.scoreModal.teamLogo')}></img>
 				</div>
 				<div className="team-score-edit-container">
 					<div className="add">
@@ -40,7 +42,7 @@ class EditScoreModal extends React.Component<Props> {
 						className={`lightblue-btn round-btn ${isWinner ? 'unset' : ''}`}
 						onClick={setWinner(isWinner ? undefined : team._id)}
 					>
-						{isWinner ? 'Unset win' : 'Set win'}
+						{isWinner ? t('match.scoreModal.unsetWin') : t('match.scoreModal.setWin')}
 					</Button>
 				</div>
 			</div>
@@ -64,4 +66,4 @@ class EditScoreModal extends React.Component<Props> {
 	}
 }
 
-export default EditScoreModal;
+export default withTranslation()(EditScoreModal);

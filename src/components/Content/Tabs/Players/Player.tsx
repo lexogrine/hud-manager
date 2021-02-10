@@ -5,6 +5,7 @@ import { countries } from './../../../../api/countries';
 import config from './../../../../api/config';
 import CustomFieldValue from '../../../CustomFields/CustomFieldValue';
 import { IContextData } from '../../../Context';
+import { withTranslation } from 'react-i18next';
 
 interface Props {
 	player: I.Player;
@@ -13,9 +14,10 @@ interface Props {
 	hash: string;
 	fields: I.CustomFieldEntry[];
 	cxt: IContextData;
+	t: any;
 }
 
-const PlayerListEntry = ({ player, team, edit, hash, cxt, fields }: Props) => {
+const PlayerListEntry = ({ player, team, edit, hash, cxt, fields, t }: Props) => {
 	const country = !player.country ? null : countries[player.country] || null;
 	return (
 		<div className="item-list-entry">
@@ -45,11 +47,11 @@ const PlayerListEntry = ({ player, team, edit, hash, cxt, fields }: Props) => {
 			))}
 			<div className="options">
 				<Button className="purple-btn round-btn" onClick={edit}>
-					Edit
+					{t('common.edit')}
 				</Button>
 			</div>
 		</div>
 	);
 };
 
-export default PlayerListEntry;
+export default withTranslation()(PlayerListEntry);
