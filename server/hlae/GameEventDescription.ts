@@ -8,11 +8,13 @@ const unserializeEnrichment = (bufferReader: BufferReader, keyValue: any) => {
 	};
 };
 
+export interface GameEventObject { name: string, clientTime: number, keys: any }
+
 class GameEventDescription {
 	eventId: number;
 	eventName: string;
 	keys: any[];
-	enrichments: any;
+	enrichments: string[] | null;
 	constructor(bufferReader: BufferReader) {
 		this.eventId = bufferReader.readInt32LE();
 		this.eventName = bufferReader.readCString();
@@ -30,7 +32,7 @@ class GameEventDescription {
 	}
 	unserialize = (bufferReader: BufferReader) => {
 		const clientTime = bufferReader.readFloatLE();
-		const result: any = {
+		const result: GameEventObject = {
 			name: this.eventName,
 			clientTime: clientTime,
 			keys: {}
@@ -40,7 +42,7 @@ class GameEventDescription {
 
 			const keyName = key.name;
 
-			let keyValue;
+			let keyValue: string | number | boolean | bigInt.BigInteger;
 
 			switch (key.type) {
 				case 1:

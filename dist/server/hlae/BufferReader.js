@@ -61,7 +61,7 @@ class BufferReader {
                 this.index = delim + 1;
                 return result;
             }
-            throw new Error("BufferReader.prototype.readCString");
+            throw new Error('BufferReader.prototype.readCString');
         };
         this.eof = () => {
             return this.index >= this.buffer.length;

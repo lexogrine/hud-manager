@@ -15,18 +15,18 @@ class GameEventUnserializer {
                     gameEvent.enrichments = this.enrichments[gameEvent.eventName];
                 }
                 if (undefined === gameEvent)
-                    throw new Error("GameEventUnserializer.prototype.unserialize");
+                    throw new Error('GameEventUnserializer.prototype.unserialize');
                 const result = gameEvent.unserialize(bufferReader);
                 return result;
             }
             const gameEvent = this.knownEvents[eventId];
             if (undefined === gameEvent)
-                throw new Error("GameEventUnserializer.prototype.unserialize");
+                throw new Error('GameEventUnserializer.prototype.unserialize');
             const result = gameEvent.unserialize(bufferReader);
             return result;
         };
         this.enrichments = enrichments;
-        this.knownEvents = {}; // id -> description	
+        this.knownEvents = {}; // id -> description
     }
 }
 exports.default = GameEventUnserializer;

@@ -5,6 +5,6 @@ exports.unserializeUseridEnrichment = (bufferReader, keyValue) => {
     const xuid = bufferReader.readBigUInt64LE().toString();
     return {
         value: keyValue,
-        xuid: xuid,
+        xuid: xuid
     };
 };

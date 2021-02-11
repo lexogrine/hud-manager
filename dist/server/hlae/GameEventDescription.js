@@ -4,7 +4,7 @@ const unserializeEnrichment = (bufferReader, keyValue) => {
     const xuid = bufferReader.readBigUInt64LE().toString();
     return {
         value: keyValue,
-        xuid: xuid,
+        xuid: xuid
     };
 };
 class GameEventDescription {
@@ -43,7 +43,7 @@ class GameEventDescription {
                         keyValue = bufferReader.readBigUInt64LE();
                         break;
                     default:
-                        throw new Error("GameEventDescription.prototype.unserialize");
+                        throw new Error('GameEventDescription.prototype.unserialize');
                 }
                 result.keys[key.name] = keyValue;
                 if (this.enrichments && this.enrichments.includes(keyName)) {

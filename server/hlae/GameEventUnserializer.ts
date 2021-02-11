@@ -5,9 +5,9 @@ export interface EnrichmentObject {
 	[x: string]: string[];
 }
 class GameEventUnserializer {
-	enrichments: any;
-	knownEvents: any;
-	constructor(enrichments: any) {
+	enrichments: EnrichmentObject;
+	knownEvents: { [x: number]: GameEventDescription };
+	constructor(enrichments: EnrichmentObject) {
 		this.enrichments = enrichments;
 
 		this.knownEvents = {}; // id -> description
