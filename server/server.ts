@@ -1,29 +1,27 @@
-"use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const BufferReader_1 = __importDefault(require("./hlae/BufferReader"));
-const GameEventUnserializer_1 = __importDefault(require("./hlae/GameEventUnserializer"));
-const init = (callback) => {
+import BufferReader from './hlae/BufferReader';
+import GameEventUnserializer from './hlae/GameEventUnserializer';
+
+const init = (callback: any) => {
     const WSServer = require('ws').Server;
     const http = require('http');
-    let ws = null;
+
+    let ws: any = null;
     const server = http.createServer();
     const webSocketServer = new WSServer({ server, path: '/mirv' });
+
     const enrichments = {
         player_death: ['userid', 'attacker', 'assister']
-    };
-    webSocketServer.on('connection', function (newWs) {
+    }
+    webSocketServer.on('connection', function (newWs: any) {
         if (ws) {
             ws.close();
             ws = newWs;
         }
         ws = newWs;
-        const gameEventUnserializer = new GameEventUnserializer_1.default(enrichments);
-        ws.on('message', function (data) {
+        const gameEventUnserializer = new GameEventUnserializer(enrichments);
+        ws.on('message', function (data: any) {
             if (data instanceof Buffer) {
-                const bufferReader = new BufferReader_1.default(Buffer.from(data));
+                const bufferReader = new BufferReader(Buffer.from(data));
                 try {
                     while (!bufferReader.eof()) {
                         const cmd = bufferReader.readCString();
@@ -46,7 +44,7 @@ const init = (callback) => {
                                 {
                                     const gameEvent = gameEventUnserializer.unserialize(bufferReader);
                                     if (gameEvent.name === "player_death") {
-                                        console.log(gameEvent);
+                                        console.log(gameEvent)
                                         if (callback) {
                                             callback(gameEvent);
                                         }
@@ -66,5 +64,5 @@ const init = (callback) => {
         });
     });
     server.listen(31337);
-};
-exports.default = init;
+}
+export default init;

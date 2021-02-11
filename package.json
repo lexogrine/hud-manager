@@ -144,6 +144,7 @@
     "@types/socket.io-client": "^1.4.32",
     "@types/tough-cookie-file-store": "^2.0.1",
     "@types/uuid": "^3.4.9",
+    "@types/ws": "^7.4.0",
     "@typescript-eslint/eslint-plugin": "^3.8.0",
     "@typescript-eslint/parser": "^3.8.0",
     "concurrently": "^5.2.0",

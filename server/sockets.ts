@@ -16,9 +16,10 @@ import { getTeamById } from './api/teams';
 import { getPlayerById } from './api/players';
 import { createNextMatch } from './api/tournaments';
 import { customer } from './api';
+import mirv from './server';
 
 const radar = require('./../boltobserv/index.js');
-const mirv = require('./server').default;
+//const mirv = require('./server').default;
 
 class DevHUDListener {
 	port: number;
