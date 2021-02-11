@@ -8,7 +8,11 @@ const unserializeEnrichment = (bufferReader: BufferReader, keyValue: any) => {
 	};
 };
 
-export interface GameEventObject { name: string, clientTime: number, keys: any }
+export interface GameEventObject {
+	name: string;
+	clientTime: number;
+	keys: any;
+}
 
 class GameEventDescription {
 	eventId: number;

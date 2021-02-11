@@ -402,7 +402,7 @@ export default function (server: http.Server, app: express.Router) {
 		});
 	});
 
-	mirv((data) => {
+	mirv(data => {
 		io.to('csgo').emit('update_mirv', data);
 	});
 
