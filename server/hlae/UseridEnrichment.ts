@@ -1,8 +1,14 @@
 import BufferReader from './BufferReader';
 
-export const unserializeUseridEnrichment = (bufferReader: BufferReader, keyValue: any) => {
-	const xuid = bufferReader.readBigUInt64LE().toString();
+export type UserEnrichmentKeyValue = string | number | boolean | bigInt.BigInteger;
 
+export interface UserEnrichment {
+	value: UserEnrichmentKeyValue;
+	xuid: string;
+}
+
+export const unserializeEnrichment = (bufferReader: BufferReader, keyValue: UserEnrichmentKeyValue): UserEnrichment => {
+	const xuid = bufferReader.readBigUInt64LE().toString();
 	return {
 		value: keyValue,
 		xuid: xuid

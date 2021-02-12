@@ -21,7 +21,7 @@ const init = (callback) => {
         }
         socket = newSocket;
         const gameEventUnserializer = new GameEventUnserializer_1.default(enrichments);
-        socket.on('message', (data) => {
+        socket.on('message', data => {
             if (!(data instanceof Buffer)) {
                 return;
             }

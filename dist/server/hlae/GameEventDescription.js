@@ -1,12 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const unserializeEnrichment = (bufferReader, keyValue) => {
-    const xuid = bufferReader.readBigUInt64LE().toString();
-    return {
-        value: keyValue,
-        xuid: xuid
-    };
-};
+const UseridEnrichment_1 = require("./UseridEnrichment");
 class GameEventDescription {
     constructor(bufferReader) {
         this.unserialize = (bufferReader) => {
@@ -47,7 +41,7 @@ class GameEventDescription {
                 }
                 result.keys[key.name] = keyValue;
                 if (this.enrichments && this.enrichments.includes(keyName)) {
-                    result.keys[key.name] = unserializeEnrichment(bufferReader, keyValue);
+                    result.keys[key.name] = UseridEnrichment_1.unserializeEnrichment(bufferReader, keyValue);
                 }
             }
             return result;

@@ -23,7 +23,7 @@ const init = (callback: (data: GameEventObject) => void) => {
 
 		const gameEventUnserializer = new GameEventUnserializer(enrichments);
 
-		socket.on('message', (data: any) => {
+		socket.on('message', data => {
 			if (!(data instanceof Buffer)) {
 				return;
 			}
