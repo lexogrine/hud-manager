@@ -1,6 +1,24 @@
 import BufferReader from './BufferReader';
 
-const unserializeEnrichment = (bufferReader: BufferReader, keyValue: any) => {
+interface GameEventKeys {
+	name: string;
+	type: number;
+}
+
+type UserEnrichmentKeyValue = string | number | boolean | bigInt.BigInteger;
+
+interface UserEnrichment {
+	value: UserEnrichmentKeyValue;
+	xuid: string;
+}
+
+export interface GameEventObject {
+	name: string;
+	clientTime: number;
+	keys: { [x: string]: UserEnrichment | UserEnrichmentKeyValue };
+}
+
+const unserializeEnrichment = (bufferReader: BufferReader, keyValue: UserEnrichmentKeyValue): UserEnrichment => {
 	const xuid = bufferReader.readBigUInt64LE().toString();
 	return {
 		value: keyValue,
@@ -8,16 +26,10 @@ const unserializeEnrichment = (bufferReader: BufferReader, keyValue: any) => {
 	};
 };
 
-export interface GameEventObject {
-	name: string;
-	clientTime: number;
-	keys: any;
-}
-
 class GameEventDescription {
 	eventId: number;
 	eventName: string;
-	keys: any[];
+	keys: GameEventKeys[];
 	enrichments: string[] | null;
 	constructor(bufferReader: BufferReader) {
 		this.eventId = bufferReader.readInt32LE();

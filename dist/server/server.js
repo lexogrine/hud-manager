@@ -29,10 +29,10 @@ const init = (callback) => {
             try {
                 while (!bufferReader.eof()) {
                     const cmd = bufferReader.readCString();
-                    if (cmd !== "hello" && cmd !== "gameEvent") {
+                    if (cmd !== 'hello' && cmd !== 'gameEvent') {
                         return;
                     }
-                    if (cmd === "hello") {
+                    if (cmd === 'hello') {
                         const version = bufferReader.readUInt32LE();
                         if (2 != version)
                             throw 'Error: version mismatch';
