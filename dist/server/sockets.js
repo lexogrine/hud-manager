@@ -158,22 +158,19 @@ async function default_1(server, app) {
         currentHUD: null
     };
     const cfg = await config_1.loadConfig();
-    const corsOrigins = [
-        `http://${config_1.internalIP}:${cfg.port}`
-    ];
+    const corsOrigins = [`http://${config_1.internalIP}:${cfg.port}`];
     if (config_1.publicIP) {
         corsOrigins.push(`http://${config_1.publicIP}:${cfg.port}`);
     }
     if (electron_2.isDev) {
-        corsOrigins.push("http://localhost:3000");
+        corsOrigins.push('http://localhost:3000');
     }
-    console.log(corsOrigins);
     const io = new socket_io_1.Server(server, {
         allowEIO3: true,
         cors: {
             origin: corsOrigins,
             credentials: true
-        },
+        }
     });
     let intervalId = null;
     let testDataIndex = 0;

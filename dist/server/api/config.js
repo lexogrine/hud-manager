@@ -25,8 +25,7 @@ exports.loadConfig = async () => {
         try {
             exports.publicIP = await public_ip_1.default.v4();
         }
-        catch {
-        }
+        catch { }
     }
     return new Promise(res => {
         configs.find({}, async (err, config) => {
