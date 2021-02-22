@@ -16,9 +16,10 @@ import { getTeamById } from './api/teams';
 import { getPlayerById } from './api/players';
 import { createNextMatch } from './api/tournaments';
 import { customer } from './api';
+import mirv from './server';
 
 const radar = require('./../boltobserv/index.js');
-const mirv = require('./server').default;
+//const mirv = require('./server').default;
 
 class DevHUDListener {
 	port: number;
@@ -401,7 +402,7 @@ export default function (server: http.Server, app: express.Router) {
 		});
 	});
 
-	mirv((data: any) => {
+	mirv(data => {
 		io.to('csgo').emit('update_mirv', data);
 	});
 

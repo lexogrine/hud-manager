@@ -19,8 +19,9 @@ const teams_1 = require("./api/teams");
 const players_1 = require("./api/players");
 const tournaments_1 = require("./api/tournaments");
 const api_1 = require("./api");
+const server_1 = __importDefault(require("./server"));
 const radar = require('./../boltobserv/index.js');
-const mirv = require('./server').default;
+//const mirv = require('./server').default;
 class DevHUDListener {
     constructor(port) {
         this.checkPort = () => {
@@ -369,7 +370,7 @@ function default_1(server, app) {
             io.emit('active_hlae', runtimeConfig.currentHUD);
         });
     });
-    mirv((data) => {
+    server_1.default(data => {
         io.to('csgo').emit('update_mirv', data);
     });
     //GSI.on('data', updateRound);
