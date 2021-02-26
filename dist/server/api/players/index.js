@@ -14,7 +14,6 @@ async function getPlayerById(id, avatar = false) {
             }
             if (!avatar && player && player.avatar)
                 player.avatar = '';
-            ;
             return res(player);
         });
     });
@@ -33,7 +32,7 @@ async function getPlayerBySteamId(steamid, avatar = false) {
     });
 }
 exports.getPlayerBySteamId = getPlayerBySteamId;
-const getPlayersList = (query) => new Promise(res => {
+exports.getPlayersList = (query) => new Promise(res => {
     players.find(query, (err, players) => {
         if (err) {
             return res([]);
@@ -41,4 +40,3 @@ const getPlayersList = (query) => new Promise(res => {
         return res(players);
     });
 });
-exports.getPlayersList = getPlayersList;

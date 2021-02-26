@@ -7,7 +7,7 @@ exports.getMachineIdRoute = exports.getMachineId = void 0;
 const fs_1 = __importDefault(require("fs"));
 const electron_1 = require("electron");
 const path_1 = __importDefault(require("path"));
-const getMachineId = () => {
+exports.getMachineId = () => {
     const machinePathDirectory = path_1.default.join(electron_1.app.getPath('appData'), '.lexogrine');
     const machinePath = path_1.default.join(machinePathDirectory, 'machine.hm');
     const machineOldPath = path_1.default.join(electron_1.app.getPath('userData'), 'machine.hm');
@@ -30,8 +30,6 @@ const getMachineId = () => {
     fs_1.default.writeFileSync(machinePath, id, { encoding: 'UTF-8' });
     return id;
 };
-exports.getMachineId = getMachineId;
-const getMachineIdRoute = async (req, res) => {
+exports.getMachineIdRoute = async (req, res) => {
     return res.json({ id: exports.getMachineId() });
 };
-exports.getMachineIdRoute = getMachineIdRoute;

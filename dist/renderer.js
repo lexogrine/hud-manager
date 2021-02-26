@@ -9,7 +9,7 @@ const path_1 = __importDefault(require("path"));
 const autoUpdater_1 = __importDefault(require("./autoUpdater"));
 const config_1 = require("./server/api/config");
 const isDev = process.env.DEV === 'true';
-const createMainWindow = async (forceDev = false) => {
+exports.createMainWindow = async (forceDev = false) => {
     let win;
     process.on('message', msg => {
         if (msg === 'refocus' && win) {
@@ -78,4 +78,3 @@ const createMainWindow = async (forceDev = false) => {
         electron_1.app.quit();
     });
 };
-exports.createMainWindow = createMainWindow;

@@ -14,7 +14,7 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
     __setModuleDefault(result, mod);
     return result;
 };
@@ -27,12 +27,11 @@ const electron_1 = require("electron");
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
 const M = __importStar(require("./index"));
-const getMatchesRoute = async (req, res) => {
+exports.getMatchesRoute = async (req, res) => {
     const matches = await M.getMatches();
     return res.json(matches);
 };
-exports.getMatchesRoute = getMatchesRoute;
-const getMatchRoute = async (req, res) => {
+exports.getMatchRoute = async (req, res) => {
     if (!req.params.id) {
         return res.sendStatus(422);
     }
@@ -42,32 +41,27 @@ const getMatchRoute = async (req, res) => {
     }
     return res.json(match);
 };
-exports.getMatchRoute = getMatchRoute;
-const addMatchRoute = async (req, res) => {
+exports.addMatchRoute = async (req, res) => {
     const match = await M.addMatch(req.body);
     return res.sendStatus(match ? 200 : 500);
 };
-exports.addMatchRoute = addMatchRoute;
-const getCurrentMatchRoute = async (req, res) => {
+exports.getCurrentMatchRoute = async (req, res) => {
     const match = await M.getCurrent();
     if (!match) {
         return res.sendStatus(404);
     }
     return res.json(match);
 };
-exports.getCurrentMatchRoute = getCurrentMatchRoute;
-const deleteMatchRoute = async (req, res) => {
+exports.deleteMatchRoute = async (req, res) => {
     const match = await M.deleteMatch(req.params.id);
     return res.sendStatus(match ? 200 : 500);
 };
-exports.deleteMatchRoute = deleteMatchRoute;
-const updateMatchRoute = (io) => async (req, res) => {
+exports.updateMatchRoute = (io) => async (req, res) => {
     const match = await M.updateMatch(req.body);
     io.emit('match');
     return res.sendStatus(match ? 200 : 500);
 };
-exports.updateMatchRoute = updateMatchRoute;
-const getMaps = (req, res) => {
+exports.getMaps = (req, res) => {
     const defaultMaps = ['de_mirage', 'de_dust2', 'de_inferno', 'de_nuke', 'de_train', 'de_overpass', 'de_vertigo'];
     const mapFilePath = path_1.default.join(electron_1.app.getPath('userData'), 'maps.json');
     try {
@@ -81,4 +75,3 @@ const getMaps = (req, res) => {
         return res.json(defaultMaps);
     }
 };
-exports.getMaps = getMaps;

@@ -13,7 +13,7 @@ const createMatchup = () => ({
     matchId: null,
     parents: []
 });
-const createSEBracket = (teams) => {
+exports.createSEBracket = (teams) => {
     if (!Number.isInteger(Math.log2(teams)))
         return [];
     const phases = Math.log2(teams);
@@ -34,8 +34,7 @@ const createSEBracket = (teams) => {
     }
     return matchups;
 };
-exports.createSEBracket = createSEBracket;
-const createDEBracket = (teams) => {
+exports.createDEBracket = (teams) => {
     if (!Number.isInteger(Math.log2(teams)))
         return [];
     const upperBracket = exports.createSEBracket(teams);
@@ -72,4 +71,3 @@ const createDEBracket = (teams) => {
     }
     return upperBracket;
 };
-exports.createDEBracket = createDEBracket;

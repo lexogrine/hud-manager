@@ -19,7 +19,7 @@ async function getTeamById(id, logo = false) {
     });
 }
 exports.getTeamById = getTeamById;
-const getTeamsList = (query) => new Promise(res => {
+exports.getTeamsList = (query) => new Promise(res => {
     teams.find(query, (err, teams) => {
         if (err) {
             return res([]);
@@ -27,4 +27,3 @@ const getTeamsList = (query) => new Promise(res => {
         return res(teams);
     });
 });
-exports.getTeamsList = getTeamsList;

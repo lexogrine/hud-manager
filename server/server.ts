@@ -15,6 +15,9 @@ const init = (io: Server) => {
 		// const headers = websocket.request.headers;
 		// TODO: Verify if incoming message is from CS:GO, if not - return
 
+
+		return;
+
 		if (socket) {
 			socket.close();
 			socket = newSocket;

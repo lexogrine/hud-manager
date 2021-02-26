@@ -9,7 +9,7 @@ const database_1 = __importDefault(require("./../../../init/database"));
 const teams_1 = require("./../teams");
 const v4_1 = __importDefault(require("uuid/v4"));
 const matchesDb = database_1.default.matches;
-const getMatches = () => {
+exports.getMatches = () => {
     return new Promise(res => {
         matchesDb.find({}, (err, matches) => {
             if (err) {
@@ -19,7 +19,6 @@ const getMatches = () => {
         });
     });
 };
-exports.getMatches = getMatches;
 async function getMatchById(id) {
     return new Promise(res => {
         matchesDb.findOne({ id }, (err, match) => {
@@ -31,7 +30,7 @@ async function getMatchById(id) {
     });
 }
 exports.getMatchById = getMatchById;
-const setMatches = (matches) => {
+exports.setMatches = (matches) => {
     return new Promise(res => {
         matchesDb.remove({}, { multi: true }, err => {
             if (err) {
@@ -46,8 +45,7 @@ const setMatches = (matches) => {
         });
     });
 };
-exports.setMatches = setMatches;
-const updateMatches = async (updateMatches) => {
+exports.updateMatches = async (updateMatches) => {
     const currents = updateMatches.filter(match => match.current);
     if (currents.length > 1) {
         updateMatches = updateMatches.map(match => ({ ...match, current: false }));
@@ -84,8 +82,7 @@ const updateMatches = async (updateMatches) => {
     });
     await exports.setMatches(matchesFixed);
 };
-exports.updateMatches = updateMatches;
-const addMatch = (match) => new Promise(res => {
+exports.addMatch = (match) => new Promise(res => {
     if (!match.id) {
         match.id = v4_1.default();
     }
@@ -96,16 +93,14 @@ const addMatch = (match) => new Promise(res => {
         return res(doc);
     });
 });
-exports.addMatch = addMatch;
-const deleteMatch = (id) => new Promise(res => {
+exports.deleteMatch = (id) => new Promise(res => {
     matchesDb.remove({ id }, err => {
         if (err)
             return res(false);
         return res(true);
     });
 });
-exports.deleteMatch = deleteMatch;
-const getCurrent = () => new Promise(res => {
+exports.getCurrent = () => new Promise(res => {
     matchesDb.findOne({ current: true }, (err, match) => {
         if (err || !match) {
             return res(null);
@@ -113,7 +108,6 @@ const getCurrent = () => new Promise(res => {
         return res(match);
     });
 });
-exports.getCurrent = getCurrent;
 /*
 export const setCurrent = (id: string) =>
     new Promise(res => {
@@ -126,7 +120,7 @@ export const setCurrent = (id: string) =>
         });
     });
 */
-const updateMatch = (match) => new Promise(res => {
+exports.updateMatch = (match) => new Promise(res => {
     matchesDb.update({ id: match.id }, match, {}, err => {
         if (err)
             return res(false);
@@ -165,8 +159,7 @@ const updateMatch = (match) => new Promise(res => {
         });
     });
 });
-exports.updateMatch = updateMatch;
-const reverseSide = async (io) => {
+exports.reverseSide = async (io) => {
     const matches = await exports.getMatches();
     const current = matches.find(match => match.current);
     if (!current)
@@ -186,8 +179,7 @@ const reverseSide = async (io) => {
     await exports.updateMatch(current);
     io.emit('match', true);
 };
-exports.reverseSide = reverseSide;
-const updateRound = async (game) => {
+exports.updateRound = async (game) => {
     const getWinType = (round_win) => {
         switch (round_win) {
             case 'ct_win_defuse':
@@ -249,4 +241,3 @@ const updateRound = async (game) => {
     });
     return exports.updateMatch(match);
 };
-exports.updateRound = updateRound;
