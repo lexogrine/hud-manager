@@ -173,6 +173,13 @@ async function default_1(server, app) {
             credentials: true
         }
     });
+    io.on('connection', incoming => {
+        const websocket = incoming.client.conn.transport.socket;
+        // const headers = websocket.request.headers;
+        websocket.on('message', data => {
+            // TODO: Add mirv endpoint here
+        });
+    });
     let intervalId = null;
     let testDataIndex = 0;
     const startSendingTestData = () => {
@@ -385,16 +392,14 @@ async function default_1(server, app) {
             io.emit('active_hlae', runtimeConfig.currentHUD);
         });
     });
-    server_1.default(data => {
-        io.to('csgo').emit('update_mirv', data);
-    });
+    server_1.default(io);
     //GSI.on('data', updateRound);
     const onRoundEnd = async (score) => {
         if (score.loser && score.loser.logo) {
-            delete score.loser.logo;
+            score.loser.logo = '';
         }
         if (score.winner && score.winner.logo) {
-            delete score.winner.logo;
+            score.winner.logo = '';
         }
         const matches = await matches_1.getMatches();
         const match = matches.filter(match => match.current)[0];

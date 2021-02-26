@@ -13,7 +13,8 @@ async function getPlayerById(id, avatar = false) {
                 return res(null);
             }
             if (!avatar && player && player.avatar)
-                delete player.avatar;
+                player.avatar = '';
+            ;
             return res(player);
         });
     });
@@ -26,13 +27,13 @@ async function getPlayerBySteamId(steamid, avatar = false) {
                 return res(null);
             }
             if (!avatar && player && player.avatar)
-                delete player.avatar;
+                player.avatar = '';
             return res(player);
         });
     });
 }
 exports.getPlayerBySteamId = getPlayerBySteamId;
-exports.getPlayersList = (query) => new Promise(res => {
+const getPlayersList = (query) => new Promise(res => {
     players.find(query, (err, players) => {
         if (err) {
             return res([]);
@@ -40,3 +41,4 @@ exports.getPlayersList = (query) => new Promise(res => {
         return res(players);
     });
 });
+exports.getPlayersList = getPlayersList;

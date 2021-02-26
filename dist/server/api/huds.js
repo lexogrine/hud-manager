@@ -14,7 +14,7 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
     __setModuleDefault(result, mod);
     return result;
 };
@@ -53,7 +53,7 @@ const remove = (pathToRemove) => {
     });
     fs.rmdirSync(pathToRemove);
 };
-exports.listHUDs = async () => {
+const listHUDs = async () => {
     const dir = path.join(electron_1.app.getPath('home'), 'HUDs');
     const filtered = fs
         .readdirSync(dir, { withFileTypes: true })
@@ -65,10 +65,12 @@ exports.listHUDs = async () => {
     }
     return huds;
 };
-exports.getHUDs = async (req, res) => {
+exports.listHUDs = listHUDs;
+const getHUDs = async (req, res) => {
     return res.json(await exports.listHUDs());
 };
-exports.getHUDData = async (dirName) => {
+exports.getHUDs = getHUDs;
+const getHUDData = async (dirName) => {
     const dir = path.join(electron_1.app.getPath('home'), 'HUDs', dirName);
     const configFileDir = path.join(dir, 'hud.json');
     const globalConfig = await config_1.loadConfig();
@@ -102,7 +104,8 @@ exports.getHUDData = async (dirName) => {
         return null;
     }
 };
-exports.getHUDKeyBinds = (dirName) => {
+exports.getHUDData = getHUDData;
+const getHUDKeyBinds = (dirName) => {
     const dir = path.join(electron_1.app.getPath('home'), 'HUDs', dirName);
     const keybindsFileDir = path.join(dir, 'keybinds.json');
     if (!fs.existsSync(keybindsFileDir)) {
@@ -117,7 +120,8 @@ exports.getHUDKeyBinds = (dirName) => {
         return null;
     }
 };
-exports.getHUDPanelSetting = (dirName) => {
+exports.getHUDKeyBinds = getHUDKeyBinds;
+const getHUDPanelSetting = (dirName) => {
     const dir = path.join(electron_1.app.getPath('home'), 'HUDs', dirName);
     const panelFileDir = path.join(dir, 'panel.json');
     if (!fs.existsSync(panelFileDir)) {
@@ -133,12 +137,14 @@ exports.getHUDPanelSetting = (dirName) => {
         return null;
     }
 };
-exports.openHUDsDirectory = async (_req, res) => {
+exports.getHUDPanelSetting = getHUDPanelSetting;
+const openHUDsDirectory = async (_req, res) => {
     const dir = path.join(electron_1.app.getPath('home'), 'HUDs');
     electron_1.shell.openPath(dir);
     return res.sendStatus(200);
 };
-exports.renderHUD = async (req, res, next) => {
+exports.openHUDsDirectory = openHUDsDirectory;
+const renderHUD = async (req, res, next) => {
     const cfg = await config_1.loadConfig();
     if (!cfg) {
         return res.sendStatus(500);
@@ -168,7 +174,8 @@ exports.renderHUD = async (req, res, next) => {
     }
     return exports.render(req, res, next);
 };
-exports.verifyOverlay = async (req, res, next) => {
+exports.renderHUD = renderHUD;
+const verifyOverlay = async (req, res, next) => {
     const cfg = await config_1.loadConfig();
     if (!cfg) {
         return res.sendStatus(500);
@@ -182,11 +189,13 @@ exports.verifyOverlay = async (req, res, next) => {
     }
     return next();
 };
-exports.render = (req, res) => {
+exports.verifyOverlay = verifyOverlay;
+const render = (req, res) => {
     const dir = path.join(electron_1.app.getPath('home'), 'HUDs', req.params.dir);
     return res.sendFile(path.join(dir, 'index.html'));
 };
-exports.renderOverlay = (devHUD = false) => async (req, res) => {
+exports.render = render;
+const renderOverlay = (devHUD = false) => async (req, res) => {
     const cfg = await config_1.loadConfig();
     if (!cfg) {
         return res.sendStatus(500);
@@ -196,17 +205,20 @@ exports.renderOverlay = (devHUD = false) => async (req, res) => {
     }
     return res.send(overlay_1.default(`/dev/?port=${cfg.port}`));
 };
-exports.renderThumbnail = (req, res) => {
+exports.renderOverlay = renderOverlay;
+const renderThumbnail = (req, res) => {
     return res.sendFile(exports.getThumbPath(req.params.dir));
 };
-exports.getThumbPath = (dir) => {
+exports.renderThumbnail = renderThumbnail;
+const getThumbPath = (dir) => {
     const thumbPath = path.join(electron_1.app.getPath('home'), 'HUDs', dir, 'thumb.png');
     if (fs.existsSync(thumbPath)) {
         return thumbPath;
     }
     return path.join(__dirname, '../../assets/icon.png');
 };
-exports.renderAssets = async (req, res, next) => {
+exports.getThumbPath = getThumbPath;
+const renderAssets = async (req, res, next) => {
     if (!req.params.dir) {
         return res.sendStatus(404);
     }
@@ -216,7 +228,8 @@ exports.renderAssets = async (req, res, next) => {
     }
     return express_1.default.static(path.join(electron_1.app.getPath('home'), 'HUDs', req.params.dir))(req, res, next);
 };
-exports.renderLegacy = async (req, res) => {
+exports.renderAssets = renderAssets;
+const renderLegacy = async (req, res) => {
     const cfg = await config_1.loadConfig();
     if (!cfg) {
         return res.sendStatus(500);
@@ -231,7 +244,8 @@ exports.renderLegacy = async (req, res) => {
         delay: 0
     });
 };
-exports.legacyJS = (req, res) => {
+exports.renderLegacy = renderLegacy;
+const legacyJS = (req, res) => {
     const dir = path.join(electron_1.app.getPath('home'), 'HUDs', req.params.hudName, 'index.js');
     if (!fs.existsSync(dir)) {
         return res.sendStatus(404);
@@ -245,7 +259,8 @@ exports.legacyJS = (req, res) => {
         return res.sendStatus(404);
     }
 };
-exports.legacyCSS = (req, res) => {
+exports.legacyJS = legacyJS;
+const legacyCSS = (req, res) => {
     const dir = path.join(electron_1.app.getPath('home'), 'HUDs', req.params.hudName, 'style.css');
     if (!fs.existsSync(dir)) {
         return res.sendStatus(404);
@@ -259,21 +274,24 @@ exports.legacyCSS = (req, res) => {
         return res.sendStatus(404);
     }
 };
-exports.showHUD = (io) => async (req, res) => {
+exports.legacyCSS = legacyCSS;
+const showHUD = (io) => async (req, res) => {
     const response = await huds_1.default.open(req.params.hudDir, io);
     if (response) {
         return res.sendStatus(200);
     }
     return res.sendStatus(404);
 };
-exports.closeHUD = (req, res) => {
+exports.showHUD = showHUD;
+const closeHUD = (req, res) => {
     const response = huds_1.default.close();
     if (response) {
         return res.sendStatus(200);
     }
     return res.sendStatus(404);
 };
-exports.uploadHUD = async (req, res) => {
+exports.closeHUD = closeHUD;
+const uploadHUD = async (req, res) => {
     if (!req.body.hud || !req.body.name)
         return res.sendStatus(422);
     const response = await loadHUD(req.body.hud, req.body.name);
@@ -287,7 +305,8 @@ exports.uploadHUD = async (req, res) => {
     }
     return res.sendStatus(response ? 200 : 500);
 };
-exports.deleteHUD = (io) => async (req, res) => {
+exports.uploadHUD = uploadHUD;
+const deleteHUD = (io) => async (req, res) => {
     if (!req.query.hudDir || typeof req.query.hudDir !== 'string' || huds_1.default.current)
         return res.sendStatus(422);
     const hudPath = path.join(electron_1.app.getPath('home'), 'HUDs', req.query.hudDir);
@@ -303,6 +322,7 @@ exports.deleteHUD = (io) => async (req, res) => {
         return res.sendStatus(500);
     }
 };
+exports.deleteHUD = deleteHUD;
 function removeArchives() {
     const files = fs.readdirSync('./').filter(file => file.startsWith('hud_temp_') && file.endsWith('.zip'));
     files.forEach(file => {

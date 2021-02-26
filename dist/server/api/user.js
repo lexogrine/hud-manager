@@ -75,11 +75,12 @@ const login = async (username, password) => {
     }
     return await loadUser(true);
 };
-exports.loginHandler = async (req, res) => {
+const loginHandler = async (req, res) => {
     const response = await login(req.body.username, req.body.password);
     res.json(response);
 };
-exports.getCurrent = async (req, res) => {
+exports.loginHandler = loginHandler;
+const getCurrent = async (req, res) => {
     if (api_1.customer.customer) {
         return res.json(api_1.customer.customer);
     }
@@ -89,8 +90,10 @@ exports.getCurrent = async (req, res) => {
     }
     return res.status(403).json(response);
 };
-exports.logout = async (req, res) => {
+exports.getCurrent = getCurrent;
+const logout = async (req, res) => {
     api_1.customer.customer = null;
     await userHandlers.logout();
     return res.sendStatus(200);
 };
+exports.logout = logout;

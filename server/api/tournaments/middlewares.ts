@@ -25,7 +25,7 @@ export const addTournament: express.RequestHandler = async (req, res) => {
 
 	tournament.name = name;
 	tournament.logo = logo;
-
+	// @ts-ignore
 	delete tournament._id;
 
 	const tournamentWithId = await T.addTournament(tournament);

@@ -13,13 +13,13 @@ async function getTeamById(id, logo = false) {
                 return res(null);
             }
             if (!logo && team && team.logo)
-                delete team.logo;
+                team.logo = '';
             return res(team);
         });
     });
 }
 exports.getTeamById = getTeamById;
-exports.getTeamsList = (query) => new Promise(res => {
+const getTeamsList = (query) => new Promise(res => {
     teams.find(query, (err, teams) => {
         if (err) {
             return res([]);
@@ -27,3 +27,4 @@ exports.getTeamsList = (query) => new Promise(res => {
         return res(teams);
     });
 });
+exports.getTeamsList = getTeamsList;

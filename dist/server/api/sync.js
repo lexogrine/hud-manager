@@ -14,7 +14,7 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
     __setModuleDefault(result, mod);
     return result;
 };
@@ -80,7 +80,7 @@ async function exportDatabase() {
     return JSON.stringify(response);
 }
 exports.exportDatabase = exportDatabase;
-exports.importDb = async (req, res) => {
+const importDb = async (req, res) => {
     const db = req.body;
     if (!db || !db.players || !db.teams)
         return res.sendStatus(422);
@@ -92,7 +92,8 @@ exports.importDb = async (req, res) => {
         return res.sendStatus(500);
     }
 };
-exports.checkForConflicts = async (req, res) => {
+exports.importDb = importDb;
+const checkForConflicts = async (req, res) => {
     const db = req.body;
     if (!db || !db.teams || !db.players)
         return res.sendStatus(422);
@@ -112,3 +113,4 @@ exports.checkForConflicts = async (req, res) => {
         return res.sendStatus(500);
     }
 };
+exports.checkForConflicts = checkForConflicts;

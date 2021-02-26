@@ -14,7 +14,7 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
     __setModuleDefault(result, mod);
     return result;
 };
@@ -22,7 +22,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.deleteTournament = exports.updateTournament = exports.bindMatchToMatchup = exports.addTournament = exports.getTournaments = exports.getCurrentTournament = void 0;
 const T = __importStar(require("./"));
 const matches_1 = require("../matches");
-exports.getCurrentTournament = async (req, res) => {
+const getCurrentTournament = async (req, res) => {
     const matches = await matches_1.getMatches();
     const current = matches.find(match => match.current);
     if (!current) {
@@ -31,22 +31,26 @@ exports.getCurrentTournament = async (req, res) => {
     const tournament = await T.getTournamentByMatchId(current.id);
     return res.json({ tournament: tournament || null });
 };
-exports.getTournaments = async (req, res) => {
+exports.getCurrentTournament = getCurrentTournament;
+const getTournaments = async (req, res) => {
     const tournaments = await T.getTournaments();
     return res.json(tournaments);
 };
-exports.addTournament = async (req, res) => {
+exports.getTournaments = getTournaments;
+const addTournament = async (req, res) => {
     const { name, logo, teams, type } = req.body;
     const tournament = T.createTournament(type, teams);
     tournament.name = name;
     tournament.logo = logo;
+    // @ts-ignore
     delete tournament._id;
     const tournamentWithId = await T.addTournament(tournament);
     if (!tournamentWithId)
         return res.sendStatus(500);
     return res.json(tournamentWithId);
 };
-exports.bindMatchToMatchup = async (req, res) => {
+exports.addTournament = addTournament;
+const bindMatchToMatchup = async (req, res) => {
     const tournamentId = req.params.id;
     const { matchId, matchupId } = req.body;
     const tournament = await T.bindMatch(matchId, matchupId, tournamentId);
@@ -54,7 +58,8 @@ exports.bindMatchToMatchup = async (req, res) => {
         return res.sendStatus(500);
     return res.sendStatus(200);
 };
-exports.updateTournament = async (req, res) => {
+exports.bindMatchToMatchup = bindMatchToMatchup;
+const updateTournament = async (req, res) => {
     const { name, logo } = req.body;
     const tournament = await T.getTournament(req.params.id);
     if (!tournament)
@@ -66,7 +71,9 @@ exports.updateTournament = async (req, res) => {
     const newTournament = await T.updateTournament(tournament);
     return res.sendStatus(newTournament ? 200 : 500);
 };
-exports.deleteTournament = async (req, res) => {
+exports.updateTournament = updateTournament;
+const deleteTournament = async (req, res) => {
     const del = await T.deleteTournament(req.params.id);
     return res.sendStatus(del ? 200 : 500);
 };
+exports.deleteTournament = deleteTournament;

@@ -60,7 +60,7 @@ function isCorrect(cfg) {
         return false;
     }
 }
-exports.checkCFGs = async (req, res) => {
+const checkCFGs = async (req, res) => {
     const config = await config_1.loadConfig();
     const SteamGamePath = steam_game_path_1.getGamePath(730);
     const gamePath = SteamGamePath?.game?.path;
@@ -90,7 +90,8 @@ exports.checkCFGs = async (req, res) => {
     }
     return res.json({ success: true });
 };
-exports.createCFGs = async (_req, res) => {
+exports.checkCFGs = checkCFGs;
+const createCFGs = async (_req, res) => {
     let GamePath;
     try {
         GamePath = steam_game_path_1.getGamePath(730);
@@ -130,10 +131,12 @@ exports.createCFGs = async (_req, res) => {
         return res.json({ success: false, message: 'Unexpected error occured' });
     }
 };
-exports.getLatestData = async (_req, res) => {
+exports.createCFGs = createCFGs;
+const getLatestData = async (_req, res) => {
     return res.json(sockets_1.GSI.last || {});
 };
-exports.getSteamPath = async (_req, res) => {
+exports.getLatestData = getLatestData;
+const getSteamPath = async (_req, res) => {
     try {
         const GamePath = steam_game_path_1.getGamePath(730);
         if (!GamePath || !GamePath.steam || !GamePath.steam.path) {
@@ -145,7 +148,8 @@ exports.getSteamPath = async (_req, res) => {
         return res.status(404).json({ success: false });
     }
 };
-exports.run = async (req, res) => {
+exports.getSteamPath = getSteamPath;
+const run = async (req, res) => {
     const config = await config_1.loadConfig();
     if (!config) {
         return res.sendStatus(422);
@@ -206,3 +210,4 @@ exports.run = async (req, res) => {
     }
     return res.sendStatus(200);
 };
+exports.run = run;

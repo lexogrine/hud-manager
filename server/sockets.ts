@@ -432,18 +432,16 @@ export default async function (server: http.Server, app: express.Router) {
 		});
 	});
 
-	mirv(data => {
-		io.to('csgo').emit('update_mirv', data);
-	});
+	mirv(io);
 
 	//GSI.on('data', updateRound);
 
 	const onRoundEnd = async (score: Score) => {
 		if (score.loser && score.loser.logo) {
-			delete score.loser.logo;
+			score.loser.logo = '';
 		}
 		if (score.winner && score.winner.logo) {
-			delete score.winner.logo;
+			score.winner.logo = '';
 		}
 		const matches = await getMatches();
 		const match = matches.filter(match => match.current)[0];

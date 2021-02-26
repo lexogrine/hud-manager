@@ -20,6 +20,7 @@
         "@typescript-eslint/no-var-requires":0,
         "no-mixed-spaces-and-tabs": ["warn", "smart-tabs"],
         "@typescript-eslint/explicit-function-return-type":0,
-        "@typescript-eslint/camelcase":0
+        "@typescript-eslint/camelcase":0,
+        "@typescript-eslint/ban-ts-comment":0
     }
   }

@@ -14,7 +14,7 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
     __setModuleDefault(result, mod);
     return result;
 };
@@ -28,14 +28,15 @@ const M = __importStar(require("./../matches"));
 const v4_1 = __importDefault(require("uuid/v4"));
 const database_1 = __importDefault(require("./../../../init/database"));
 const { tournaments } = database_1.default;
-exports.getTournaments = () => new Promise(res => {
+const getTournaments = () => new Promise(res => {
     tournaments.find({}, (err, docs) => {
         if (err)
             return res([]);
         return res(docs);
     });
 });
-exports.createTournament = (type, teams) => {
+exports.getTournaments = getTournaments;
+const createTournament = (type, teams) => {
     const tournament = {
         _id: '',
         name: '',
@@ -55,33 +56,38 @@ exports.createTournament = (type, teams) => {
     }
     return tournament;
 };
-exports.getTournamentByMatchId = async (matchId) => {
+exports.createTournament = createTournament;
+const getTournamentByMatchId = async (matchId) => {
     const tournaments = await exports.getTournaments();
     const tournament = tournaments.find(trnm => !!trnm.matchups.find(matchup => matchup.matchId === matchId));
     return tournament || null;
 };
-exports.addTournament = (tournament) => new Promise(res => {
+exports.getTournamentByMatchId = getTournamentByMatchId;
+const addTournament = (tournament) => new Promise(res => {
     tournaments.insert(tournament, (err, newTournament) => {
         if (err)
             return res(null);
         return res(newTournament);
     });
 });
-exports.getTournament = (tournamentId) => new Promise(res => {
+exports.addTournament = addTournament;
+const getTournament = (tournamentId) => new Promise(res => {
     tournaments.findOne({ _id: tournamentId }, (err, tournament) => {
         if (err || !tournament)
             return res(null);
         return res(tournament);
     });
 });
-exports.updateTournament = (tournament) => new Promise(res => {
+exports.getTournament = getTournament;
+const updateTournament = (tournament) => new Promise(res => {
     tournaments.update({ _id: tournament._id }, tournament, {}, err => {
         if (err)
             return res(null);
         return res(tournament);
     });
 });
-exports.bindMatch = async (matchId, matchupId, tournamentId) => {
+exports.updateTournament = updateTournament;
+const bindMatch = async (matchId, matchupId, tournamentId) => {
     const tournament = await exports.getTournament(tournamentId);
     if (!tournament)
         return null;
@@ -91,7 +97,8 @@ exports.bindMatch = async (matchId, matchupId, tournamentId) => {
     matchup.matchId = matchId;
     return await exports.updateTournament(tournament);
 };
-exports.fillNextMatch = (matchId, type) => new Promise(res => {
+exports.bindMatch = bindMatch;
+const fillNextMatch = (matchId, type) => new Promise(res => {
     const maxWins = (type) => {
         switch (type) {
             case 'bo1':
@@ -172,7 +179,8 @@ exports.fillNextMatch = (matchId, type) => new Promise(res => {
         return res(nextMatch);
     });
 });
-exports.createNextMatch = async (matchId) => {
+exports.fillNextMatch = fillNextMatch;
+const createNextMatch = async (matchId) => {
     try {
         await Promise.all([exports.fillNextMatch(matchId, 'winner'), exports.fillNextMatch(matchId, 'loser')]);
     }
@@ -180,10 +188,12 @@ exports.createNextMatch = async (matchId) => {
         return;
     }
 };
-exports.deleteTournament = (tournamentId) => new Promise(res => {
+exports.createNextMatch = createNextMatch;
+const deleteTournament = (tournamentId) => new Promise(res => {
     tournaments.remove({ _id: tournamentId }, err => {
         if (err)
             return res(null);
         return res(true);
     });
 });
+exports.deleteTournament = deleteTournament;

@@ -3,18 +3,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const ws_1 = require("ws");
-const http_1 = __importDefault(require("http"));
 const BufferReader_1 = __importDefault(require("./hlae/BufferReader"));
 const GameEventUnserializer_1 = __importDefault(require("./hlae/GameEventUnserializer"));
-const init = (callback) => {
-    const server = http_1.default.createServer();
-    const webSocketServer = new ws_1.Server({ server, path: '/mirv' });
+const init = (io) => {
     const enrichments = {
         player_death: ['userid', 'attacker', 'assister']
     };
     let socket;
-    webSocketServer.on('connection', newSocket => {
+    io.on('connection', incoming => {
+        const newSocket = incoming.client.conn.transport.socket;
+        // const headers = websocket.request.headers;
+        // TODO: Verify if incoming message is from CS:GO, if not - return
         if (socket) {
             socket.close();
             socket = newSocket;
@@ -49,16 +48,12 @@ const init = (callback) => {
                     }
                     const gameEvent = gameEventUnserializer.unserialize(bufferReader);
                     if (gameEvent.name === 'player_death') {
-                        if (callback) {
-                            callback(gameEvent);
-                        }
-                        //console.log(JSON.stringify(gameEvent));
+                        io.to('csgo').emit('update_mirv', gameEvent);
                     }
                 }
             }
             catch (err) { }
         });
     });
-    server.listen(31337);
 };
 exports.default = init;
