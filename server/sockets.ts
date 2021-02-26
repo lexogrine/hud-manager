@@ -1,5 +1,6 @@
 import { Server, Socket } from 'socket.io';
 import http from 'http';
+import WebSocket from 'ws';
 import express from 'express';
 import CSGOGSI, { CSGORaw, Score, CSGO } from 'csgogsi';
 import { app as Application } from 'electron';
@@ -190,6 +191,16 @@ export default async function (server: http.Server, app: express.Router) {
 			origin: corsOrigins,
 			credentials: true
 		}
+	});
+
+	io.on("connection", (incoming) => {
+		const websocket = incoming.client.conn.transport.socket as WebSocket;
+
+		// const headers = websocket.request.headers;
+
+		websocket.on('message', (data) => {
+			// TODO: Add mirv endpoint here
+		});
 	});
 
 	let intervalId: NodeJS.Timeout | null = null;
