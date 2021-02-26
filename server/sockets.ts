@@ -193,12 +193,12 @@ export default async function (server: http.Server, app: express.Router) {
 		}
 	});
 
-	io.on("connection", (incoming) => {
+	io.on('connection', incoming => {
 		const websocket = incoming.client.conn.transport.socket as WebSocket;
 
 		// const headers = websocket.request.headers;
 
-		websocket.on('message', (data) => {
+		websocket.on('message', data => {
 			// TODO: Add mirv endpoint here
 		});
 	});
