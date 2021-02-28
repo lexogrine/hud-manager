@@ -14,14 +14,15 @@ const init = (io: Server) => {
 		const newSocket = incoming?.client?.conn?.transport?.socket as WebSocket;
 		const headers = incoming.request.headers;
 
-		const isCSGO = !headers.referer &&
+		const isCSGO =
+			!headers.referer &&
 			!headers.accept &&
 			!headers.origin &&
-			!headers["accept-language"] &&
+			!headers['accept-language'] &&
 			!headers.pragma &&
-			!headers["user-agent"];
+			!headers['user-agent'];
 
-		if(!isCSGO){
+		if (!isCSGO) {
 			return;
 		}
 
