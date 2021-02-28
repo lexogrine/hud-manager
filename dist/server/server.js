@@ -10,10 +10,18 @@ const init = (io) => {
         player_death: ['userid', 'attacker', 'assister']
     };
     let socket;
-    io.on('connection', incoming => {
-        const newSocket = incoming.client.conn.transport.socket;
-        // const headers = websocket.request.headers;
-        // TODO: Verify if incoming message is from CS:GO, if not - return
+    io.on('connection', (incoming) => {
+        const newSocket = incoming?.client?.conn?.transport?.socket;
+        const headers = incoming.request.headers;
+        const isCSGO = !headers.referer &&
+            !headers.accept &&
+            !headers.origin &&
+            !headers["accept-language"] &&
+            !headers.pragma &&
+            !headers["user-agent"];
+        if (!isCSGO) {
+            return;
+        }
         if (socket) {
             socket.close();
             socket = newSocket;

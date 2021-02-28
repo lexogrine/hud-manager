@@ -173,13 +173,6 @@ async function default_1(server, app) {
             credentials: true
         }
     });
-    io.on('connection', incoming => {
-        const websocket = incoming.client.conn.transport.socket;
-        // const headers = websocket.request.headers;
-        websocket.on('message', data => {
-            // TODO: Add mirv endpoint here
-        });
-    });
     let intervalId = null;
     let testDataIndex = 0;
     const startSendingTestData = () => {

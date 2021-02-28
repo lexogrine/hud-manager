@@ -1,7 +1,8 @@
 import WebSocket from 'ws';
-import { Server } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 import BufferReader from './hlae/BufferReader';
 import GameEventUnserializer from './hlae/GameEventUnserializer';
+
 const init = (io: Server) => {
 	const enrichments = {
 		player_death: ['userid', 'attacker', 'assister']
@@ -9,13 +10,20 @@ const init = (io: Server) => {
 
 	let socket: WebSocket;
 
-	io.on('connection', incoming => {
-		const newSocket = incoming.client.conn.transport.socket as WebSocket;
+	io.on('connection', (incoming: Socket) => {
+		const newSocket = incoming?.client?.conn?.transport?.socket as WebSocket;
+		const headers = incoming.request.headers;
 
-		// const headers = websocket.request.headers;
-		// TODO: Verify if incoming message is from CS:GO, if not - return
+		const isCSGO = !headers.referer &&
+			!headers.accept &&
+			!headers.origin &&
+			!headers["accept-language"] &&
+			!headers.pragma &&
+			!headers["user-agent"];
 
-		return;
+		if(!isCSGO){
+			return;
+		}
 
 		if (socket) {
 			socket.close();
