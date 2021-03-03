@@ -1,8 +1,7 @@
 import { Server, Socket } from 'socket.io';
 import http from 'http';
-import WebSocket from 'ws';
 import express from 'express';
-import CSGOGSI, { CSGORaw, Score, CSGO } from 'csgogsi';
+import { CSGOGSI, CSGORaw, Score, CSGO } from 'csgogsi-socket';
 import { app as Application } from 'electron';
 import path from 'path';
 import fetch from 'node-fetch';
@@ -427,6 +426,7 @@ export default async function (server: http.Server, app: express.Router) {
 	//GSI.on('data', updateRound);
 
 	const onRoundEnd = async (score: Score) => {
+		if(GSI.last) await updateRound(GSI.last);
 		if (score.loser && score.loser.logo) {
 			score.loser.logo = '';
 		}
@@ -451,10 +451,35 @@ export default async function (server: http.Server, app: express.Router) {
 				veto.score[score.map.team_t.id] = score.map.team_ct.score;
 				veto.score[score.map.team_ct.id] = score.map.team_t.score;
 			}
+			if (score.mapEnd) {
+				veto.winner =
+					score.map.team_ct.score > score.map.team_t.score ? score.map.team_ct.id : score.map.team_t.id;
+				if (veto.reverseSide) {
+					veto.winner =
+						score.map.team_ct.score > score.map.team_t.score ? score.map.team_t.id : score.map.team_ct.id;
+				}
+				if (match.left.id === score.winner.id) {
+					if (veto.reverseSide) {
+						match.right.wins++;
+					} else {
+						match.left.wins++;
+					}
+				} else if (match.right.id === score.winner.id) {
+					if (veto.reverseSide) {
+						match.left.wins++;
+					} else {
+						match.right.wins++;
+					}
+				}
+			}
 			return veto;
 		});
 		match.vetos = vetos;
 		await updateMatch(match);
+
+		if (score.mapEnd) {
+			await createNextMatch(match.id);
+		}
 
 		io.emit('match', true);
 	};
@@ -463,85 +488,46 @@ export default async function (server: http.Server, app: express.Router) {
 		const matches = await getMatches();
 		const match = matches.filter(match => match.current)[0];
 		const mapName = score.map.name.substring(score.map.name.lastIndexOf('/') + 1);
-		if (match) {
-			const { vetos } = match;
-			const isReversed = vetos.filter(veto => veto.mapName === mapName && veto.reverseSide)[0];
-			vetos.map(veto => {
-				if (veto.mapName !== mapName || !score.map.team_ct.id || !score.map.team_t.id) {
-					return veto;
-				}
-				veto.winner =
-					score.map.team_ct.score > score.map.team_t.score ? score.map.team_ct.id : score.map.team_t.id;
-				if (isReversed) {
-					veto.winner =
-						score.map.team_ct.score > score.map.team_t.score ? score.map.team_t.id : score.map.team_ct.id;
-				}
-				if (veto.score && veto.score[veto.winner]) {
-					veto.score[veto.winner]++;
-				}
-				veto.mapEnd = true;
+		if (!match) return;
+		const { vetos } = match;
+		const isReversed = vetos.filter(veto => veto.mapName === mapName && veto.reverseSide)[0];
+		vetos.map(veto => {
+			if (veto.mapName !== mapName || !score.map.team_ct.id || !score.map.team_t.id) {
 				return veto;
-			});
-			if (match.left.id === score.winner.id) {
-				if (isReversed) {
-					match.right.wins++;
-				} else {
-					match.left.wins++;
-				}
-			} else if (match.right.id === score.winner.id) {
-				if (isReversed) {
-					match.left.wins++;
-				} else {
-					match.right.wins++;
-				}
 			}
-			match.vetos = vetos;
-			await updateMatch(match);
-			await createNextMatch(match.id);
-			io.emit('match', true);
+			veto.winner = score.map.team_ct.score > score.map.team_t.score ? score.map.team_ct.id : score.map.team_t.id;
+			if (isReversed) {
+				veto.winner =
+					score.map.team_ct.score > score.map.team_t.score ? score.map.team_t.id : score.map.team_ct.id;
+			}
+			if (veto.score && veto.score[veto.winner]) {
+				veto.score[veto.winner]++;
+			}
+			veto.mapEnd = true;
+			return veto;
+		});
+		if (match.left.id === score.winner.id) {
+			if (isReversed) {
+				match.right.wins++;
+			} else {
+				match.left.wins++;
+			}
+		} else if (match.right.id === score.winner.id) {
+			if (isReversed) {
+				match.left.wins++;
+			} else {
+				match.right.wins++;
+			}
 		}
+		match.vetos = vetos;
+		await updateMatch(match);
+		await createNextMatch(match.id);
+		io.emit('match', true);
 	};
 
-	let last: CSGO;
+	GSI.on("roundEnd", onRoundEnd);
 
-	GSI.on('data', async data => {
-		await updateRound(data);
-		if (
-			(last?.map.team_ct.score !== data.map.team_ct.score) !==
-			(last?.map.team_t.score !== data.map.team_t.score)
-		) {
-			if (last?.map.team_ct.score !== data.map.team_ct.score) {
-				const round = {
-					winner: data.map.team_ct,
-					loser: data.map.team_t,
-					map: data.map,
-					mapEnd: false
-				};
-				await onRoundEnd(round);
-			} else {
-				const round = {
-					winner: data.map.team_t,
-					loser: data.map.team_ct,
-					map: data.map,
-					mapEnd: false
-				};
-				await onRoundEnd(round);
-			}
-		}
-		if (data.map.phase === 'gameover' && last.map.phase !== 'gameover') {
-			const winner = data.map.team_ct.score > data.map.team_t.score ? data.map.team_ct : data.map.team_t;
-			const loser = data.map.team_ct.score > data.map.team_t.score ? data.map.team_t : data.map.team_ct;
-
-			const final: Score = {
-				winner,
-				loser,
-				map: data.map,
-				mapEnd: true
-			};
-
-			await onMatchEnd(final);
-		}
-		last = GSI.last as CSGO;
+	GSI.on('data', data => {
 		const now = new Date().getTime();
 		if (now - lastUpdate > 300000 && customer.customer) {
 			lastUpdate = new Date().getTime();

@@ -1237,6 +1237,12 @@ input:checked ~ .customCheckbox {
     text-transform: uppercase;
     margin: 0;
 }
+#window-bar-area {
+    z-index: 9999;
+    width:100%;
+    height:64px;
+    position:fixed;
+}
 .window-app {
     width: 100%;
 }

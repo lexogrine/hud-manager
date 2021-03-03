@@ -13,7 +13,7 @@ import goBack from './../../../../styles/goBack.png';
 import config from './../../../../api/config';
 const isElectron = config.isElectron;
 
-function createCFG(customRadar: boolean, customKillfeed: boolean, afx: boolean, autoexec = true): I.CFG {
+function createCFG(customRadar: boolean, customKillfeed: boolean, afx: boolean, port: number, autoexec = true): I.CFG {
 	let cfg = `cl_draw_only_deathnotices 1`;
 	let file = 'hud';
 
@@ -26,13 +26,13 @@ function createCFG(customRadar: boolean, customKillfeed: boolean, afx: boolean, 
 	if (customKillfeed) {
 		file += '_killfeed';
 		cfg += `\ncl_drawhud_force_deathnotices -1`;
-		cfg += `\nmirv_pgl url "ws://localhost:31337/mirv"`;
+		cfg += `\nmirv_pgl url "ws://localhost:${port}/socket.io/?EIO=3&transport=websocket"`;
 		cfg += `\nmirv_pgl start`;
 	}
 	if (afx) {
 		file += '_interop';
 		cfg = 'afx_interop connect 1';
-		cfg += `\nexec ${createCFG(customRadar, customKillfeed, false).file}`;
+		cfg += `\nexec ${createCFG(customRadar, customKillfeed, false, port).file}`;
 	}
 	file += '.cfg';
 	if (!autoexec) {
@@ -193,7 +193,9 @@ export default class Huds extends React.Component<IProps, IState> {
 							<div className="running-game-container">
 								<div>
 									<div className="config-description">Console:</div>
-									<code className="exec-code">exec {createCFG(radar, killfeed, afx).file}</code>
+									<code className="exec-code">
+										exec {createCFG(radar, killfeed, afx, config.port).file}
+									</code>
 									<ElectronOnly>
 										<div className="config-description">OR</div>
 										<Button

@@ -16,9 +16,9 @@ const init = (io) => {
         const isCSGO = !headers.referer &&
             !headers.accept &&
             !headers.origin &&
-            !headers["accept-language"] &&
+            !headers['accept-language'] &&
             !headers.pragma &&
-            !headers["user-agent"];
+            !headers['user-agent'];
         if (!isCSGO) {
             return;
         }

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import config from './../../../../api/config';
 import { Col, Row } from 'reactstrap';
-import GSISocket, { CSGO, Player, Team, PlayerExtension } from 'csgogsi-socket';
+import { GSISocket, CSGO, Player, Team, PlayerExtension } from 'csgogsi-socket';
 import { IContextData } from '../../../Context';
 
 export const { GSI, socket } = GSISocket(`${config.isDev ? config.apiAddress : '/'}`, 'update');

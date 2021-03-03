@@ -54,24 +54,24 @@ exports.updateMatches = async (updateMatches) => {
         const left = await teams_1.getTeamById(currents[0].left.id || '');
         const right = await teams_1.getTeamById(currents[0].right.id || '');
         if (left && left._id) {
-            sockets_1.GSI.setTeamOne({
+            sockets_1.GSI.teams.left = {
                 id: left._id,
                 name: left.name,
                 country: left.country,
                 logo: left.logo,
                 map_score: currents[0].left.wins,
                 extra: left.extra
-            });
+            };
         }
         if (right && right._id) {
-            sockets_1.GSI.setTeamTwo({
+            sockets_1.GSI.teams.right = {
                 id: right._id,
                 name: right.name,
                 country: right.country,
                 logo: right.logo,
                 map_score: currents[0].right.wins,
                 extra: right.extra
-            });
+            };
         }
     }
     const matchesFixed = updateMatches.map(match => {
@@ -134,24 +134,24 @@ exports.updateMatch = (match) => new Promise(res => {
             const left = await teams_1.getTeamById(match.left.id || '');
             const right = await teams_1.getTeamById(match.right.id || '');
             if (left && left._id) {
-                sockets_1.GSI.setTeamOne({
+                sockets_1.GSI.teams.left = {
                     id: left._id,
                     name: left.name,
                     country: left.country,
                     logo: left.logo,
                     map_score: match.left.wins,
                     extra: left.extra
-                });
+                };
             }
             if (right && right._id) {
-                sockets_1.GSI.setTeamTwo({
+                sockets_1.GSI.teams.right = {
                     id: right._id,
                     name: right.name,
                     country: right.country,
                     logo: right.logo,
                     map_score: match.right.wins,
                     extra: right.extra
-                });
+                };
             }
             if (err)
                 return res(false);

@@ -11,7 +11,7 @@ const config_1 = require("./config");
 const sockets_1 = require("../sockets");
 const child_process_1 = require("child_process");
 const electron_1 = require("../../electron");
-function createCFG(customRadar, customKillfeed, afx, autoexec = true) {
+function createCFG(customRadar, customKillfeed, afx, port, autoexec = true) {
     let cfg = `cl_draw_only_deathnotices 1`;
     let file = 'hud';
     if (!customRadar) {
@@ -24,13 +24,13 @@ function createCFG(customRadar, customKillfeed, afx, autoexec = true) {
     if (customKillfeed) {
         file += '_killfeed';
         cfg += `\ncl_drawhud_force_deathnotices -1`;
-        cfg += `\nmirv_pgl url "ws://localhost:31337/mirv"`;
+        cfg += `\nmirv_pgl url "ws://localhost:${port}/socket.io/?EIO=3&transport=websocket"`;
         cfg += `\nmirv_pgl start`;
     }
     if (afx) {
         file += '_interop';
         cfg = 'afx_interop connect 1';
-        cfg += `\nexec ${createCFG(customRadar, customKillfeed, false).file}`;
+        cfg += `\nexec ${createCFG(customRadar, customKillfeed, false, port).file}`;
     }
     file += '.cfg';
     if (!autoexec) {
@@ -77,7 +77,7 @@ exports.checkCFGs = async (req, res) => {
     switcher.forEach(interop => {
         switcher.forEach(radar => {
             switcher.forEach(killfeed => {
-                cfgs.push(createCFG(radar, killfeed, interop));
+                cfgs.push(createCFG(radar, killfeed, interop, config.port));
             });
         });
     });
@@ -91,6 +91,7 @@ exports.checkCFGs = async (req, res) => {
     return res.json({ success: true });
 };
 exports.createCFGs = async (_req, res) => {
+    const config = await config_1.loadConfig();
     let GamePath;
     try {
         GamePath = steam_game_path_1.getGamePath(730);
@@ -113,7 +114,7 @@ exports.createCFGs = async (_req, res) => {
         switcher.forEach(interop => {
             switcher.forEach(radar => {
                 switcher.forEach(killfeed => {
-                    cfgs.push(createCFG(radar, killfeed, interop));
+                    cfgs.push(createCFG(radar, killfeed, interop, config.port));
                 });
             });
         });
@@ -151,7 +152,7 @@ exports.run = async (req, res) => {
         return res.sendStatus(422);
     }
     const cfgData = req.body;
-    const cfg = createCFG(cfgData.radar, cfgData.killfeed, cfgData.afx, cfgData.autoexec);
+    const cfg = createCFG(cfgData.radar, cfgData.killfeed, cfgData.afx, config.port, cfgData.autoexec);
     const exec = cfg.file ? `+exec ${cfg.file}` : '';
     let GamePath;
     try {

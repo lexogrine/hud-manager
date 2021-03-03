@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GSI = exports.HUDState = exports.Sockets = void 0;
 const socket_io_1 = require("socket.io");
-const csgogsi_1 = __importDefault(require("csgogsi"));
+const csgogsi_socket_1 = require("csgogsi-socket");
 const electron_1 = require("electron");
 const path_1 = __importDefault(require("path"));
 const node_fetch_1 = __importDefault(require("node-fetch"));
@@ -128,7 +128,7 @@ class SocketManager {
 let lastUpdate = new Date().getTime();
 exports.Sockets = new SocketManager();
 exports.HUDState = new HUDStateManager();
-exports.GSI = new csgogsi_1.default();
+exports.GSI = new csgogsi_socket_1.CSGOGSI();
 const assertUser = (req, res, next) => {
     if (!api_1.customer.customer) {
         return res.sendStatus(403);
@@ -388,6 +388,8 @@ async function default_1(server, app) {
     server_1.default(io);
     //GSI.on('data', updateRound);
     const onRoundEnd = async (score) => {
+        if (exports.GSI.last)
+            await matches_1.updateRound(exports.GSI.last);
         if (score.loser && score.loser.logo) {
             score.loser.logo = '';
         }
@@ -413,93 +415,85 @@ async function default_1(server, app) {
                 veto.score[score.map.team_t.id] = score.map.team_ct.score;
                 veto.score[score.map.team_ct.id] = score.map.team_t.score;
             }
+            if (score.mapEnd) {
+                veto.winner =
+                    score.map.team_ct.score > score.map.team_t.score ? score.map.team_ct.id : score.map.team_t.id;
+                if (veto.reverseSide) {
+                    veto.winner =
+                        score.map.team_ct.score > score.map.team_t.score ? score.map.team_t.id : score.map.team_ct.id;
+                }
+                if (match.left.id === score.winner.id) {
+                    if (veto.reverseSide) {
+                        match.right.wins++;
+                    }
+                    else {
+                        match.left.wins++;
+                    }
+                }
+                else if (match.right.id === score.winner.id) {
+                    if (veto.reverseSide) {
+                        match.left.wins++;
+                    }
+                    else {
+                        match.right.wins++;
+                    }
+                }
+            }
             return veto;
         });
         match.vetos = vetos;
         await matches_1.updateMatch(match);
+        if (score.mapEnd) {
+            await tournaments_1.createNextMatch(match.id);
+        }
         io.emit('match', true);
     };
     const onMatchEnd = async (score) => {
         const matches = await matches_1.getMatches();
         const match = matches.filter(match => match.current)[0];
         const mapName = score.map.name.substring(score.map.name.lastIndexOf('/') + 1);
-        if (match) {
-            const { vetos } = match;
-            const isReversed = vetos.filter(veto => veto.mapName === mapName && veto.reverseSide)[0];
-            vetos.map(veto => {
-                if (veto.mapName !== mapName || !score.map.team_ct.id || !score.map.team_t.id) {
-                    return veto;
-                }
-                veto.winner =
-                    score.map.team_ct.score > score.map.team_t.score ? score.map.team_ct.id : score.map.team_t.id;
-                if (isReversed) {
-                    veto.winner =
-                        score.map.team_ct.score > score.map.team_t.score ? score.map.team_t.id : score.map.team_ct.id;
-                }
-                if (veto.score && veto.score[veto.winner]) {
-                    veto.score[veto.winner]++;
-                }
-                veto.mapEnd = true;
+        if (!match)
+            return;
+        const { vetos } = match;
+        const isReversed = vetos.filter(veto => veto.mapName === mapName && veto.reverseSide)[0];
+        vetos.map(veto => {
+            if (veto.mapName !== mapName || !score.map.team_ct.id || !score.map.team_t.id) {
                 return veto;
-            });
-            if (match.left.id === score.winner.id) {
-                if (isReversed) {
-                    match.right.wins++;
-                }
-                else {
-                    match.left.wins++;
-                }
             }
-            else if (match.right.id === score.winner.id) {
-                if (isReversed) {
-                    match.left.wins++;
-                }
-                else {
-                    match.right.wins++;
-                }
+            veto.winner = score.map.team_ct.score > score.map.team_t.score ? score.map.team_ct.id : score.map.team_t.id;
+            if (isReversed) {
+                veto.winner =
+                    score.map.team_ct.score > score.map.team_t.score ? score.map.team_t.id : score.map.team_ct.id;
             }
-            match.vetos = vetos;
-            await matches_1.updateMatch(match);
-            await tournaments_1.createNextMatch(match.id);
-            io.emit('match', true);
-        }
-    };
-    let last;
-    exports.GSI.on('data', async (data) => {
-        await matches_1.updateRound(data);
-        if ((last?.map.team_ct.score !== data.map.team_ct.score) !==
-            (last?.map.team_t.score !== data.map.team_t.score)) {
-            if (last?.map.team_ct.score !== data.map.team_ct.score) {
-                const round = {
-                    winner: data.map.team_ct,
-                    loser: data.map.team_t,
-                    map: data.map,
-                    mapEnd: false
-                };
-                await onRoundEnd(round);
+            if (veto.score && veto.score[veto.winner]) {
+                veto.score[veto.winner]++;
+            }
+            veto.mapEnd = true;
+            return veto;
+        });
+        if (match.left.id === score.winner.id) {
+            if (isReversed) {
+                match.right.wins++;
             }
             else {
-                const round = {
-                    winner: data.map.team_t,
-                    loser: data.map.team_ct,
-                    map: data.map,
-                    mapEnd: false
-                };
-                await onRoundEnd(round);
+                match.left.wins++;
             }
         }
-        if (data.map.phase === 'gameover' && last.map.phase !== 'gameover') {
-            const winner = data.map.team_ct.score > data.map.team_t.score ? data.map.team_ct : data.map.team_t;
-            const loser = data.map.team_ct.score > data.map.team_t.score ? data.map.team_t : data.map.team_ct;
-            const final = {
-                winner,
-                loser,
-                map: data.map,
-                mapEnd: true
-            };
-            await onMatchEnd(final);
+        else if (match.right.id === score.winner.id) {
+            if (isReversed) {
+                match.left.wins++;
+            }
+            else {
+                match.right.wins++;
+            }
         }
-        last = exports.GSI.last;
+        match.vetos = vetos;
+        await matches_1.updateMatch(match);
+        await tournaments_1.createNextMatch(match.id);
+        io.emit('match', true);
+    };
+    exports.GSI.on("roundEnd", onRoundEnd);
+    exports.GSI.on('data', data => {
         const now = new Date().getTime();
         if (now - lastUpdate > 300000 && api_1.customer.customer) {
             lastUpdate = new Date().getTime();
