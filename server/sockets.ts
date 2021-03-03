@@ -426,7 +426,7 @@ export default async function (server: http.Server, app: express.Router) {
 	//GSI.on('data', updateRound);
 
 	const onRoundEnd = async (score: Score) => {
-		if(GSI.last) await updateRound(GSI.last);
+		if (GSI.last) await updateRound(GSI.last);
 		if (score.loser && score.loser.logo) {
 			score.loser.logo = '';
 		}
@@ -525,7 +525,7 @@ export default async function (server: http.Server, app: express.Router) {
 		io.emit('match', true);
 	};
 
-	GSI.on("roundEnd", onRoundEnd);
+	GSI.on('roundEnd', onRoundEnd);
 
 	GSI.on('data', data => {
 		const now = new Date().getTime();
