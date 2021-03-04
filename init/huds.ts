@@ -36,7 +36,7 @@ class HUD {
 				backgroundThrottling: false
 			}
 		});
-		if(!hud.allowAppsOnTop) {
+		if (!hud.allowAppsOnTop) {
 			hudWindow.on('show', () => {
 				hudWindow.setAlwaysOnTop(true);
 			});

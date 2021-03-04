@@ -17,7 +17,7 @@ If you are in the business of broadcasting professional CS:GO matches, the Lexog
   * [Player cam feed](#player-cam-feed)
   * [Custom database fields](#custom-database-fields)
 * [Settings](#settings)
-* [AFX Mode](#built-in-hud---afx-experimental-mode)
+* [AFX Mode](#embedded-hud)
 * [HUD API](#hud-api)
   * [Structure](#structure)
     * [hud.json](#hudjson)
