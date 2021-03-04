@@ -98,5 +98,4 @@ portListener.onChange(async (status) => {
         return io.emit('reloadHUDs');
     });
 });
-console.log("INIT");
 portListener.start();

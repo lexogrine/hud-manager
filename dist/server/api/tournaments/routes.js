@@ -24,10 +24,6 @@ const T = __importStar(require("./middlewares"));
 const initRoute = () => {
     __1.app.route('/api/tournaments').get(T.getTournaments).post(T.addTournament);
     __1.app.route('/api/tournament').get(T.getCurrentTournament);
-    __1.app
-        .route('/api/tournaments/:id')
-        .post(T.bindMatchToMatchup)
-        .patch(T.updateTournament)
-        .delete(T.deleteTournament);
+    __1.app.route('/api/tournaments/:id').post(T.bindMatchToMatchup).patch(T.updateTournament).delete(T.deleteTournament);
 };
 exports.default = initRoute;
