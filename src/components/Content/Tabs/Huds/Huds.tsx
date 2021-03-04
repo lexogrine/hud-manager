@@ -183,14 +183,16 @@ export default class Huds extends React.Component<IProps, IState> {
 									handleToggle={this.changeForm('afx')}
 								/>
 							</div>
-							<div className="config-area">
-								<div className="config-description">Play test loop</div>
-								<Switch
-									isOn={this.state.isOnLoop}
-									id="autoexec-toggle"
-									handleToggle={api.game.toggleLoop}
-								/>
-							</div>
+							<ElectronOnly>
+								<div className="config-area">
+									<div className="config-description">Play test loop</div>
+									<Switch
+										isOn={this.state.isOnLoop}
+										id="autoexec-toggle"
+										handleToggle={api.game.toggleLoop}
+									/>
+								</div>
+							</ElectronOnly>
 							<div className="config-area">
 								<div className="config-description">Auto-execute</div>
 								<Switch
@@ -274,8 +276,8 @@ export default class Huds extends React.Component<IProps, IState> {
 							</Col>
 						</Row>
 					) : (
-						''
-					)}
+							''
+						)}
 				</div>
 			</React.Fragment>
 		);
