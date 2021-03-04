@@ -59,7 +59,7 @@ export default async function init() {
 	app.use(parsePayload(config));
 
 	router();
-	
+
 	const io = await ioPromise;
 
 	fs.watch(path.join(application.getPath('home'), 'HUDs'), () => {

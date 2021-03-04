@@ -6,11 +6,7 @@ const initRoute = () => {
 
 	app.route('/api/tournament').get(T.getCurrentTournament);
 
-	app
-		.route('/api/tournaments/:id')
-		.post(T.bindMatchToMatchup)
-		.patch(T.updateTournament)
-		.delete(T.deleteTournament);
+	app.route('/api/tournaments/:id').post(T.bindMatchToMatchup).patch(T.updateTournament).delete(T.deleteTournament);
 };
 
 export default initRoute;

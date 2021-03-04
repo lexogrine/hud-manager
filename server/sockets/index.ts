@@ -1,7 +1,7 @@
-import { verifyUrl } from "../api/config";
-import { HUDStateManager } from "../api/huds/hudstatemanager";
-import { reverseSide } from "../api/matches";
-import { HUDState, ioPromise, runtimeConfig } from "../socket";
+import { verifyUrl } from '../api/config';
+import { HUDStateManager } from '../api/huds/hudstatemanager';
+import { reverseSide } from '../api/matches';
+import { HUDState, ioPromise, runtimeConfig } from '../socket';
 
 ioPromise.then(io => {
 	io.on('connection', socket => {

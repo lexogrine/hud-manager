@@ -9,7 +9,7 @@ import { isDev } from '../electron';
 import hlaeServer from './hlae';
 import { app, server } from '.';
 import { HUDStateManager } from './api/huds/hudstatemanager';
-import "./api/huds/devhud";
+import './api/huds/devhud';
 
 const radar = require('./../boltobserv/index.js');
 

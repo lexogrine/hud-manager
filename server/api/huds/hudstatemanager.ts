@@ -4,7 +4,7 @@ import fs from 'fs';
 import * as I from '../../../types/interfaces';
 import { getTeamById } from '../teams';
 import { getPlayerById } from '../players';
-import {getMatchById } from '../matches';
+import { getMatchById } from '../matches';
 
 export class HUDStateManager {
 	data: Map<string, any>;
