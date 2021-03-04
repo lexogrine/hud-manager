@@ -40,6 +40,7 @@ exports.addTournament = async (req, res) => {
     const tournament = T.createTournament(type, teams);
     tournament.name = name;
     tournament.logo = logo;
+    // @ts-ignore
     delete tournament._id;
     const tournamentWithId = await T.addTournament(tournament);
     if (!tournamentWithId)

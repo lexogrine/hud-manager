@@ -13,7 +13,7 @@ async function getTeamById(id, logo = false) {
                 return res(null);
             }
             if (!logo && team && team.logo)
-                delete team.logo;
+                team.logo = '';
             return res(team);
         });
     });

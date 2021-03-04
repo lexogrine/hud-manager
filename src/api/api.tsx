@@ -106,7 +106,8 @@ export default {
 	game: {
 		run: async (config: { radar: boolean; killfeed: boolean; afx: boolean; autoexec: boolean }) =>
 			await apiV2(`game/run`, 'POST', config),
-		runTest: () => apiV2('test', 'POST')
+		runTest: () => apiV2('test', 'POST'),
+		toggleLoop: () => apiV2('test/loop', 'POST')
 	},
 	huds: {
 		get: async (): Promise<I.HUD[]> => await apiV2('huds'),

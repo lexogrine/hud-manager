@@ -218,7 +218,7 @@ export default class Config extends React.Component<IProps, IState> {
 	checkUpdate = () => {
 		if (!isElectron) return;
 		const { ipcRenderer } = window.require('electron');
-		ipcRenderer.on('updateStatus', (e: any, data: boolean) => {
+		ipcRenderer.on('updateStatus', (_e: any, data: boolean) => {
 			this.setState(state => {
 				state.update.available = data;
 				return state;

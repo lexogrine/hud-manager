@@ -363,7 +363,7 @@ img.smallLogo {
     background-image: url('./more.png');
     background-repeat: no-repeat;
     background-position: center;
-    transition: all 1s;
+    transition: all 0.25s;
 }
 .entry-main .preview {
     width: 90px;
@@ -419,7 +419,7 @@ img.smallLogo {
 }
 .veto-description {
     width:250px;
-    transition: width 0.75s, opacity 0.5s;
+    transition: width 0.1875s, opacity 0.125s;
 }
 .veto-description.hide {
     opacity: 0;
@@ -436,7 +436,7 @@ img.smallLogo {
 }
 .side-menu-container {
     width:29px;
-    transition: width 1s;
+    transition: width 0.25s;
 }
 .side-menu-container.expanded {
     width:325px;
@@ -461,8 +461,6 @@ img.smallLogo {
 }
 .map-score .versus {
     margin: 0 14px;
-}
-.map-score {
 }
 .match-entry {
     padding-left: 22px;
@@ -745,7 +743,7 @@ img.smallLogo {
     background-color: #7ad9f5 !important;
     color: #24272d;
 }
-input, select.form-control {
+input:not([type="checkbox"]), select.form-control {
     font-size:12px !important;
     height:44px !important;
 }
@@ -1237,6 +1235,12 @@ input:checked ~ .customCheckbox {
     text-transform: uppercase;
     margin: 0;
 }
+#window-bar-area {
+    z-index: 9999;
+    width:100%;
+    height:64px;
+    position:fixed;
+}
 .window-app {
     width: 100%;
 }
@@ -1433,7 +1437,7 @@ input:checked ~ .customCheckbox {
 
 .match-date, .match-time {
     width:100px;
-    transition: width 0.75s, opacity 0.5s;
+    transition: width 0.1875s, opacity 0.125s;
     flex: unset !important;
 }
 .item-list-entry.heading.matches .options {

@@ -1,9 +1,9 @@
 import express, { RequestHandler } from 'express';
-import socketio from 'socket.io';
 import { app } from 'electron';
 import path from 'path';
 import fs from 'fs';
 import * as M from './index';
+import { ioPromise } from '../../socket';
 
 export const getMatchesRoute: express.RequestHandler = async (req, res) => {
 	const matches = await M.getMatches();
@@ -43,7 +43,8 @@ export const deleteMatchRoute: RequestHandler = async (req, res) => {
 	return res.sendStatus(match ? 200 : 500);
 };
 
-export const updateMatchRoute = (io: socketio.Server): RequestHandler => async (req, res) => {
+export const updateMatchRoute: RequestHandler = async (req, res) => {
+	const io = await ioPromise;
 	const match = await M.updateMatch(req.body);
 	io.emit('match');
 	return res.sendStatus(match ? 200 : 500);

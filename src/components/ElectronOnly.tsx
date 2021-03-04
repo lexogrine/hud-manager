@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 import config from './../api/config';
 
-export default class ElectronOnly extends React.Component<{ children?: React.ReactNode }> {
-	render() {
-		if (!config.isElectron) {
-			return null;
-		}
-		return this.props.children;
+const ElectronOnly = ({ children }: { children: React.ReactNode }) => {
+	if (!config.isElectron) {
+		return null;
 	}
-}
+	return children as ReactElement<any>;
+};
+
+export default ElectronOnly;

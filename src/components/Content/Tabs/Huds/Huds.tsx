@@ -13,7 +13,7 @@ import goBack from './../../../../styles/goBack.png';
 import config from './../../../../api/config';
 const isElectron = config.isElectron;
 
-function createCFG(customRadar: boolean, customKillfeed: boolean, afx: boolean, autoexec = true): I.CFG {
+function createCFG(customRadar: boolean, customKillfeed: boolean, afx: boolean, port: number, autoexec = true): I.CFG {
 	let cfg = `cl_draw_only_deathnotices 1`;
 	let file = 'hud';
 
@@ -26,13 +26,13 @@ function createCFG(customRadar: boolean, customKillfeed: boolean, afx: boolean, 
 	if (customKillfeed) {
 		file += '_killfeed';
 		cfg += `\ncl_drawhud_force_deathnotices -1`;
-		cfg += `\nmirv_pgl url "ws://localhost:31337/mirv"`;
+		cfg += `\nmirv_pgl url "ws://localhost:${port}/socket.io/?EIO=3&transport=websocket"`;
 		cfg += `\nmirv_pgl start`;
 	}
 	if (afx) {
 		file += '_interop';
 		cfg = 'afx_interop connect 1';
-		cfg += `\nexec ${createCFG(customRadar, customKillfeed, false).file}`;
+		cfg += `\nexec ${createCFG(customRadar, customKillfeed, false, port).file}`;
 	}
 	file += '.cfg';
 	if (!autoexec) {
@@ -59,6 +59,7 @@ interface IState {
 	active: I.HUD | null;
 	currentHUD: string | null;
 	enableTest: boolean;
+	isOnLoop: boolean;
 }
 
 export default class Huds extends React.Component<IProps, IState> {
@@ -81,7 +82,8 @@ export default class Huds extends React.Component<IProps, IState> {
 			},
 			active: null,
 			currentHUD: null,
-			enableTest: true
+			enableTest: true,
+			isOnLoop: false
 		};
 	}
 
@@ -118,13 +120,14 @@ export default class Huds extends React.Component<IProps, IState> {
 		socket.on('active_hlae', (hud: string | null) => {
 			this.setState({ currentHUD: hud });
 		});
-		socket.on('enableTest', (status: boolean) => {
-			this.setState({ enableTest: status });
+		socket.on('enableTest', (status: boolean, isOnLoop: boolean) => {
+			this.setState({ enableTest: status, isOnLoop });
 		});
 		socket.on('config', () => {
 			this.getConfig();
 		});
 		socket.emit('get_active_hlae');
+		socket.emit('get_test_settings');
 		this.loadHUDs();
 		this.getConfig();
 	}
@@ -180,6 +183,16 @@ export default class Huds extends React.Component<IProps, IState> {
 									handleToggle={this.changeForm('afx')}
 								/>
 							</div>
+							<ElectronOnly>
+								<div className="config-area">
+									<div className="config-description">Play test loop</div>
+									<Switch
+										isOn={this.state.isOnLoop}
+										id="autoexec-toggle"
+										handleToggle={api.game.toggleLoop}
+									/>
+								</div>
+							</ElectronOnly>
 							<div className="config-area">
 								<div className="config-description">Auto-execute</div>
 								<Switch
@@ -193,7 +206,9 @@ export default class Huds extends React.Component<IProps, IState> {
 							<div className="running-game-container">
 								<div>
 									<div className="config-description">Console:</div>
-									<code className="exec-code">exec {createCFG(radar, killfeed, afx).file}</code>
+									<code className="exec-code">
+										exec {createCFG(radar, killfeed, afx, config.port).file}
+									</code>
 									<ElectronOnly>
 										<div className="config-description">OR</div>
 										<Button
@@ -211,7 +226,7 @@ export default class Huds extends React.Component<IProps, IState> {
 											// disabled={!this.state.enableTest}
 											onClick={api.game.runTest}
 										>
-											{!this.state.enableTest ? 'PAUSE TEST DATA' : 'RUN TEST DATA'}
+											{!this.state.enableTest ? 'PAUSE TEST' : 'PLAY TEST'}
 										</Button>
 									</ElectronOnly>
 								</div>

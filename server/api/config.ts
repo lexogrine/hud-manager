@@ -2,10 +2,11 @@ import express from 'express';
 import db from './../../init/database';
 import fs from 'fs';
 import ip from 'ip';
-import socketio from 'socket.io';
 import { Config, ExtendedConfig } from '../../types/interfaces';
 import publicIp from 'public-ip';
 import internalIp from 'internal-ip';
+import { isDev } from '../../electron';
+import { ioPromise } from '../socket';
 
 const configs = db.config;
 
@@ -22,6 +23,11 @@ publicIp
 const defaultConfig: Config = { steamApiKey: '', token: '', port: 1349, hlaePath: '', afxCEFHudInteropPath: '' };
 
 export const loadConfig = async (): Promise<Config> => {
+	if (!publicIP) {
+		try {
+			publicIP = await publicIp.v4();
+		} catch {}
+	}
 	return new Promise(res => {
 		configs.find({}, async (err: any, config: Config[]) => {
 			if (err) {
@@ -62,7 +68,8 @@ export const getConfig: express.RequestHandler = async (_req, res) => {
 	const response: ExtendedConfig = { ...config, ip: internalIP };
 	return res.json(response);
 };
-export const updateConfig = (io: socketio.Server): express.RequestHandler => async (req, res) => {
+export const updateConfig: express.RequestHandler = async (req, res) => {
+	const io = await ioPromise;
 	const updated: Config = {
 		steamApiKey: req.body.steamApiKey,
 		port: Number(req.body.port),
@@ -100,7 +107,7 @@ export const verifyUrl = async (url: string) => {
 		return false;
 	}
 	const bases = [`http://${internalIP}:${cfg.port}`, `http://${publicIP}:${cfg.port}`];
-	if (process.env.DEV === 'true') {
+	if (isDev) {
 		bases.push(`http://localhost:3000/?port=${cfg.port}`);
 	}
 	if (bases.find(base => url.startsWith(`${base}/dev`))) {

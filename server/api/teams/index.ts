@@ -9,7 +9,7 @@ export async function getTeamById(id: string, logo = false): Promise<Team | null
 			if (err) {
 				return res(null);
 			}
-			if (!logo && team && team.logo) delete team.logo;
+			if (!logo && team && team.logo) team.logo = '';
 			return res(team);
 		});
 	});

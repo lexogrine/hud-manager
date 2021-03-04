@@ -26,7 +26,7 @@ interface State {
 	};
 }
 
-export default class Teams extends React.Component<{ cxt: IContextData }, State> {
+export default class Tournaments extends React.Component<{ cxt: IContextData }, State> {
 	constructor(props: { cxt: IContextData }) {
 		super(props);
 		this.state = {

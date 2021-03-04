@@ -4,6 +4,7 @@ import * as path from 'path';
 //import ip from 'ip';
 import socketio from 'socket.io';
 import * as I from './../types/interfaces';
+import { ioPromise } from '../server/socket';
 
 class HUD {
 	current: BrowserWindow | null;
@@ -17,7 +18,8 @@ class HUD {
 		this.hud = null;
 	}
 
-	async open(dirName: string, io: socketio.Server) {
+	async open(dirName: string) {
+		const io = await ioPromise;
 		if (this.current !== null || this.hud !== null) return null;
 		const hud = await getHUDData(dirName);
 		if (hud === null) return null;
@@ -26,7 +28,7 @@ class HUD {
 			show: false,
 			title: hud.name,
 			resizable: false,
-			alwaysOnTop: true,
+			alwaysOnTop: !hud.allowAppsOnTop,
 			frame: false,
 			transparent: true,
 			focusable: true,
@@ -34,10 +36,12 @@ class HUD {
 				backgroundThrottling: false
 			}
 		});
-		hudWindow.on('show', () => {
-			hudWindow.setAlwaysOnTop(true);
-		});
-		hudWindow.setIgnoreMouseEvents(true);
+		if (!hud.allowAppsOnTop) {
+			hudWindow.on('show', () => {
+				hudWindow.setAlwaysOnTop(true);
+			});
+			hudWindow.setIgnoreMouseEvents(true);
+		}
 
 		const tray = new Tray(path.join(__dirname, 'favicon.ico'));
 

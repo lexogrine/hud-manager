@@ -9,7 +9,7 @@ export async function getPlayerById(id: string, avatar = false): Promise<Player 
 			if (err) {
 				return res(null);
 			}
-			if (!avatar && player && player.avatar) delete player.avatar;
+			if (!avatar && player && player.avatar) player.avatar = '';
 			return res(player);
 		});
 	});
@@ -20,7 +20,7 @@ export async function getPlayerBySteamId(steamid: string, avatar = false): Promi
 			if (err) {
 				return res(null);
 			}
-			if (!avatar && player && player.avatar) delete player.avatar;
+			if (!avatar && player && player.avatar) player.avatar = '';
 			return res(player);
 		});
 	});

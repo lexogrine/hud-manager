@@ -15,7 +15,6 @@ const fakeRequire = () => ({ ipcRenderer: null });
 if (!isElectron) {
 	window.require = fakeRequire;
 }
-const { ipcRenderer } = window.require('electron');
 
 interface IState {
 	data: IContextData;
@@ -128,21 +127,9 @@ export default class Layout extends React.Component<{}, IState> {
 			this.setState({ data });
 		}
 	};
-	minimize = () => {
-		if (!ipcRenderer) return;
-		ipcRenderer.send('min');
-	};
-	maximize = () => {
-		if (!ipcRenderer) return;
-		ipcRenderer.send('max');
-	};
 	logout = async () => {
 		await api.user.logout();
 		this.loadUser();
-	};
-	close = () => {
-		if (!ipcRenderer) return;
-		ipcRenderer.send('close');
 	};
 	setLoading = (loading: boolean, loginError?: string) => {
 		this.setState({ loadingLogin: loading, loginError: loginError || '' });
@@ -153,14 +140,6 @@ export default class Layout extends React.Component<{}, IState> {
 		return (
 			<Provider value={this.state.data}>
 				<div className={`loaded ${isElectron ? 'electron' : ''}`}>
-					<div className="window-bar">
-						<div className="window-drag-bar">
-							<div className="title-bar">Lexogrine HUD Manager</div>
-						</div>
-						<div onClick={this.minimize} className="app-control minimize"></div>
-						<div onClick={this.maximize} className="app-control maximize"></div>
-						<div onClick={this.close} className="app-control close"></div>
-					</div>
 					{data.customer ? (
 						<div className={`license-status ${isElectron ? 'electron' : ''}`}>
 							{data.customer.license.type} {version}
@@ -178,7 +157,6 @@ export default class Layout extends React.Component<{}, IState> {
 						setLoading={this.setLoading}
 						loadUser={this.loadUser}
 						error={loginError}
-						version={version}
 					/>
 					<Content />
 				</div>

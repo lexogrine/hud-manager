@@ -13,11 +13,7 @@ interface Props {
 	onSave: (name: string, map: number, value: any) => void;
 	maps: string[];
 }
-interface State {
-	isOpen: boolean;
-	isScoreOpen: boolean;
-	isMenuExpanded: boolean;
-}
+
 const VetoScore = ({ veto, left, right }: { veto: I.Veto; left: I.Team | null; right: I.Team | null }) => {
 	if (!left || !right || !veto.score) return null;
 	return (

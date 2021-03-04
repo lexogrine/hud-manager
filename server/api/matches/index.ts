@@ -1,10 +1,9 @@
 import { Match, RoundData } from '../../../types/interfaces';
-import { GSI } from './../../sockets';
+import { GSI, ioPromise } from './../../socket';
 import db from './../../../init/database';
-import socketio from 'socket.io';
 import { getTeamById } from './../teams';
 import uuidv4 from 'uuid/v4';
-import { CSGO, RoundOutcome } from 'csgogsi';
+import { CSGO, RoundOutcome } from 'csgogsi-socket';
 
 const matchesDb = db.matches;
 
@@ -56,24 +55,24 @@ export const updateMatches = async (updateMatches: Match[]) => {
 		const right = await getTeamById(currents[0].right.id || '');
 
 		if (left && left._id) {
-			GSI.setTeamOne({
+			GSI.teams.left = {
 				id: left._id,
 				name: left.name,
 				country: left.country,
 				logo: left.logo,
 				map_score: currents[0].left.wins,
 				extra: left.extra
-			});
+			};
 		}
 		if (right && right._id) {
-			GSI.setTeamTwo({
+			GSI.teams.right = {
 				id: right._id,
 				name: right.name,
 				country: right.country,
 				logo: right.logo,
 				map_score: currents[0].right.wins,
 				extra: right.extra
-			});
+			};
 		}
 	}
 
@@ -145,24 +144,24 @@ export const updateMatch = (match: Match) =>
 					const right = await getTeamById(match.right.id || '');
 
 					if (left && left._id) {
-						GSI.setTeamOne({
+						GSI.teams.left = {
 							id: left._id,
 							name: left.name,
 							country: left.country,
 							logo: left.logo,
 							map_score: match.left.wins,
 							extra: left.extra
-						});
+						};
 					}
 					if (right && right._id) {
-						GSI.setTeamTwo({
+						GSI.teams.right = {
 							id: right._id,
 							name: right.name,
 							country: right.country,
 							logo: right.logo,
 							map_score: match.right.wins,
 							extra: right.extra
-						});
+						};
 					}
 					if (err) return res(false);
 					return res(true);
@@ -171,7 +170,8 @@ export const updateMatch = (match: Match) =>
 		});
 	});
 
-export const reverseSide = async (io: socketio.Server) => {
+export const reverseSide = async () => {
+	const io = await ioPromise;
 	const matches = await getMatches();
 	const current = matches.find(match => match.current);
 	if (!current) return;

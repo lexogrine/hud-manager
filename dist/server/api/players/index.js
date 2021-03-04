@@ -13,7 +13,7 @@ async function getPlayerById(id, avatar = false) {
                 return res(null);
             }
             if (!avatar && player && player.avatar)
-                delete player.avatar;
+                player.avatar = '';
             return res(player);
         });
     });
@@ -26,7 +26,7 @@ async function getPlayerBySteamId(steamid, avatar = false) {
                 return res(null);
             }
             if (!avatar && player && player.avatar)
-                delete player.avatar;
+                player.avatar = '';
             return res(player);
         });
     });

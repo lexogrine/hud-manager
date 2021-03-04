@@ -1,11 +1,10 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { app, shell, Notification } from 'electron';
-import express from 'express';
+import express, { request } from 'express';
 import * as I from './../../types/interfaces';
-import socketio from 'socket.io';
 import { loadConfig, publicIP, internalIP } from './config';
-import { HUDState } from './../sockets';
+import { HUDState, ioPromise } from './../socket';
 import HUDWindow from './../../init/huds';
 import overlay from './overlay';
 
@@ -161,7 +160,15 @@ export const verifyOverlay: express.RequestHandler = async (req, res, next) => {
 	if (!cfg) {
 		return res.sendStatus(500);
 	}
+	const requestUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
+
 	const availableUrls = [`http://${internalIP}:${cfg.port}/dev`, `http://${publicIP}:${cfg.port}/dev`];
+	if (
+		requestUrl === `http://localhost:${cfg.port}/dev/thumb.png` ||
+		availableUrls.find(url => `${url}/thumb.png` === requestUrl)
+	) {
+		return next();
+	}
 	if (availableUrls.every(url => !(req.headers.referer || '').startsWith(url))) {
 		return res.status(403).json({
 			expected: availableUrls,
@@ -254,8 +261,8 @@ export const legacyCSS: express.RequestHandler = (req, res) => {
 	}
 };
 
-export const showHUD = (io: socketio.Server): express.RequestHandler => async (req, res) => {
-	const response = await HUDWindow.open(req.params.hudDir, io);
+export const showHUD: express.RequestHandler = async (req, res) => {
+	const response = await HUDWindow.open(req.params.hudDir);
 	if (response) {
 		return res.sendStatus(200);
 	}
@@ -284,7 +291,8 @@ export const uploadHUD: express.RequestHandler = async (req, res) => {
 	return res.sendStatus(response ? 200 : 500);
 };
 
-export const deleteHUD = (io: socketio.Server): express.RequestHandler => async (req, res) => {
+export const deleteHUD: express.RequestHandler = async (req, res) => {
+	const io = await ioPromise;
 	if (!req.query.hudDir || typeof req.query.hudDir !== 'string' || HUDWindow.current) return res.sendStatus(422);
 	const hudPath = path.join(app.getPath('home'), 'HUDs', req.query.hudDir);
 	if (!fs.existsSync(hudPath)) {

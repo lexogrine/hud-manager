@@ -27,6 +27,7 @@ const electron_1 = require("electron");
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
 const M = __importStar(require("./index"));
+const socket_1 = require("../../socket");
 exports.getMatchesRoute = async (req, res) => {
     const matches = await M.getMatches();
     return res.json(matches);
@@ -56,7 +57,8 @@ exports.deleteMatchRoute = async (req, res) => {
     const match = await M.deleteMatch(req.params.id);
     return res.sendStatus(match ? 200 : 500);
 };
-exports.updateMatchRoute = (io) => async (req, res) => {
+exports.updateMatchRoute = async (req, res) => {
+    const io = await socket_1.ioPromise;
     const match = await M.updateMatch(req.body);
     io.emit('match');
     return res.sendStatus(match ? 200 : 500);

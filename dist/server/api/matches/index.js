@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateRound = exports.reverseSide = exports.updateMatch = exports.getCurrent = exports.deleteMatch = exports.addMatch = exports.updateMatches = exports.setMatches = exports.getMatchById = exports.getMatches = void 0;
-const sockets_1 = require("./../../sockets");
+const socket_1 = require("./../../socket");
 const database_1 = __importDefault(require("./../../../init/database"));
 const teams_1 = require("./../teams");
 const v4_1 = __importDefault(require("uuid/v4"));
@@ -54,24 +54,24 @@ exports.updateMatches = async (updateMatches) => {
         const left = await teams_1.getTeamById(currents[0].left.id || '');
         const right = await teams_1.getTeamById(currents[0].right.id || '');
         if (left && left._id) {
-            sockets_1.GSI.setTeamOne({
+            socket_1.GSI.teams.left = {
                 id: left._id,
                 name: left.name,
                 country: left.country,
                 logo: left.logo,
                 map_score: currents[0].left.wins,
                 extra: left.extra
-            });
+            };
         }
         if (right && right._id) {
-            sockets_1.GSI.setTeamTwo({
+            socket_1.GSI.teams.right = {
                 id: right._id,
                 name: right.name,
                 country: right.country,
                 logo: right.logo,
                 map_score: currents[0].right.wins,
                 extra: right.extra
-            });
+            };
         }
     }
     const matchesFixed = updateMatches.map(match => {
@@ -134,24 +134,24 @@ exports.updateMatch = (match) => new Promise(res => {
             const left = await teams_1.getTeamById(match.left.id || '');
             const right = await teams_1.getTeamById(match.right.id || '');
             if (left && left._id) {
-                sockets_1.GSI.setTeamOne({
+                socket_1.GSI.teams.left = {
                     id: left._id,
                     name: left.name,
                     country: left.country,
                     logo: left.logo,
                     map_score: match.left.wins,
                     extra: left.extra
-                });
+                };
             }
             if (right && right._id) {
-                sockets_1.GSI.setTeamTwo({
+                socket_1.GSI.teams.right = {
                     id: right._id,
                     name: right.name,
                     country: right.country,
                     logo: right.logo,
                     map_score: match.right.wins,
                     extra: right.extra
-                });
+                };
             }
             if (err)
                 return res(false);
@@ -159,12 +159,13 @@ exports.updateMatch = (match) => new Promise(res => {
         });
     });
 });
-exports.reverseSide = async (io) => {
+exports.reverseSide = async () => {
+    const io = await socket_1.ioPromise;
     const matches = await exports.getMatches();
     const current = matches.find(match => match.current);
     if (!current)
         return;
-    if (current.vetos.filter(veto => veto.teamId).length > 0 && !sockets_1.GSI.last) {
+    if (current.vetos.filter(veto => veto.teamId).length > 0 && !socket_1.GSI.last) {
         return;
     }
     if (current.vetos.filter(veto => veto.teamId).length === 0) {
@@ -172,7 +173,7 @@ exports.reverseSide = async (io) => {
         await exports.updateMatch(current);
         return io.emit('match', true);
     }
-    const currentVetoMap = current.vetos.find(veto => sockets_1.GSI.last?.map.name.includes(veto.mapName));
+    const currentVetoMap = current.vetos.find(veto => socket_1.GSI.last?.map.name.includes(veto.mapName));
     if (!currentVetoMap)
         return;
     currentVetoMap.reverseSide = !currentVetoMap.reverseSide;
