@@ -121,7 +121,6 @@ export default class Huds extends React.Component<IProps, IState> {
 			this.setState({ currentHUD: hud });
 		});
 		socket.on('enableTest', (status: boolean, isOnLoop: boolean) => {
-			console.log(status, isOnLoop);
 			this.setState({ enableTest: status, isOnLoop });
 		});
 		socket.on('config', () => {
