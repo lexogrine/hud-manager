@@ -1,34 +1,39 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Tooltip } from 'reactstrap';
 
-export default class Tip extends React.Component<{ id: string; className?: string; label: any; link?: string }> {
-	state = {
-		isOpen: false
-	};
-	toggle = () => {
-		this.setState({ isOpen: !this.state.isOpen });
-	};
-	render() {
-		return (
-			<>
-				<span className={this.props.className || ''} id={this.props.id} onMouseOver={this.toggle}>
-					{this.props.link ? (
-						<a
-							style={{ textDecoration: 'none', color: 'white' }}
-							rel="noopener noreferrer"
-							href={this.props.link}
-							target="_blank"
-						>
-							{this.props.label}
-						</a>
-					) : (
-						this.props.label
-					)}
-				</span>
-				<Tooltip placement="top" target={this.props.id} isOpen={this.state.isOpen} toggle={this.toggle}>
-					{this.props.children}
-				</Tooltip>
-			</>
-		);
-	}
+interface Props {
+	id: string;
+	className?: string;
+	label: any;
+	link?: string;
+	children?: any
 }
+
+const Tip = ({id, className, label, link,children}: Props) => {
+	const [ isOpen, setOpen ] = useState(false);
+
+	const toggle = () => setOpen(!isOpen);
+
+	return (
+		<>
+			<span className={className || ''} id={id} onMouseOver={toggle}>
+				{link ? (
+					<a
+						style={{ textDecoration: 'none', color: 'white' }}
+						rel="noopener noreferrer"
+						href={link}
+						target="_blank"
+					>
+						{label}
+					</a>
+				) : (
+					label
+				)}
+			</span>
+			<Tooltip placement="top" target={id} isOpen={isOpen} toggle={toggle}>
+				{children}
+			</Tooltip>
+		</>
+	);
+}
+export default Tip;

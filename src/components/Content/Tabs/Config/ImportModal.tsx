@@ -8,22 +8,20 @@ interface Props {
 	teams: number;
 	players: number;
 }
-export default class VetoModal extends React.Component<Props> {
-	render() {
-		const { isOpen, teams, players, toggle } = this.props;
-		return (
-			<Modal isOpen={isOpen} toggle={toggle} className="veto_modal">
-				<ModalHeader toggle={toggle}>Import conflict</ModalHeader>
-				<ModalBody>
-					During import we detected {teams} teams and {players} players that share the same id. If you
-					continue, existing teams and players will be overwritten.
-				</ModalBody>
-				<ModalFooter className="no-padding">
-					<Button color="primary" onClick={this.props.save} className="modal-save">
-						Overwrite
-					</Button>
-				</ModalFooter>
-			</Modal>
-		);
-	}
-}
+
+const ImportModal = ({ isOpen, toggle, save, teams, players }: Props) => (
+	<Modal isOpen={isOpen} toggle={toggle} className="veto_modal">
+		<ModalHeader toggle={toggle}>Import conflict</ModalHeader>
+		<ModalBody>
+			During import we detected {teams} teams and {players} players that share the same id. If you
+			continue, existing teams and players will be overwritten.
+		</ModalBody>
+		<ModalFooter className="no-padding">
+			<Button color="primary" onClick={save} className="modal-save">
+				Overwrite
+			</Button>
+		</ModalFooter>
+	</Modal>
+)
+
+export default ImportModal;

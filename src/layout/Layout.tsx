@@ -157,7 +157,6 @@ export default class Layout extends React.Component<{}, IState> {
 						setLoading={this.setLoading}
 						loadUser={this.loadUser}
 						error={loginError}
-						version={version}
 					/>
 					<Content />
 				</div>

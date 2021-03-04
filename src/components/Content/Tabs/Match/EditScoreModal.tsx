@@ -13,10 +13,9 @@ interface Props {
 	setWinner: any;
 }
 
-class EditScoreModal extends React.Component<Props> {
-	renderTeamScore = (team: I.Team | undefined, score: number) => {
+const EditScoreModal = ({ isOpen, toggle, veto, saveScore, teams, setWinner }: Props) => {
+	const renderTeamScore = (team: I.Team | undefined, score: number) => {
 		if (!team) return null;
-		const { veto, saveScore, setWinner } = this.props;
 		const isWinner = veto && veto.winner && veto.winner === team._id;
 		return (
 			<div key={team._id} className="team-score-container">
@@ -46,22 +45,19 @@ class EditScoreModal extends React.Component<Props> {
 			</div>
 		);
 	};
-	render() {
-		const { veto, teams, toggle, isOpen } = this.props;
-		const score = veto.score;
-		return (
-			<Modal isOpen={isOpen} toggle={toggle} className={'veto_modal'}>
-				<ModalHeader className="bordered" toggle={toggle}>
-					{veto.mapName.toUpperCase()}
-				</ModalHeader>
-				<ModalBody>
-					<div className="score-editor">
-						{teams.map(team => this.renderTeamScore(team, (score && score[team._id]) || 0))}
-					</div>
-				</ModalBody>
-			</Modal>
-		);
-	}
+	const score = veto.score;
+	return (
+		<Modal isOpen={isOpen} toggle={toggle} className={'veto_modal'}>
+			<ModalHeader className="bordered" toggle={toggle}>
+				{veto.mapName.toUpperCase()}
+			</ModalHeader>
+			<ModalBody>
+				<div className="score-editor">
+					{teams.map(team => renderTeamScore(team, (score && score[team._id]) || 0))}
+				</div>
+			</ModalBody>
+		</Modal>
+	);
 }
 
 export default EditScoreModal;
