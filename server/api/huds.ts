@@ -1,7 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { app, shell, Notification } from 'electron';
-import express from 'express';
+import express, { request } from 'express';
 import * as I from './../../types/interfaces';
 import { loadConfig, publicIP, internalIP } from './config';
 import { HUDState, ioPromise } from './../socket';
@@ -160,7 +160,12 @@ export const verifyOverlay: express.RequestHandler = async (req, res, next) => {
 	if (!cfg) {
 		return res.sendStatus(500);
 	}
+	const requestUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
+
 	const availableUrls = [`http://${internalIP}:${cfg.port}/dev`, `http://${publicIP}:${cfg.port}/dev`];
+	if(availableUrls.find(url => `${url}/thumb.png` === requestUrl)){
+		return next();
+	}
 	if (availableUrls.every(url => !(req.headers.referer || '').startsWith(url))) {
 		return res.status(403).json({
 			expected: availableUrls,
