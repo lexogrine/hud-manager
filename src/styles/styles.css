@@ -745,7 +745,7 @@ img.smallLogo {
     background-color: #7ad9f5 !important;
     color: #24272d;
 }
-input, select.form-control {
+input:not([type="checkbox"]), select.form-control {
     font-size:12px !important;
     height:44px !important;
 }
