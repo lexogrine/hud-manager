@@ -276,8 +276,8 @@ export default class Huds extends React.Component<IProps, IState> {
 							</Col>
 						</Row>
 					) : (
-							''
-						)}
+						''
+					)}
 				</div>
 			</React.Fragment>
 		);
