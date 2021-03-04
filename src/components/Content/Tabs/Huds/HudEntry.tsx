@@ -70,10 +70,7 @@ const HudEntry = ({ hud, isActive, toggleConfig, customFields }: IProps) => {
 			<Col s={12}>
 				<Row>
 					<Col className="centered thumb">
-						<img
-							src={`${Config.isDev ? Config.apiAddress : '/'}huds/${hud.dir}/thumbnail`}
-							alt={`${hud.name}`}
-						/>
+						<img src={`${Config.isDev ? Config.apiAddress : '/'}${hud.isDev ? 'dev/thumb.png' : `huds/${hud.dir}/thumbnail`}`} alt={`${hud.name}`} />
 					</Col>
 					<Col style={{ flex: 10, display: 'flex', justifyContent: 'center', flexDirection: 'column' }}>
 						<Row>
