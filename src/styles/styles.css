@@ -363,7 +363,7 @@ img.smallLogo {
     background-image: url('./more.png');
     background-repeat: no-repeat;
     background-position: center;
-    transition: all 1s;
+    transition: all 0.25s;
 }
 .entry-main .preview {
     width: 90px;
@@ -419,7 +419,7 @@ img.smallLogo {
 }
 .veto-description {
     width:250px;
-    transition: width 0.75s, opacity 0.5s;
+    transition: width 0.1875s, opacity 0.125s;
 }
 .veto-description.hide {
     opacity: 0;
@@ -436,7 +436,7 @@ img.smallLogo {
 }
 .side-menu-container {
     width:29px;
-    transition: width 1s;
+    transition: width 0.25s;
 }
 .side-menu-container.expanded {
     width:325px;
@@ -1439,7 +1439,7 @@ input:checked ~ .customCheckbox {
 
 .match-date, .match-time {
     width:100px;
-    transition: width 0.75s, opacity 0.5s;
+    transition: width 0.1875s, opacity 0.125s;
     flex: unset !important;
 }
 .item-list-entry.heading.matches .options {

@@ -492,7 +492,7 @@ async function default_1(server, app) {
         await tournaments_1.createNextMatch(match.id);
         io.emit('match', true);
     };
-    exports.GSI.on("roundEnd", onRoundEnd);
+    exports.GSI.on('roundEnd', onRoundEnd);
     exports.GSI.on('data', data => {
         const now = new Date().getTime();
         if (now - lastUpdate > 300000 && api_1.customer.customer) {
