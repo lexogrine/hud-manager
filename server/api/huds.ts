@@ -163,7 +163,10 @@ export const verifyOverlay: express.RequestHandler = async (req, res, next) => {
 	const requestUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
 
 	const availableUrls = [`http://${internalIP}:${cfg.port}/dev`, `http://${publicIP}:${cfg.port}/dev`];
-	if (requestUrl === `http://localhost:${cfg.port}/dev/thumb.png` || availableUrls.find(url => `${url}/thumb.png` === requestUrl)) {
+	if (
+		requestUrl === `http://localhost:${cfg.port}/dev/thumb.png` ||
+		availableUrls.find(url => `${url}/thumb.png` === requestUrl)
+	) {
 		return next();
 	}
 	if (availableUrls.every(url => !(req.headers.referer || '').startsWith(url))) {
