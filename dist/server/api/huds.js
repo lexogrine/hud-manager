@@ -28,7 +28,7 @@ const path = __importStar(require("path"));
 const electron_1 = require("electron");
 const express_1 = __importDefault(require("express"));
 const config_1 = require("./config");
-const sockets_1 = require("./../sockets");
+const socket_1 = require("./../socket");
 const huds_1 = __importDefault(require("./../../init/huds"));
 const overlay_1 = __importDefault(require("./overlay"));
 const DecompressZip = require('decompress-zip');
@@ -60,8 +60,8 @@ exports.listHUDs = async () => {
         .filter(dirent => dirent.isDirectory())
         .filter(dirent => /^[0-9a-zA-Z-_]+$/g.test(dirent.name));
     const huds = (await Promise.all(filtered.map(async (dirent) => await exports.getHUDData(dirent.name)))).filter(hud => hud !== null);
-    if (sockets_1.HUDState.devHUD) {
-        huds.unshift(sockets_1.HUDState.devHUD);
+    if (socket_1.HUDState.devHUD) {
+        huds.unshift(socket_1.HUDState.devHUD);
     }
     return huds;
 };
@@ -75,10 +75,10 @@ exports.getHUDData = async (dirName) => {
     if (!globalConfig)
         return null;
     if (!fs.existsSync(configFileDir)) {
-        if (!sockets_1.HUDState.devHUD)
+        if (!socket_1.HUDState.devHUD)
             return null;
-        if (sockets_1.HUDState.devHUD.dir === dirName) {
-            return sockets_1.HUDState.devHUD;
+        if (socket_1.HUDState.devHUD.dir === dirName) {
+            return socket_1.HUDState.devHUD;
         }
         return null;
     }
@@ -259,8 +259,8 @@ exports.legacyCSS = (req, res) => {
         return res.sendStatus(404);
     }
 };
-exports.showHUD = (io) => async (req, res) => {
-    const response = await huds_1.default.open(req.params.hudDir, io);
+exports.showHUD = async (req, res) => {
+    const response = await huds_1.default.open(req.params.hudDir);
     if (response) {
         return res.sendStatus(200);
     }
@@ -287,7 +287,8 @@ exports.uploadHUD = async (req, res) => {
     }
     return res.sendStatus(response ? 200 : 500);
 };
-exports.deleteHUD = (io) => async (req, res) => {
+exports.deleteHUD = async (req, res) => {
+    const io = await socket_1.ioPromise;
     if (!req.query.hudDir || typeof req.query.hudDir !== 'string' || huds_1.default.current)
         return res.sendStatus(422);
     const hudPath = path.join(electron_1.app.getPath('home'), 'HUDs', req.query.hudDir);

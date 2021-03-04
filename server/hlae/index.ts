@@ -1,9 +1,11 @@
 import WebSocket from 'ws';
-import { Server, Socket } from 'socket.io';
-import BufferReader from './hlae/BufferReader';
-import GameEventUnserializer from './hlae/GameEventUnserializer';
+import { Socket } from 'socket.io';
+import BufferReader from './BufferReader';
+import GameEventUnserializer from './GameEventUnserializer';
+import { ioPromise } from './../socket';
 
-const init = (io: Server) => {
+const init = async () => {
+	const io = await ioPromise;
 	const enrichments = {
 		player_death: ['userid', 'attacker', 'assister']
 	};

@@ -3,9 +3,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const BufferReader_1 = __importDefault(require("./hlae/BufferReader"));
-const GameEventUnserializer_1 = __importDefault(require("./hlae/GameEventUnserializer"));
-const socket_1 = require("./socket");
+const BufferReader_1 = __importDefault(require("./BufferReader"));
+const GameEventUnserializer_1 = __importDefault(require("./GameEventUnserializer"));
+const socket_1 = require("./../socket");
 const init = async () => {
     const io = await socket_1.ioPromise;
     const enrichments = {

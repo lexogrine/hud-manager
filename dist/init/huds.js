@@ -22,6 +22,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const electron_1 = require("electron");
 const huds_1 = require("./../server/api/huds");
 const path = __importStar(require("path"));
+const socket_1 = require("../server/socket");
 class HUD {
     constructor() {
         this.current = null;
@@ -29,7 +30,8 @@ class HUD {
         this.show = true;
         this.hud = null;
     }
-    async open(dirName, io) {
+    async open(dirName) {
+        const io = await socket_1.ioPromise;
         if (this.current !== null || this.hud !== null)
             return null;
         const hud = await huds_1.getHUDData(dirName);

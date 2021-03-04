@@ -8,7 +8,7 @@ const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const steam_game_path_1 = require("steam-game-path");
 const config_1 = require("./config");
-const sockets_1 = require("../sockets");
+const socket_1 = require("../socket");
 const child_process_1 = require("child_process");
 const electron_1 = require("../../electron");
 function createCFG(customRadar, customKillfeed, afx, port, autoexec = true) {
@@ -132,7 +132,7 @@ exports.createCFGs = async (_req, res) => {
     }
 };
 exports.getLatestData = async (_req, res) => {
-    return res.json(sockets_1.GSI.last || {});
+    return res.json(socket_1.GSI.last || {});
 };
 exports.getSteamPath = async (_req, res) => {
     try {

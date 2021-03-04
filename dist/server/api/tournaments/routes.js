@@ -19,11 +19,12 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const __1 = require("../..");
 const T = __importStar(require("./middlewares"));
-const initRoute = (router) => {
-    router.route('/api/tournaments').get(T.getTournaments).post(T.addTournament);
-    router.route('/api/tournament').get(T.getCurrentTournament);
-    router
+const initRoute = () => {
+    __1.app.route('/api/tournaments').get(T.getTournaments).post(T.addTournament);
+    __1.app.route('/api/tournament').get(T.getCurrentTournament);
+    __1.app
         .route('/api/tournaments/:id')
         .post(T.bindMatchToMatchup)
         .patch(T.updateTournament)

@@ -8,7 +8,6 @@ import { socket } from './../components/Content/Tabs/Live/Live';
 import LoginRegisterModal from './LoginRegisterModal';
 import ElectronOnly from './../components/ElectronOnly';
 import { hash } from '../hash';
-import WindowBar from './../WindowBar';
 
 declare let window: any;
 const isElectron = config.isElectron;
@@ -16,7 +15,6 @@ const fakeRequire = () => ({ ipcRenderer: null });
 if (!isElectron) {
 	window.require = fakeRequire;
 }
-const { ipcRenderer } = window.require('electron');
 
 interface IState {
 	data: IContextData;

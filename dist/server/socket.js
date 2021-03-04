@@ -12,9 +12,8 @@ const config_1 = require("./api/config");
 const tournaments_1 = require("./api/tournaments");
 const api_1 = require("./api");
 const electron_1 = require("../electron");
-const server_1 = __importDefault(require("./server"));
-require("./sockets/index");
-const _1 = require("./");
+const hlae_1 = __importDefault(require("./hlae"));
+const _1 = require(".");
 const hudstatemanager_1 = require("./api/huds/hudstatemanager");
 require("./api/huds/devhud");
 const radar = require('./../boltobserv/index.js');
@@ -44,7 +43,7 @@ exports.ioPromise = config_1.loadConfig().then(cfg => {
 });
 exports.ioPromise.then(io => {
     radar.startRadar(_1.app, io);
-    server_1.default();
+    hlae_1.default();
     const onRoundEnd = async (score) => {
         if (exports.GSI.last)
             await matches_1.updateRound(exports.GSI.last);

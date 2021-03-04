@@ -3,7 +3,7 @@ import path from 'path';
 import { getGamePath } from 'steam-game-path';
 import express from 'express';
 import { loadConfig } from './config';
-import { GSI } from '../sockets';
+import { GSI } from '../socket';
 import { spawn } from 'child_process';
 import { CFG } from '../../types/interfaces';
 import { AFXInterop } from '../../electron';

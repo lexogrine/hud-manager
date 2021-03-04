@@ -22,16 +22,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.server = exports.app = void 0;
 /* eslint-disable no-console */
 const express_1 = __importDefault(require("express"));
-const sockets_1 = __importDefault(require("./sockets"));
-const http_1 = __importDefault(require("http"));
-const cors_1 = __importDefault(require("cors"));
 const get_port_1 = __importStar(require("get-port"));
-const api_1 = __importDefault(require("./api"));
-const path_1 = __importDefault(require("path"));
 const electron_1 = require("electron");
 const fs_1 = __importDefault(require("fs"));
+const cors_1 = __importDefault(require("cors"));
+const path_1 = __importDefault(require("path"));
+const http_1 = __importDefault(require("http"));
+const socket_1 = require("./socket");
+require("./sockets/index");
+const api_1 = __importDefault(require("./api"));
 const config_1 = require("./api/config");
 const fields_1 = require("./api/fields");
 const parsePayload = (config) => (req, res, next) => {
@@ -58,11 +60,14 @@ const parsePayload = (config) => (req, res, next) => {
         next();
     }
 };
+exports.app = express_1.default();
+exports.server = http_1.default.createServer(exports.app);
+exports.app.use(express_1.default.urlencoded({ extended: true }));
+exports.app.use(express_1.default.raw({ limit: '100Mb', type: 'application/json' }));
+exports.app.use(cors_1.default({ origin: '*', credentials: true }));
 async function init() {
     let config = await config_1.loadConfig();
     await fields_1.initiateCustomFields();
-    const app = express_1.default();
-    const server = http_1.default.createServer(app);
     let port = await get_port_1.default({ port: config.port });
     if (port !== config.port) {
         port = await get_port_1.default({ port: get_port_1.makeRange(1300, 50000) });
@@ -70,19 +75,16 @@ async function init() {
         config = await config_1.setConfig({ ...config, port: port });
     }
     console.log(`Server listening on ${port}`);
-    app.use(express_1.default.urlencoded({ extended: true }));
-    app.use(express_1.default.raw({ limit: '100Mb', type: 'application/json' }));
-    app.use(parsePayload(config));
-    app.use(cors_1.default({ origin: '*', credentials: true }));
-    const io = await sockets_1.default(server, app);
-    api_1.default(app, io);
+    exports.app.use(parsePayload(config));
+    api_1.default();
+    const io = await socket_1.ioPromise;
     fs_1.default.watch(path_1.default.join(electron_1.app.getPath('home'), 'HUDs'), () => {
         io.emit('reloadHUDs');
     });
-    app.use('/', express_1.default.static(path_1.default.join(__dirname, '../build')));
-    app.get('*', (_req, res) => {
+    exports.app.use('/', express_1.default.static(path_1.default.join(__dirname, '../build')));
+    exports.app.get('*', (_req, res) => {
         res.sendFile(path_1.default.join(__dirname, '../build/index.html'));
     });
-    return server.listen(config.port);
+    return exports.server.listen(config.port);
 }
 exports.default = init;

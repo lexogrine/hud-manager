@@ -1,7 +1,6 @@
 import { Match, RoundData } from '../../../types/interfaces';
-import { GSI } from './../../sockets';
+import { GSI, ioPromise } from './../../socket';
 import db from './../../../init/database';
-import socketio from 'socket.io';
 import { getTeamById } from './../teams';
 import uuidv4 from 'uuid/v4';
 import { CSGO, RoundOutcome } from 'csgogsi-socket';
@@ -171,7 +170,8 @@ export const updateMatch = (match: Match) =>
 		});
 	});
 
-export const reverseSide = async (io: socketio.Server) => {
+export const reverseSide = async () => {
+	const io = await ioPromise;
 	const matches = await getMatches();
 	const current = matches.find(match => match.current);
 	if (!current) return;

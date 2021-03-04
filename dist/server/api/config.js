@@ -10,6 +10,7 @@ const ip_1 = __importDefault(require("ip"));
 const public_ip_1 = __importDefault(require("public-ip"));
 const internal_ip_1 = __importDefault(require("internal-ip"));
 const electron_1 = require("../../electron");
+const socket_1 = require("../socket");
 const configs = database_1.default.config;
 exports.publicIP = null;
 exports.internalIP = internal_ip_1.default.v4.sync() || ip_1.default.address();
@@ -62,7 +63,8 @@ exports.getConfig = async (_req, res) => {
     const response = { ...config, ip: exports.internalIP };
     return res.json(response);
 };
-exports.updateConfig = (io) => async (req, res) => {
+exports.updateConfig = async (req, res) => {
+    const io = await socket_1.ioPromise;
     const updated = {
         steamApiKey: req.body.steamApiKey,
         port: Number(req.body.port),
