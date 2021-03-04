@@ -59,6 +59,7 @@ interface IState {
 	active: I.HUD | null;
 	currentHUD: string | null;
 	enableTest: boolean;
+	isOnLoop: boolean;
 }
 
 export default class Huds extends React.Component<IProps, IState> {
@@ -81,7 +82,8 @@ export default class Huds extends React.Component<IProps, IState> {
 			},
 			active: null,
 			currentHUD: null,
-			enableTest: true
+			enableTest: true,
+			isOnLoop: false
 		};
 	}
 
@@ -118,13 +120,15 @@ export default class Huds extends React.Component<IProps, IState> {
 		socket.on('active_hlae', (hud: string | null) => {
 			this.setState({ currentHUD: hud });
 		});
-		socket.on('enableTest', (status: boolean) => {
-			this.setState({ enableTest: status });
+		socket.on('enableTest', (status: boolean, isOnLoop: boolean) => {
+			console.log(status, isOnLoop);
+			this.setState({ enableTest: status, isOnLoop });
 		});
 		socket.on('config', () => {
 			this.getConfig();
 		});
 		socket.emit('get_active_hlae');
+		socket.emit('get_test_settings');
 		this.loadHUDs();
 		this.getConfig();
 	}
@@ -181,6 +185,14 @@ export default class Huds extends React.Component<IProps, IState> {
 								/>
 							</div>
 							<div className="config-area">
+								<div className="config-description">Play test loop</div>
+								<Switch
+									isOn={this.state.isOnLoop}
+									id="autoexec-toggle"
+									handleToggle={api.game.toggleLoop}
+								/>
+							</div>
+							<div className="config-area">
 								<div className="config-description">Auto-execute</div>
 								<Switch
 									isOn={this.state.form.autoexec}
@@ -213,7 +225,7 @@ export default class Huds extends React.Component<IProps, IState> {
 											// disabled={!this.state.enableTest}
 											onClick={api.game.runTest}
 										>
-											{!this.state.enableTest ? 'PAUSE TEST DATA' : 'RUN TEST DATA'}
+											{!this.state.enableTest ? 'PAUSE TEST' : 'PLAY TEST'}
 										</Button>
 									</ElectronOnly>
 								</div>

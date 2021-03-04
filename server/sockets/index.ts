@@ -2,6 +2,7 @@ import { verifyUrl } from '../api/config';
 import { HUDStateManager } from '../api/huds/hudstatemanager';
 import { reverseSide } from '../api/matches';
 import { HUDState, ioPromise, runtimeConfig } from '../socket';
+import { playTesting } from './../api/huds/play';
 
 ioPromise.then(io => {
 	io.on('connection', socket => {
@@ -63,6 +64,10 @@ ioPromise.then(io => {
 
 		socket.on('get_active_hlae', () => {
 			io.emit('active_hlae', runtimeConfig.currentHUD);
+		});
+
+		socket.on('get_test_settings', () => {
+			socket.emit('enableTest', !playTesting.intervalId, playTesting.isOnLoop);
 		});
 	});
 });

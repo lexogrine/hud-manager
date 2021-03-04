@@ -4,6 +4,7 @@ const config_1 = require("../api/config");
 const hudstatemanager_1 = require("../api/huds/hudstatemanager");
 const matches_1 = require("../api/matches");
 const socket_1 = require("../socket");
+const play_1 = require("./../api/huds/play");
 socket_1.ioPromise.then(io => {
     io.on('connection', socket => {
         const ref = socket.request?.headers?.referer || '';
@@ -63,6 +64,9 @@ socket_1.ioPromise.then(io => {
         });
         socket.on('get_active_hlae', () => {
             io.emit('active_hlae', socket_1.runtimeConfig.currentHUD);
+        });
+        socket.on("get_test_settings", () => {
+            socket.emit("enableTest", !play_1.playTesting.intervalId, play_1.playTesting.isOnLoop);
         });
     });
 });

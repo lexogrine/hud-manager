@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.initGameConnection = void 0;
+exports.initGameConnection = exports.playTesting = void 0;
 const __1 = require("..");
 const __2 = require("../..");
 const socket_1 = require("../../socket");
@@ -12,43 +12,48 @@ const assertUser = (req, res, next) => {
     }
     return next();
 };
+exports.playTesting = {
+    intervalId: null,
+    isOnLoop: false
+};
 exports.initGameConnection = async () => {
     const io = await socket_1.ioPromise;
-    let intervalId = null;
     let testDataIndex = 0;
     const startSendingTestData = () => {
-        if (intervalId)
+        if (exports.playTesting.intervalId)
             return;
         if (socket_1.runtimeConfig.last?.provider?.timestamp &&
             new Date().getTime() - socket_1.runtimeConfig.last.provider.timestamp * 1000 <= 5000)
             return;
-        io.emit('enableTest', false);
-        intervalId = setInterval(() => {
+        io.emit('enableTest', false, exports.playTesting.isOnLoop);
+        exports.playTesting.intervalId = setInterval(() => {
             if (!testing_1.testData[testDataIndex]) {
-                stopSendingTestData();
+                if (!exports.playTesting.isOnLoop) {
+                    stopSendingTestData();
+                    return;
+                }
                 testDataIndex = 0;
-                return;
             }
             io.to('csgo').emit('update', testing_1.testData[testDataIndex]);
             testDataIndex++;
         }, 16);
     };
     const stopSendingTestData = () => {
-        if (!intervalId)
+        if (!exports.playTesting.intervalId)
             return;
-        clearInterval(intervalId);
-        intervalId = null;
-        io.emit('enableTest', true);
+        clearInterval(exports.playTesting.intervalId);
+        exports.playTesting.intervalId = null;
+        io.emit('enableTest', true, exports.playTesting.isOnLoop);
     };
     __2.app.post('/', assertUser, (req, res) => {
         if (!__1.customer.customer) {
             return res.sendStatus(200);
         }
         socket_1.runtimeConfig.last = req.body;
-        if (intervalId) {
-            clearInterval(intervalId);
-            intervalId = null;
-            io.emit('enableTest', true);
+        if (exports.playTesting.intervalId) {
+            clearInterval(exports.playTesting.intervalId);
+            exports.playTesting.intervalId = null;
+            io.emit('enableTest', true, exports.playTesting.isOnLoop);
         }
         io.to('csgo').emit('update', req.body);
         socket_1.GSI.digest(req.body);
@@ -56,10 +61,15 @@ exports.initGameConnection = async () => {
         res.sendStatus(200);
     });
     __2.app.post('/api/test', assertUser, (_req, res) => {
-        res.sendStatus(200);
-        if (intervalId)
+        if (exports.playTesting.intervalId)
             stopSendingTestData();
         else
             startSendingTestData();
+        res.sendStatus(200);
+    });
+    __2.app.post('/api/test/loop', assertUser, (_req, res) => {
+        exports.playTesting.isOnLoop = !exports.playTesting.isOnLoop;
+        io.emit('enableTest', !exports.playTesting.intervalId, exports.playTesting.isOnLoop);
+        res.sendStatus(200);
     });
 };

@@ -12,26 +12,33 @@ const assertUser: express.RequestHandler = (req, res, next) => {
 	return next();
 };
 
+export const playTesting: { intervalId: NodeJS.Timeout | null; isOnLoop: boolean } = {
+	intervalId: null,
+	isOnLoop: false
+};
+
 export const initGameConnection = async () => {
 	const io = await ioPromise;
-	let intervalId: NodeJS.Timeout | null = null;
+
 	let testDataIndex = 0;
 
 	const startSendingTestData = () => {
-		if (intervalId) return;
+		if (playTesting.intervalId) return;
 		if (
 			runtimeConfig.last?.provider?.timestamp &&
 			new Date().getTime() - runtimeConfig.last.provider.timestamp * 1000 <= 5000
 		)
 			return;
 
-		io.emit('enableTest', false);
+		io.emit('enableTest', false, playTesting.isOnLoop);
 
-		intervalId = setInterval(() => {
+		playTesting.intervalId = setInterval(() => {
 			if (!testData[testDataIndex]) {
-				stopSendingTestData();
+				if (!playTesting.isOnLoop) {
+					stopSendingTestData();
+					return;
+				}
 				testDataIndex = 0;
-				return;
 			}
 			io.to('csgo').emit('update', testData[testDataIndex]);
 			testDataIndex++;
@@ -39,10 +46,10 @@ export const initGameConnection = async () => {
 	};
 
 	const stopSendingTestData = () => {
-		if (!intervalId) return;
-		clearInterval(intervalId);
-		intervalId = null;
-		io.emit('enableTest', true);
+		if (!playTesting.intervalId) return;
+		clearInterval(playTesting.intervalId);
+		playTesting.intervalId = null;
+		io.emit('enableTest', true, playTesting.isOnLoop);
 	};
 	app.post('/', assertUser, (req, res) => {
 		if (!customer.customer) {
@@ -50,10 +57,10 @@ export const initGameConnection = async () => {
 		}
 		runtimeConfig.last = req.body;
 
-		if (intervalId) {
-			clearInterval(intervalId);
-			intervalId = null;
-			io.emit('enableTest', true);
+		if (playTesting.intervalId) {
+			clearInterval(playTesting.intervalId);
+			playTesting.intervalId = null;
+			io.emit('enableTest', true, playTesting.isOnLoop);
 		}
 
 		io.to('csgo').emit('update', req.body);
@@ -63,8 +70,14 @@ export const initGameConnection = async () => {
 	});
 
 	app.post('/api/test', assertUser, (_req, res) => {
-		res.sendStatus(200);
-		if (intervalId) stopSendingTestData();
+		if (playTesting.intervalId) stopSendingTestData();
 		else startSendingTestData();
+		res.sendStatus(200);
+	});
+
+	app.post('/api/test/loop', assertUser, (_req, res) => {
+		playTesting.isOnLoop = !playTesting.isOnLoop;
+		io.emit('enableTest', !playTesting.intervalId, playTesting.isOnLoop);
+		res.sendStatus(200);
 	});
 };
