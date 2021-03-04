@@ -31,7 +31,7 @@
     "node-media-server": "^2.2.4",
     "portscanner": "^2.2.0",
     "public-ip": "^4.0.3",
-    "pug": "^2.0.4",
+    "pug": "^3.0.1",
     "query-string": "^6.12.1",
     "react": "^16.13.1",
     "react-color": "^2.19.3",
