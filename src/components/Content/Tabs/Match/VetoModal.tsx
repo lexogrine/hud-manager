@@ -26,10 +26,7 @@ const VetoModal = ({ onChange, map, isOpen, toggle, veto, teams, maps }: Props) 
 				>
 					PICK
 				</div>
-				<div
-					className={`type ban ${veto.type === 'ban' ? 'active' : ''}`}
-					onClick={changeTypeHandler('ban')}
-				>
+				<div className={`type ban ${veto.type === 'ban' ? 'active' : ''}`} onClick={changeTypeHandler('ban')}>
 					BAN
 				</div>
 				<div

@@ -9,11 +9,13 @@ interface IProps {
 	error: string;
 }
 
-const LoginRegisterModal = ({ isOpen, loading, setLoading, loadUser, error}: IProps) => {
-	const [ email, setEmail ] = useState('');
-	const [ password, setPassword ] = useState('');
-	
-	const handleChange = (setValue: React.Dispatch<React.SetStateAction<string>>) => (e: React.ChangeEvent<HTMLInputElement>) => {
+const LoginRegisterModal = ({ isOpen, loading, setLoading, loadUser, error }: IProps) => {
+	const [email, setEmail] = useState('');
+	const [password, setPassword] = useState('');
+
+	const handleChange = (setValue: React.Dispatch<React.SetStateAction<string>>) => (
+		e: React.ChangeEvent<HTMLInputElement>
+	) => {
 		setValue(e.target.value);
 	};
 	const login = async () => {
@@ -79,6 +81,6 @@ const LoginRegisterModal = ({ isOpen, loading, setLoading, loadUser, error}: IPr
 			</ModalFooter>
 		</Modal>
 	);
-}
+};
 
 export default LoginRegisterModal;

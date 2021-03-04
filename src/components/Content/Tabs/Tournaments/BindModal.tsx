@@ -16,7 +16,9 @@ interface Props {
 const BindModal = ({ matches, toggle, isOpen, matchId, bindHandler, save, teams }: Props) => {
 	const getMatchDescription = (match: I.Match) => {
 		const pickedTeams = teams.filter(team => team._id === match.left.id || team._id === match.right.id);
-		return `${(pickedTeams[0] && pickedTeams[0].name) || 'Team #1'} vs ${(pickedTeams[1] && pickedTeams[1].name) || 'Team #2'}`;
+		return `${(pickedTeams[0] && pickedTeams[0].name) || 'Team #1'} vs ${
+			(pickedTeams[1] && pickedTeams[1].name) || 'Team #2'
+		}`;
 	};
 	return (
 		<Modal isOpen={isOpen} toggle={toggle} className="veto_modal">
@@ -42,6 +44,6 @@ const BindModal = ({ matches, toggle, isOpen, matchId, bindHandler, save, teams 
 			</ModalFooter>
 		</Modal>
 	);
-}
+};
 
 export default BindModal;

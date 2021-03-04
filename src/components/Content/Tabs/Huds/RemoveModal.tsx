@@ -19,5 +19,5 @@ const RemoveHUDModal = ({ isOpen, toggle, remove, hud }: Props) => (
 			</Button>
 		</ModalFooter>
 	</Modal>
-)
+);
 export default RemoveHUDModal;

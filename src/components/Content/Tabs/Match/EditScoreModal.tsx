@@ -58,6 +58,6 @@ const EditScoreModal = ({ isOpen, toggle, veto, saveScore, teams, setWinner }: P
 			</ModalBody>
 		</Modal>
 	);
-}
+};
 
 export default EditScoreModal;

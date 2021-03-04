@@ -3,8 +3,8 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter, FormGroup, Input } 
 import * as I from './../../../../api/interfaces';
 
 interface TeamData {
-	id: string,
-	wins: number
+	id: string;
+	wins: number;
 }
 interface Props {
 	isOpen: boolean;
@@ -15,9 +15,8 @@ interface Props {
 	onSave: Function;
 }
 
-
 const SetTeamModal = ({ isOpen, toggle, side, teams, team, onSave }: Props) => {
-	const [ form, setForm ] = useState<TeamData>({...team})
+	const [form, setForm] = useState<TeamData>({ ...team });
 	const save = () => {
 		if (form.id === 'empty') {
 			onSave(side, null, form.wins);
@@ -26,27 +25,21 @@ const SetTeamModal = ({ isOpen, toggle, side, teams, team, onSave }: Props) => {
 		}
 		onSave(side, form.id, form.wins);
 		toggle();
-	}
+	};
 	const changeHandler = (name: keyof TeamData) => (event: any) => {
-		if(name === "wins"){
+		if (name === 'wins') {
 			form.wins = Number(event.target.value);
 		} else {
 			form.id = event.target.value;
 		}
-		setForm({...form});
+		setForm({ ...form });
 	};
 	return (
 		<Modal isOpen={isOpen} toggle={toggle} className={'veto_modal'}>
 			<ModalHeader toggle={toggle}>TEAM #{side === 'left' ? 1 : 2}</ModalHeader>
 			<ModalBody>
 				<FormGroup>
-					<Input
-						type="select"
-						name="teams"
-						id="teams"
-						value={form.id}
-						onChange={changeHandler('id')}
-					>
+					<Input type="select" name="teams" id="teams" value={form.id} onChange={changeHandler('id')}>
 						<option value={'empty'}>Empty team</option>
 						{teams.map(teams => (
 							<option key={teams._id} value={teams._id}>
@@ -56,13 +49,7 @@ const SetTeamModal = ({ isOpen, toggle, side, teams, team, onSave }: Props) => {
 					</Input>
 				</FormGroup>
 				<FormGroup>
-					<Input
-						type="select"
-						name="wins"
-						id="wins"
-						value={form.wins}
-						onChange={changeHandler('wins')}
-					>
+					<Input type="select" name="wins" id="wins" value={form.wins} onChange={changeHandler('wins')}>
 						<option value={0}>0</option>
 						<option value={1}>1</option>
 						<option value={2}>2</option>
@@ -77,33 +64,31 @@ const SetTeamModal = ({ isOpen, toggle, side, teams, team, onSave }: Props) => {
 			</ModalFooter>
 		</Modal>
 	);
-	
+};
+
+interface TeamModalsProps {
+	button: JSX.Element;
+	side: 'right' | 'left';
+	team: any;
+	teams: I.Team[];
+	onSave: Function;
 }
 
-interface TeamModalsProps { button: JSX.Element; side: 'right' | 'left'; team: any; teams: I.Team[]; onSave: Function }
-
 const TeamModal = ({ button, side, team, teams, onSave }: TeamModalsProps) => {
-	const [ isOpen, setOpen ] = useState(false);
+	const [isOpen, setOpen] = useState(false);
 
 	const toggle = () => setOpen(!isOpen);
-	
+
 	const setOnPress = (element: JSX.Element) => {
 		return React.cloneElement(element, { onClick: toggle });
-	}
-	
+	};
+
 	return (
 		<React.Fragment>
 			{setOnPress(button)}
-			<SetTeamModal
-				isOpen={isOpen}
-				toggle={toggle}
-				side={side}
-				team={team}
-				teams={teams}
-				onSave={onSave}
-			/>
+			<SetTeamModal isOpen={isOpen} toggle={toggle} side={side} team={team} teams={teams} onSave={onSave} />
 		</React.Fragment>
 	);
-}
+};
 
 export default TeamModal;

@@ -6,6 +6,6 @@ const ElectronOnly = ({ children }: { children: React.ReactNode }) => {
 		return null;
 	}
 	return children as ReactElement<any>;
-}
+};
 
 export default ElectronOnly;

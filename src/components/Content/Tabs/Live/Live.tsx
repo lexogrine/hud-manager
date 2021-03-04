@@ -10,9 +10,8 @@ interface Props {
 	players: Player[];
 	team: Team;
 	toggle: (tab: string, data?: any) => void;
-	cxt: IContextData
+	cxt: IContextData;
 }
-
 
 const Teamboard = ({ players, team, toggle, cxt }: Props) => {
 	const mapPlayer = (player: Player): PlayerExtension => {
@@ -38,7 +37,7 @@ const Teamboard = ({ players, team, toggle, cxt }: Props) => {
 			avatar: data.avatar,
 			extra: {}
 		};
-	}
+	};
 
 	return (
 		<Col s={12} md={6}>
@@ -71,10 +70,10 @@ const Teamboard = ({ players, team, toggle, cxt }: Props) => {
 			</div>
 		</Col>
 	);
-}
+};
 
 const Live = ({ toggle, cxt }: { toggle: (tab: string, data?: any) => void; cxt: IContextData }) => {
-	const [ game, setGame ] = useState<CSGO | null>(null);
+	const [game, setGame] = useState<CSGO | null>(null);
 
 	useEffect(() => {
 		GSI.on('data', setGame);
@@ -91,7 +90,7 @@ const Live = ({ toggle, cxt }: { toggle: (tab: string, data?: any) => void; cxt:
 	const left = teams.find(team => team.orientation === 'left');
 	const right = teams.find(team => team.orientation === 'right');
 
-	if(!left || !right){
+	if (!left || !right) {
 		return (
 			<React.Fragment>
 				<div className="tab-title-container">Live</div>
@@ -126,6 +125,6 @@ const Live = ({ toggle, cxt }: { toggle: (tab: string, data?: any) => void; cxt:
 			</div>
 		</React.Fragment>
 	);
-}
+};
 
 export default Live;

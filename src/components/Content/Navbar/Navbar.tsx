@@ -8,7 +8,7 @@ interface IProps {
 	files: boolean;
 }
 
-const Navbar = ({ activeTab, toggle, files}: IProps) => (
+const Navbar = ({ activeTab, toggle, files }: IProps) => (
 	<Nav tabs className="navbar-container">
 		<NavItem className="hover-pointer">
 			<NavLink

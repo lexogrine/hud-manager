@@ -6,11 +6,11 @@ interface Props {
 	className?: string;
 	label: any;
 	link?: string;
-	children?: any
+	children?: any;
 }
 
-const Tip = ({id, className, label, link,children}: Props) => {
-	const [ isOpen, setOpen ] = useState(false);
+const Tip = ({ id, className, label, link, children }: Props) => {
+	const [isOpen, setOpen] = useState(false);
 
 	const toggle = () => setOpen(!isOpen);
 
@@ -35,5 +35,5 @@ const Tip = ({id, className, label, link,children}: Props) => {
 			</Tooltip>
 		</>
 	);
-}
+};
 export default Tip;

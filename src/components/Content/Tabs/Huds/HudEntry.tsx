@@ -29,14 +29,14 @@ const HudEntry = ({ hud, isActive, toggleConfig, customFields }: IProps) => {
 
 	const startHUD = (dir: string) => {
 		api.huds.start(dir);
-	}
+	};
 	const setHUD = (url: string) => {
 		socket.emit('set_active_hlae', url);
 	};
 	const deleteHUD = async () => {
 		try {
 			await api.huds.delete(hud.dir);
-		} catch { }
+		} catch {}
 		toggleModal();
 	};
 	const missingFieldsText = [];
@@ -107,11 +107,7 @@ const HudEntry = ({ hud, isActive, toggleConfig, customFields }: IProps) => {
 											id={`killfeed_support_${hud.dir}`}
 											className="killfeed_support"
 											label={
-												<img
-													src={Killfeed}
-													className="action"
-													alt="Supports custom killfeed"
-												/>
+												<img src={Killfeed} className="action" alt="Supports custom killfeed" />
 											}
 										>
 											Includes custom killfeed
@@ -129,8 +125,8 @@ const HudEntry = ({ hud, isActive, toggleConfig, customFields }: IProps) => {
 								</Col>
 							</Row>
 						) : (
-								''
-							)}
+							''
+						)}
 					</Col>
 					<Col style={{ flex: 1 }} className="hud-options">
 						<div className="centered">
@@ -141,15 +137,10 @@ const HudEntry = ({ hud, isActive, toggleConfig, customFields }: IProps) => {
 								alt="Local network HUD URL"
 							/>
 							{hud.panel ? (
-								<img
-									src={Settings}
-									onClick={toggleConfig(hud)}
-									className="action"
-									alt="HUD panel"
-								/>
+								<img src={Settings} onClick={toggleConfig(hud)} className="action" alt="HUD panel" />
 							) : (
-									''
-								)}
+								''
+							)}
 							{Config.isElectron ? (
 								<img
 									src={Display}
@@ -191,7 +182,6 @@ const HudEntry = ({ hud, isActive, toggleConfig, customFields }: IProps) => {
 			</Col>
 		</Row>
 	);
-
-}
+};
 
 export default HudEntry;

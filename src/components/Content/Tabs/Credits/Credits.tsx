@@ -6,7 +6,7 @@ const CreditsEntry = ({ title, people }: { title: string; people: string[] }) =>
 		<div className="credits_title">{title}</div>
 		<div className="credits_name">{people.join(', ')}</div>
 	</div>
-)
+);
 
 const Credits = () => (
 	<>
@@ -26,6 +26,6 @@ const Credits = () => (
 			</Row>
 		</div>
 	</>
-)
+);
 
 export default Credits;

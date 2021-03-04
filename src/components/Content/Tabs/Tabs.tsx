@@ -48,6 +48,6 @@ const Tabs = ({ activeTab, data, toggle, gsiCheck }: IProps) => (
 			</TabContent>
 		)}
 	</ContextData.Consumer>
-)
+);
 
 export default Tabs;
