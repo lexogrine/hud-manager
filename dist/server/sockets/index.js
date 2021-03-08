@@ -27,7 +27,7 @@ socket_1.ioPromise.then(io => {
         socket.emit('readyToRegister');
         socket.on('register', async (name, isDev) => {
             if (!isDev || socket_1.HUDState.devHUD) {
-                socket.on("hud_inner_action", (action) => {
+                socket.on('hud_inner_action', (action) => {
                     io.to(isDev && socket_1.HUDState.devHUD ? socket_1.HUDState.devHUD.dir : name).emit(`hud_action`, action);
                 });
             }
