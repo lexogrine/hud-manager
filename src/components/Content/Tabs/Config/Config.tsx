@@ -108,7 +108,7 @@ export default class Config extends React.Component<IProps, IState> {
 		if (!file) {
 			return;
 		}
-		if (!file.path || file.type !== 'application/json') return;
+		if (file.type !== 'application/json') return;
 		const reader: any = new FileReader();
 		reader.readAsDataURL(file);
 		reader.onload = async () => {
