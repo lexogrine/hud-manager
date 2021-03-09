@@ -34,11 +34,11 @@ export const initGameConnection = async () => {
 
 		playTesting.intervalId = setInterval(() => {
 			if (!testData[testDataIndex]) {
+				testDataIndex = 0;
 				if (!playTesting.isOnLoop) {
 					stopSendingTestData();
 					return;
 				}
-				testDataIndex = 0;
 			}
 			io.to('csgo').emit('update', testData[testDataIndex]);
 			testDataIndex++;

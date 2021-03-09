@@ -1,6 +1,6 @@
 {
   "name": "hud-manager",
-  "version": "1.11.0",
+  "version": "1.11.1",
   "homepage": "./",
   "description": "Lexogrine HUD Manager",
   "author": "Lexogrine",
@@ -53,7 +53,12 @@
     "productName": "Lexogrine HUD Manager",
     "win": {
       "icon": "./dist/build/favicon.ico",
-      "target": "NSIS"
+      "target": [
+        {
+          "target":"NSIS",
+          "arch":[ "x64", "ia32" ]
+        }
+      ]
     },
     "linux": {
       "icon": "icon.png",
