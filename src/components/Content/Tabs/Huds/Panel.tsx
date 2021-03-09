@@ -20,7 +20,7 @@ export default class ActionPanel extends React.Component<IProps, IState> {
 		super(props);
 		this.state = {
 			form: {},
-			active: (props.hud.panel && props.hud.panel[0].name) || ''
+			active: props.hud.panel?.[0]?.name || ''
 		};
 	}
 	changeForm = (section: string, name: string, type: I.PanelInputType) => (e: any) => {

@@ -138,7 +138,7 @@ const HudEntry = ({ hud, isActive, toggleConfig, customFields }: IProps) => {
 								className="action"
 								alt="Local network HUD URL"
 							/>
-							{hud.panel ? (
+							{hud.panel?.length ? (
 								<img src={Settings} onClick={toggleConfig(hud)} className="action" alt="HUD panel" />
 							) : (
 								''
