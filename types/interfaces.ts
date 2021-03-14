@@ -1,3 +1,5 @@
+import { CSGO } from 'csgogsi-socket';
+
 export interface Player {
 	_id?: string;
 	firstName: string;
@@ -60,6 +62,7 @@ export interface Veto {
 	rounds?: RoundData[];
 	reverseSide?: boolean;
 	winner?: string;
+	game?: CSGO;
 	mapEnd: boolean;
 }
 

@@ -83,7 +83,7 @@ portListener.onChange(async (status) => {
             if (!cfg) {
                 return;
             }
-            hud.url = `http://${config_1.internalIP}:${cfg.port}/development/`;
+            hud.url = `http://localhost:${cfg.port}/development/`;
             socket_1.HUDState.devHUD = hud;
             if (socket_1.runtimeConfig.devSocket) {
                 const hudData = socket_1.HUDState.get(hud.dir);

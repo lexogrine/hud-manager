@@ -26,7 +26,7 @@ exports.runtimeConfig = {
 exports.HUDState = new hudstatemanager_1.HUDStateManager();
 exports.GSI = new csgogsi_socket_1.CSGOGSI();
 exports.ioPromise = config_1.loadConfig().then(cfg => {
-    const corsOrigins = [`http://${config_1.internalIP}:${cfg.port}`];
+    const corsOrigins = [`http://${config_1.internalIP}:${cfg.port}`, `http://localhost:${cfg.port}`];
     if (config_1.publicIP) {
         corsOrigins.push(`http://${config_1.publicIP}:${cfg.port}`);
     }
@@ -45,8 +45,9 @@ exports.ioPromise.then(io => {
     radar.startRadar(_1.app, io);
     hlae_1.default();
     const onRoundEnd = async (score) => {
-        if (exports.GSI.last)
-            await matches_1.updateRound(exports.GSI.last);
+        const lastGSIEntry = exports.GSI.last;
+        if (lastGSIEntry)
+            await matches_1.updateRound(lastGSIEntry);
         if (score.loser && score.loser.logo) {
             score.loser.logo = '';
         }
@@ -95,6 +96,10 @@ exports.ioPromise.then(io => {
                         match.right.wins++;
                     }
                 }
+                if (lastGSIEntry) {
+                    veto.game = lastGSIEntry;
+                }
+                veto.mapEnd = true;
             }
             return veto;
         });

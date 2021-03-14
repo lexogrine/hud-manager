@@ -129,7 +129,8 @@ export const renderHUD: express.RequestHandler = async (req, res, next) => {
 	}
 	const availableUrls = [
 		`http://${internalIP}:${cfg.port}/hud/${req.params.dir}/`,
-		`http://${publicIP}:${cfg.port}/hud/${req.params.dir}/`
+		`http://${publicIP}:${cfg.port}/hud/${req.params.dir}/`,
+		`http://localhost:${cfg.port}/hud/${req.params.dir}/`
 	];
 	if (!req.params.dir) {
 		return res.sendStatus(404);
@@ -162,7 +163,11 @@ export const verifyOverlay: express.RequestHandler = async (req, res, next) => {
 	}
 	const requestUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
 
-	const availableUrls = [`http://${internalIP}:${cfg.port}/dev`, `http://${publicIP}:${cfg.port}/dev`];
+	const availableUrls = [
+		`http://${internalIP}:${cfg.port}/dev`,
+		`http://${publicIP}:${cfg.port}/dev`,
+		`http://localhost:${cfg.port}/dev`
+	];
 	if (
 		requestUrl === `http://localhost:${cfg.port}/dev/thumb.png` ||
 		availableUrls.find(url => `${url}/thumb.png` === requestUrl)

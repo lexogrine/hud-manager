@@ -106,7 +106,11 @@ export const verifyUrl = async (url: string) => {
 	if (!cfg) {
 		return false;
 	}
-	const bases = [`http://${internalIP}:${cfg.port}`, `http://${publicIP}:${cfg.port}`];
+	const bases = [
+		`http://${internalIP}:${cfg.port}`,
+		`http://${publicIP}:${cfg.port}`,
+		`http://localhost:${cfg.port}`
+	];
 	if (isDev) {
 		bases.push(`http://localhost:3000/?port=${cfg.port}`);
 	}

@@ -32,7 +32,7 @@ export const HUDState = new HUDStateManager();
 export const GSI = new CSGOGSI();
 
 export const ioPromise = loadConfig().then(cfg => {
-	const corsOrigins = [`http://${internalIP}:${cfg.port}`];
+	const corsOrigins = [`http://${internalIP}:${cfg.port}`, `http://localhost:${cfg.port}`];
 
 	if (publicIP) {
 		corsOrigins.push(`http://${publicIP}:${cfg.port}`);
@@ -56,7 +56,8 @@ ioPromise.then(io => {
 	hlaeServer();
 
 	const onRoundEnd = async (score: Score) => {
-		if (GSI.last) await updateRound(GSI.last);
+		const lastGSIEntry = GSI.last;
+		if (lastGSIEntry) await updateRound(lastGSIEntry);
 		if (score.loser && score.loser.logo) {
 			score.loser.logo = '';
 		}
@@ -101,9 +102,15 @@ ioPromise.then(io => {
 						match.right.wins++;
 					}
 				}
+				if (lastGSIEntry) {
+					veto.game = lastGSIEntry;
+				}
+
+				veto.mapEnd = true;
 			}
 			return veto;
 		});
+
 		match.vetos = vetos;
 		await updateMatch(match);
 
