@@ -40,8 +40,8 @@ exports.createMainWindow = async (forceDev = false) => {
             backgroundThrottling: false,
             devTools: isDev || forceDev
         },
-        minWidth: 950,
-        minHeight: 874,
+        minWidth: 740,
+        minHeight: 440,
         width: 1200
     });
     electron_1.ipcMain.on('min', () => {
@@ -67,7 +67,8 @@ exports.createMainWindow = async (forceDev = false) => {
     // win.setMenu(null);
     const config = await config_1.loadConfig();
     win.setMenuBarVisibility(false);
-    const startUrl = `http://${config_1.internalIP}:${config.port}/`;
+    //const startUrl = `http://${internalIP}:${config.port}/`;
+    const startUrl = `http://localhost:${config.port}/`;
     win.webContents.on('new-window', (e, url) => {
         e.preventDefault();
         electron_1.shell.openExternal(url);
