@@ -6,7 +6,13 @@ import * as M from './index';
 import { ioPromise } from '../../socket';
 
 export const getMatchesRoute: express.RequestHandler = async (req, res) => {
-	const matches = await M.getMatches();
+	const matches = (await M.getMatches()).map(match => {
+		if ('full' in req.query) return match;
+		return {
+			...match,
+			vetos: match.vetos.map(veto => ({ ...veto, game: undefined }))
+		};
+	});
 	return res.json(matches);
 };
 

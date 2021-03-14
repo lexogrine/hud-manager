@@ -21,6 +21,6 @@ export const getTeamsList = (query: any) =>
 			if (err) {
 				return res([]);
 			}
-			return res(teams);
+			return res([...teams].sort((a, b) => (a.name > b.name ? 1 : -1)));
 		});
 	});

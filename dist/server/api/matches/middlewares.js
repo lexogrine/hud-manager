@@ -29,7 +29,14 @@ const fs_1 = __importDefault(require("fs"));
 const M = __importStar(require("./index"));
 const socket_1 = require("../../socket");
 exports.getMatchesRoute = async (req, res) => {
-    const matches = await M.getMatches();
+    const matches = (await M.getMatches()).map(match => {
+        if ("full" in req.query)
+            return match;
+        return ({
+            ...match,
+            vetos: match.vetos.map(veto => ({ ...veto, game: undefined }))
+        });
+    });
     return res.json(matches);
 };
 exports.getMatchRoute = async (req, res) => {

@@ -32,6 +32,6 @@ export const getPlayersList = (query: any) =>
 			if (err) {
 				return res([]);
 			}
-			return res(players);
+			return res([...players].sort((a, b) => (a.username > b.username ? 1 : -1)));
 		});
 	});
