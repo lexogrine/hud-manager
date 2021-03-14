@@ -121,7 +121,7 @@ export default {
 		get: async (): Promise<{ id: string }> => await apiV2('machine')
 	},
 	match: {
-		get: async (): Promise<I.Match[]> => await apiV2('match'),
+		get: async (): Promise<I.Match[]> => await apiV2('match?full'),
 		set: async (match: I.Match[]): Promise<I.Match[]> => apiV2('match', 'PATCH', match),
 		add: async (match: I.Match) => apiV2('match', 'POST', match),
 		update: async (id: string, match: any) => await apiV2(`match/${id}`, 'PATCH', match),
