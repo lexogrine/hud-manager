@@ -15,6 +15,7 @@ import { socket } from '../Live/Live';
 import RemoveHUDModal from './RemoveModal';
 import { hashCode } from '../../../../hash';
 import { getMissingFields } from '../../../../utils';
+import { copyToClipboard } from '../../../../api/clipboard';
 
 interface IProps {
 	hud: I.HUD;
@@ -172,7 +173,7 @@ const HudEntry = ({ hud, isActive, toggleConfig, customFields }: IProps) => {
 							<UncontrolledCollapse toggler={`#hud_link_${hashCode(hud.dir)}`}>
 								<code
 									onClick={() => {
-										navigator.clipboard.writeText(hud.url).catch(console.error);
+										copyToClipboard(hud.url);
 									}}
 								>
 									{hud.url}

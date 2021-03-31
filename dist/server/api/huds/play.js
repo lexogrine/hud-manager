@@ -46,9 +46,6 @@ exports.initGameConnection = async () => {
         io.emit('enableTest', true, exports.playTesting.isOnLoop);
     };
     __2.app.post('/', assertUser, (req, res) => {
-        if (!__1.customer.customer) {
-            return res.sendStatus(200);
-        }
         socket_1.runtimeConfig.last = req.body;
         if (exports.playTesting.intervalId) {
             clearInterval(exports.playTesting.intervalId);
@@ -59,6 +56,15 @@ exports.initGameConnection = async () => {
         socket_1.GSI.digest(req.body);
         radar.digestRadar(req.body);
         res.sendStatus(200);
+    });
+    __2.app.post('/csgo/input/ar', assertUser, (req, res) => {
+        const { player } = req.body;
+        if (!player || !player.position || !player.forward)
+            return res.sendStatus(200);
+        const forward = player.forward.split(", ").map((n) => Number(n));
+        const position = player.position.split(", ").map((n) => Number(n));
+        io.to('csgo').emit('camera', { forward, position });
+        return res.sendStatus(200);
     });
     __2.app.post('/api/test', assertUser, (_req, res) => {
         if (exports.playTesting.intervalId)

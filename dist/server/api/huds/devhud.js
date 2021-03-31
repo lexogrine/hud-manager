@@ -74,6 +74,7 @@ portListener.onChange(async (status) => {
                 return;
             hud.keybinds = await getJSONArray('http://localhost:3500/dev/keybinds.json');
             hud.panel = await getJSONArray('http://localhost:3500/dev/panel.json');
+            hud.ar = await node_fetch_1.default('http://localhost:3500/dev/ar.json').then(res => res.json()).catch(() => undefined);
             hud.isDev = true;
             hud.dir = (Math.random() * 1000 + 1)
                 .toString(36)
