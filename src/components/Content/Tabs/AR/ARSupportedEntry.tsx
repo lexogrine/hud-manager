@@ -9,11 +9,10 @@ import { copyToClipboard } from '../../../../api/clipboard';
 
 interface IProps {
 	hud: I.HUD;
-    setActive: (hud: I.HUD) => void;
+	setActive: (hud: I.HUD) => void;
 }
 
 const HudEntry = ({ hud, setActive }: IProps) => {
-
 	return (
 		<Row key={hud.dir} className="hudRow">
 			<Col s={12}>
@@ -50,7 +49,7 @@ const HudEntry = ({ hud, setActive }: IProps) => {
 								className="action"
 								alt="Local network HUD URL"
 							/>
-                            <img src={Settings} className="action" alt="HUD panel" onClick={() => setActive(hud)} />
+							<img src={Settings} className="action" alt="HUD panel" onClick={() => setActive(hud)} />
 						</div>
 					</Col>
 				</Row>

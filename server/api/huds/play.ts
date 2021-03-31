@@ -68,12 +68,12 @@ export const initGameConnection = async () => {
 
 	app.post('/csgo/input/ar', assertUser, (req, res) => {
 		const { player } = req.body;
-		if(!player || !player.position || !player.forward) return res.sendStatus(200);
-		const forward = player.forward.split(", ").map((n: string) => Number(n));
-		const position = player.position.split(", ").map((n: string) => Number(n));
+		if (!player || !player.position || !player.forward) return res.sendStatus(200);
+		const forward = player.forward.split(', ').map((n: string) => Number(n));
+		const position = player.position.split(', ').map((n: string) => Number(n));
 		io.to('csgo').emit('camera', { forward, position });
 		return res.sendStatus(200);
-	})
+	});
 
 	app.post('/api/test', assertUser, (_req, res) => {
 		if (playTesting.intervalId) stopSendingTestData();

@@ -10,7 +10,7 @@ import ColorPicker from '../../../ColorPicker/ColorPicker';
 
 interface IProps {
 	section: I.PanelTemplate;
-    hud: string;
+	hud: string;
 	cxt: IContextData;
 }
 interface IState {
@@ -50,14 +50,14 @@ export default class ARSettings extends React.Component<IProps, IState> {
 		if (!section) return;
 		const form: any = {};
 
-        form[section.name] = {};
-        for (const input of section.inputs) {
-            if (input.type !== 'action') form[section.name][input.name] = '';
-            if (input.type === 'player' || input.type === 'team' || input.type === 'match')
-                form[section.name][input.name] = {};
-            if (input.type === 'checkbox') form[section.name][input.name] = false;
-        }
-		
+		form[section.name] = {};
+		for (const input of section.inputs) {
+			if (input.type !== 'action') form[section.name][input.name] = '';
+			if (input.type === 'player' || input.type === 'team' || input.type === 'match')
+				form[section.name][input.name] = {};
+			if (input.type === 'checkbox') form[section.name][input.name] = false;
+		}
+
 		this.setState({ form });
 		socket.on('hud_config', (data: any) => {
 			if (!data) return;
@@ -147,7 +147,6 @@ export default class ARSettings extends React.Component<IProps, IState> {
 	getSelects = (panel: I.PanelTemplate) => this.filterInputs(panel, 'select');
 
 	getCheckboxes = (panel: I.PanelTemplate) => this.filterInputs(panel, 'checkbox');
-
 
 	renderSection = () => {
 		const { cxt, section } = this.props;
@@ -385,8 +384,6 @@ export default class ARSettings extends React.Component<IProps, IState> {
 	render() {
 		const { hud } = this.props;
 		if (!hud) return '';
-		return (
-            <div className="section_panel_container">{this.renderSection()}</div>
-		);
+		return <div className="section_panel_container">{this.renderSection()}</div>;
 	}
 }

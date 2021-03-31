@@ -30,7 +30,6 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 	const [form, setForm] = useState(emptyPlayer);
 	const [search, setSearch] = useState('');
 
-	
 	const [sortBy, setSortBy] = useState<keyof I.Player>('username');
 	const [sortByType, setSortByType] = useState<'DESC' | 'ASC'>('ASC');
 
@@ -46,26 +45,29 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 
 	const sortPlayers = (players: I.Player[]) => {
 		const sortType = (result: -1 | 1) => {
-			if(sortByType === 'ASC') return result;
-			return result*-1;
-		}
-		if(sortBy === "team"){
+			if (sortByType === 'ASC') return result;
+			return result * -1;
+		};
+		if (sortBy === 'team') {
 			return [...players].sort((a, b) => {
-				const [ aTeam, bTeam ] = [ cxt.teams.find(team => team._id === a.team), cxt.teams.find(team => team._id === b.team) ];
-				if(!a.team || !aTeam) return sortType(-1);
-				else if(!b.team || !bTeam) return sortType(1);
+				const [aTeam, bTeam] = [
+					cxt.teams.find(team => team._id === a.team),
+					cxt.teams.find(team => team._id === b.team)
+				];
+				if (!a.team || !aTeam) return sortType(-1);
+				else if (!b.team || !bTeam) return sortType(1);
 				return sortType(aTeam.name < bTeam.name ? -1 : 1);
 			});
 		}
 		return [...players].sort((a, b) => sortType(a[sortBy] < b[sortBy] ? -1 : 1));
-	}
+	};
 
 	const toggleSortBy = (targetSortBy: keyof I.Player) => () => {
-		if(targetSortBy === sortBy) {
+		if (targetSortBy === sortBy) {
 			return setSortByType(sortByType === 'ASC' ? 'DESC' : 'ASC');
 		}
 		setSortBy(targetSortBy);
-	}
+	};
 
 	const saveFields = async () => {
 		await api.players.fields.update(customFieldForm.filter(fieldEntry => fieldEntry.name));
@@ -281,10 +283,18 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 			<div className="tab-content-container no-padding">
 				<div className="item-list-entry heading">
 					<div className="picture">Avatar</div>
-					<div className="realName" onClick={toggleSortBy('firstName')}>Real Name</div>
-					<div className="username" onClick={toggleSortBy('username')}>Username</div>
-					<div className="team" onClick={toggleSortBy('team')}>Team</div>
-					<div className="country" onClick={toggleSortBy('country')}>Country</div>
+					<div className="realName" onClick={toggleSortBy('firstName')}>
+						Real Name
+					</div>
+					<div className="username" onClick={toggleSortBy('username')}>
+						Username
+					</div>
+					<div className="team" onClick={toggleSortBy('team')}>
+						Team
+					</div>
+					<div className="country" onClick={toggleSortBy('country')}>
+						Country
+					</div>
 					{visibleFields.map(field => (
 						<div className="custom-field" key={field._id}>
 							{field.name}
