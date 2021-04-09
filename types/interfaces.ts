@@ -1,5 +1,9 @@
 import { CSGO } from 'csgogsi-socket';
 
+export type AvailableGames = "csgo" | "rocketleague";
+
+export type AvailableResources = 'teams' | 'players' | 'matches';
+
 export interface Player {
 	_id?: string;
 	firstName: string;
@@ -210,7 +214,7 @@ export interface User {
 	banned: boolean;
 }
 
-export type LicenseType = 'free' | 'professional' | 'enterprise';
+export type LicenseType = 'free' | 'professional' | 'personal' | 'enterprise';
 export interface License {
 	id: number;
 	type: LicenseType;

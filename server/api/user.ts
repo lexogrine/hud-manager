@@ -13,10 +13,10 @@ import { getMachineId } from './machine';
 
 const cookiePath = path.join(app.getPath('userData'), 'cookie.json');
 const cookieJar = new CookieJar(new FileCookieStore(cookiePath));
-const fetch = fetchHandler(nodeFetch, cookieJar);
+export const fetch = fetchHandler(nodeFetch, cookieJar);
 
-const api = (url: string, method = 'GET', body?: any) => {
-	const options: RequestInit = {
+export const api = (url: string, method = 'GET', body?: any, opts?: RequestInit) => {
+	const options: RequestInit = opts || {
 		method,
 		headers: {
 			Accept: 'application/json',
@@ -92,6 +92,9 @@ export const getCurrent: express.RequestHandler = async (req, res) => {
 	const response = await loadUser();
 
 	if (customer.customer) {
+		if((customer.customer as any).license.type === "professional") {
+
+		}
 		return res.json(customer.customer);
 	}
 	return res.status(403).json(response);

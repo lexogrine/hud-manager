@@ -8,6 +8,7 @@ import { socket } from './../components/Content/Tabs/Live/Live';
 import LoginRegisterModal from './LoginRegisterModal';
 import ElectronOnly from './../components/ElectronOnly';
 import { hash } from '../hash';
+import GamePicker from './GamePicker';
 
 declare let window: any;
 const isElectron = config.isElectron;
@@ -22,6 +23,7 @@ interface IState {
 	loadingLogin: boolean;
 	loginError: string;
 	version: string;
+	picked: null| string;
 }
 export default class Layout extends React.Component<{}, IState> {
 	constructor(props: {}) {
@@ -47,7 +49,8 @@ export default class Layout extends React.Component<{}, IState> {
 			loginError: '',
 			loadingLogin: false,
 			loading: true,
-			version: '-'
+			version: '-',
+			picked: null
 		};
 	}
 	async componentDidMount() {
@@ -64,6 +67,9 @@ export default class Layout extends React.Component<{}, IState> {
 			return state;
 		});
 	};
+	setGame = (game: string) => {
+		this.setState({ picked: game })
+	}
 	getCustomFields = async () => {
 		const [teams, players] = await Promise.all([api.teams.fields.get(), api.players.fields.get()]);
 		this.setState(state => {
@@ -158,6 +164,7 @@ export default class Layout extends React.Component<{}, IState> {
 						loadUser={this.loadUser}
 						error={loginError}
 					/>
+					<GamePicker isOpen={Boolean(data.customer && !this.state.picked)} setGame={this.setGame}/>
 					<Content />
 				</div>
 			</Provider>

@@ -1,3 +1,5 @@
+import { LicenseType } from './../../types/interfaces';
+
 export type {
 	PanelInput,
 	SelectActionInput,
@@ -15,6 +17,7 @@ export type {
 	ExtendedConfig,
 	CFG,
 	CustomFieldEntry,
+	LicenseType,
 	CustomFieldStore,
 	onExtraChangeFunction
 } from './../../types/interfaces';
@@ -53,8 +56,6 @@ export interface User {
 	admin: boolean;
 	banned: boolean;
 }
-
-export type LicenseType = 'free' | 'professional' | 'enterprise';
 export interface License {
 	id: number;
 	type: LicenseType;

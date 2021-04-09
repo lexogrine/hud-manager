@@ -175,7 +175,11 @@ exports.verifyOverlay = async (req, res, next) => {
         return res.sendStatus(500);
     }
     const requestUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
-    const availableUrls = [`http://${config_1.internalIP}:${cfg.port}/dev`, `http://${config_1.publicIP}:${cfg.port}/dev`, `http://localhost:${cfg.port}/dev`];
+    const availableUrls = [
+        `http://${config_1.internalIP}:${cfg.port}/dev`,
+        `http://${config_1.publicIP}:${cfg.port}/dev`,
+        `http://localhost:${cfg.port}/dev`
+    ];
     if (requestUrl === `http://localhost:${cfg.port}/dev/thumb.png` ||
         availableUrls.find(url => `${url}/thumb.png` === requestUrl)) {
         return next();
