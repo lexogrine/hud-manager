@@ -1,12 +1,10 @@
-import {api} from "./../user";
-import * as I from "../../../types/interfaces";
+import { api } from './../user';
+import * as I from '../../../types/interfaces';
 
-const cloudErrorHandler = () => {
-
-}
+const cloudErrorHandler = () => {};
 
 /**
- * 
+ *
  * return sdf
  */
 
@@ -19,26 +17,24 @@ const cloudErrorHandler = () => {
  * If local data is newer, ask which for option: upload local, download cloud, no sync
  * If local data is older, download cloud
  */
-export const verifyCloudSync = () => {
-
-}
+export const verifyCloudSync = () => {};
 
 export const addResource = async <T>(game: I.AvailableGames, resource: I.AvailableResources, data: T) => {
-    const result = await api(`storage/${resource}/${game}`, 'POST', data) as T;
-    if(!result){
-        cloudErrorHandler();
-        return null;
-    }
-    return result;
-}
+	const result = (await api(`storage/${resource}/${game}`, 'POST', data)) as T;
+	if (!result) {
+		cloudErrorHandler();
+		return null;
+	}
+	return result;
+};
 
 export const getResource = async <T>(game: I.AvailableGames, resource: I.AvailableResources) => {
-    const result = await api(`storage/${resource}/${game}`) as T;
+	const result = (await api(`storage/${resource}/${game}`)) as T;
 
-    if(!result){
-        cloudErrorHandler();
-        return null;
-    }
+	if (!result) {
+		cloudErrorHandler();
+		return null;
+	}
 
-    return result || null;
-}
+	return result || null;
+};

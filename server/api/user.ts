@@ -92,8 +92,7 @@ export const getCurrent: express.RequestHandler = async (req, res) => {
 	const response = await loadUser();
 
 	if (customer.customer) {
-		if((customer.customer as any).license.type === "professional") {
-
+		if ((customer.customer as any).license.type === 'professional') {
 		}
 		return res.json(customer.customer);
 	}
