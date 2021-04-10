@@ -9,7 +9,7 @@ ioPromise.then(io => {
 		const ref = socket.request?.headers?.referer || '';
 		verifyUrl(ref).then(status => {
 			if (status) {
-				socket.join('csgo');
+				socket.join('game');
 			}
 		});
 		socket.on('started', () => {
@@ -24,12 +24,14 @@ ioPromise.then(io => {
 			socket.on('readerReverseSide', reverseSide);
 		});
 		socket.emit('readyToRegister');
-		socket.on('register', async (name: string, isDev: boolean) => {
+		socket.on('register', async (name: string, isDev: boolean, game = "csgo") => {
 			if (!isDev || HUDState.devHUD) {
 				socket.on('hud_inner_action', (action: any) => {
 					io.to(isDev && HUDState.devHUD ? HUDState.devHUD.dir : name).emit(`hud_action`, action);
 				});
 			}
+			console.log('registered', game);
+			socket.join(game);
 			if (!isDev) {
 				socket.join(name);
 				const hudData = HUDState.get(name, true);

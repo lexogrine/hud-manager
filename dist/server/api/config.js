@@ -98,7 +98,11 @@ exports.verifyUrl = async (url) => {
     if (!cfg) {
         return false;
     }
-    const bases = [`http://${exports.internalIP}:${cfg.port}`, `http://${exports.publicIP}:${cfg.port}`, `http://localhost:${cfg.port}`];
+    const bases = [
+        `http://${exports.internalIP}:${cfg.port}`,
+        `http://${exports.publicIP}:${cfg.port}`,
+        `http://localhost:${cfg.port}`
+    ];
     if (electron_1.isDev) {
         bases.push(`http://localhost:3000/?port=${cfg.port}`);
     }

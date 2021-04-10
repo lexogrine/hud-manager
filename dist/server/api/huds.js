@@ -54,6 +54,8 @@ const remove = (pathToRemove) => {
     fs.rmdirSync(pathToRemove);
 };
 exports.listHUDs = async () => {
+    const uploadedHUD = "lexogrine_hud_191";
+    const downloadedHUD = "lexogrine_hud_192";
     const dir = path.join(electron_1.app.getPath('home'), 'HUDs');
     const filtered = fs
         .readdirSync(dir, { withFileTypes: true })
@@ -63,7 +65,7 @@ exports.listHUDs = async () => {
     if (socket_1.HUDState.devHUD) {
         huds.unshift(socket_1.HUDState.devHUD);
     }
-    return huds;
+    return huds.map((hud) => ({ ...hud, downloaded: uploadedHUD !== hud.dir, uploaded: uploadedHUD === hud.dir }));
 };
 exports.getHUDs = async (req, res) => {
     return res.json(await exports.listHUDs());
@@ -86,6 +88,7 @@ exports.getHUDData = async (dirName) => {
         const configFile = fs.readFileSync(configFileDir, { encoding: 'utf8' });
         const config = JSON.parse(configFile);
         config.dir = dirName;
+        config.game = config.game || "csgo";
         const panel = exports.getHUDPanelSetting(dirName);
         const keybinds = exports.getHUDKeyBinds(dirName);
         if (panel) {
@@ -175,7 +178,11 @@ exports.verifyOverlay = async (req, res, next) => {
         return res.sendStatus(500);
     }
     const requestUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
-    const availableUrls = [`http://${config_1.internalIP}:${cfg.port}/dev`, `http://${config_1.publicIP}:${cfg.port}/dev`, `http://localhost:${cfg.port}/dev`];
+    const availableUrls = [
+        `http://${config_1.internalIP}:${cfg.port}/dev`,
+        `http://${config_1.publicIP}:${cfg.port}/dev`,
+        `http://localhost:${cfg.port}/dev`
+    ];
     if (requestUrl === `http://localhost:${cfg.port}/dev/thumb.png` ||
         availableUrls.find(url => `${url}/thumb.png` === requestUrl)) {
         return next();

@@ -67,7 +67,6 @@ exports.createMainWindow = async (forceDev = false) => {
     // win.setMenu(null);
     const config = await config_1.loadConfig();
     win.setMenuBarVisibility(false);
-    //const startUrl = `http://${internalIP}:${config.port}/`;
     const startUrl = `http://localhost:${config.port}/`;
     win.webContents.on('new-window', (e, url) => {
         e.preventDefault();

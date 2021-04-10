@@ -190,10 +190,13 @@ export interface HUD {
 	legacy: boolean;
 	dir: string;
 	radar: boolean;
+	game: string;
 	killfeed: boolean;
 	panel?: PanelTemplate[];
 	keybinds?: KeyBind[];
 	url: string;
+	downloaded?: boolean;
+	uploaded?: boolean;
 	allowAppsOnTop?: boolean;
 	requiredFields?: RequiredFields;
 	boltobserv?: {

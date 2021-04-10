@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Row, Col, UncontrolledCollapse } from 'reactstrap';
+import { Row, Col, UncontrolledCollapse, Button } from 'reactstrap';
 import Config from './../../../../api/config';
 import Tip from './../../../Tooltip';
 import api from './../../../../api/api';
@@ -23,9 +23,38 @@ interface IProps {
 	customFields: I.CustomFieldStore;
 }
 
+//  let forceRemoveUploaded = false;
+let forceUploadDownloaded = false;
+let forceDownload = false;
+
 const HudEntry = ({ hud, isActive, toggleConfig, customFields }: IProps) => {
+	const gameToTag = (game: string) => {
+		if(game === "csgo"){
+			return '[CSGO]';
+		} else if(game === "rocketleague"){
+			return "[RL]";
+		}
+		return null;
+	}
 	const [isOpen, setOpen] = useState(false);
 	const toggleModal = () => setOpen(!isOpen);
+	const [ isLoadingUpload, setLoadingUpload ] = useState(false);
+	const [ isLoadingDown, setLoadingDown ] = useState(false);
+
+	const upload = () => {
+		setLoadingUpload(true);
+		setTimeout(() => {
+			forceUploadDownloaded = true;
+			setLoadingUpload(false);
+		}, 5400)
+	}
+	const download = () => {
+		setLoadingDown(true);
+		setTimeout(() => {
+			forceDownload = true;
+			setLoadingDown(false);
+		}, 4400)
+	}
 
 	const startHUD = (dir: string) => {
 		api.huds.start(dir);
@@ -36,7 +65,7 @@ const HudEntry = ({ hud, isActive, toggleConfig, customFields }: IProps) => {
 	const deleteHUD = async () => {
 		try {
 			await api.huds.delete(hud.dir);
-		} catch {}
+		} catch { }
 		toggleModal();
 	};
 	const missingFieldsText = [];
@@ -71,9 +100,8 @@ const HudEntry = ({ hud, isActive, toggleConfig, customFields }: IProps) => {
 				<Row>
 					<Col className="centered thumb">
 						<img
-							src={`${Config.isDev ? Config.apiAddress : '/'}${
-								hud.isDev ? 'dev/thumb.png' : `huds/${hud.dir}/thumbnail`
-							}`}
+							src={`${Config.isDev ? Config.apiAddress : '/'}${hud.isDev ? 'dev/thumb.png' : `huds/${hud.dir}/thumbnail`
+								}`}
 							alt={`${hud.name}`}
 						/>
 					</Col>
@@ -82,6 +110,7 @@ const HudEntry = ({ hud, isActive, toggleConfig, customFields }: IProps) => {
 							<Col>
 								<strong className="hudName">
 									{hud.isDev ? '[DEV] ' : ''}
+									{gameToTag(hud.game)+' '}
 									{hud.name}
 								</strong>{' '}
 								<span className="hudVersion">({hud.version})</span>
@@ -131,42 +160,67 @@ const HudEntry = ({ hud, isActive, toggleConfig, customFields }: IProps) => {
 						)}
 					</Col>
 					<Col style={{ flex: 1 }} className="hud-options">
-						<div className="centered">
-							<img
-								src={HyperLink}
-								id={`hud_link_${hashCode(hud.dir)}`}
-								className="action"
-								alt="Local network HUD URL"
-							/>
-							{hud.panel?.length ? (
-								<img src={Settings} onClick={toggleConfig(hud)} className="action" alt="HUD panel" />
-							) : (
-								''
-							)}
-							{Config.isElectron ? (
-								<img
-									src={Display}
-									onClick={() => startHUD(hud.dir)}
-									className="action"
-									alt="Start HUD"
-								/>
-							) : null}
-							{Config.isElectron && !hud.isDev ? (
-								<img src={trash} onClick={toggleModal} className="action" alt="Delete HUD" />
-							) : null}
-						</div>
-						{Config.isElectron ? (
-							<div className="hud-toggle">
-								<Switch
-									id={`hud-switch-${hud.dir}`}
-									isOn={isActive}
-									handleToggle={() => setHUD(hud.url)}
-								/>
-							</div>
-						) : null}
+						{
+							hud.downloaded || forceDownload ||  ({}) ? (
+								<>
+									<div className="centered">
+										<img
+											src={HyperLink}
+											id={`hud_link_${hashCode(hud.dir)}`}
+											className="action"
+											alt="Local network HUD URL"
+										/>
+										{hud.panel?.length ? (
+											<img src={Settings} onClick={toggleConfig(hud)} className="action" alt="HUD panel" />
+										) : (
+											''
+										)}
+										{Config.isElectron ? (
+											<img
+												src={Display}
+												onClick={() => startHUD(hud.dir)}
+												className="action"
+												alt="Start HUD"
+											/>
+										) : null}
+										{Config.isElectron && !hud.isDev ? (
+											<img src={trash} onClick={toggleModal} className="action" alt="Delete HUD" />
+										) : null}
+										{
+											!hud.uploaded && !forceUploadDownloaded && !({}) ? (
+												<>
+													<Button
+														className="round-btn run-game"
+														disabled={isLoadingUpload}
+														onClick={upload}
+													>
+														Upload
+											</Button>
+												</>
+											) : null
+										}
+									</div>
+									{Config.isElectron ? (
+										<div className="hud-toggle">
+											<Switch
+												id={`hud-switch-${hud.dir}`}
+												isOn={isActive}
+												handleToggle={() => setHUD(hud.url)}
+											/>
+										</div>
+									) : null}
+								</>
+							) : <Button
+								className="round-btn run-game"
+								disabled={isLoadingDown}
+								onClick={download}
+							>
+								Download
+							</Button>
+						}
 					</Col>
 				</Row>
-				<Row>
+				{hud.downloaded ? <Row>
 					<Col s={12}>
 						<div className="match_data">
 							<UncontrolledCollapse toggler={`#hud_link_${hashCode(hud.dir)}`}>
@@ -180,7 +234,7 @@ const HudEntry = ({ hud, isActive, toggleConfig, customFields }: IProps) => {
 							</UncontrolledCollapse>
 						</div>
 					</Col>
-				</Row>
+				</Row> : null}
 			</Col>
 		</Row>
 	);
