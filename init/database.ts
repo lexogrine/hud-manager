@@ -12,7 +12,7 @@ const databases = {
 	matches: new Datastore<I.Match>({ filename: path.join(directory, 'matches'), autoload: true }),
 	custom: new Datastore<I.CustomFieldStore>({ filename: path.join(directory, 'custom'), autoload: true }),
 	tournaments: new Datastore<I.Tournament>({ filename: path.join(directory, 'tournaments'), autoload: true })
-}
+};
 
 const testPlayers: I.Player[] = [
 	{
@@ -45,16 +45,12 @@ const testPlayers: I.Player[] = [
 		team: '',
 		extra: {}
 	}
-]
+];
 
 databases.players.find({}, (err: any, player: I.Player[]) => {
-	if(player.length) return;
+	if (player.length) return;
 
-	databases.players.insert(testPlayers, (err, doc) => {
-
-	});
+	databases.players.insert(testPlayers, (err, doc) => {});
 });
 
 export default databases;
-
-

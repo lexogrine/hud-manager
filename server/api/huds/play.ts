@@ -83,23 +83,22 @@ export const initGameConnection = async () => {
 		res.sendStatus(200);
 	});
 
-
 	const connectToRocketLeague = () => {
 		const ws = new WebSocket('ws://localhost:49122');
 
 		const onData = (data: WebSocket.Data) => {
 			io.to('rocketleague').emit('update', data);
-		}
+		};
 
-		ws.on("message", onData);
+		ws.on('message', onData);
 
-		ws.on("close", () => {
-			ws.off("message", onData);
+		ws.on('close', () => {
+			ws.off('message', onData);
 			setTimeout(connectToRocketLeague, 1000);
 		});
 
-		ws.on("error", ws.close);
-	}
+		ws.on('error', ws.close);
+	};
 
 	// connectToRocketLeague();
 };
