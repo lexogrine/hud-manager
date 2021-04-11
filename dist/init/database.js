@@ -50,7 +50,6 @@ const testPlayers = [
 databases.players.find({}, (err, player) => {
     if (player.length)
         return;
-    databases.players.insert(testPlayers, (err, doc) => {
-    });
+    databases.players.insert(testPlayers, (err, doc) => { });
 });
 exports.default = databases;

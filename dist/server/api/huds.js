@@ -54,8 +54,8 @@ const remove = (pathToRemove) => {
     fs.rmdirSync(pathToRemove);
 };
 exports.listHUDs = async () => {
-    const uploadedHUD = "lexogrine_hud_191";
-    const downloadedHUD = "lexogrine_hud_192";
+    const uploadedHUD = 'lexogrine_hud_191';
+    const downloadedHUD = 'lexogrine_hud_192';
     const dir = path.join(electron_1.app.getPath('home'), 'HUDs');
     const filtered = fs
         .readdirSync(dir, { withFileTypes: true })
@@ -88,7 +88,7 @@ exports.getHUDData = async (dirName) => {
         const configFile = fs.readFileSync(configFileDir, { encoding: 'utf8' });
         const config = JSON.parse(configFile);
         config.dir = dirName;
-        config.game = config.game || "csgo";
+        config.game = config.game || 'csgo';
         const panel = exports.getHUDPanelSetting(dirName);
         const keybinds = exports.getHUDKeyBinds(dirName);
         if (panel) {

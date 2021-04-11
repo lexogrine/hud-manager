@@ -81,12 +81,12 @@ exports.initGameConnection = async () => {
         const onData = (data) => {
             io.to('rocketleague').emit('update', data);
         };
-        ws.on("message", onData);
-        ws.on("close", () => {
-            ws.off("message", onData);
+        ws.on('message', onData);
+        ws.on('close', () => {
+            ws.off('message', onData);
             setTimeout(connectToRocketLeague, 1000);
         });
-        ws.on("error", ws.close);
+        ws.on('error', ws.close);
     };
-    // connectToRocketLeague();
+    connectToRocketLeague();
 };

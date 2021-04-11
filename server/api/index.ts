@@ -9,6 +9,7 @@ import * as game from './game';
 import * as sync from './sync';
 import * as machine from './machine';
 import * as user from './user';
+import * as bakkesmod from './bakkesmod';
 import * as I from './../../types/interfaces';
 import { initGameConnection } from './huds/play';
 import TournamentHandler from './tournaments/routes';
@@ -91,6 +92,16 @@ export default async function () {
 	app.use('/huds/:dir/', huds.renderAssets);
 
 	app.route('/huds/:dir/thumbnail').get(huds.renderThumbnail);
+
+	app.route('/api/bakkesmod/check').get(bakkesmod.checkStatus);
+
+	app.route('/api/bakkesmod/download/mod').get(bakkesmod.downloadBakkesMod);
+
+	app.route('/api/bakkesmod/download/sos').get(bakkesmod.downloadSosPlugin);
+
+	app.route('/api/bakkesmod/install/mod').get(bakkesmod.installBakkesMod);
+
+	app.route('/api/bakkesmod/install/sos').get(bakkesmod.installSosPlugin);
 
 	globalShortcut.register('Alt+Shift+F', () => io.emit('refreshHUD'));
 

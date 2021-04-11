@@ -100,5 +100,5 @@ export const initGameConnection = async () => {
 		ws.on('error', ws.close);
 	};
 
-	// connectToRocketLeague();
+	connectToRocketLeague();
 };

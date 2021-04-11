@@ -158,5 +158,12 @@ export default {
 		},
 		sync: async (db: DB) => await apiV2<any>('import', 'POST', db),
 		syncCheck: async (db: DB) => await apiV2<any>('import/verify', 'POST', db)
+	},
+	bakkesmod: {
+		check: async () => await apiV2<I.BakkesModStatusResponse>('bakkesmod/check'),
+		downloadMod: async () => await apiV2<I.BakkesModAPIResponse>('bakkesmod/download/mod'),
+		downloadSos: async () => await apiV2<I.BakkesModAPIResponse>('bakkesmod/download/sos'),
+		installMod: async () => await apiV2<I.BakkesModAPIResponse>('bakkesmod/install/mod'),
+		installSos: async () => await apiV2<I.BakkesModAPIResponse>('bakkesmod/install/sos')
 	}
 };
