@@ -69,6 +69,7 @@ export const checkStatus: express.RequestHandler = async (req, res) => {
 	const status = {
 		bakkesModDownloaded: false,
 		bakkesModInstalled: false,
+		bakkesModStartedOnce: false,
 		sosPluginDownloaded: false,
 		sosPluginInstalled: false,
 		sosConfigSet: false,
@@ -77,6 +78,7 @@ export const checkStatus: express.RequestHandler = async (req, res) => {
 
 	if (fs.existsSync(bakkesModDownloadFilePath)) status.bakkesModDownloaded = true;
 	if (fs.existsSync(sosPluginDownloadFilePath)) status.sosPluginDownloaded = true;
+	if (fs.existsSync(bakkesModConfigPath)) status.bakkesModStartedOnce = true;
 	if (fs.existsSync(bakkesModPath)) status.bakkesModInstalled = true;
 	if (fs.existsSync(path.join(bakkesModDirPath, sosPluginFiles[0]))) status.sosPluginInstalled = true;
 	if (verifyPluginList()) status.sosConfigSet = true;
@@ -123,7 +125,10 @@ export const installBakkesMod: express.RequestHandler = async (req, res) => {
 			return res.json({ success: false, message: 'Failed to install BakkesMod', error });
 		}
 		if (!fs.existsSync(bakkesModConfigPath)) {
-			return res.json({ success: false, message: 'BakkesMod installation failed' });
+			return res.json({
+				success: false,
+				message: 'BakkesMod needs to be started at least once before continuing'
+			});
 		}
 		return res.json({ success: true });
 	});

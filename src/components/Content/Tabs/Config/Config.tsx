@@ -235,7 +235,7 @@ export default class Config extends React.Component<IProps, IState> {
 		if (this.state.bakkesModAutoconfBusy) return 'Busy...';
 
 		const status = this.state.bakkesModStatus;
-		if (!status.bakkesModInstalled) return 'BakkesMod not installed';
+		if (!status.bakkesModInstalled) return 'BakkesMod not installed or never launched yet';
 		if (!status.sosPluginInstalled) return 'SOS Plugin not installed';
 		if (!status.sosConfigSet) return 'Not configured';
 		return 'Installed';
