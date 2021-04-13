@@ -67,7 +67,10 @@ const updateLastDateLocally = (game: I.AvailableGames, resources: I.ResourceResp
 };
 
 export const addResource = async <T>(game: I.AvailableGames, resource: I.AvailableResources, data: T | T[]) => {
-	const result = (await api(`storage/${resource}/${game}`, 'POST', data)) as { entries: number, lastUpdateTime: string | null };
+	const result = (await api(`storage/${resource}/${game}`, 'POST', data)) as {
+		entries: number;
+		lastUpdateTime: string | null;
+	};
 	if (!result) {
 		cloudErrorHandler();
 		return null;
@@ -77,7 +80,9 @@ export const addResource = async <T>(game: I.AvailableGames, resource: I.Availab
 };
 
 export const updateResource = async <T>(game: I.AvailableGames, resource: I.AvailableResources, data: T) => {
-	const result = (await api(`storage/${resource}/${game}`, 'PATCH', data)) as I.CloudStorageData<T> & { lastUpdateTime: string | null };
+	const result = (await api(`storage/${resource}/${game}`, 'PATCH', data)) as I.CloudStorageData<T> & {
+		lastUpdateTime: string | null;
+	};
 	if (!result) {
 		cloudErrorHandler();
 		return null;
@@ -157,27 +162,25 @@ const updateCloudToLocal = async (game: I.AvailableGames, resource: I.AvailableR
 };
 
 export const uploadLocalToCloud = async (game: I.AvailableGames) => {
-	const resources = await Promise.all([getPlayersList({ game }), getTeamsList({ game })/*, getMatches()*/]);
+	const resources = await Promise.all([getPlayersList({ game }), getTeamsList({ game }) /*, getMatches()*/]);
 
 	const mappedResources = {
 		players: resources[0],
-		teams: resources[1],
+		teams: resources[1]
 		//matches: resources[2],
-	} as { [ resource in I.AvailableResources]: any }
+	} as { [resource in I.AvailableResources]: any };
 	try {
-		const result = [] as { entries: number, lastUpdateTime: string | null }[];
-		for(const resource of I.availableResources){
+		const result = [] as { entries: number; lastUpdateTime: string | null }[];
+		for (const resource of I.availableResources) {
 			const response = await addResource(game, resource, mappedResources[resource]);
-			if(!response) return false;
+			if (!response) return false;
 			result.push(response);
 		}
-		return result.every(response => response.lastUpdateTime)
+		return result.every(response => response.lastUpdateTime);
 	} catch {
 		return false;
 	}
-	
-
-}
+};
 
 export const checkCloudStatus = async (game: I.AvailableGames) => {
 	if (customer.customer?.license.type !== 'professional' && customer.customer?.license.type !== 'enterprise') {
@@ -206,7 +209,7 @@ export const checkCloudStatus = async (game: I.AvailableGames) => {
 			lastUpdateStatusOnline[resourceStatus.resource] = resourceStatus.status;
 		}
 
-		const resources = await Promise.all([getPlayersList({ game }), getTeamsList({ game })/*, getMatches()*/]);
+		const resources = await Promise.all([getPlayersList({ game }), getTeamsList({ game }) /*, getMatches()*/]);
 
 		if (resources.every(resource => !resource.length)) {
 			// no local resources

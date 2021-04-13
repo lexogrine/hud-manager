@@ -2,9 +2,9 @@ import { CSGO } from 'csgogsi-socket';
 
 export type AvailableGames = 'csgo' | 'rocketleague';
 
-export type AvailableResources = 'teams' | 'players'/* | 'matches'*/;
+export type AvailableResources = 'teams' | 'players' /* | 'matches'*/;
 
-export const availableResources: AvailableResources[] = ['teams', 'players'/*, 'matches'*/];
+export const availableResources: AvailableResources[] = ['teams', 'players' /*, 'matches'*/];
 
 export const availableGames: AvailableGames[] = ['csgo', 'rocketleague'];
 

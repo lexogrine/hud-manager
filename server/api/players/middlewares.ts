@@ -83,7 +83,7 @@ export const addPlayer: express.RequestHandler = (req, res) => {
 		steamid: req.body.steamid,
 		team: req.body.team,
 		extra: req.body.extra,
-		game: req.body.game,
+		game: req.body.game
 	} as Player;
 	players.insert(newPlayer, async (err, player) => {
 		if (err) {
@@ -107,7 +107,7 @@ export const deletePlayer: express.RequestHandler = async (req, res) => {
 		if (err) {
 			return res.sendStatus(500);
 		}
-		console.log(validateCloudAbility())
+		console.log(validateCloudAbility());
 		if (validateCloudAbility()) {
 			await deleteResource(customer.game as AvailableGames, 'players', req.params.id);
 		}

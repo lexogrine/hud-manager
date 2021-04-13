@@ -111,13 +111,10 @@ export default {
 	},
 	games: {
 		getCurrent: (): Promise<{ game: AvailableGames }> => apiV2(`games/current`),
-		startServices: (
-			game: AvailableGames
-		): Promise<{ result: CloudSyncStatus }> =>
-			apiV2(`games/start/${game}`)
+		startServices: (game: AvailableGames): Promise<{ result: CloudSyncStatus }> => apiV2(`games/start/${game}`)
 	},
 	cloud: {
-		upload: () => apiV2('cloud/upload', "POST")
+		upload: () => apiV2('cloud/upload', 'POST')
 	},
 	huds: {
 		get: async (): Promise<I.HUD[]> => await apiV2('huds'),

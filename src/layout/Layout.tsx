@@ -78,7 +78,7 @@ export default class Layout extends React.Component<{}, IState> {
 	}
 	setSyncOpen = (sync: boolean) => {
 		this.setState({ isSyncModalOpen: sync });
-	}
+	};
 	rehash = () => {
 		this.setState(state => {
 			state.data.hash = hash();
@@ -89,17 +89,17 @@ export default class Layout extends React.Component<{}, IState> {
 		this.setState({ picked: game }, this.sync);
 	};
 	sync = () => {
-		if(!this.state.picked) return;
+		if (!this.state.picked) return;
 		api.games.startServices(this.state.picked).then(response => {
-			this.setState({synchronizationStatus: response.result});
-			this.setSyncOpen(response.result !== "ALL_SYNCED");
-			console.log(response)
+			this.setState({ synchronizationStatus: response.result });
+			this.setSyncOpen(response.result !== 'ALL_SYNCED');
+			console.log(response);
 			if (response.result === 'ALL_SYNCED') {
 				this.state.data.reload();
 			}
 			// TODO: Add handlers for the rest of the events
 		});
-	}
+	};
 	getCustomFields = async () => {
 		const [teams, players] = await Promise.all([api.teams.fields.get(), api.players.fields.get()]);
 		this.setState(state => {
@@ -172,7 +172,16 @@ export default class Layout extends React.Component<{}, IState> {
 	};
 	render() {
 		const { Provider } = ContextData;
-		const { loading, data, loadingLogin, loginError, version, loadingGame, isSyncModalOpen, synchronizationStatus } = this.state;
+		const {
+			loading,
+			data,
+			loadingLogin,
+			loginError,
+			version,
+			loadingGame,
+			isSyncModalOpen,
+			synchronizationStatus
+		} = this.state;
 		return (
 			<Provider value={this.state.data}>
 				<div className={`loaded ${isElectron ? 'electron' : ''}`}>
