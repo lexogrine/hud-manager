@@ -6,7 +6,7 @@ import isSvg from './../../../src/isSvg';
 import { getTeamsList, getTeamById } from './index';
 import * as F from './../fields';
 import { validateCloudAbility, customer } from '..';
-import { addResource, updateResource } from '../cloud';
+import { addResource, updateResource, deleteResource } from '../cloud';
 
 const teams = db.teams;
 const players = db.players;
@@ -98,16 +98,14 @@ export const deleteTeam: express.RequestHandler = async (req, res) => {
 		return res.sendStatus(404);
 	}
 	//players.update({team:})
-	teams.remove({ _id: req.params.id }, (err, n) => {
+	teams.remove({ _id: req.params.id }, async (err, n) => {
 		if (err) {
 			return res.sendStatus(500);
 		}
-		players.update({ team: req.params.id }, { $set: { team: '' } }, { multi: true }, err => {
-			if (err) {
-				return res.sendStatus(500);
-			}
-			return res.sendStatus(n ? 200 : 404);
-		});
+		if (validateCloudAbility()) {
+			await deleteResource(customer.game as AvailableGames, 'teams', req.params.id);
+		}
+		return res.sendStatus(n ? 200 : 404);
 	});
 };
 

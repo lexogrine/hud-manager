@@ -1,11 +1,13 @@
 import express from 'express';
 import db from './../../../init/database';
-import { Player } from '../../../types/interfaces';
+import { Player, AvailableGames } from '../../../types/interfaces';
 import { loadConfig, internalIP } from './../config';
 import fetch from 'node-fetch';
 import isSvg from './../../../src/isSvg';
 import { getPlayersList, getPlayerById, getPlayerBySteamId } from './index';
 import * as F from './../fields';
+import { validateCloudAbility, customer } from '..';
+import { addResource, updateResource, deleteResource } from '../cloud';
 
 const players = db.players;
 
@@ -49,6 +51,7 @@ export const updatePlayer: express.RequestHandler = async (req, res) => {
 		lastName: req.body.lastName,
 		username: req.body.username,
 		avatar: req.body.avatar,
+		game: req.body.game,
 		country: req.body.country,
 		steamid: req.body.steamid,
 		team: req.body.team,
@@ -63,6 +66,9 @@ export const updatePlayer: express.RequestHandler = async (req, res) => {
 		if (err) {
 			return res.sendStatus(500);
 		}
+		if (validateCloudAbility()) {
+			await updateResource(customer.game as AvailableGames, 'players', { ...updated, _id: req.params.id });
+		}
 		const player = await getPlayerById(req.params.id);
 		return res.json(player);
 	});
@@ -76,11 +82,15 @@ export const addPlayer: express.RequestHandler = (req, res) => {
 		country: req.body.country,
 		steamid: req.body.steamid,
 		team: req.body.team,
-		extra: req.body.extra
+		extra: req.body.extra,
+		game: req.body.game,
 	} as Player;
-	players.insert(newPlayer, (err, player) => {
+	players.insert(newPlayer, async (err, player) => {
 		if (err) {
 			return res.sendStatus(500);
+		}
+		if (validateCloudAbility()) {
+			await addResource(customer.game as AvailableGames, 'players', player);
 		}
 		return res.json(player);
 	});
@@ -93,9 +103,13 @@ export const deletePlayer: express.RequestHandler = async (req, res) => {
 	if (!player) {
 		return res.sendStatus(404);
 	}
-	players.remove({ _id: req.params.id }, (err, n) => {
+	players.remove({ _id: req.params.id }, async (err, n) => {
 		if (err) {
 			return res.sendStatus(500);
+		}
+		console.log(validateCloudAbility())
+		if (validateCloudAbility()) {
+			await deleteResource(customer.game as AvailableGames, 'players', req.params.id);
 		}
 		return res.sendStatus(n ? 200 : 404);
 	});

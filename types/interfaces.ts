@@ -2,12 +2,13 @@ import { CSGO } from 'csgogsi-socket';
 
 export type AvailableGames = 'csgo' | 'rocketleague';
 
-export type AvailableResources = 'teams' | 'players' | 'matches';
+export type AvailableResources = 'teams' | 'players'/* | 'matches'*/;
 
-export const availableResources: AvailableResources[] = ['teams', 'players', 'matches'];
+export const availableResources: AvailableResources[] = ['teams', 'players'/*, 'matches'*/];
 
 export const availableGames: AvailableGames[] = ['csgo', 'rocketleague'];
 
+export type CloudSyncStatus = 'NO_UPLOADED_RESOURCES' | 'ALL_SYNCED' | 'NO_SYNC_LOCAL' | 'UNKNOWN_ERROR';
 export interface Player {
 	_id: string;
 	firstName: string;
@@ -247,7 +248,6 @@ export interface CloudStorageData<T> {
 	data: T;
 	game: AvailableGames;
 	owner: number;
-	lastUpdateTime: string | null;
 }
 
 export type ResourceUpdateStatus = {

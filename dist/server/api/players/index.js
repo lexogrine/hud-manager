@@ -40,14 +40,12 @@ exports.getPlayersList = (query) => new Promise(res => {
         return res([...players].sort((a, b) => (a.username > b.username ? 1 : -1)));
     });
 });
-exports.replaceLocalPlayers = (newPlayers, game) => new Promise((res) => {
-    const or = [
-        { game }
-    ];
-    if (game === "csgo") {
+exports.replaceLocalPlayers = (newPlayers, game) => new Promise(res => {
+    const or = [{ game }];
+    if (game === 'csgo') {
         or.push({ game: { $exists: false } });
     }
-    players.remove({ $or: or }, { multi: true }, (err) => {
+    players.remove({ $or: or }, { multi: true }, err => {
         if (err) {
             return res(false);
         }

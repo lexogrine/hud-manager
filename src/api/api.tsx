@@ -1,4 +1,4 @@
-import { CustomFieldEntry, AvailableGames } from '../../types/interfaces';
+import { CustomFieldEntry, AvailableGames, CloudSyncStatus } from '../../types/interfaces';
 import config from './config';
 import * as I from './interfaces';
 const apiUrl = config.apiAddress;
@@ -113,8 +113,11 @@ export default {
 		getCurrent: (): Promise<{ game: AvailableGames }> => apiV2(`games/current`),
 		startServices: (
 			game: AvailableGames
-		): Promise<{ result: 'NO_UPLOADED_RESOURCES' | 'ALL_SYNCED' | 'NO_SYNC_LOCAL' | 'UNKNOWN_ERROR' }> =>
+		): Promise<{ result: CloudSyncStatus }> =>
 			apiV2(`games/start/${game}`)
+	},
+	cloud: {
+		upload: () => apiV2('cloud/upload', "POST")
 	},
 	huds: {
 		get: async (): Promise<I.HUD[]> => await apiV2('huds'),

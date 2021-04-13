@@ -22,7 +22,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.checkCloudStatus = exports.getResource = exports.deleteResource = exports.updateResource = exports.addResource = void 0;
+exports.checkCloudStatus = exports.uploadLocalToCloud = exports.getResource = exports.deleteResource = exports.updateResource = exports.addResource = void 0;
 const user_1 = require("./../user");
 const I = __importStar(require("../../../types/interfaces"));
 const config_1 = require("../config");
@@ -50,7 +50,7 @@ const getLastUpdateDateLocally = () => {
                     lastUpdated[game] = {};
                 }
                 if (!lastUpdated[game][resource])
-                    lastUpdated[game][resource] = (new Date(0)).toISOString();
+                    lastUpdated[game][resource] = new Date(0).toISOString();
             }
         }
         if (saveOnFinish) {
@@ -65,7 +65,7 @@ const getLastUpdateDateLocally = () => {
                     lastUpdated[game] = {};
                 }
                 if (!lastUpdated[game][resource])
-                    lastUpdated[game][resource] = (new Date(0)).toISOString();
+                    lastUpdated[game][resource] = new Date(0).toISOString();
             }
         }
         return lastUpdated;
@@ -74,7 +74,7 @@ const getLastUpdateDateLocally = () => {
 const updateLastDateLocally = (game, resources) => {
     const lastUpdateLocal = getLastUpdateDateLocally();
     for (const resourceInfo of resources) {
-        lastUpdateLocal[game][resourceInfo.resource] = resourceInfo.status || (new Date(0)).toISOString();
+        lastUpdateLocal[game][resourceInfo.resource] = resourceInfo.status || new Date(0).toISOString();
     }
     const userData = electron_1.app.getPath('userData');
     const database = path_1.default.join(userData, 'databases', 'lastUpdated.lhm');
@@ -101,6 +101,7 @@ exports.updateResource = async (game, resource, data) => {
 };
 exports.deleteResource = async (game, resource, id) => {
     const result = (await user_1.api(`storage/${resource}/${game}/${id}`, 'DELETE'));
+    console.log(result);
     if (!result || !result.success) {
         cloudErrorHandler();
         return null;
@@ -133,13 +134,13 @@ const updateCloudToLocal = async (game, resource) => {
     const replacer = {};
     for (const resource of I.availableResources) {
         switch (resource) {
-            case "matches":
-                replacer.matches = matches_1.replaceLocalMatches;
-                break;
-            case "teams":
+            /*case 'matches':
+                replacer.matches = replaceLocalMatches;
+                break;*/
+            case 'teams':
                 replacer.teams = teams_1.replaceLocalTeams;
                 break;
-            case "players":
+            case 'players':
                 replacer.players = players_1.replaceLocalPlayers;
                 break;
         }
@@ -149,7 +150,7 @@ const updateCloudToLocal = async (game, resource) => {
         if (!resources) {
             return false;
         }
-        console.log("reloading", resource, 'for', game);
+        console.log('reloading', resource, 'for', game);
         await replacer[resource](resources, game);
         return true;
     }
@@ -157,18 +158,38 @@ const updateCloudToLocal = async (game, resource) => {
         return false;
     }
 };
+exports.uploadLocalToCloud = async (game) => {
+    const resources = await Promise.all([players_1.getPlayersList({}), teams_1.getTeamsList({}) /*, getMatches()*/]);
+    const mappedResources = {
+        players: resources[0],
+        teams: resources[1],
+    };
+    try {
+        const result = [];
+        for (const resource of I.availableResources) {
+            const response = await exports.addResource(game, resource, mappedResources[resource]);
+            if (!response)
+                return false;
+            result.push(response);
+        }
+        return result.every(response => response.lastUpdateTime);
+    }
+    catch {
+        return false;
+    }
+};
 exports.checkCloudStatus = async (game) => {
-    if (__1.customer.customer?.license.type !== "professional" && __1.customer.customer?.license.type !== "enterprise") {
-        return "ALL_SYNCED";
+    if (__1.customer.customer?.license.type !== 'professional' && __1.customer.customer?.license.type !== 'enterprise') {
+        return 'ALL_SYNCED';
     }
     const cfg = await config_1.loadConfig();
     if (cfg.sync === false)
-        return;
+        return 'ALL_SYNCED';
     if (!cfg.sync) {
         await config_1.setConfig({ ...cfg, sync: true });
     }
     try {
-        const result = await user_1.api(`storage/${game}/status`);
+        const result = (await user_1.api(`storage/${game}/status`));
         if (result.every(status => !status.status)) {
             // No remote resources
             // Ask if to upload current db - rejection will result in cloud option turned off
@@ -203,7 +224,9 @@ exports.checkCloudStatus = async (game) => {
             console.log('NICE. no reason to sync');
             return 'ALL_SYNCED';
         }
-        if (nonSyncedResources.find(resource => !lastUpdateStatusOnline[resource] || new Date(lastUpdateStatusLocal[game][resource]) > new Date(lastUpdateStatusOnline[resource]))) {
+        if (nonSyncedResources.find(resource => !lastUpdateStatusOnline[resource] ||
+            new Date(lastUpdateStatusLocal[game][resource]) >
+                new Date(lastUpdateStatusOnline[resource]))) {
             // Local data found newer, show options
             console.log('SYNC CONFLICT, WHAT DO? #2');
             return 'NO_SYNC_LOCAL';

@@ -20,7 +20,14 @@ public_ip_1.default
     exports.publicIP = ip;
 })
     .catch();
-const defaultConfig = { steamApiKey: '', token: '', port: 1349, hlaePath: '', afxCEFHudInteropPath: '', sync: false };
+const defaultConfig = {
+    steamApiKey: '',
+    token: '',
+    port: 1349,
+    hlaePath: '',
+    afxCEFHudInteropPath: '',
+    sync: false
+};
 exports.loadConfig = async () => {
     if (!exports.publicIP) {
         try {

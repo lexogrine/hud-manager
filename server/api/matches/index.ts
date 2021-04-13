@@ -4,6 +4,8 @@ import db from './../../../init/database';
 import { getTeamById } from './../teams';
 import uuidv4 from 'uuid/v4';
 import { CSGO, RoundOutcome } from 'csgogsi-socket';
+import { validateCloudAbility, customer } from '..';
+import { addResource, deleteResource, updateResource } from '../cloud';
 
 const matchesDb = db.matches;
 
@@ -91,16 +93,22 @@ export const addMatch = (match: Match) =>
 			match.id = uuidv4();
 		}
 		match.current = false;
-		matchesDb.insert(match, (err, doc) => {
+		matchesDb.insert(match, async (err, doc) => {
 			if (err) return res(null);
+			/* if (validateCloudAbility()) {
+				await addResource(customer.game as AvailableGames, 'matches', doc);
+			} */
 			return res(doc);
 		});
 	});
 
 export const deleteMatch = (id: string) =>
 	new Promise(res => {
-		matchesDb.remove({ id }, err => {
+		matchesDb.remove({ id }, async err => {
 			if (err) return res(false);
+			/* if (validateCloudAbility()) {
+				await deleteResource(customer.game as AvailableGames, 'matches', id);
+			} */
 			return res(true);
 		});
 	});
@@ -163,6 +171,9 @@ export const updateMatch = (match: Match) =>
 							extra: right.extra
 						};
 					}
+					/* if (validateCloudAbility()) {
+						await updateResource(customer.game as AvailableGames, 'matches', match);
+					} */
 					if (err) return res(false);
 					return res(true);
 				}

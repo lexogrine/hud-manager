@@ -19,7 +19,7 @@ import TeamHandler from './teams/routes';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import { ioPromise } from '../socket';
 import { app } from '..';
-import { checkCloudStatus } from './cloud';
+import { checkCloudStatus, uploadLocalToCloud } from './cloud';
 
 export const customer: I.CustomerData = {
 	customer: null,
@@ -63,6 +63,16 @@ export default async function () {
 
 		res.json({ result });
 	});
+
+	app.route('/api/cloud/upload')
+		.post(async (req, res) => {
+			const game = customer.game;
+			if(!game) return res.sendStatus(403);
+			const result = await uploadLocalToCloud(game);
+
+
+			return res.json({ result });
+		})
 
 	app.route('/api/games/current').get((req, res) => res.json({ game: customer.game }));
 

@@ -49,7 +49,9 @@ exports.customer = {
     game: null
 };
 exports.validateCloudAbility = () => {
-    if (!exports.customer.customer || !exports.customer.customer.license || (exports.customer.customer.license.type !== "enterprise" && exports.customer.customer.license.type !== "professional")) {
+    if (!exports.customer.customer ||
+        !exports.customer.customer.license ||
+        (exports.customer.customer.license.type !== 'enterprise' && exports.customer.customer.license.type !== 'professional')) {
         return false;
     }
     return !!exports.customer.game;
@@ -64,15 +66,21 @@ async function default_1() {
     routes_2.default();
     routes_3.default();
     routes_4.default();
-    __1.app.route('/api/games/start/:game')
-        .get(async (req, res) => {
+    __1.app.route('/api/games/start/:game').get(async (req, res) => {
         const game = req.params.game;
         exports.customer.game = game;
         const result = await cloud_1.checkCloudStatus(game);
         res.json({ result });
     });
-    __1.app.route('/api/games/current')
-        .get((req, res) => res.json({ game: exports.customer.game }));
+    __1.app.route('/api/cloud/upload')
+        .post(async (req, res) => {
+        const game = exports.customer.game;
+        if (!game)
+            return res.sendStatus(403);
+        const result = await cloud_1.uploadLocalToCloud(game);
+        return res.json({ result });
+    });
+    __1.app.route('/api/games/current').get((req, res) => res.json({ game: exports.customer.game }));
     __1.app.route('/api/huds').get(huds.getHUDs).post(huds.openHUDsDirectory).delete(huds.deleteHUD);
     __1.app.route('/api/huds/add').post(huds.uploadHUD);
     __1.app.route('/api/huds/close').post(huds.closeHUD);

@@ -228,6 +228,10 @@ body {
 .no-padding .main-buttons-container {
     left: 158px;
 }*/
+
+.in-row .modal-save{
+    flex: 1;
+}
 input.form-control, select.form-control {
     color:#e1e1e2;
     background-color: transparent;
@@ -1235,6 +1239,10 @@ input:checked ~ .customCheckbox {
     text-transform: uppercase;
     margin: 0;
 }
+.veto_modal .modal-save.secondary {
+    background-color: grey !important;
+}
+
 #window-bar-area {
     z-index: 9999;
     width:100%;

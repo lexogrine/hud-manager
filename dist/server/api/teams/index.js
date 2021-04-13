@@ -27,14 +27,12 @@ exports.getTeamsList = (query) => new Promise(res => {
         return res([...teams].sort((a, b) => (a.name > b.name ? 1 : -1)));
     });
 });
-exports.replaceLocalTeams = (newTeams, game) => new Promise((res) => {
-    const or = [
-        { game }
-    ];
-    if (game === "csgo") {
+exports.replaceLocalTeams = (newTeams, game) => new Promise(res => {
+    const or = [{ game }];
+    if (game === 'csgo') {
         or.push({ game: { $exists: false } });
     }
-    teams.remove({ $or: or }, { multi: true }, (err) => {
+    teams.remove({ $or: or }, { multi: true }, err => {
         if (err) {
             return res(false);
         }
