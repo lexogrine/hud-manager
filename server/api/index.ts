@@ -27,11 +27,15 @@ export const customer: I.CustomerData = {
 };
 
 export const validateCloudAbility = () => {
-	if(!customer.customer || !customer.customer.license || (customer.customer.license.type !== "enterprise" && customer.customer.license.type !== "professional")){
+	if (
+		!customer.customer ||
+		!customer.customer.license ||
+		(customer.customer.license.type !== 'enterprise' && customer.customer.license.type !== 'professional')
+	) {
 		return false;
 	}
-	return !!customer.game
-}
+	return !!customer.game;
+};
 
 export default async function () {
 	const io = await ioPromise;
@@ -52,18 +56,15 @@ export default async function () {
 
 	TeamHandler();
 
-	app.route('/api/games/start/:game')
-		.get(async (req, res) => {
-			const game = req.params.game as I.AvailableGames;
-			customer.game = game;
-			const result = await checkCloudStatus(game);
+	app.route('/api/games/start/:game').get(async (req, res) => {
+		const game = req.params.game as I.AvailableGames;
+		customer.game = game;
+		const result = await checkCloudStatus(game);
 
-			res.json({result})
-		});
+		res.json({ result });
+	});
 
-	
-	app.route('/api/games/current')
-		.get((req, res) => res.json({ game: customer.game }));
+	app.route('/api/games/current').get((req, res) => res.json({ game: customer.game }));
 
 	app.route('/api/huds').get(huds.getHUDs).post(huds.openHUDsDirectory).delete(huds.deleteHUD);
 

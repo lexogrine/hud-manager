@@ -261,17 +261,13 @@ export const updateRound = async (game: CSGO) => {
 	return updateMatch(match);
 };
 
-
-
 export const replaceLocalMatches = (newMatches: Match[], game: AvailableGames) =>
-	new Promise<boolean>((res) => {
-		const or: any[] = [
-			{ game }
-		];
-		if(game === "csgo"){
+	new Promise<boolean>(res => {
+		const or: any[] = [{ game }];
+		if (game === 'csgo') {
 			or.push({ game: { $exists: false } });
 		}
-		matchesDb.remove({ $or: or }, { multi: true }, (err) => {
+		matchesDb.remove({ $or: or }, { multi: true }, err => {
 			if (err) {
 				return res(false);
 			}

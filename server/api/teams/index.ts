@@ -25,16 +25,13 @@ export const getTeamsList = (query: any) =>
 		});
 	});
 
-
 export const replaceLocalTeams = (newTeams: Team[], game: AvailableGames) =>
-	new Promise<boolean>((res) => {
-		const or: any[] = [
-			{ game }
-		];
-		if(game === "csgo"){
+	new Promise<boolean>(res => {
+		const or: any[] = [{ game }];
+		if (game === 'csgo') {
 			or.push({ game: { $exists: false } });
 		}
-		teams.remove({ $or: or }, { multi: true }, (err) => {
+		teams.remove({ $or: or }, { multi: true }, err => {
 			if (err) {
 				return res(false);
 			}

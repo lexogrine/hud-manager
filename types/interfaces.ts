@@ -6,7 +6,7 @@ export type AvailableResources = 'teams' | 'players' | 'matches';
 
 export const availableResources: AvailableResources[] = ['teams', 'players', 'matches'];
 
-export const availableGames: AvailableGames[] = ["csgo", "rocketleague"];
+export const availableGames: AvailableGames[] = ['csgo', 'rocketleague'];
 
 export interface Player {
 	_id: string;
@@ -238,29 +238,29 @@ export interface Customer {
 }
 export interface CustomerData {
 	customer: Customer | null;
-	game: AvailableGames | null
+	game: AvailableGames | null;
 }
 
 export interface CloudStorageData<T> {
-    id: number,
-    lhmId: string,
-    data: T,
-    game: AvailableGames;
-    owner: number
-	lastUpdateTime: string | null
+	id: number;
+	lhmId: string;
+	data: T;
+	game: AvailableGames;
+	owner: number;
+	lastUpdateTime: string | null;
 }
 
 export type ResourceUpdateStatus = {
 	[resource in AvailableResources]: string | null;
-}
+};
 
 export type LastUpdated = {
-	[game in AvailableGames]: ResourceUpdateStatus
-}
+	[game in AvailableGames]: ResourceUpdateStatus;
+};
 
 export type Replacer = {
 	[resource in AvailableResources]: (resource: any[], game: AvailableGames) => Promise<boolean>;
-}
+};
 
 export interface ResourceResponseStatus {
 	resource: AvailableResources;

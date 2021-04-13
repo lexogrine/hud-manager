@@ -11,7 +11,7 @@ export interface IContextData {
 	customer?: I.Customer;
 	fields: I.CustomFieldStore;
 	hash: string;
-	game: I.AvailableGames
+	game: I.AvailableGames;
 }
 
 const defaultContext: IContextData = {

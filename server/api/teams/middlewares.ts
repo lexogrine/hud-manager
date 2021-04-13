@@ -49,8 +49,8 @@ export const addTeam: express.RequestHandler = (req, res) => {
 		if (err) {
 			return res.sendStatus(500);
 		}
-		if(validateCloudAbility()){
-			await addResource(customer.game as AvailableGames, "teams", team);
+		if (validateCloudAbility()) {
+			await addResource(customer.game as AvailableGames, 'teams', team);
 		}
 		return res.json(team);
 	});
@@ -81,9 +81,9 @@ export const updateTeam: express.RequestHandler = async (req, res) => {
 		if (err) {
 			return res.sendStatus(500);
 		}
-		
-		if(validateCloudAbility()){
-			await updateResource(customer.game as AvailableGames, "teams", { ...updated, _id: req.params.id });
+
+		if (validateCloudAbility()) {
+			await updateResource(customer.game as AvailableGames, 'teams', { ...updated, _id: req.params.id });
 		}
 		const team = await getTeamById(req.params.id);
 		return res.json(team);

@@ -36,17 +36,14 @@ export const getPlayersList = (query: any) =>
 		});
 	});
 
-
-export const replaceLocalPlayers = (newPlayers: Player[], game: AvailableGames) => 
-	new Promise<boolean>((res) => {
-		const or: any[] = [
-			{ game }
-		];
-		if(game === "csgo"){
+export const replaceLocalPlayers = (newPlayers: Player[], game: AvailableGames) =>
+	new Promise<boolean>(res => {
+		const or: any[] = [{ game }];
+		if (game === 'csgo') {
 			or.push({ game: { $exists: false } });
 		}
-		players.remove({ $or: or }, { multi: true }, (err) => {
-			if(err){
+		players.remove({ $or: or }, { multi: true }, err => {
+			if (err) {
 				return res(false);
 			}
 			players.insert(newPlayers, (err, docs) => {

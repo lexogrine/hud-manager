@@ -63,7 +63,7 @@ export default class Layout extends React.Component<{}, IState> {
 			this.setState({
 				loadingGame: false,
 				picked: result.game
-			})
+			});
 		});
 		await this.getVersion();
 		this.loadUser();
@@ -80,11 +80,11 @@ export default class Layout extends React.Component<{}, IState> {
 	setGame = (game: AvailableGames) => {
 		this.setState({ picked: game }, () => {
 			api.games.startServices(game).then(response => {
-				if(response.result === "ALL_SYNCED"){
+				if (response.result === 'ALL_SYNCED') {
 					this.state.data.reload();
 				}
 				// TODO: Add handlers for the rest of the events
-			})
+			});
 		});
 	};
 	getCustomFields = async () => {

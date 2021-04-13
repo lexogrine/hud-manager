@@ -111,7 +111,10 @@ export default {
 	},
 	games: {
 		getCurrent: (): Promise<{ game: AvailableGames }> => apiV2(`games/current`),
-		startServices: (game: AvailableGames): Promise<{result: "NO_UPLOADED_RESOURCES" | "ALL_SYNCED" | "NO_SYNC_LOCAL" | "UNKNOWN_ERROR"}> => apiV2(`games/start/${game}`)
+		startServices: (
+			game: AvailableGames
+		): Promise<{ result: 'NO_UPLOADED_RESOURCES' | 'ALL_SYNCED' | 'NO_SYNC_LOCAL' | 'UNKNOWN_ERROR' }> =>
+			apiV2(`games/start/${game}`)
 	},
 	huds: {
 		get: async (): Promise<I.HUD[]> => await apiV2('huds'),

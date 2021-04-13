@@ -26,8 +26,6 @@ export type {
 	onExtraChangeFunction
 } from './../../types/interfaces';
 
-
-
 export interface CFGGSIResponse {
 	success: boolean;
 	accessible: boolean;

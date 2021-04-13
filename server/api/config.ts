@@ -20,7 +20,14 @@ publicIp
 	})
 	.catch();
 
-const defaultConfig: Config = { steamApiKey: '', token: '', port: 1349, hlaePath: '', afxCEFHudInteropPath: '', sync: false };
+const defaultConfig: Config = {
+	steamApiKey: '',
+	token: '',
+	port: 1349,
+	hlaePath: '',
+	afxCEFHudInteropPath: '',
+	sync: false
+};
 
 export const loadConfig = async (): Promise<Config> => {
 	if (!publicIP) {
