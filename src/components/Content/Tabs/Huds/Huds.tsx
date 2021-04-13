@@ -72,7 +72,8 @@ export default class Huds extends React.Component<IProps, IState> {
 				hlaePath: '',
 				port: 1349,
 				token: '',
-				afxCEFHudInteropPath: ''
+				afxCEFHudInteropPath: '',
+				sync: false
 			},
 			form: {
 				killfeed: false,

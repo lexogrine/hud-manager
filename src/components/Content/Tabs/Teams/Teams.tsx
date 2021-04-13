@@ -21,6 +21,7 @@ const TeamsTab = ({ cxt }: IProps) => {
 		shortName: '',
 		country: '',
 		logo: '',
+		game: cxt.game,
 		extra: {}
 	};
 	const [form, setForm] = useState(emptyTeam);

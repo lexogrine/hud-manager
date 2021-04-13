@@ -4,13 +4,18 @@ export type AvailableGames = 'csgo' | 'rocketleague';
 
 export type AvailableResources = 'teams' | 'players' | 'matches';
 
+export const availableResources: AvailableResources[] = ['teams', 'players', 'matches'];
+
+export const availableGames: AvailableGames[] = ["csgo", "rocketleague"];
+
 export interface Player {
-	_id?: string;
+	_id: string;
 	firstName: string;
 	lastName: string;
 	username: string;
 	avatar: string;
 	country: string;
+	game?: AvailableGames;
 	steamid: string;
 	team: string;
 	extra: Record<string, string>;
@@ -45,10 +50,11 @@ export interface CFG {
 }
 
 export interface Team {
-	_id?: string;
+	_id: string;
 	name: string;
 	shortName: string;
 	country: string;
+	game?: AvailableGames;
 	logo: string;
 	extra: Record<string, string>;
 }
@@ -82,6 +88,7 @@ export interface Match {
 	current: boolean;
 	left: MatchTeam;
 	right: MatchTeam;
+	game?: AvailableGames;
 	matchType: BOTypes;
 	vetos: Veto[];
 	startTime: number;
@@ -115,6 +122,7 @@ export interface Config {
 	token: string;
 	hlaePath: string;
 	afxCEFHudInteropPath: string;
+	sync: boolean;
 }
 
 export interface ExtendedConfig extends Config {
@@ -230,4 +238,31 @@ export interface Customer {
 }
 export interface CustomerData {
 	customer: Customer | null;
+	game: AvailableGames | null
+}
+
+export interface CloudStorageData<T> {
+    id: number,
+    lhmId: string,
+    data: T,
+    game: AvailableGames;
+    owner: number
+	lastUpdateTime: string | null
+}
+
+export type ResourceUpdateStatus = {
+	[resource in AvailableResources]: string | null;
+}
+
+export type LastUpdated = {
+	[game in AvailableGames]: ResourceUpdateStatus
+}
+
+export type Replacer = {
+	[resource in AvailableResources]: (resource: any[], game: AvailableGames) => Promise<boolean>;
+}
+
+export interface ResourceResponseStatus {
+	resource: AvailableResources;
+	status: string | null;
 }

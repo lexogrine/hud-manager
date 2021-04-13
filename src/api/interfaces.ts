@@ -8,6 +8,7 @@ export type {
 	KeyBind,
 	PanelTemplate,
 	HUD,
+	Player,
 	Match,
 	MatchTeam,
 	Veto,
@@ -19,29 +20,13 @@ export type {
 	CustomFieldEntry,
 	LicenseType,
 	CustomFieldStore,
+	Team,
+	AvailableGames,
+	AvailableResources,
 	onExtraChangeFunction
 } from './../../types/interfaces';
 
-export interface Player {
-	_id: string;
-	firstName: string;
-	lastName: string;
-	username: string;
-	avatar: string;
-	country: string;
-	steamid: string;
-	team: string;
-	extra: Record<string, string>;
-}
 
-export interface Team {
-	_id: string;
-	name: string;
-	country: string;
-	shortName: string;
-	logo: string;
-	extra: Record<string, string>;
-}
 
 export interface CFGGSIResponse {
 	success: boolean;

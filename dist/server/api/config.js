@@ -20,7 +20,7 @@ public_ip_1.default
     exports.publicIP = ip;
 })
     .catch();
-const defaultConfig = { steamApiKey: '', token: '', port: 1349, hlaePath: '', afxCEFHudInteropPath: '' };
+const defaultConfig = { steamApiKey: '', token: '', port: 1349, hlaePath: '', afxCEFHudInteropPath: '', sync: false };
 exports.loadConfig = async () => {
     if (!exports.publicIP) {
         try {
@@ -70,7 +70,8 @@ exports.updateConfig = async (req, res) => {
         port: Number(req.body.port),
         token: req.body.token,
         hlaePath: req.body.hlaePath,
-        afxCEFHudInteropPath: req.body.afxCEFHudInteropPath
+        afxCEFHudInteropPath: req.body.afxCEFHudInteropPath,
+        sync: !!req.body.sync
     };
     const config = await exports.setConfig(updated);
     if (!config) {

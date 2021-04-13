@@ -22,7 +22,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.customer = void 0;
+exports.validateCloudAbility = exports.customer = void 0;
 const express_1 = __importDefault(require("express"));
 const electron_1 = require("electron");
 const steam_game_path_1 = require("steam-game-path");
@@ -43,8 +43,16 @@ const routes_4 = __importDefault(require("./teams/routes"));
 const http_proxy_middleware_1 = require("http-proxy-middleware");
 const socket_1 = require("../socket");
 const __1 = require("..");
+const cloud_1 = require("./cloud");
 exports.customer = {
-    customer: null
+    customer: null,
+    game: null
+};
+exports.validateCloudAbility = () => {
+    if (!exports.customer.customer || !exports.customer.customer.license || (exports.customer.customer.license.type !== "enterprise" && exports.customer.customer.license.type !== "professional")) {
+        return false;
+    }
+    return !!exports.customer.game;
 };
 async function default_1() {
     const io = await socket_1.ioPromise;
@@ -56,6 +64,15 @@ async function default_1() {
     routes_2.default();
     routes_3.default();
     routes_4.default();
+    __1.app.route('/api/games/start/:game')
+        .get(async (req, res) => {
+        const game = req.params.game;
+        exports.customer.game = game;
+        const result = await cloud_1.checkCloudStatus(game);
+        res.json({ result });
+    });
+    __1.app.route('/api/games/current')
+        .get((req, res) => res.json({ game: exports.customer.game }));
     __1.app.route('/api/huds').get(huds.getHUDs).post(huds.openHUDsDirectory).delete(huds.deleteHUD);
     __1.app.route('/api/huds/add').post(huds.uploadHUD);
     __1.app.route('/api/huds/close').post(huds.closeHUD);

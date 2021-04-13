@@ -27,7 +27,7 @@ export const api = (url: string, method = 'GET', body?: any, opts?: RequestInit)
 		options.body = JSON.stringify(body);
 	}
 	let data: any = null;
-	return fetch(`https://hmapi.lexogrine.com/${url}`, options).then(res => {
+	return fetch(`http://localhost:5000/${url}`, options).then(res => {
 		data = res;
 		return res.json().catch(() => data && data.status < 300);
 	});

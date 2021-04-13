@@ -122,7 +122,7 @@ ioPromise.then(io => {
 	};
 
 	GSI.on('roundEnd', onRoundEnd);
-
+	
 	GSI.on('data', data => {
 		const now = new Date().getTime();
 		if (now - lastUpdate > 300000 && customer.customer) {
@@ -140,6 +140,7 @@ ioPromise.then(io => {
 				user: customer.customer.user.id
 			};
 			try {
+				
 				fetch(`https://hmapi.lexogrine.com/users/payload`, {
 					method: 'POST',
 					headers: {

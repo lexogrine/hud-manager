@@ -1,4 +1,4 @@
-import { CustomFieldEntry } from '../../types/interfaces';
+import { CustomFieldEntry, AvailableGames } from '../../types/interfaces';
 import config from './config';
 import * as I from './interfaces';
 const apiUrl = config.apiAddress;
@@ -108,6 +108,10 @@ export default {
 			await apiV2(`game/run`, 'POST', config),
 		runTest: () => apiV2('test', 'POST'),
 		toggleLoop: () => apiV2('test/loop', 'POST')
+	},
+	games: {
+		getCurrent: (): Promise<{ game: AvailableGames }> => apiV2(`games/current`),
+		startServices: (game: AvailableGames): Promise<{result: "NO_UPLOADED_RESOURCES" | "ALL_SYNCED" | "NO_SYNC_LOCAL" | "UNKNOWN_ERROR"}> => apiV2(`games/start/${game}`)
 	},
 	huds: {
 		get: async (): Promise<I.HUD[]> => await apiV2('huds'),

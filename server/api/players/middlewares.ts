@@ -44,7 +44,7 @@ export const updatePlayer: express.RequestHandler = async (req, res) => {
 		return res.sendStatus(404);
 	}
 
-	const updated: Player = {
+	const updated = {
 		firstName: req.body.firstName,
 		lastName: req.body.lastName,
 		username: req.body.username,
@@ -53,7 +53,7 @@ export const updatePlayer: express.RequestHandler = async (req, res) => {
 		steamid: req.body.steamid,
 		team: req.body.team,
 		extra: req.body.extra
-	};
+	} as Player;
 
 	if (req.body.avatar === undefined) {
 		updated.avatar = player.avatar;
@@ -68,7 +68,7 @@ export const updatePlayer: express.RequestHandler = async (req, res) => {
 	});
 };
 export const addPlayer: express.RequestHandler = (req, res) => {
-	const newPlayer: Player = {
+	const newPlayer = {
 		firstName: req.body.firstName,
 		lastName: req.body.lastName,
 		username: req.body.username,
@@ -77,7 +77,7 @@ export const addPlayer: express.RequestHandler = (req, res) => {
 		steamid: req.body.steamid,
 		team: req.body.team,
 		extra: req.body.extra
-	};
+	} as Player;
 	players.insert(newPlayer, (err, player) => {
 		if (err) {
 			return res.sendStatus(500);

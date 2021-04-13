@@ -11,6 +11,7 @@ export interface IContextData {
 	customer?: I.Customer;
 	fields: I.CustomFieldStore;
 	hash: string;
+	game: I.AvailableGames
 }
 
 const defaultContext: IContextData = {
@@ -20,7 +21,8 @@ const defaultContext: IContextData = {
 	reload: () => {},
 	matches: [],
 	fields: { players: [], teams: [] },
-	hash: ''
+	hash: '',
+	game: 'csgo'
 };
 
 export const ContextData = React.createContext(defaultContext);

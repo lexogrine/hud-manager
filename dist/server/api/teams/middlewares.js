@@ -28,6 +28,8 @@ const config_1 = require("./../config");
 const isSvg_1 = __importDefault(require("./../../../src/isSvg"));
 const index_1 = require("./index");
 const F = __importStar(require("./../fields"));
+const __1 = require("..");
+const cloud_1 = require("../cloud");
 const teams = database_1.default.teams;
 const players = database_1.default.players;
 exports.getTeams = async (req, res) => {
@@ -54,11 +56,15 @@ exports.addTeam = (req, res) => {
         shortName: req.body.shortName,
         logo: req.body.logo,
         country: req.body.country,
+        game: req.body.game,
         extra: req.body.extra
     };
-    teams.insert(newTeam, (err, team) => {
+    teams.insert(newTeam, async (err, team) => {
         if (err) {
             return res.sendStatus(500);
+        }
+        if (__1.validateCloudAbility()) {
+            await cloud_1.addResource(__1.customer.game, "teams", team);
         }
         return res.json(team);
     });
@@ -75,6 +81,7 @@ exports.updateTeam = async (req, res) => {
         name: req.body.name,
         shortName: req.body.shortName,
         logo: req.body.logo,
+        game: req.body.game,
         country: req.body.country,
         extra: req.body.extra
     };
@@ -84,6 +91,9 @@ exports.updateTeam = async (req, res) => {
     teams.update({ _id: req.params.id }, { $set: updated }, {}, async (err) => {
         if (err) {
             return res.sendStatus(500);
+        }
+        if (__1.validateCloudAbility()) {
+            await cloud_1.updateResource(__1.customer.game, "teams", { ...updated, _id: req.params.id });
         }
         const team = await index_1.getTeamById(req.params.id);
         return res.json(team);

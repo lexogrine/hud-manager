@@ -19,10 +19,19 @@ import TeamHandler from './teams/routes';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import { ioPromise } from '../socket';
 import { app } from '..';
+import { checkCloudStatus } from './cloud';
 
 export const customer: I.CustomerData = {
-	customer: null
+	customer: null,
+	game: null
 };
+
+export const validateCloudAbility = () => {
+	if(!customer.customer || !customer.customer.license || (customer.customer.license.type !== "enterprise" && customer.customer.license.type !== "professional")){
+		return false;
+	}
+	return !!customer.game
+}
 
 export default async function () {
 	const io = await ioPromise;
@@ -42,6 +51,19 @@ export default async function () {
 	PlayerHandler();
 
 	TeamHandler();
+
+	app.route('/api/games/start/:game')
+		.get(async (req, res) => {
+			const game = req.params.game as I.AvailableGames;
+			customer.game = game;
+			const result = await checkCloudStatus(game);
+
+			res.json({result})
+		});
+
+	
+	app.route('/api/games/current')
+		.get((req, res) => res.json({ game: customer.game }));
 
 	app.route('/api/huds').get(huds.getHUDs).post(huds.openHUDsDirectory).delete(huds.deleteHUD);
 

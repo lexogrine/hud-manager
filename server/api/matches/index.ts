@@ -1,4 +1,4 @@
-import { Match, RoundData } from '../../../types/interfaces';
+import { Match, RoundData, AvailableGames } from '../../../types/interfaces';
 import { GSI, ioPromise } from './../../socket';
 import db from './../../../init/database';
 import { getTeamById } from './../teams';
@@ -260,3 +260,23 @@ export const updateRound = async (game: CSGO) => {
 
 	return updateMatch(match);
 };
+
+
+
+export const replaceLocalMatches = (newMatches: Match[], game: AvailableGames) =>
+	new Promise<boolean>((res) => {
+		const or: any[] = [
+			{ game }
+		];
+		if(game === "csgo"){
+			or.push({ game: { $exists: false } });
+		}
+		matchesDb.remove({ $or: or }, { multi: true }, (err) => {
+			if (err) {
+				return res(false);
+			}
+			matchesDb.insert(newMatches, (err, docs) => {
+				return res(!err);
+			});
+		});
+	});

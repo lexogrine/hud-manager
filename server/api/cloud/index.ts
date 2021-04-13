@@ -1,7 +1,120 @@
 import { api } from './../user';
 import * as I from '../../../types/interfaces';
+import { loadConfig, setConfig } from '../config';
+import { getPlayersList, replaceLocalPlayers } from '../players';
+import { getTeamsList, replaceLocalTeams } from '../teams';
+import { getMatches, replaceLocalMatches } from '../matches';
+import { app } from 'electron';
+import path from 'path';
+import fs from 'fs';
+import { customer } from '..';
 
-const cloudErrorHandler = () => {};
+const cloudErrorHandler = () => { };
+
+const getLastUpdateDateLocally = () => {
+	const userData = app.getPath('userData');
+	const database = path.join(userData, 'databases', 'lastUpdated.lhm');
+
+	let lastUpdated = {} as I.LastUpdated;
+	let saveOnFinish = true;
+
+	try {
+		if (fs.existsSync(database)) {
+			saveOnFinish = false;
+			lastUpdated = JSON.parse(fs.readFileSync(database, 'utf8'));
+
+		}
+
+		for (const game of I.availableGames) {
+			for (const resource of I.availableResources) {
+				if (!lastUpdated[game]) {
+					lastUpdated[game] = {} as I.ResourceUpdateStatus;
+				}
+				if(!lastUpdated[game][resource]) lastUpdated[game][resource] = ( new Date(0) ).toISOString();
+			}
+		}
+
+		if(saveOnFinish){
+			fs.writeFileSync(database, JSON.stringify(lastUpdated), 'utf8');
+		}
+
+
+
+		return lastUpdated;
+	} catch {
+
+		for (const game of I.availableGames) {
+			for (const resource of I.availableResources) {
+				if (!lastUpdated[game]) {
+					lastUpdated[game] = {} as I.ResourceUpdateStatus;
+				}
+				if(!lastUpdated[game][resource]) lastUpdated[game][resource] = ( new Date(0) ).toISOString();
+			}
+		}
+		return lastUpdated;
+	}
+}
+
+
+const updateLastDateLocally = (game: I.AvailableGames, resources: I.ResourceResponseStatus[]) => {
+	const lastUpdateLocal = getLastUpdateDateLocally();
+
+	for(const resourceInfo of resources){
+		lastUpdateLocal[game][resourceInfo.resource] = resourceInfo.status || ( new Date(0) ).toISOString();
+	}
+
+	const userData = app.getPath('userData');
+	const database = path.join(userData, 'databases', 'lastUpdated.lhm');
+
+	
+	fs.writeFileSync(database, JSON.stringify(lastUpdateLocal), 'utf8');
+
+	return lastUpdateLocal;
+}
+
+
+export const addResource = async <T>(game: I.AvailableGames, resource: I.AvailableResources, data: T) => {
+	const result = (await api(`storage/${resource}/${game}`, 'POST', data)) as I.CloudStorageData<T>;
+	if (!result) {
+		cloudErrorHandler();
+		return null;
+	}
+	updateLastDateLocally(game, [{ resource, status: result.lastUpdateTime }])
+	return result;
+};
+
+export const updateResource = async <T>(game: I.AvailableGames, resource: I.AvailableResources, data: T) => {
+	const result = (await api(`storage/${resource}/${game}`, 'PATCH', data)) as I.CloudStorageData<T>;
+	if (!result) {
+		cloudErrorHandler();
+		return null;
+	}
+	updateLastDateLocally(game, [{ resource, status: result.lastUpdateTime }])
+	return result;
+}
+
+
+export const deleteResource = async (game: I.AvailableGames, resource: I.AvailableResources, id: string) => {
+	const result = (await api(`storage/${resource}/${game}/${id}`, 'DELETE')) as { success: boolean, lastUpdateTime: string};
+	if (!result || !result.success) {
+		cloudErrorHandler();
+		return null;
+	}
+	updateLastDateLocally(game, [{ resource, status: result.lastUpdateTime }])
+	return result;
+}
+
+export const getResource = async <T>(game: I.AvailableGames, resource: I.AvailableResources) => {
+	const result = (await api(`storage/${resource}/${game}`)) as T[];
+
+	if (!result) {
+		cloudErrorHandler();
+		return null;
+	}
+
+	return result || null;
+};
+
 
 /**
  *
@@ -17,24 +130,117 @@ const cloudErrorHandler = () => {};
  * If local data is newer, ask which for option: upload local, download cloud, no sync
  * If local data is older, download cloud
  */
-export const verifyCloudSync = () => {};
 
-export const addResource = async <T>(game: I.AvailableGames, resource: I.AvailableResources, data: T) => {
-	const result = (await api(`storage/${resource}/${game}`, 'POST', data)) as T;
-	if (!result) {
-		cloudErrorHandler();
-		return null;
+
+const updateCloudToLocal = async (game: I.AvailableGames, resource: I.AvailableResources) => {
+	const replacer = {} as I.Replacer;
+
+	for (const resource of I.availableResources) {
+		switch (resource) {
+			case "matches":
+				replacer.matches = replaceLocalMatches;
+				break;
+			case "teams":
+				replacer.teams = replaceLocalTeams;
+				break;
+			case "players":
+				replacer.players = replaceLocalPlayers;
+				break;
+		}
 	}
-	return result;
-};
+	try {
+		const resources = await getResource(game, resource);
+		if(!resources){
+			return false;
+		}
+		console.log("reloading",resource,'for',game)
+		await replacer[resource](resources, game);
 
-export const getResource = async <T>(game: I.AvailableGames, resource: I.AvailableResources) => {
-	const result = (await api(`storage/${resource}/${game}`)) as T;
+		return true;
+	} catch {
+		return false;
+	}
+}
 
-	if (!result) {
-		cloudErrorHandler();
-		return null;
+export const checkCloudStatus = async (game: I.AvailableGames) => {
+	if(customer.customer?.license.type !== "professional" && customer.customer?.license.type !== "enterprise"){
+		return "ALL_SYNCED";
+	}
+	const cfg = await loadConfig();
+
+	if (cfg.sync === false) return;
+
+	if (!cfg.sync) {
+		await setConfig({ ...cfg, sync: true });
 	}
 
-	return result || null;
+	try {
+		const result = await api(`storage/${game}/status`) as I.ResourceResponseStatus[];
+		if (result.every(status => !status.status)) {
+			// No remote resources
+			// Ask if to upload current db - rejection will result in cloud option turned off
+			console.log('NO REMOTE RESOURCES, UPLOAD?');
+			return 'NO_UPLOADED_RESOURCES';
+		}
+
+		const lastUpdateStatusOnline = {} as I.ResourceUpdateStatus;
+
+		for (const resourceStatus of result) {
+			lastUpdateStatusOnline[resourceStatus.resource] = resourceStatus.status
+		}
+
+		const resources = await Promise.all([getPlayersList({}), getTeamsList({}), getMatches()])
+
+		if (resources.every(resource => !resource.length)) {
+			// no local resources
+			// download db
+			console.log('NO LOCAL RESOURCES, DOWNLOADING...');
+
+			await Promise.all(I.availableResources.map(resource => updateCloudToLocal(game, resource)));
+
+			updateLastDateLocally(game, result);
+
+			return 'ALL_SYNCED';
+		}
+
+		const lastUpdateStatusLocal = getLastUpdateDateLocally();
+
+		if (I.availableResources.find(availableResource => !lastUpdateStatusLocal[game][availableResource])) {
+			// resources exist both locally and remotely, but local db wasnt ever synced
+			// show options: upload local, download cloud, no sync
+			console.log(lastUpdateStatusLocal);
+			console.log(I.availableResources.filter(availableResource => !lastUpdateStatusLocal[game][availableResource]))
+			console.log('SYNC CONFLICT, WHAT DO? #1');
+			return 'NO_SYNC_LOCAL';
+		}
+
+		const nonSyncedResources = I.availableResources.filter(availableResource => lastUpdateStatusOnline[availableResource] !== lastUpdateStatusLocal[game][availableResource]);
+
+		if (!nonSyncedResources.length) {
+			// All resources are supposed to be in sync here
+			console.log('NICE. no reason to sync');
+
+			return 'ALL_SYNCED';
+		}
+
+		if (nonSyncedResources.find(resource => !lastUpdateStatusOnline[resource] || new Date(lastUpdateStatusLocal[game][resource] as any) > new Date(lastUpdateStatusOnline[resource] as any))) {
+			// Local data found newer, show options
+			console.log('SYNC CONFLICT, WHAT DO? #2');
+			return 'NO_SYNC_LOCAL';
+		}
+
+		// Local data older, download non-synced resources
+
+		await Promise.all(nonSyncedResources.map(resource => updateCloudToLocal(game, resource)));
+		
+		updateLastDateLocally(game, result.filter(resource => nonSyncedResources.includes(resource.resource)));
+
+		console.log('NICE');
+
+		return 'ALL_SYNCED';
+
+	} catch(e) {
+		console.log(e);
+		return 'UNKNOWN_ERROR';
+	}
 };

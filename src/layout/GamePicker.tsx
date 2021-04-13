@@ -35,7 +35,7 @@ const GamePicker = ({ isOpen, setGame }: IProps) => {
 				</div>
 			</ModalBody>
 			<ModalFooter className="no-padding">
-				<Button color="primary" className="modal-save" onClick={setGame} disabled={!game}>
+				<Button color="primary" className="modal-save" onClick={() => setGame(game || 'csgo')} disabled={!game}>
 					Pick
 				</Button>
 			</ModalFooter>

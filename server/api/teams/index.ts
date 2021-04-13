@@ -1,5 +1,5 @@
 import db from './../../../init/database';
-import { Team } from '../../../types/interfaces';
+import { Team, AvailableGames } from '../../../types/interfaces';
 
 const { teams } = db;
 
@@ -22,5 +22,24 @@ export const getTeamsList = (query: any) =>
 				return res([]);
 			}
 			return res([...teams].sort((a, b) => (a.name > b.name ? 1 : -1)));
+		});
+	});
+
+
+export const replaceLocalTeams = (newTeams: Team[], game: AvailableGames) =>
+	new Promise<boolean>((res) => {
+		const or: any[] = [
+			{ game }
+		];
+		if(game === "csgo"){
+			or.push({ game: { $exists: false } });
+		}
+		teams.remove({ $or: or }, { multi: true }, (err) => {
+			if (err) {
+				return res(false);
+			}
+			teams.insert(newTeams, (err, docs) => {
+				return res(!err);
+			});
 		});
 	});

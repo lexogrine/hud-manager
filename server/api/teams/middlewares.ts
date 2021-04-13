@@ -1,10 +1,12 @@
 import express from 'express';
 import db from './../../../init/database';
-import { Team } from '../../../types/interfaces';
+import { Team, AvailableGames } from '../../../types/interfaces';
 import { loadConfig, internalIP } from './../config';
 import isSvg from './../../../src/isSvg';
 import { getTeamsList, getTeamById } from './index';
 import * as F from './../fields';
+import { validateCloudAbility, customer } from '..';
+import { addResource, updateResource } from '../cloud';
 
 const teams = db.teams;
 const players = db.players;
@@ -35,16 +37,20 @@ export const getTeam: express.RequestHandler = async (req, res) => {
 	return res.json(team);
 };
 export const addTeam: express.RequestHandler = (req, res) => {
-	const newTeam: Team = {
+	const newTeam = {
 		name: req.body.name,
 		shortName: req.body.shortName,
 		logo: req.body.logo,
 		country: req.body.country,
+		game: req.body.game,
 		extra: req.body.extra
-	};
-	teams.insert(newTeam, (err, team) => {
+	} as Team;
+	teams.insert(newTeam, async (err, team) => {
 		if (err) {
 			return res.sendStatus(500);
+		}
+		if(validateCloudAbility()){
+			await addResource(customer.game as AvailableGames, "teams", team);
 		}
 		return res.json(team);
 	});
@@ -58,13 +64,14 @@ export const updateTeam: express.RequestHandler = async (req, res) => {
 		return res.sendStatus(404);
 	}
 
-	const updated: Team = {
+	const updated = {
 		name: req.body.name,
 		shortName: req.body.shortName,
 		logo: req.body.logo,
+		game: req.body.game,
 		country: req.body.country,
 		extra: req.body.extra
-	};
+	} as Team;
 
 	if (req.body.logo === undefined) {
 		updated.logo = team.logo;
@@ -73,6 +80,10 @@ export const updateTeam: express.RequestHandler = async (req, res) => {
 	teams.update({ _id: req.params.id }, { $set: updated }, {}, async err => {
 		if (err) {
 			return res.sendStatus(500);
+		}
+		
+		if(validateCloudAbility()){
+			await updateResource(customer.game as AvailableGames, "teams", { ...updated, _id: req.params.id });
 		}
 		const team = await getTeamById(req.params.id);
 		return res.json(team);

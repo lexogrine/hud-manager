@@ -29,7 +29,7 @@ exports.api = (url, method = 'GET', body, opts) => {
         options.body = JSON.stringify(body);
     }
     let data = null;
-    return exports.fetch(`https://hmapi.lexogrine.com/${url}`, options).then(res => {
+    return exports.fetch(`http://localhost:5000/${url}`, options).then(res => {
         data = res;
         return res.json().catch(() => data && data.status < 300);
     });
@@ -85,7 +85,7 @@ exports.getCurrent = async (req, res) => {
     }
     const response = await loadUser();
     if (api_1.customer.customer) {
-        if (api_1.customer.customer.license.type === "professional") {
+        if (api_1.customer.customer.license.type === 'professional') {
         }
         return res.json(api_1.customer.customer);
     }

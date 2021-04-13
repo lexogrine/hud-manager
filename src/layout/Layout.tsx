@@ -9,6 +9,7 @@ import LoginRegisterModal from './LoginRegisterModal';
 import ElectronOnly from './../components/ElectronOnly';
 import { hash } from '../hash';
 import GamePicker from './GamePicker';
+import { AvailableGames } from '../../types/interfaces';
 
 declare let window: any;
 const isElectron = config.isElectron;
@@ -21,9 +22,10 @@ interface IState {
 	data: IContextData;
 	loading: boolean;
 	loadingLogin: boolean;
+	loadingGame: boolean;
 	loginError: string;
 	version: string;
-	picked: null | string;
+	picked: null | AvailableGames;
 }
 export default class Layout extends React.Component<{}, IState> {
 	constructor(props: {}) {
@@ -44,17 +46,25 @@ export default class Layout extends React.Component<{}, IState> {
 					]).then(this.rehash);
 				},
 				fields: { players: [], teams: [] },
-				hash: ''
+				hash: '',
+				game: 'csgo'
 			},
 			loginError: '',
 			loadingLogin: false,
 			loading: true,
+			loadingGame: true,
 			version: '-',
 			picked: null
 		};
 	}
 	async componentDidMount() {
 		//const socket = io.connect(`${config.isDev ? config.apiAddress : '/'}`);
+		api.games.getCurrent().then(result => {
+			this.setState({
+				loadingGame: false,
+				picked: result.game
+			})
+		});
 		await this.getVersion();
 		this.loadUser();
 		socket.on('match', (fromVeto?: boolean) => {
@@ -67,8 +77,15 @@ export default class Layout extends React.Component<{}, IState> {
 			return state;
 		});
 	};
-	setGame = (game: string) => {
-		this.setState({ picked: game });
+	setGame = (game: AvailableGames) => {
+		this.setState({ picked: game }, () => {
+			api.games.startServices(game).then(response => {
+				if(response.result === "ALL_SYNCED"){
+					this.state.data.reload();
+				}
+				// TODO: Add handlers for the rest of the events
+			})
+		});
 	};
 	getCustomFields = async () => {
 		const [teams, players] = await Promise.all([api.teams.fields.get(), api.players.fields.get()]);
@@ -142,7 +159,7 @@ export default class Layout extends React.Component<{}, IState> {
 	};
 	render() {
 		const { Provider } = ContextData;
-		const { loading, data, loadingLogin, loginError, version } = this.state;
+		const { loading, data, loadingLogin, loginError, version, loadingGame } = this.state;
 		return (
 			<Provider value={this.state.data}>
 				<div className={`loaded ${isElectron ? 'electron' : ''}`}>
@@ -156,7 +173,7 @@ export default class Layout extends React.Component<{}, IState> {
 							</ElectronOnly>
 						</div>
 					) : null}
-					{<div className={`loading-container ${loading ? '' : 'hide'}`}>Loading...</div>}
+					{<div className={`loading-container ${loading || loadingGame ? '' : 'hide'}`}>Loading...</div>}
 					<LoginRegisterModal
 						isOpen={!data.customer}
 						loading={loadingLogin}
