@@ -126,6 +126,7 @@ export const getHUDData = async (dirName: string): Promise<I.HUD | null> => {
 		const configFile = fs.readFileSync(configFileDir, { encoding: 'utf8' });
 		const config = JSON.parse(configFile);
 		config.dir = dirName;
+		config.game = config.game || 'csgo';
 
 		const panel = getHUDPanelSetting(dirName);
 		const keybinds = getHUDKeyBinds(dirName);
@@ -458,7 +459,11 @@ export const downloadHUD: RequestHandler = async (req, res) => {
 
 	if (hudData?.data?.data?.type !== 'Buffer' || !name) return res.sendStatus(422);
 
-	const hudBufferString = Buffer.from(hudData.data.data).toString('base64');
+	const data = hudData.data.data;
+
+	if (typeof data === 'number') return res.sendStatus(422);
+
+	const hudBufferString = Buffer.from(data as any).toString('base64');
 
 	const result = await loadHUD(hudBufferString, name, uuid);
 

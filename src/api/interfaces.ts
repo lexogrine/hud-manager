@@ -52,3 +52,23 @@ export interface Customer {
 	iat: number;
 	exp: number;
 }
+
+export interface BakkesModStatus {
+	bakkesModDownloaded: boolean;
+	bakkesModInstalled: boolean;
+	sosPluginDownloaded: boolean;
+	sosPluginInstalled: boolean;
+	sosConfigSet: boolean;
+	bakkesModRunning: boolean;
+}
+
+export interface BakkesModAPIResponse {
+	success: boolean;
+	message?: string;
+	error?: any;
+	path?: string;
+}
+
+export interface BakkesModStatusResponse extends BakkesModAPIResponse {
+	status: BakkesModStatus;
+}

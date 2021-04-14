@@ -28,6 +28,9 @@ interface IState {
 	config: I.Config;
 	cfg: ConfigStatus;
 	gsi: ConfigStatus;
+	bakkesModStatus: I.BakkesModStatus;
+	bakkesModAutoconfBusy: boolean;
+	bakkesModAutoconfError: string | null;
 	restartRequired: boolean;
 	importModalOpen: boolean;
 	conflict: {
@@ -66,6 +69,16 @@ export default class Config extends React.Component<IProps, IState> {
 				message: 'Loading data about GameState files...',
 				accessible: true
 			},
+			bakkesModStatus: {
+				bakkesModDownloaded: false,
+				bakkesModInstalled: false,
+				sosPluginDownloaded: false,
+				sosPluginInstalled: false,
+				sosConfigSet: false,
+				bakkesModRunning: false
+			},
+			bakkesModAutoconfBusy: true,
+			bakkesModAutoconfError: null,
 			importModalOpen: false,
 			restartRequired: false,
 			conflict: {
@@ -210,11 +223,87 @@ export default class Config extends React.Component<IProps, IState> {
 		});
 	};
 
+	loadBakkesModStatus = async (keepBusyOnSuccess?: boolean) => {
+		const response = await api.bakkesmod.check();
+		if (!response.success)
+			this.setState({ bakkesModAutoconfBusy: false, bakkesModAutoconfError: 'Unable to determine state' });
+
+		this.setState({ bakkesModAutoconfBusy: keepBusyOnSuccess || false, bakkesModStatus: response.status });
+		return response.status;
+	};
+
+	getBakkesModStatusDescription = () => {
+		if (this.state.bakkesModAutoconfBusy) return 'Busy...';
+
+		const status = this.state.bakkesModStatus;
+		if (!status.bakkesModInstalled) return 'BakkesMod not installed or never launched yet';
+		if (!status.sosPluginInstalled) return 'SOS Plugin not installed';
+		if (!status.sosConfigSet) return 'Not configured';
+		return 'Installed';
+	};
+
+	installRLIntegration = async () => {
+		if (this.state.bakkesModAutoconfBusy) return;
+		const status = await this.loadBakkesModStatus(true);
+
+		try {
+			if (!status.bakkesModInstalled) {
+				if (!status.bakkesModDownloaded) {
+					const downloadStatus: I.BakkesModAPIResponse = await api.bakkesmod.downloadMod();
+					if (!downloadStatus.success) {
+						this.setState({
+							bakkesModAutoconfError: downloadStatus.message || 'Failed to download BakkesMod',
+							bakkesModAutoconfBusy: false
+						});
+						return;
+					}
+				}
+				const installStatus = await api.bakkesmod.installMod();
+				if (!installStatus.success) {
+					this.setState({
+						bakkesModAutoconfError: installStatus.message || 'Failed to install BakkesMod',
+						bakkesModAutoconfBusy: false
+					});
+					return;
+				}
+			}
+			if (!status.sosPluginInstalled || !status.sosConfigSet) {
+				if (!status.sosPluginDownloaded) {
+					const downloadStatus = await api.bakkesmod.downloadSos();
+					if (!downloadStatus.success) {
+						this.setState({
+							bakkesModAutoconfError: downloadStatus.message || 'Failed to download SOS Plugin',
+							bakkesModAutoconfBusy: false
+						});
+						return;
+					}
+				}
+				const installStatus = await api.bakkesmod.installSos();
+				if (!installStatus.success) {
+					this.setState({
+						bakkesModAutoconfError: installStatus.message || 'Failed to install and configure SOS Plugin',
+						bakkesModAutoconfBusy: false
+					});
+					return;
+				}
+
+				this.setState({
+					bakkesModAutoconfError: null
+				});
+			}
+		} catch (e) {
+			this.setState({ bakkesModAutoconfError: 'Unknown error' });
+		}
+
+		this.loadBakkesModStatus();
+	};
+
 	async componentDidMount() {
 		this.getConfig();
 		this.checkCFG();
 		this.checkGSI();
 		this.checkUpdate();
+		this.loadBakkesModStatus();
 	}
 	checkUpdate = () => {
 		if (!isElectron) return;
@@ -381,6 +470,30 @@ export default class Config extends React.Component<IProps, IState> {
 							</Button>
 						</Col>
 						<Col md="12" className="config-entry">
+							<div className="config-description">
+								<p>Rocket League integration: {this.getBakkesModStatusDescription()}</p>
+								{this.state.bakkesModAutoconfError && <p>[{this.state.bakkesModAutoconfError}]</p>}
+							</div>
+							<div className="download-container">
+								<Button
+									className="purple-btn round-btn"
+									disabled={this.state.bakkesModAutoconfBusy}
+									onClick={() => this.loadBakkesModStatus()}
+								>
+									Refresh
+								</Button>
+								<Button
+									className="purple-btn round-btn"
+									disabled={
+										this.state.bakkesModAutoconfBusy || this.state.bakkesModStatus.sosConfigSet
+									}
+									onClick={this.installRLIntegration}
+								>
+									Install
+								</Button>
+							</div>
+						</Col>
+						<Col md="12" className="config-entry">
 							<div className="config-description">Credits</div>
 							<Button className="lightblue-btn round-btn" onClick={() => this.props.toggle('credits')}>
 								See now
@@ -424,7 +537,6 @@ export default class Config extends React.Component<IProps, IState> {
 							</p>
 						</Col>
 					</Row>
-
 					{/*<Toast isOpen={this.state.restartRequired} className="fixed-toast">
                         <ToastHeader>Change of port detected</ToastHeader>
                         <ToastBody>It seems like you've changed GSI port - for all changes to be set in place you should now restart the Manager and update the GSI files</ToastBody>

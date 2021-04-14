@@ -58,7 +58,7 @@ const init = async () => {
                     }
                     const gameEvent = gameEventUnserializer.unserialize(bufferReader);
                     if (gameEvent.name === 'player_death') {
-                        io.to('csgo').emit('update_mirv', gameEvent);
+                        io.to('game').emit('update_mirv', gameEvent);
                     }
                 }
             }

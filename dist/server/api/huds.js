@@ -132,6 +132,7 @@ exports.getHUDData = async (dirName) => {
         const configFile = fs.readFileSync(configFileDir, { encoding: 'utf8' });
         const config = JSON.parse(configFile);
         config.dir = dirName;
+        config.game = config.game || 'csgo';
         const panel = exports.getHUDPanelSetting(dirName);
         const keybinds = exports.getHUDKeyBinds(dirName);
         try {

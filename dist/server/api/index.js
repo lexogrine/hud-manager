@@ -34,6 +34,7 @@ const game = __importStar(require("./game"));
 const sync = __importStar(require("./sync"));
 const machine = __importStar(require("./machine"));
 const user = __importStar(require("./user"));
+const bakkesmod = __importStar(require("./bakkesmod"));
 const play_1 = require("./huds/play");
 const routes_1 = __importDefault(require("./tournaments/routes"));
 const routes_2 = __importDefault(require("./matches/routes"));
@@ -114,6 +115,11 @@ async function default_1() {
     __1.app.route('/api/machine').get(machine.getMachineIdRoute);
     __1.app.use('/huds/:dir/', huds.renderAssets);
     __1.app.route('/huds/:dir/thumbnail').get(huds.renderThumbnail);
+    __1.app.route('/api/bakkesmod/check').get(bakkesmod.checkStatus);
+    __1.app.route('/api/bakkesmod/download/mod').get(bakkesmod.downloadBakkesMod);
+    __1.app.route('/api/bakkesmod/download/sos').get(bakkesmod.downloadSosPlugin);
+    __1.app.route('/api/bakkesmod/install/mod').get(bakkesmod.installBakkesMod);
+    __1.app.route('/api/bakkesmod/install/sos').get(bakkesmod.installSosPlugin);
     electron_1.globalShortcut.register('Alt+Shift+F', () => io.emit('refreshHUD'));
     electron_1.globalShortcut.register('Alt+R', match.reverseSide);
     /**

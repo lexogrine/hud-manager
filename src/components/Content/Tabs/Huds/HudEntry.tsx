@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Row, Col, UncontrolledCollapse } from 'reactstrap';
+import { Row, Col, UncontrolledCollapse, Button } from 'reactstrap';
 import Config from './../../../../api/config';
 import Tip from './../../../Tooltip';
 import api from './../../../../api/api';
@@ -30,6 +30,14 @@ interface IProps {
 }
 
 const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHUDs, setHUDLoading }: IProps) => {
+	const gameToTag = (game: string) => {
+		if (game === 'csgo') {
+			return '[CSGO]';
+		} else if (game === 'rocketleague') {
+			return '[RL]';
+		}
+		return null;
+	};
 	const [isOpen, setOpen] = useState(false);
 	const toggleModal = () => setOpen(!isOpen);
 
@@ -108,6 +116,7 @@ const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHU
 							<Col>
 								<strong className="hudName">
 									{hud.isDev ? '[DEV] ' : ''}
+									{gameToTag(hud.game) + ' '}
 									{hud.name}
 								</strong>{' '}
 								<span className="hudVersion">({hud.version})</span>

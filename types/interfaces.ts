@@ -207,6 +207,7 @@ export interface HUD {
 	legacy: boolean;
 	dir: string;
 	radar: boolean;
+	game: string;
 	killfeed: boolean;
 	panel?: PanelTemplate[];
 	keybinds?: KeyBind[];
