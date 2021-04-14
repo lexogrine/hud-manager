@@ -53,35 +53,41 @@ const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHU
 	};
 	const downloadHUD = (uuid: string) => {
 		setHUDLoading(uuid, true);
-		api.huds.download(uuid).then(res => {
-			if (!res || !res.result) {
-				// TODO: Handler error
-			}
-			loadHUDs().then(() => {
-				setHUDLoading(uuid, false);
+		api.huds
+			.download(uuid)
+			.then(res => {
+				if (!res || !res.result) {
+					// TODO: Handler error
+				}
+				loadHUDs().then(() => {
+					setHUDLoading(uuid, false);
+				});
 			})
-		}).catch(() => {
-			loadHUDs().then(() => {
-				setHUDLoading(uuid, false);
-			})
-		});
+			.catch(() => {
+				loadHUDs().then(() => {
+					setHUDLoading(uuid, false);
+				});
+			});
 	};
 	const uploadHUD = (dir: string, uuid: string) => {
 		api.huds.upload(dir);
 
 		setHUDLoading(uuid, true);
-		api.huds.upload(uuid).then(res => {
-			if (!res || !res.result) {
-				// TODO: Handler error
-			}
-			loadHUDs().then(() => {
-				setHUDLoading(uuid, false);
+		api.huds
+			.upload(uuid)
+			.then(res => {
+				if (!res || !res.result) {
+					// TODO: Handler error
+				}
+				loadHUDs().then(() => {
+					setHUDLoading(uuid, false);
+				});
 			})
-		}).catch(() => {
-			loadHUDs().then(() => {
-				setHUDLoading(uuid, false);
-			})
-		});
+			.catch(() => {
+				loadHUDs().then(() => {
+					setHUDLoading(uuid, false);
+				});
+			});
 	};
 	const missingFieldsText = [];
 	const missingFields = getMissingFields(customFields, hud.requiredFields);
@@ -111,7 +117,7 @@ const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHU
 
 	const isLocal = hud.status !== 'REMOTE';
 	const isNotRemote = hud.status === 'LOCAL';
-	console.log(hud)
+	console.log(hud);
 
 	return (
 		<Row key={hud.dir} className="hudRow">
@@ -133,7 +139,7 @@ const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHU
 							<Col>
 								<strong className="hudName">
 									{hud.isDev ? '[DEV] ' : ''}
-									{gameToTag(hud.game)+ ' '}
+									{gameToTag(hud.game) + ' '}
 									{hud.name}
 								</strong>{' '}
 								<span className="hudVersion">({hud.version})</span>

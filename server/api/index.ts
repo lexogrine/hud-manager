@@ -63,7 +63,7 @@ export default async function () {
 		const result = await checkCloudStatus(game);
 
 		io.emit('reloadHUDs');
-		
+
 		res.json({ result });
 	});
 

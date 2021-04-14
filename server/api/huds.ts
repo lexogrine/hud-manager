@@ -105,7 +105,7 @@ export const listHUDs = async () => {
 		}
 		return hud;
 	};
-	return huds.map(mapHUDStatus).filter(hud => customer.game === hud.game || (customer.game === "csgo" && !hud.game));
+	return huds.map(mapHUDStatus).filter(hud => customer.game === hud.game || (customer.game === 'csgo' && !hud.game));
 };
 
 export const getHUDs: express.RequestHandler = async (req, res) => {
