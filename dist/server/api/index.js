@@ -80,11 +80,21 @@ async function default_1() {
         const result = await cloud_1.uploadLocalToCloud(game);
         return res.json({ result });
     });
+    __1.app.route('/api/cloud/download')
+        .post(async (req, res) => {
+        const game = exports.customer.game;
+        if (!game)
+            return res.sendStatus(403);
+        const result = await cloud_1.downloadCloudToLocal(game);
+        return res.json({ result });
+    });
     __1.app.route('/api/games/current').get((req, res) => res.json({ game: exports.customer.game }));
     __1.app.route('/api/huds').get(huds.getHUDs).post(huds.openHUDsDirectory).delete(huds.deleteHUD);
-    __1.app.route('/api/huds/add').post(huds.uploadHUD);
+    __1.app.route('/api/huds/add').post(huds.sendHUD);
     __1.app.route('/api/huds/close').post(huds.closeHUD);
     __1.app.route('/api/huds/:hudDir/start').post(huds.showHUD);
+    __1.app.route('/api/huds/download/:uuid').get(huds.downloadHUD);
+    __1.app.route('/api/huds/upload/:hudDir').post(huds.uploadHUD);
     __1.app.route('/api/gsi').get(gsi.checkGSIFile).put(gsi.createGSIFile);
     __1.app.route('/api/import').post(sync.importDb);
     __1.app.route('/api/steam').get((req, res) => res.json({ gamePath: steam_game_path_1.getGamePath(730) }));

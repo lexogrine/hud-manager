@@ -33,7 +33,12 @@ const __1 = require("..");
 const cloud_1 = require("../cloud");
 const players = database_1.default.players;
 exports.getPlayers = async (req, res) => {
-    const players = await index_1.getPlayersList({});
+    const game = __1.customer.game;
+    const $or = [{ game }];
+    if (game === 'csgo') {
+        $or.push({ game: { $exists: false } });
+    }
+    const players = await index_1.getPlayersList({ $or });
     const config = await config_1.loadConfig();
     return res.json(players.map(player => ({
         ...player,
@@ -65,7 +70,7 @@ exports.updatePlayer = async (req, res) => {
         lastName: req.body.lastName,
         username: req.body.username,
         avatar: req.body.avatar,
-        game: req.body.game,
+        game: __1.customer.game,
         country: req.body.country,
         steamid: req.body.steamid,
         team: req.body.team,
@@ -95,7 +100,7 @@ exports.addPlayer = (req, res) => {
         steamid: req.body.steamid,
         team: req.body.team,
         extra: req.body.extra,
-        game: req.body.game,
+        game: __1.customer.game
     };
     players.insert(newPlayer, async (err, player) => {
         if (err) {

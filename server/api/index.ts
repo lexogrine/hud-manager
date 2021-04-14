@@ -19,7 +19,7 @@ import TeamHandler from './teams/routes';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import { ioPromise } from '../socket';
 import { app } from '..';
-import { checkCloudStatus, uploadLocalToCloud } from './cloud';
+import { checkCloudStatus, uploadLocalToCloud, downloadCloudToLocal } from './cloud';
 
 export const customer: I.CustomerData = {
 	customer: null,
@@ -64,23 +64,37 @@ export default async function () {
 		res.json({ result });
 	});
 
-	app.route('/api/cloud/upload').post(async (req, res) => {
-		const game = customer.game;
-		if (!game) return res.sendStatus(403);
-		const result = await uploadLocalToCloud(game);
+	app.route('/api/cloud/upload')
+		.post(async (req, res) => {
+			const game = customer.game;
+			if (!game) return res.sendStatus(403);
+			const result = await uploadLocalToCloud(game);
 
-		return res.json({ result });
-	});
+			return res.json({ result });
+		});
+
+	app.route('/api/cloud/download')
+		.post(async (req, res) => {
+			const game = customer.game;
+			if (!game) return res.sendStatus(403);
+			const result = await downloadCloudToLocal(game);
+
+			return res.json({ result });
+		});
 
 	app.route('/api/games/current').get((req, res) => res.json({ game: customer.game }));
 
 	app.route('/api/huds').get(huds.getHUDs).post(huds.openHUDsDirectory).delete(huds.deleteHUD);
 
-	app.route('/api/huds/add').post(huds.uploadHUD);
+	app.route('/api/huds/add').post(huds.sendHUD);
 
 	app.route('/api/huds/close').post(huds.closeHUD);
 
 	app.route('/api/huds/:hudDir/start').post(huds.showHUD);
+
+	app.route('/api/huds/download/:uuid').get(huds.downloadHUD);
+
+	app.route('/api/huds/upload/:hudDir').post(huds.uploadHUD);
 
 	app.route('/api/gsi').get(gsi.checkGSIFile).put(gsi.createGSIFile);
 

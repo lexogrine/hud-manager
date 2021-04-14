@@ -8,6 +8,8 @@ export const availableResources: AvailableResources[] = ['teams', 'players' /*, 
 
 export const availableGames: AvailableGames[] = ['csgo', 'rocketleague'];
 
+export type ResourcesTypes = Player | Team;
+
 export type CloudSyncStatus = 'NO_UPLOADED_RESOURCES' | 'ALL_SYNCED' | 'NO_SYNC_LOCAL' | 'UNKNOWN_ERROR';
 export interface Player {
 	_id: string;
@@ -196,6 +198,8 @@ export type RequiredFields = {
 		[key: string]: CustomFieldInputType;
 	};
 };
+
+export type HUDSyncStatus = "SYNCED" | "REMOTE" | "LOCAL";
 export interface HUD {
 	name: string;
 	version: string;
@@ -209,6 +213,8 @@ export interface HUD {
 	url: string;
 	allowAppsOnTop?: boolean;
 	requiredFields?: RequiredFields;
+	status: HUDSyncStatus;
+	uuid: string;
 	boltobserv?: {
 		css?: boolean;
 		maps?: boolean;

@@ -93,11 +93,9 @@ export default class Layout extends React.Component<{}, IState> {
 		api.games.startServices(this.state.picked).then(response => {
 			this.setState({ synchronizationStatus: response.result });
 			this.setSyncOpen(response.result !== 'ALL_SYNCED');
-			console.log(response);
 			if (response.result === 'ALL_SYNCED') {
 				this.state.data.reload();
 			}
-			// TODO: Add handlers for the rest of the events
 		});
 	};
 	getCustomFields = async () => {
@@ -134,6 +132,7 @@ export default class Layout extends React.Component<{}, IState> {
 	};
 	loadTeams = async () => {
 		const teams = await api.teams.get();
+		if (!teams) return;
 		const { data } = this.state;
 		data.teams = teams;
 		if (teams) {
@@ -149,6 +148,7 @@ export default class Layout extends React.Component<{}, IState> {
 	};
 	loadMatch = async () => {
 		const matches = await api.match.get();
+		if (!matches) return;
 		const { data } = this.state;
 		data.matches = matches;
 		if (matches) {
@@ -204,7 +204,7 @@ export default class Layout extends React.Component<{}, IState> {
 						loadUser={this.loadUser}
 						error={loginError}
 					/>
-					<SyncModal isOpen={isSyncModalOpen} setOpen={this.setSyncOpen} syncStatus={synchronizationStatus} />
+					<SyncModal isOpen={isSyncModalOpen} setOpen={this.setSyncOpen} syncStatus={synchronizationStatus} reload={this.state.data.reload} />
 					<GamePicker isOpen={Boolean(data.customer && !this.state.picked)} setGame={this.setGame} />
 					<Content />
 				</div>

@@ -12,7 +12,12 @@ const teams = db.teams;
 const players = db.players;
 
 export const getTeams: express.RequestHandler = async (req, res) => {
-	const teams = await getTeamsList({});
+	const game = customer.game;
+	const $or: any[] = [{ game }];
+	if (game === 'csgo') {
+		$or.push({ game: { $exists: false } });
+	}
+	const teams = await getTeamsList({ $or });
 	const config = await loadConfig();
 	return res.json(
 		teams.map(team => ({
@@ -42,7 +47,7 @@ export const addTeam: express.RequestHandler = (req, res) => {
 		shortName: req.body.shortName,
 		logo: req.body.logo,
 		country: req.body.country,
-		game: req.body.game,
+		game: customer.game,
 		extra: req.body.extra
 	} as Team;
 	teams.insert(newTeam, async (err, team) => {
@@ -68,7 +73,7 @@ export const updateTeam: express.RequestHandler = async (req, res) => {
 		name: req.body.name,
 		shortName: req.body.shortName,
 		logo: req.body.logo,
-		game: req.body.game,
+		game: customer.game,
 		country: req.body.country,
 		extra: req.body.extra
 	} as Team;

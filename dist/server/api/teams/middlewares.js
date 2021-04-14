@@ -33,7 +33,12 @@ const cloud_1 = require("../cloud");
 const teams = database_1.default.teams;
 const players = database_1.default.players;
 exports.getTeams = async (req, res) => {
-    const teams = await index_1.getTeamsList({});
+    const game = __1.customer.game;
+    const $or = [{ game }];
+    if (game === 'csgo') {
+        $or.push({ game: { $exists: false } });
+    }
+    const teams = await index_1.getTeamsList({ $or });
     const config = await config_1.loadConfig();
     return res.json(teams.map(team => ({
         ...team,
@@ -56,7 +61,7 @@ exports.addTeam = (req, res) => {
         shortName: req.body.shortName,
         logo: req.body.logo,
         country: req.body.country,
-        game: req.body.game,
+        game: __1.customer.game,
         extra: req.body.extra
     };
     teams.insert(newTeam, async (err, team) => {
@@ -81,7 +86,7 @@ exports.updateTeam = async (req, res) => {
         name: req.body.name,
         shortName: req.body.shortName,
         logo: req.body.logo,
-        game: req.body.game,
+        game: __1.customer.game,
         country: req.body.country,
         extra: req.body.extra
     };

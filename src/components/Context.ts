@@ -7,7 +7,7 @@ export interface IContextData {
 	players: I.Player[];
 	matches: I.Match[];
 	tournaments: I.Tournament[];
-	reload: Function;
+	reload: () => void;
 	customer?: I.Customer;
 	fields: I.CustomFieldStore;
 	hash: string;

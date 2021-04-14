@@ -12,7 +12,12 @@ import { addResource, updateResource, deleteResource } from '../cloud';
 const players = db.players;
 
 export const getPlayers: express.RequestHandler = async (req, res) => {
-	const players = await getPlayersList({});
+	const game = customer.game;
+	const $or: any[] = [{ game }];
+	if (game === 'csgo') {
+		$or.push({ game: { $exists: false } });
+	}
+	const players = await getPlayersList({ $or });
 	const config = await loadConfig();
 	return res.json(
 		players.map(player => ({
@@ -51,7 +56,7 @@ export const updatePlayer: express.RequestHandler = async (req, res) => {
 		lastName: req.body.lastName,
 		username: req.body.username,
 		avatar: req.body.avatar,
-		game: req.body.game,
+		game: customer.game,
 		country: req.body.country,
 		steamid: req.body.steamid,
 		team: req.body.team,
@@ -83,7 +88,7 @@ export const addPlayer: express.RequestHandler = (req, res) => {
 		steamid: req.body.steamid,
 		team: req.body.team,
 		extra: req.body.extra,
-		game: req.body.game
+		game: customer.game
 	} as Player;
 	players.insert(newPlayer, async (err, player) => {
 		if (err) {
