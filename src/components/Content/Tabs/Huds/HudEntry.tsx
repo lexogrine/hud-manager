@@ -44,7 +44,7 @@ const HudEntry = ({ hud, isActive, toggleConfig, customFields }: IProps) => {
 	const deleteHUD = async () => {
 		try {
 			await api.huds.delete(hud.dir);
-		} catch { }
+		} catch {}
 		toggleModal();
 	};
 	const missingFieldsText = [];
@@ -79,8 +79,9 @@ const HudEntry = ({ hud, isActive, toggleConfig, customFields }: IProps) => {
 				<Row>
 					<Col className="centered thumb">
 						<img
-							src={`${Config.isDev ? Config.apiAddress : '/'}${hud.isDev ? 'dev/thumb.png' : `huds/${hud.dir}/thumbnail`
-								}`}
+							src={`${Config.isDev ? Config.apiAddress : '/'}${
+								hud.isDev ? 'dev/thumb.png' : `huds/${hud.dir}/thumbnail`
+							}`}
 							alt={`${hud.name}`}
 						/>
 					</Col>
@@ -147,12 +148,7 @@ const HudEntry = ({ hud, isActive, toggleConfig, customFields }: IProps) => {
 								alt="Local network HUD URL"
 							/>
 							{hud.panel?.length ? (
-								<img
-									src={Settings}
-									onClick={toggleConfig(hud)}
-									className="action"
-									alt="HUD panel"
-								/>
+								<img src={Settings} onClick={toggleConfig(hud)} className="action" alt="HUD panel" />
 							) : (
 								''
 							)}
