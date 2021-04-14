@@ -125,7 +125,7 @@ export default {
 		save: async (hud: string, name: string) => await apiV2(`huds/add`, 'POST', { hud, name }),
 		delete: async (hudDir: string) => await apiV2(`huds?hudDir=${hudDir}`, 'DELETE'),
 		download: (uuid: string): Promise<{ result: I.HUD | null }> => apiV2(`huds/download/${uuid}`),
-		upload: (hudDir: string) => apiV2(`huds/upload/${hudDir}`, 'POST')
+		upload: (hudDir: string): Promise<any> => apiV2(`huds/upload/${hudDir}`, 'POST')
 	},
 	machine: {
 		get: async (): Promise<{ id: string }> => await apiV2('machine')

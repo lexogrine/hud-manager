@@ -71,18 +71,17 @@ async function default_1() {
         const game = req.params.game;
         exports.customer.game = game;
         const result = await cloud_1.checkCloudStatus(game);
+        io.emit('reloadHUDs');
         res.json({ result });
     });
-    __1.app.route('/api/cloud/upload')
-        .post(async (req, res) => {
+    __1.app.route('/api/cloud/upload').post(async (req, res) => {
         const game = exports.customer.game;
         if (!game)
             return res.sendStatus(403);
         const result = await cloud_1.uploadLocalToCloud(game);
         return res.json({ result });
     });
-    __1.app.route('/api/cloud/download')
-        .post(async (req, res) => {
+    __1.app.route('/api/cloud/download').post(async (req, res) => {
         const game = exports.customer.game;
         if (!game)
             return res.sendStatus(403);

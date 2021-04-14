@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Row, Col, UncontrolledCollapse, Button } from 'reactstrap';
+import { Row, Col, UncontrolledCollapse } from 'reactstrap';
 import Config from './../../../../api/config';
 import Tip from './../../../Tooltip';
 import api from './../../../../api/api';
@@ -24,19 +24,17 @@ interface IProps {
 	isActive: boolean;
 	toggleConfig: (hud: I.HUD) => any;
 	customFields: I.CustomFieldStore;
-	loadHUDs: () => void;
+	loadHUDs: () => Promise<void>;
 	setHUDLoading: (uuid: string, isLoading: boolean) => void;
 	isLoading: boolean;
 }
 
 const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHUDs, setHUDLoading }: IProps) => {
 	const gameToTag = (game: string) => {
-		if (game === 'csgo') {
-			return '[CSGO]';
-		} else if (game === 'rocketleague') {
+		if (game === 'rocketleague') {
 			return '[RL]';
 		}
-		return null;
+		return '[CSGO]';
 	};
 	const [isOpen, setOpen] = useState(false);
 	const toggleModal = () => setOpen(!isOpen);
@@ -58,14 +56,32 @@ const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHU
 		api.huds.download(uuid).then(res => {
 			if (!res || !res.result) {
 				// TODO: Handler error
-				return;
 			}
-			setHUDLoading(uuid, false);
-			loadHUDs();
+			loadHUDs().then(() => {
+				setHUDLoading(uuid, false);
+			})
+		}).catch(() => {
+			loadHUDs().then(() => {
+				setHUDLoading(uuid, false);
+			})
 		});
 	};
-	const uploadHUD = (dir: string) => {
+	const uploadHUD = (dir: string, uuid: string) => {
 		api.huds.upload(dir);
+
+		setHUDLoading(uuid, true);
+		api.huds.upload(uuid).then(res => {
+			if (!res || !res.result) {
+				// TODO: Handler error
+			}
+			loadHUDs().then(() => {
+				setHUDLoading(uuid, false);
+			})
+		}).catch(() => {
+			loadHUDs().then(() => {
+				setHUDLoading(uuid, false);
+			})
+		});
 	};
 	const missingFieldsText = [];
 	const missingFields = getMissingFields(customFields, hud.requiredFields);
@@ -95,6 +111,7 @@ const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHU
 
 	const isLocal = hud.status !== 'REMOTE';
 	const isNotRemote = hud.status === 'LOCAL';
+	console.log(hud)
 
 	return (
 		<Row key={hud.dir} className="hudRow">
@@ -116,7 +133,7 @@ const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHU
 							<Col>
 								<strong className="hudName">
 									{hud.isDev ? '[DEV] ' : ''}
-									{gameToTag(hud.game) + ' '}
+									{gameToTag(hud.game)+ ' '}
 									{hud.name}
 								</strong>{' '}
 								<span className="hudVersion">({hud.version})</span>
@@ -201,7 +218,7 @@ const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHU
 												src={uploadIcon}
 												className="action"
 												onClick={() => {
-													uploadHUD(hud.dir);
+													uploadHUD(hud.dir, hud.uuid);
 												}}
 											/>
 										) : (

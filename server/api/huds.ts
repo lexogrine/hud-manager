@@ -59,8 +59,9 @@ type OnlineHUDEntry = {
 };
 
 const getOnlineHUDs = async () => {
+	if (!customer.game) return [];
 	try {
-		const onlineHUDData = ((await api(`storage/file`)) || []) as OnlineHUDEntry[];
+		const onlineHUDData = ((await api(`storage/file/${customer.game}`)) || []) as OnlineHUDEntry[];
 		const huds = onlineHUDData.map(data => {
 			const hud = {
 				...data.extra,
@@ -75,6 +76,7 @@ const getOnlineHUDs = async () => {
 };
 
 export const listHUDs = async () => {
+	if (!customer || !customer.game) return [];
 	const onlineHUDs = await getOnlineHUDs();
 
 	const dir = path.join(app.getPath('home'), 'HUDs');
@@ -103,7 +105,7 @@ export const listHUDs = async () => {
 		}
 		return hud;
 	};
-	return huds.map(mapHUDStatus);
+	return huds.map(mapHUDStatus).filter(hud => customer.game === hud.game || (customer.game === "csgo" && !hud.game));
 };
 
 export const getHUDs: express.RequestHandler = async (req, res) => {
@@ -448,12 +450,11 @@ type APIFileResponse = {
 	data: (OnlineHUDEntry & { data: { type: string; data: number[] } | null }) | null;
 };
 
-const wait = (ms: number) => new Promise(r => setTimeout(r, ms));
+// const wait = (ms: number) => new Promise(r => setTimeout(r, ms));
 
 export const downloadHUD: RequestHandler = async (req, res) => {
 	const uuid = req.params.uuid;
 	if (!customer.game || !uuid) return res.sendStatus(422);
-	await wait(3000);
 	const hudData = ((await api(`storage/file/${customer.game}/hud/${uuid}`)) || null) as APIFileResponse | null;
 	const name = hudData?.data?.extra?.name;
 

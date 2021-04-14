@@ -62,21 +62,23 @@ const remove = (pathToRemove) => {
     fs.rmdirSync(pathToRemove);
 };
 const verifyUniqueID = (hudDir) => {
-    const dir = path.join(electron_1.app.getPath('home'), 'HUDs', hudDir, "uuid.lhm");
+    const dir = path.join(electron_1.app.getPath('home'), 'HUDs', hudDir, 'uuid.lhm');
     if (fs.existsSync(dir)) {
-        return fs.readFileSync(dir, "utf8");
+        return fs.readFileSync(dir, 'utf8');
     }
     const uuid = v4_1.default();
     fs.writeFileSync(dir, uuid, 'utf8');
     return uuid;
 };
 const getOnlineHUDs = async () => {
+    if (!_1.customer.game)
+        return [];
     try {
-        const onlineHUDData = (await user_1.api(`storage/file`) || []);
+        const onlineHUDData = ((await user_1.api(`storage/file/${_1.customer.game}`)) || []);
         const huds = onlineHUDData.map(data => {
             const hud = {
                 ...data.extra,
-                uuid: data.uuid,
+                uuid: data.uuid
             };
             return hud;
         });
@@ -87,6 +89,8 @@ const getOnlineHUDs = async () => {
     }
 };
 exports.listHUDs = async () => {
+    if (!_1.customer || !_1.customer.game)
+        return [];
     const onlineHUDs = await getOnlineHUDs();
     const dir = path.join(electron_1.app.getPath('home'), 'HUDs');
     const filtered = fs
@@ -100,16 +104,16 @@ exports.listHUDs = async () => {
     const onlineOnlyHUDs = onlineHUDs.filter(hud => !huds.map(hud => hud.uuid).includes(hud.uuid));
     huds.push(...onlineOnlyHUDs);
     const mapHUDStatus = (hud) => {
-        hud.status = "LOCAL";
+        hud.status = 'LOCAL';
         if (onlineOnlyHUDs.map(hud => hud.uuid).includes(hud.uuid)) {
-            hud.status = "REMOTE";
+            hud.status = 'REMOTE';
         }
         else if (onlineHUDs.map(hud => hud.uuid).includes(hud.uuid)) {
-            hud.status = "SYNCED";
+            hud.status = 'SYNCED';
         }
         return hud;
     };
-    return huds.map(mapHUDStatus);
+    return huds.map(mapHUDStatus).filter(hud => _1.customer.game === hud.game || (_1.customer.game === "csgo" && !hud.game));
 };
 exports.getHUDs = async (req, res) => {
     return res.json(await exports.listHUDs());
@@ -403,7 +407,7 @@ async function loadHUD(base64, name, existingUUID) {
                     }
                     const hudData = await exports.getHUDData(path.basename(hudPath));
                     removeArchives();
-                    fs.writeFileSync(path.join(hudPath, "uuid.lhm"), existingUUID || v4_1.default(), 'utf8');
+                    fs.writeFileSync(path.join(hudPath, 'uuid.lhm'), existingUUID || v4_1.default(), 'utf8');
                     res(hudData);
                 }
                 else {
@@ -431,17 +435,19 @@ async function loadHUD(base64, name, existingUUID) {
         }
     });
 }
-const wait = (ms) => new Promise(r => setTimeout(r, ms));
+// const wait = (ms: number) => new Promise(r => setTimeout(r, ms));
 exports.downloadHUD = async (req, res) => {
     const uuid = req.params.uuid;
     if (!_1.customer.game || !uuid)
         return res.sendStatus(422);
-    await wait(3000);
-    const hudData = (await user_1.api(`storage/file/${_1.customer.game}/hud/${uuid}`) || null);
+    const hudData = ((await user_1.api(`storage/file/${_1.customer.game}/hud/${uuid}`)) || null);
     const name = hudData?.data?.extra?.name;
-    if (hudData?.data?.data?.type !== "Buffer" || !name)
+    if (hudData?.data?.data?.type !== 'Buffer' || !name)
         return res.sendStatus(422);
-    const hudBufferString = Buffer.from(hudData.data.data).toString('base64');
+    const data = hudData.data.data;
+    if (typeof data === 'number')
+        return res.sendStatus(422);
+    const hudBufferString = Buffer.from(data).toString('base64');
     const result = await loadHUD(hudBufferString, name, uuid);
     return res.json({ result });
 };
@@ -466,13 +472,11 @@ exports.uploadHUD = async (req, res) => {
     if (!hud || !hud.uuid)
         return res.sendStatus(422);
     const archivePath = await archiveHUD(hudDir);
-    console.log(archivePath, 'uploading');
     const archiveBase64 = fs.readFileSync(archivePath, 'base64');
     const hudUploadResponse = await user_1.api(`storage/file/${_1.customer.game}/hud/${hud.uuid}`, 'POST', {
         file: archiveBase64,
         extra: hud
     });
-    console.log(hudUploadResponse);
     fs.unlinkSync(archivePath);
     return res.json({ hudUploadResponse });
 };
