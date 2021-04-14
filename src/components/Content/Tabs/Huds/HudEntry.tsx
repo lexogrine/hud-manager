@@ -46,19 +46,19 @@ const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHU
 		toggleModal();
 	};
 	const downloadHUD = (uuid: string) => {
-		setHUDLoading(uuid, true)
+		setHUDLoading(uuid, true);
 		api.huds.download(uuid).then(res => {
-			if(!res || !res.result){
+			if (!res || !res.result) {
 				// TODO: Handler error
 				return;
 			}
 			setHUDLoading(uuid, false);
 			loadHUDs();
 		});
-	}
+	};
 	const uploadHUD = (dir: string) => {
 		api.huds.upload(dir);
-	}
+	};
 	const missingFieldsText = [];
 	const missingFields = getMissingFields(customFields, hud.requiredFields);
 	if (missingFields) {
@@ -85,8 +85,8 @@ const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHU
 		}
 	}
 
-	const isLocal = hud.status !== "REMOTE";
-	const isNotRemote = hud.status === "LOCAL";
+	const isLocal = hud.status !== 'REMOTE';
+	const isNotRemote = hud.status === 'LOCAL';
 
 	return (
 		<Row key={hud.dir} className="hudRow">
@@ -94,12 +94,14 @@ const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHU
 			<Col s={12}>
 				<Row>
 					<Col className="centered thumb">
-						{ isLocal ? <img
-							src={`${Config.isDev ? Config.apiAddress : '/'}${
-								hud.isDev ? 'dev/thumb.png' : `huds/${hud.dir}/thumbnail`
-							}`}
-							alt={`${hud.name}`}
-						/> : null}
+						{isLocal ? (
+							<img
+								src={`${Config.isDev ? Config.apiAddress : '/'}${
+									hud.isDev ? 'dev/thumb.png' : `huds/${hud.dir}/thumbnail`
+								}`}
+								alt={`${hud.name}`}
+							/>
+						) : null}
 					</Col>
 					<Col style={{ flex: 10, display: 'flex', justifyContent: 'center', flexDirection: 'column' }}>
 						<Row>
@@ -154,69 +156,99 @@ const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHU
 							''
 						)}
 					</Col>
-					{ isLocal ? <Col style={{ flex: 1 }} className="hud-options">
-						<div className="centered">
-							{isLocal ? <img
-								src={HyperLink}
-								id={`hud_link_${hashCode(hud.dir)}`}
-								className="action"
-								alt="Local network HUD URL"
-							/> : null}
-							{hud.panel?.length ? (
-								<img src={Settings} onClick={toggleConfig(hud)} className="action" alt="HUD panel" />
-							) : (
-								''
-							)}
-							{Config.isElectron ? (
-								<img
-									src={Display}
-									onClick={() => startHUD(hud.dir)}
-									className="action"
-									alt="Start HUD"
-								/>
-							) : null}
-							<ElectronOnly>
-								
-								{
-									isNotRemote ? (
-										!isLoading ? <img src={uploadIcon} className="action" onClick={() => {uploadHUD(hud.dir)}} /> : "Uploading..."
-									) : null
-								}
-							</ElectronOnly>
-							{Config.isElectron && !hud.isDev ? (
-								<img src={trash} onClick={toggleModal} className="action" alt="Delete HUD" />
-							) : null}
-						</div>
-						{Config.isElectron ? (
-							<div className="hud-toggle">
-								<Switch
-									id={`hud-switch-${hud.dir}`}
-									isOn={isActive}
-									handleToggle={() => setHUD(hud.url)}
-								/>
+					{isLocal ? (
+						<Col style={{ flex: 1 }} className="hud-options">
+							<div className="centered">
+								{isLocal ? (
+									<img
+										src={HyperLink}
+										id={`hud_link_${hashCode(hud.dir)}`}
+										className="action"
+										alt="Local network HUD URL"
+									/>
+								) : null}
+								{hud.panel?.length ? (
+									<img
+										src={Settings}
+										onClick={toggleConfig(hud)}
+										className="action"
+										alt="HUD panel"
+									/>
+								) : (
+									''
+								)}
+								{Config.isElectron ? (
+									<img
+										src={Display}
+										onClick={() => startHUD(hud.dir)}
+										className="action"
+										alt="Start HUD"
+									/>
+								) : null}
+								<ElectronOnly>
+									{isNotRemote ? (
+										!isLoading ? (
+											<img
+												src={uploadIcon}
+												className="action"
+												onClick={() => {
+													uploadHUD(hud.dir);
+												}}
+											/>
+										) : (
+											'Uploading...'
+										)
+									) : null}
+								</ElectronOnly>
+								{Config.isElectron && !hud.isDev ? (
+									<img src={trash} onClick={toggleModal} className="action" alt="Delete HUD" />
+								) : null}
 							</div>
-						) : null}
-					</Col> : <Col style={{ flex: 1 }} className="hud-options">
-						<div className="centered">
-							{ !isLoading ? <img src={downloadIcon} className="action" onClick={() => {downloadHUD(hud.uuid)}} /> : "Downloading..."}
-						</div>
-					</Col> } 
+							{Config.isElectron ? (
+								<div className="hud-toggle">
+									<Switch
+										id={`hud-switch-${hud.dir}`}
+										isOn={isActive}
+										handleToggle={() => setHUD(hud.url)}
+									/>
+								</div>
+							) : null}
+						</Col>
+					) : (
+						<Col style={{ flex: 1 }} className="hud-options">
+							<div className="centered">
+								{!isLoading ? (
+									<img
+										src={downloadIcon}
+										className="action"
+										onClick={() => {
+											downloadHUD(hud.uuid);
+										}}
+									/>
+								) : (
+									'Downloading...'
+								)}
+							</div>
+						</Col>
+					)}
 				</Row>
-				{ isLocal ? <Row>
-					<Col s={12}>
-						<div className="match_data">
-							<UncontrolledCollapse toggler={`#hud_link_${hashCode(hud.dir)}`}>
-								<code
-									onClick={() => {
-										navigator.clipboard.writeText(hud.url).catch(console.error);
-									}}
-								>
-									{hud.url}
-								</code>
-							</UncontrolledCollapse>
-						</div>
-					</Col>
-				</Row> : null}
+				{isLocal ? (
+					<Row>
+						<Col s={12}>
+							<div className="match_data">
+								<UncontrolledCollapse toggler={`#hud_link_${hashCode(hud.dir)}`}>
+									<code
+										onClick={() => {
+											navigator.clipboard.writeText(hud.url).catch(console.error);
+										}}
+									>
+										{hud.url}
+									</code>
+								</UncontrolledCollapse>
+							</div>
+						</Col>
+					</Row>
+				) : null}
 			</Col>
 		</Row>
 	);

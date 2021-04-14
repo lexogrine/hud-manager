@@ -199,7 +199,7 @@ export type RequiredFields = {
 	};
 };
 
-export type HUDSyncStatus = "SYNCED" | "REMOTE" | "LOCAL";
+export type HUDSyncStatus = 'SYNCED' | 'REMOTE' | 'LOCAL';
 export interface HUD {
 	name: string;
 	version: string;

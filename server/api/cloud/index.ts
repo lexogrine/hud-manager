@@ -148,7 +148,10 @@ const downloadCloudData = async (game: I.AvailableGames, resource: I.AvailableRe
 			return false;
 		}
 		console.log('reloading', resource, 'for', game);
-		await replacer[resource](resources.map(resource => ({ ...resource, game })), game);
+		await replacer[resource](
+			resources.map(resource => ({ ...resource, game })),
+			game
+		);
 
 		return true;
 	} catch {
@@ -167,7 +170,7 @@ export const downloadCloudToLocal = async (game: I.AvailableGames) => {
 	} catch {
 		return false;
 	}
-}
+};
 
 export const uploadLocalToCloud = async (game: I.AvailableGames) => {
 	const resources = await Promise.all([getPlayersList({ game }), getTeamsList({ game }) /*, getMatches()*/]);
@@ -239,7 +242,6 @@ export const checkCloudStatus = async (game: I.AvailableGames) => {
 			console.log('SYNC CONFLICT, WHAT DO? #1');
 			return 'NO_SYNC_LOCAL';
 		}
-
 
 		const nonSyncedResources = I.availableResources.filter(
 			availableResource =>

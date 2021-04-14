@@ -14,7 +14,6 @@ import { customer } from '.';
 
 const DecompressZip = require('decompress-zip');
 
-
 const getRandomString = () =>
 	(Math.random() * 1000 + 1)
 		.toString(36)
@@ -41,31 +40,31 @@ const remove = (pathToRemove: string) => {
 };
 
 const verifyUniqueID = (hudDir: string) => {
-	const dir = path.join(app.getPath('home'), 'HUDs', hudDir, "uuid.lhm");
+	const dir = path.join(app.getPath('home'), 'HUDs', hudDir, 'uuid.lhm');
 	if (fs.existsSync(dir)) {
-		return fs.readFileSync(dir, "utf8");
+		return fs.readFileSync(dir, 'utf8');
 	}
 	const uuid = uuidv4();
 	fs.writeFileSync(dir, uuid, 'utf8');
 	return uuid;
-}
+};
 
 type OnlineHUDEntry = {
-	uuid: string,
-	id: number,
-	game: I.AvailableGames,
-	resource: string,
-	data: number,
-	extra: I.HUD
-}
+	uuid: string;
+	id: number;
+	game: I.AvailableGames;
+	resource: string;
+	data: number;
+	extra: I.HUD;
+};
 
 const getOnlineHUDs = async () => {
 	try {
-		const onlineHUDData = (await api(`storage/file`) || []) as OnlineHUDEntry[];
+		const onlineHUDData = ((await api(`storage/file`)) || []) as OnlineHUDEntry[];
 		const huds = onlineHUDData.map(data => {
 			const hud = {
 				...data.extra,
-				uuid: data.uuid,
+				uuid: data.uuid
 			} as I.HUD;
 			return hud;
 		});
@@ -73,7 +72,7 @@ const getOnlineHUDs = async () => {
 	} catch {
 		return [];
 	}
-}
+};
 
 export const listHUDs = async () => {
 	const onlineHUDs = await getOnlineHUDs();
@@ -96,14 +95,14 @@ export const listHUDs = async () => {
 	huds.push(...onlineOnlyHUDs);
 
 	const mapHUDStatus = (hud: I.HUD) => {
-		hud.status = "LOCAL";
+		hud.status = 'LOCAL';
 		if (onlineOnlyHUDs.map(hud => hud.uuid).includes(hud.uuid)) {
-			hud.status = "REMOTE";
+			hud.status = 'REMOTE';
 		} else if (onlineHUDs.map(hud => hud.uuid).includes(hud.uuid)) {
-			hud.status = "SYNCED";
+			hud.status = 'SYNCED';
 		}
 		return hud;
-	}
+	};
 	return huds.map(mapHUDStatus);
 };
 
@@ -388,7 +387,7 @@ function removeArchives() {
 				return;
 			}
 			if (fs.existsSync(file)) fs.unlinkSync(file);
-		} catch { }
+		} catch {}
 	});
 }
 
@@ -417,7 +416,7 @@ async function loadHUD(base64: string, name: string, existingUUID?: string): Pro
 					const hudData = await getHUDData(path.basename(hudPath));
 					removeArchives();
 
-					fs.writeFileSync(path.join(hudPath, "uuid.lhm"), existingUUID || uuidv4(), 'utf8');
+					fs.writeFileSync(path.join(hudPath, 'uuid.lhm'), existingUUID || uuidv4(), 'utf8');
 					res(hudData);
 				} else {
 					throw new Error();
@@ -445,8 +444,8 @@ async function loadHUD(base64: string, name: string, existingUUID?: string): Pro
 }
 
 type APIFileResponse = {
-	data: OnlineHUDEntry & { data: { type: string, data: number[] } | null } | null;
-}
+	data: (OnlineHUDEntry & { data: { type: string; data: number[] } | null }) | null;
+};
 
 const wait = (ms: number) => new Promise(r => setTimeout(r, ms));
 
@@ -454,43 +453,42 @@ export const downloadHUD: RequestHandler = async (req, res) => {
 	const uuid = req.params.uuid;
 	if (!customer.game || !uuid) return res.sendStatus(422);
 	await wait(3000);
-	const hudData = (await api(`storage/file/${customer.game}/hud/${uuid}`) || null) as APIFileResponse | null;
+	const hudData = ((await api(`storage/file/${customer.game}/hud/${uuid}`)) || null) as APIFileResponse | null;
 	const name = hudData?.data?.extra?.name;
 
-	if (hudData?.data?.data?.type !== "Buffer" || !name) return res.sendStatus(422);
+	if (hudData?.data?.data?.type !== 'Buffer' || !name) return res.sendStatus(422);
 
 	const hudBufferString = Buffer.from(hudData.data.data).toString('base64');
 
 	const result = await loadHUD(hudBufferString, name, uuid);
 
 	return res.json({ result });
-}
+};
 
-const archiveHUD = (hudDir: string) => new Promise<string>((res, rej) => {
-	const dir = path.join(app.getPath('home'), 'HUDs', hudDir);
+const archiveHUD = (hudDir: string) =>
+	new Promise<string>((res, rej) => {
+		const dir = path.join(app.getPath('home'), 'HUDs', hudDir);
 
-	const fileName = `${uuidv4()}.zip`;
+		const fileName = `${uuidv4()}.zip`;
 
-	const archive = archiver('zip', {
-		zlib: { level: 9 } // Sets the compression level.
+		const archive = archiver('zip', {
+			zlib: { level: 9 } // Sets the compression level.
+		});
+
+		const outputFilePath = path.join(app.getPath('home'), 'HUDs', fileName);
+
+		const output = fs.createWriteStream(outputFilePath);
+
+		output.on('close', () => res(outputFilePath));
+
+		archive.pipe(output);
+
+		archive.directory(dir, false);
+
+		archive.finalize();
 	});
 
-	const outputFilePath = path.join(app.getPath('home'), 'HUDs', fileName)
-
-	const output = fs.createWriteStream(outputFilePath);
-
-	output.on('close', () => res(outputFilePath));
-
-	archive.pipe(output);
-
-	archive.directory(dir, false);
-
-	archive.finalize();
-});
-
 export const uploadHUD: RequestHandler = async (req, res) => {
-	
-	
 	const hudDir = req.params.hudDir;
 	if (!customer.game || !hudDir) return res.sendStatus(422);
 
@@ -500,7 +498,7 @@ export const uploadHUD: RequestHandler = async (req, res) => {
 
 	const archivePath = await archiveHUD(hudDir);
 	const archiveBase64 = fs.readFileSync(archivePath, 'base64');
-	
+
 	const hudUploadResponse = await api(`storage/file/${customer.game}/hud/${hud.uuid}`, 'POST', {
 		file: archiveBase64,
 		extra: hud
@@ -508,6 +506,6 @@ export const uploadHUD: RequestHandler = async (req, res) => {
 	fs.unlinkSync(archivePath);
 
 	return res.json({ hudUploadResponse });
-}
+};
 
 listHUDs().then(huds => huds.filter(hud => !!hud.dir).map(hud => verifyUniqueID(hud.dir)));

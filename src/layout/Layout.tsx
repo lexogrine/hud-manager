@@ -204,7 +204,12 @@ export default class Layout extends React.Component<{}, IState> {
 						loadUser={this.loadUser}
 						error={loginError}
 					/>
-					<SyncModal isOpen={isSyncModalOpen} setOpen={this.setSyncOpen} syncStatus={synchronizationStatus} reload={this.state.data.reload} />
+					<SyncModal
+						isOpen={isSyncModalOpen}
+						setOpen={this.setSyncOpen}
+						syncStatus={synchronizationStatus}
+						reload={this.state.data.reload}
+					/>
 					<GamePicker isOpen={Boolean(data.customer && !this.state.picked)} setGame={this.setGame} />
 					<Content />
 				</div>

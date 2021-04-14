@@ -120,12 +120,12 @@ export default class Huds extends React.Component<IProps, IState> {
 	};
 	setHUDLoading = (uuid: string, isLoading: boolean) => {
 		const { loadingHUDs } = this.state;
-		if(isLoading && !loadingHUDs.includes(uuid)){
+		if (isLoading && !loadingHUDs.includes(uuid)) {
 			this.setState({ loadingHUDs: [...loadingHUDs, uuid] });
-		} else if(!isLoading && loadingHUDs.includes(uuid)){
+		} else if (!isLoading && loadingHUDs.includes(uuid)) {
 			this.setState({ loadingHUDs: loadingHUDs.filter(hudUUID => hudUUID !== uuid) });
 		}
-	}
+	};
 	async componentDidMount() {
 		socket.on('reloadHUDs', this.loadHUDs);
 		socket.on('active_hlae', (hud: string | null) => {

@@ -33,7 +33,7 @@ const SyncModal = ({ isOpen, setOpen, syncStatus, reload }: IProps) => {
 					setOpen(false);
 				});
 			});
-		}
+		};
 		switch (syncStatus) {
 			case 'ALL_SYNCED':
 				return [];
@@ -43,12 +43,15 @@ const SyncModal = ({ isOpen, setOpen, syncStatus, reload }: IProps) => {
 						label: 'Upload',
 						action: () => {
 							setLoading(true);
-							api.cloud.upload().then(() => {
-								setLoading(false);
-								setOpen(false);
-							}).catch(() => {
-								// Handle error
-							});
+							api.cloud
+								.upload()
+								.then(() => {
+									setLoading(false);
+									setOpen(false);
+								})
+								.catch(() => {
+									// Handle error
+								});
 						},
 						type: ''
 					},
@@ -61,15 +64,21 @@ const SyncModal = ({ isOpen, setOpen, syncStatus, reload }: IProps) => {
 			case 'NO_SYNC_LOCAL':
 				return [
 					{
-						label: 'Download', action: () => {
+						label: 'Download',
+						action: () => {
 							setLoading(true);
-							api.cloud.download().then(reload).then(() => {
-								setLoading(false);
-								setOpen(false);
-							}).catch(() => {
-								// Handle error
-							});
-						}, type: ''
+							api.cloud
+								.download()
+								.then(reload)
+								.then(() => {
+									setLoading(false);
+									setOpen(false);
+								})
+								.catch(() => {
+									// Handle error
+								});
+						},
+						type: ''
 					},
 					{ label: 'Disable', action: disableSyncing, type: 'secondary' }
 				];
@@ -79,7 +88,7 @@ const SyncModal = ({ isOpen, setOpen, syncStatus, reload }: IProps) => {
 		}
 	};
 	return (
-		<Modal isOpen={isOpen} toggle={() => { }} className="veto_modal">
+		<Modal isOpen={isOpen} toggle={() => {}} className="veto_modal">
 			<ModalHeader>Synchronization</ModalHeader>
 			<ModalBody>
 				<p>{getLabel()}</p>

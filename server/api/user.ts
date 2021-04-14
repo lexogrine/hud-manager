@@ -16,11 +16,11 @@ const cookieJar = new CookieJar(new FileCookieStore(cookiePath));
 export const fetch = fetchHandler(nodeFetch, cookieJar);
 
 export const verifyGame: RequestHandler = (req, res, next) => {
-	if(!customer.game){
+	if (!customer.game) {
 		return res.sendStatus(403);
 	}
 	return next();
-}
+};
 
 export const api = (url: string, method = 'GET', body?: any, opts?: RequestInit) => {
 	const options: RequestInit = opts || {
