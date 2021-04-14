@@ -23,6 +23,7 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 		username: '',
 		avatar: '',
 		country: '',
+		game: cxt.game,
 		steamid: '',
 		team: '',
 		extra: {}

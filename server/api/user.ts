@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { RequestHandler } from 'express';
 import { app } from 'electron';
 import jwt from 'jsonwebtoken';
 import nodeFetch, { RequestInit } from 'node-fetch';
@@ -13,10 +13,17 @@ import { getMachineId } from './machine';
 
 const cookiePath = path.join(app.getPath('userData'), 'cookie.json');
 const cookieJar = new CookieJar(new FileCookieStore(cookiePath));
-const fetch = fetchHandler(nodeFetch, cookieJar);
+export const fetch = fetchHandler(nodeFetch, cookieJar);
 
-const api = (url: string, method = 'GET', body?: any) => {
-	const options: RequestInit = {
+export const verifyGame: RequestHandler = (req, res, next) => {
+	if (!customer.game) {
+		return res.sendStatus(403);
+	}
+	return next();
+};
+
+export const api = (url: string, method = 'GET', body?: any, opts?: RequestInit) => {
+	const options: RequestInit = opts || {
 		method,
 		headers: {
 			Accept: 'application/json',
@@ -27,7 +34,7 @@ const api = (url: string, method = 'GET', body?: any) => {
 		options.body = JSON.stringify(body);
 	}
 	let data: any = null;
-	return fetch(`https://hmapi.lexogrine.com/${url}`, options).then(res => {
+	return fetch(`http://localhost:5000/${url}`, options).then(res => {
 		data = res;
 		return res.json().catch(() => data && data.status < 300);
 	});
@@ -92,6 +99,8 @@ export const getCurrent: express.RequestHandler = async (req, res) => {
 	const response = await loadUser();
 
 	if (customer.customer) {
+		if ((customer.customer as any).license.type === 'professional') {
+		}
 		return res.json(customer.customer);
 	}
 	return res.status(403).json(response);

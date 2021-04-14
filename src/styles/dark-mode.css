@@ -226,3 +226,33 @@ button.btn-primary {
 .match_data code {
     cursor: pointer;
 }
+.games-picker {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.game-preview {
+    display: flex;
+    flex-direction: column;
+    padding: 10px 25px;
+    cursor: pointer;
+}
+.game-preview:hover {
+    background-color: rgba(122, 217, 245, 0.5);
+}
+.game-preview.active {
+    background-color: #7ad9f5;
+}
+.game-title {
+    font-size: 12px;
+    font-Weight:700;
+    text-transform: uppercase;
+    text-align: center;
+}
+.game-img, .game-img img {
+    width: 110px;
+    height: 110px;
+}
+.game-img {
+    margin: 20px 0;
+}

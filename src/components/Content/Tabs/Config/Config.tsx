@@ -54,7 +54,8 @@ export default class Config extends React.Component<IProps, IState> {
 				port: 1349,
 				token: '',
 				hlaePath: '',
-				afxCEFHudInteropPath: ''
+				afxCEFHudInteropPath: '',
+				sync: false
 			},
 			cfg: {
 				success: false,

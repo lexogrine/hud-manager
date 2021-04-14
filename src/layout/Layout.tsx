@@ -8,6 +8,9 @@ import { socket } from './../components/Content/Tabs/Live/Live';
 import LoginRegisterModal from './LoginRegisterModal';
 import ElectronOnly from './../components/ElectronOnly';
 import { hash } from '../hash';
+import GamePicker from './GamePicker';
+import { AvailableGames, CloudSyncStatus } from '../../types/interfaces';
+import SyncModal from './SyncModal';
 
 declare let window: any;
 const isElectron = config.isElectron;
@@ -20,8 +23,12 @@ interface IState {
 	data: IContextData;
 	loading: boolean;
 	loadingLogin: boolean;
+	loadingGame: boolean;
 	loginError: string;
 	version: string;
+	picked: null | AvailableGames;
+	synchronizationStatus: CloudSyncStatus | null;
+	isSyncModalOpen: boolean;
 }
 export default class Layout extends React.Component<{}, IState> {
 	constructor(props: {}) {
@@ -42,26 +49,53 @@ export default class Layout extends React.Component<{}, IState> {
 					]).then(this.rehash);
 				},
 				fields: { players: [], teams: [] },
-				hash: ''
+				hash: '',
+				game: 'csgo'
 			},
 			loginError: '',
 			loadingLogin: false,
 			loading: true,
-			version: '-'
+			loadingGame: true,
+			version: '-',
+			picked: null,
+			synchronizationStatus: null,
+			isSyncModalOpen: false
 		};
 	}
 	async componentDidMount() {
 		//const socket = io.connect(`${config.isDev ? config.apiAddress : '/'}`);
+		api.games.getCurrent().then(result => {
+			this.setState({
+				loadingGame: false,
+				picked: result.game
+			});
+		});
 		await this.getVersion();
 		this.loadUser();
 		socket.on('match', (fromVeto?: boolean) => {
 			if (fromVeto) this.loadMatch();
 		});
 	}
+	setSyncOpen = (sync: boolean) => {
+		this.setState({ isSyncModalOpen: sync });
+	};
 	rehash = () => {
 		this.setState(state => {
 			state.data.hash = hash();
 			return state;
+		});
+	};
+	setGame = (game: AvailableGames) => {
+		this.setState({ picked: game }, this.sync);
+	};
+	sync = () => {
+		if (!this.state.picked) return;
+		api.games.startServices(this.state.picked).then(response => {
+			this.setState({ synchronizationStatus: response.result });
+			this.setSyncOpen(response.result !== 'ALL_SYNCED');
+			if (response.result === 'ALL_SYNCED') {
+				this.state.data.reload();
+			}
 		});
 	};
 	getCustomFields = async () => {
@@ -98,6 +132,7 @@ export default class Layout extends React.Component<{}, IState> {
 	};
 	loadTeams = async () => {
 		const teams = await api.teams.get();
+		if (!teams) return;
 		const { data } = this.state;
 		data.teams = teams;
 		if (teams) {
@@ -113,6 +148,7 @@ export default class Layout extends React.Component<{}, IState> {
 	};
 	loadMatch = async () => {
 		const matches = await api.match.get();
+		if (!matches) return;
 		const { data } = this.state;
 		data.matches = matches;
 		if (matches) {
@@ -136,13 +172,23 @@ export default class Layout extends React.Component<{}, IState> {
 	};
 	render() {
 		const { Provider } = ContextData;
-		const { loading, data, loadingLogin, loginError, version } = this.state;
+		const {
+			loading,
+			data,
+			loadingLogin,
+			loginError,
+			version,
+			loadingGame,
+			isSyncModalOpen,
+			synchronizationStatus
+		} = this.state;
 		return (
 			<Provider value={this.state.data}>
 				<div className={`loaded ${isElectron ? 'electron' : ''}`}>
 					{data.customer ? (
 						<div className={`license-status ${isElectron ? 'electron' : ''}`}>
 							{data.customer.license.type} {version}
+							<div onClick={this.sync}>Sync check</div>
 							<ElectronOnly>
 								<div className="logout-button" onClick={this.logout}>
 									Logout
@@ -150,7 +196,7 @@ export default class Layout extends React.Component<{}, IState> {
 							</ElectronOnly>
 						</div>
 					) : null}
-					{<div className={`loading-container ${loading ? '' : 'hide'}`}>Loading...</div>}
+					{<div className={`loading-container ${loading || loadingGame ? '' : 'hide'}`}>Loading...</div>}
 					<LoginRegisterModal
 						isOpen={!data.customer}
 						loading={loadingLogin}
@@ -158,6 +204,13 @@ export default class Layout extends React.Component<{}, IState> {
 						loadUser={this.loadUser}
 						error={loginError}
 					/>
+					<SyncModal
+						isOpen={isSyncModalOpen}
+						setOpen={this.setSyncOpen}
+						syncStatus={synchronizationStatus}
+						reload={this.state.data.reload}
+					/>
+					<GamePicker isOpen={Boolean(data.customer && !this.state.picked)} setGame={this.setGame} />
 					<Content />
 				</div>
 			</Provider>

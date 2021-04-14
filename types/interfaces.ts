@@ -1,12 +1,24 @@
 import { CSGO } from 'csgogsi-socket';
 
+export type AvailableGames = 'csgo' | 'rocketleague';
+
+export type AvailableResources = 'teams' | 'players' /* | 'matches'*/;
+
+export const availableResources: AvailableResources[] = ['teams', 'players' /*, 'matches'*/];
+
+export const availableGames: AvailableGames[] = ['csgo', 'rocketleague'];
+
+export type ResourcesTypes = Player | Team;
+
+export type CloudSyncStatus = 'NO_UPLOADED_RESOURCES' | 'ALL_SYNCED' | 'NO_SYNC_LOCAL' | 'UNKNOWN_ERROR';
 export interface Player {
-	_id?: string;
+	_id: string;
 	firstName: string;
 	lastName: string;
 	username: string;
 	avatar: string;
 	country: string;
+	game?: AvailableGames;
 	steamid: string;
 	team: string;
 	extra: Record<string, string>;
@@ -41,10 +53,11 @@ export interface CFG {
 }
 
 export interface Team {
-	_id?: string;
+	_id: string;
 	name: string;
 	shortName: string;
 	country: string;
+	game?: AvailableGames;
 	logo: string;
 	extra: Record<string, string>;
 }
@@ -78,6 +91,7 @@ export interface Match {
 	current: boolean;
 	left: MatchTeam;
 	right: MatchTeam;
+	game?: AvailableGames;
 	matchType: BOTypes;
 	vetos: Veto[];
 	startTime: number;
@@ -111,6 +125,7 @@ export interface Config {
 	token: string;
 	hlaePath: string;
 	afxCEFHudInteropPath: string;
+	sync: boolean;
 }
 
 export interface ExtendedConfig extends Config {
@@ -183,6 +198,8 @@ export type RequiredFields = {
 		[key: string]: CustomFieldInputType;
 	};
 };
+
+export type HUDSyncStatus = 'SYNCED' | 'REMOTE' | 'LOCAL';
 export interface HUD {
 	name: string;
 	version: string;
@@ -197,6 +214,8 @@ export interface HUD {
 	url: string;
 	allowAppsOnTop?: boolean;
 	requiredFields?: RequiredFields;
+	status: HUDSyncStatus;
+	uuid: string;
 	boltobserv?: {
 		css?: boolean;
 		maps?: boolean;
@@ -211,7 +230,7 @@ export interface User {
 	banned: boolean;
 }
 
-export type LicenseType = 'free' | 'professional' | 'enterprise';
+export type LicenseType = 'free' | 'professional' | 'personal' | 'enterprise';
 export interface License {
 	id: number;
 	type: LicenseType;
@@ -227,4 +246,30 @@ export interface Customer {
 }
 export interface CustomerData {
 	customer: Customer | null;
+	game: AvailableGames | null;
+}
+
+export interface CloudStorageData<T> {
+	id: number;
+	lhmId: string;
+	data: T;
+	game: AvailableGames;
+	owner: number;
+}
+
+export type ResourceUpdateStatus = {
+	[resource in AvailableResources]: string | null;
+};
+
+export type LastUpdated = {
+	[game in AvailableGames]: ResourceUpdateStatus;
+};
+
+export type Replacer = {
+	[resource in AvailableResources]: (resource: any[], game: AvailableGames) => Promise<boolean>;
+};
+
+export interface ResourceResponseStatus {
+	resource: AvailableResources;
+	status: string | null;
 }

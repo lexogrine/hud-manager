@@ -1,8 +1,9 @@
 import { app } from '../..';
 import * as T from './middlewares';
+import { verifyGame } from '../user';
 
 const initRoute = () => {
-	app.route('/api/teams').get(T.getTeams).post(T.addTeam);
+	app.route('/api/teams').get(verifyGame, T.getTeams).post(verifyGame, T.addTeam);
 
 	app.route('/api/teams/fields').get(T.getFields).patch(T.updateFields);
 

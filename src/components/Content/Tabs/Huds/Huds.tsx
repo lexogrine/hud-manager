@@ -55,6 +55,7 @@ interface IForm {
 interface IState {
 	config: I.Config;
 	huds: I.HUD[];
+	loadingHUDs: string[];
 	form: IForm;
 	active: I.HUD | null;
 	currentHUD: string | null;
@@ -66,13 +67,15 @@ export default class Huds extends React.Component<IProps, IState> {
 	constructor(props: { cxt: IContextData }) {
 		super(props);
 		this.state = {
+			loadingHUDs: [],
 			huds: [],
 			config: {
 				steamApiKey: '',
 				hlaePath: '',
 				port: 1349,
 				token: '',
-				afxCEFHudInteropPath: ''
+				afxCEFHudInteropPath: '',
+				sync: false
 			},
 			form: {
 				killfeed: false,
@@ -99,7 +102,7 @@ export default class Huds extends React.Component<IProps, IState> {
 				return;
 			}
 
-			api.huds.upload(reader.result, name);
+			api.huds.save(reader.result, name);
 		};
 	};
 	changeForm = (name: keyof IForm) => () => {
@@ -114,6 +117,14 @@ export default class Huds extends React.Component<IProps, IState> {
 	loadHUDs = async () => {
 		const huds = await api.huds.get();
 		this.setState({ huds });
+	};
+	setHUDLoading = (uuid: string, isLoading: boolean) => {
+		const { loadingHUDs } = this.state;
+		if (isLoading && !loadingHUDs.includes(uuid)) {
+			this.setState({ loadingHUDs: [...loadingHUDs, uuid] });
+		} else if (!isLoading && loadingHUDs.includes(uuid)) {
+			this.setState({ loadingHUDs: loadingHUDs.filter(hudUUID => hudUUID !== uuid) });
+		}
 	};
 	async componentDidMount() {
 		socket.on('reloadHUDs', this.loadHUDs);
@@ -262,6 +273,9 @@ export default class Huds extends React.Component<IProps, IState> {
 									toggleConfig={this.toggleConfig}
 									isActive={hud.url === this.state.currentHUD}
 									customFields={this.props.cxt.fields}
+									loadHUDs={this.loadHUDs}
+									setHUDLoading={this.setHUDLoading}
+									isLoading={!!hud.uuid && this.state.loadingHUDs.includes(hud.uuid)}
 								/>
 							))}
 						</Col>

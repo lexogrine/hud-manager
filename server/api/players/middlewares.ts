@@ -1,16 +1,23 @@
 import express from 'express';
 import db from './../../../init/database';
-import { Player } from '../../../types/interfaces';
+import { Player, AvailableGames } from '../../../types/interfaces';
 import { loadConfig, internalIP } from './../config';
 import fetch from 'node-fetch';
 import isSvg from './../../../src/isSvg';
 import { getPlayersList, getPlayerById, getPlayerBySteamId } from './index';
 import * as F from './../fields';
+import { validateCloudAbility, customer } from '..';
+import { addResource, updateResource, deleteResource } from '../cloud';
 
 const players = db.players;
 
 export const getPlayers: express.RequestHandler = async (req, res) => {
-	const players = await getPlayersList({});
+	const game = customer.game;
+	const $or: any[] = [{ game }];
+	if (game === 'csgo') {
+		$or.push({ game: { $exists: false } });
+	}
+	const players = await getPlayersList({ $or });
 	const config = await loadConfig();
 	return res.json(
 		players.map(player => ({
@@ -44,16 +51,17 @@ export const updatePlayer: express.RequestHandler = async (req, res) => {
 		return res.sendStatus(404);
 	}
 
-	const updated: Player = {
+	const updated = {
 		firstName: req.body.firstName,
 		lastName: req.body.lastName,
 		username: req.body.username,
 		avatar: req.body.avatar,
+		game: customer.game,
 		country: req.body.country,
 		steamid: req.body.steamid,
 		team: req.body.team,
 		extra: req.body.extra
-	};
+	} as Player;
 
 	if (req.body.avatar === undefined) {
 		updated.avatar = player.avatar;
@@ -63,12 +71,15 @@ export const updatePlayer: express.RequestHandler = async (req, res) => {
 		if (err) {
 			return res.sendStatus(500);
 		}
+		if (validateCloudAbility()) {
+			await updateResource(customer.game as AvailableGames, 'players', { ...updated, _id: req.params.id });
+		}
 		const player = await getPlayerById(req.params.id);
 		return res.json(player);
 	});
 };
 export const addPlayer: express.RequestHandler = (req, res) => {
-	const newPlayer: Player = {
+	const newPlayer = {
 		firstName: req.body.firstName,
 		lastName: req.body.lastName,
 		username: req.body.username,
@@ -76,11 +87,15 @@ export const addPlayer: express.RequestHandler = (req, res) => {
 		country: req.body.country,
 		steamid: req.body.steamid,
 		team: req.body.team,
-		extra: req.body.extra
-	};
-	players.insert(newPlayer, (err, player) => {
+		extra: req.body.extra,
+		game: customer.game
+	} as Player;
+	players.insert(newPlayer, async (err, player) => {
 		if (err) {
 			return res.sendStatus(500);
+		}
+		if (validateCloudAbility()) {
+			await addResource(customer.game as AvailableGames, 'players', player);
 		}
 		return res.json(player);
 	});
@@ -93,9 +108,13 @@ export const deletePlayer: express.RequestHandler = async (req, res) => {
 	if (!player) {
 		return res.sendStatus(404);
 	}
-	players.remove({ _id: req.params.id }, (err, n) => {
+	players.remove({ _id: req.params.id }, async (err, n) => {
 		if (err) {
 			return res.sendStatus(500);
+		}
+		console.log(validateCloudAbility());
+		if (validateCloudAbility()) {
+			await deleteResource(customer.game as AvailableGames, 'players', req.params.id);
 		}
 		return res.sendStatus(n ? 200 : 404);
 	});

@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.logout = exports.getCurrent = exports.loginHandler = void 0;
+exports.logout = exports.getCurrent = exports.loginHandler = exports.api = exports.verifyGame = exports.fetch = void 0;
 const electron_1 = require("electron");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const node_fetch_1 = __importDefault(require("node-fetch"));
@@ -16,9 +16,15 @@ const fetch_cookie_1 = __importDefault(require("fetch-cookie"));
 const machine_1 = require("./machine");
 const cookiePath = path_1.default.join(electron_1.app.getPath('userData'), 'cookie.json');
 const cookieJar = new tough_cookie_1.CookieJar(new tough_cookie_file_store_1.FileCookieStore(cookiePath));
-const fetch = fetch_cookie_1.default(node_fetch_1.default, cookieJar);
-const api = (url, method = 'GET', body) => {
-    const options = {
+exports.fetch = fetch_cookie_1.default(node_fetch_1.default, cookieJar);
+exports.verifyGame = (req, res, next) => {
+    if (!api_1.customer.game) {
+        return res.sendStatus(403);
+    }
+    return next();
+};
+exports.api = (url, method = 'GET', body, opts) => {
+    const options = opts || {
         method,
         headers: {
             Accept: 'application/json',
@@ -29,15 +35,15 @@ const api = (url, method = 'GET', body) => {
         options.body = JSON.stringify(body);
     }
     let data = null;
-    return fetch(`https://hmapi.lexogrine.com/${url}`, options).then(res => {
+    return exports.fetch(`http://localhost:5000/${url}`, options).then(res => {
         data = res;
         return res.json().catch(() => data && data.status < 300);
     });
 };
 const userHandlers = {
-    get: (machineId) => api(`auth/${machineId}`),
-    login: (username, password, ver) => api('auth', 'POST', { username, password, ver }),
-    logout: () => api('auth', 'DELETE')
+    get: (machineId) => exports.api(`auth/${machineId}`),
+    login: (username, password, ver) => exports.api('auth', 'POST', { username, password, ver }),
+    logout: () => exports.api('auth', 'DELETE')
 };
 const verifyToken = (token) => {
     try {
@@ -85,6 +91,8 @@ exports.getCurrent = async (req, res) => {
     }
     const response = await loadUser();
     if (api_1.customer.customer) {
+        if (api_1.customer.customer.license.type === 'professional') {
+        }
         return res.json(api_1.customer.customer);
     }
     return res.status(403).json(response);

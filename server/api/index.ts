@@ -20,9 +20,22 @@ import TeamHandler from './teams/routes';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import { ioPromise } from '../socket';
 import { app } from '..';
+import { checkCloudStatus, uploadLocalToCloud, downloadCloudToLocal } from './cloud';
 
 export const customer: I.CustomerData = {
-	customer: null
+	customer: null,
+	game: null
+};
+
+export const validateCloudAbility = () => {
+	if (
+		!customer.customer ||
+		!customer.customer.license ||
+		(customer.customer.license.type !== 'enterprise' && customer.customer.license.type !== 'professional')
+	) {
+		return false;
+	}
+	return !!customer.game;
 };
 
 export default async function () {
@@ -44,13 +57,43 @@ export default async function () {
 
 	TeamHandler();
 
+	app.route('/api/games/start/:game').get(async (req, res) => {
+		const game = req.params.game as I.AvailableGames;
+		customer.game = game;
+		const result = await checkCloudStatus(game);
+
+		res.json({ result });
+	});
+
+	app.route('/api/cloud/upload').post(async (req, res) => {
+		const game = customer.game;
+		if (!game) return res.sendStatus(403);
+		const result = await uploadLocalToCloud(game);
+
+		return res.json({ result });
+	});
+
+	app.route('/api/cloud/download').post(async (req, res) => {
+		const game = customer.game;
+		if (!game) return res.sendStatus(403);
+		const result = await downloadCloudToLocal(game);
+
+		return res.json({ result });
+	});
+
+	app.route('/api/games/current').get((req, res) => res.json({ game: customer.game }));
+
 	app.route('/api/huds').get(huds.getHUDs).post(huds.openHUDsDirectory).delete(huds.deleteHUD);
 
-	app.route('/api/huds/add').post(huds.uploadHUD);
+	app.route('/api/huds/add').post(huds.sendHUD);
 
 	app.route('/api/huds/close').post(huds.closeHUD);
 
 	app.route('/api/huds/:hudDir/start').post(huds.showHUD);
+
+	app.route('/api/huds/download/:uuid').get(huds.downloadHUD);
+
+	app.route('/api/huds/upload/:hudDir').post(huds.uploadHUD);
 
 	app.route('/api/gsi').get(gsi.checkGSIFile).put(gsi.createGSIFile);
 
