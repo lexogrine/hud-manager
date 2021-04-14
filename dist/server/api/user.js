@@ -35,7 +35,7 @@ exports.api = (url, method = 'GET', body, opts) => {
         options.body = JSON.stringify(body);
     }
     let data = null;
-    return exports.fetch(`http://3.122.116.166/${url}`, options).then(res => {
+    return exports.fetch(`https://hmapi-dev.lexogrine.pl/${url}`, options).then(res => {
         data = res;
         return res.json().catch(() => data && data.status < 300);
     });

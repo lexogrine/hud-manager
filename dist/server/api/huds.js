@@ -113,7 +113,7 @@ exports.listHUDs = async () => {
         }
         return hud;
     };
-    return huds.map(mapHUDStatus).filter(hud => _1.customer.game === hud.game || (_1.customer.game === "csgo" && !hud.game));
+    return huds.map(mapHUDStatus).filter(hud => _1.customer.game === hud.game || (_1.customer.game === 'csgo' && !hud.game));
 };
 exports.getHUDs = async (req, res) => {
     return res.json(await exports.listHUDs());
