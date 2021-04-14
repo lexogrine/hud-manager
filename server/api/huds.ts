@@ -30,8 +30,6 @@ const remove = (pathToRemove: string) => {
 };
 
 export const listHUDs = async () => {
-	const uploadedHUD = 'lexogrine_hud_191';
-	const downloadedHUD = 'lexogrine_hud_192';
 	const dir = path.join(app.getPath('home'), 'HUDs');
 	const filtered = fs
 		.readdirSync(dir, { withFileTypes: true })
@@ -44,7 +42,7 @@ export const listHUDs = async () => {
 	if (HUDState.devHUD) {
 		huds.unshift(HUDState.devHUD);
 	}
-	return huds.map((hud: any) => ({ ...hud, downloaded: uploadedHUD !== hud.dir, uploaded: uploadedHUD === hud.dir }));
+	return huds;
 };
 
 export const getHUDs: express.RequestHandler = async (req, res) => {

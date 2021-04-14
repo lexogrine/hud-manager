@@ -14,43 +14,4 @@ const databases = {
 	tournaments: new Datastore<I.Tournament>({ filename: path.join(directory, 'tournaments'), autoload: true })
 };
 
-const testPlayers: I.Player[] = [
-	{
-		firstName: 'Hubert',
-		lastName: 'Walczak',
-		username: '0sh10',
-		avatar: '',
-		country: 'PL',
-		steamid: '123456789',
-		team: '',
-		extra: {}
-	},
-	{
-		firstName: 'Michał',
-		lastName: 'Majka',
-		username: 'esterling',
-		avatar: '',
-		country: 'US',
-		steamid: '1234567891',
-		team: '',
-		extra: {}
-	},
-	{
-		firstName: 'Kacper',
-		lastName: 'Herchel',
-		username: 'kacperski1',
-		avatar: '',
-		country: 'UK',
-		steamid: '1234567894',
-		team: '',
-		extra: {}
-	}
-];
-
-databases.players.find({}, (err: any, player: I.Player[]) => {
-	if (player.length) return;
-
-	databases.players.insert(testPlayers, (err, doc) => {});
-});
-
 export default databases;

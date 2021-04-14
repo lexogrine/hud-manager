@@ -195,8 +195,6 @@ export interface HUD {
 	panel?: PanelTemplate[];
 	keybinds?: KeyBind[];
 	url: string;
-	downloaded?: boolean;
-	uploaded?: boolean;
 	allowAppsOnTop?: boolean;
 	requiredFields?: RequiredFields;
 	boltobserv?: {
