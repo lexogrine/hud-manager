@@ -68,7 +68,7 @@ const updateLastDateLocally = (game: I.AvailableGames, resources: I.ResourceResp
 
 export const addResource = async <T>(game: I.AvailableGames, resource: I.AvailableResources, data: T | T[]) => {
 	const status = await checkCloudStatus(game);
-	if(status !== "ALL_SYNCED"){
+	if (status !== 'ALL_SYNCED') {
 		return;
 	}
 	const result = (await api(`storage/${resource}/${game}`, 'POST', data)) as {
@@ -85,7 +85,7 @@ export const addResource = async <T>(game: I.AvailableGames, resource: I.Availab
 
 export const updateResource = async <T>(game: I.AvailableGames, resource: I.AvailableResources, data: T) => {
 	const status = await checkCloudStatus(game);
-	if(status !== "ALL_SYNCED"){
+	if (status !== 'ALL_SYNCED') {
 		return;
 	}
 	const result = (await api(`storage/${resource}/${game}`, 'PATCH', data)) as I.CloudStorageData<T> & {
@@ -101,7 +101,7 @@ export const updateResource = async <T>(game: I.AvailableGames, resource: I.Avai
 
 export const deleteResource = async (game: I.AvailableGames, resource: I.AvailableResources, id: string) => {
 	const status = await checkCloudStatus(game);
-	if(status !== "ALL_SYNCED"){
+	if (status !== 'ALL_SYNCED') {
 		return;
 	}
 	const result = (await api(`storage/${resource}/${game}/${id}`, 'DELETE')) as {
