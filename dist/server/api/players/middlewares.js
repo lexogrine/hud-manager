@@ -90,7 +90,11 @@ exports.updatePlayer = async (req, res) => {
         return res.json(player);
     });
 };
-exports.addPlayer = (req, res) => {
+exports.addPlayer = async (req, res) => {
+    let cloudStatus = false;
+    if (__1.validateCloudAbility()) {
+        cloudStatus = (await cloud_1.checkCloudStatus(__1.customer.game)) === "ALL_SYNCED";
+    }
     const newPlayer = {
         firstName: req.body.firstName,
         lastName: req.body.lastName,
@@ -106,7 +110,7 @@ exports.addPlayer = (req, res) => {
         if (err) {
             return res.sendStatus(500);
         }
-        if (__1.validateCloudAbility()) {
+        if (cloudStatus) {
             await cloud_1.addResource(__1.customer.game, 'players', player);
         }
         return res.json(player);

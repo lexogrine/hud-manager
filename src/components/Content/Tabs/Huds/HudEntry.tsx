@@ -117,7 +117,6 @@ const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHU
 
 	const isLocal = hud.status !== 'REMOTE';
 	const isNotRemote = hud.status === 'LOCAL';
-	console.log(hud);
 
 	return (
 		<Row key={hud.dir} className="hudRow">

@@ -6,7 +6,7 @@ import isSvg from './../../../src/isSvg';
 import { getTeamsList, getTeamById } from './index';
 import * as F from './../fields';
 import { validateCloudAbility, customer } from '..';
-import { addResource, updateResource, deleteResource } from '../cloud';
+import { addResource, updateResource, deleteResource, checkCloudStatus } from '../cloud';
 
 const teams = db.teams;
 const players = db.players;
@@ -41,7 +41,11 @@ export const getTeam: express.RequestHandler = async (req, res) => {
 
 	return res.json(team);
 };
-export const addTeam: express.RequestHandler = (req, res) => {
+export const addTeam: express.RequestHandler = async (req, res) => {
+	let cloudStatus = false;
+	if(validateCloudAbility()){
+		cloudStatus = (await checkCloudStatus(customer.game as AvailableGames)) === "ALL_SYNCED";
+	}
 	const newTeam = {
 		name: req.body.name,
 		shortName: req.body.shortName,
@@ -54,7 +58,7 @@ export const addTeam: express.RequestHandler = (req, res) => {
 		if (err) {
 			return res.sendStatus(500);
 		}
-		if (validateCloudAbility()) {
+		if (cloudStatus) {
 			await addResource(customer.game as AvailableGames, 'teams', team);
 		}
 		return res.json(team);

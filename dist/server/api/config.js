@@ -26,7 +26,7 @@ const defaultConfig = {
     port: 1349,
     hlaePath: '',
     afxCEFHudInteropPath: '',
-    sync: false
+    sync: true
 };
 exports.loadConfig = async () => {
     if (!exports.publicIP) {

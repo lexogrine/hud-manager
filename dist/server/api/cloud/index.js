@@ -88,6 +88,10 @@ exports.addResource = async (game, resource, data) => {
     return result;
 };
 exports.updateResource = async (game, resource, data) => {
+    const status = await exports.checkCloudStatus(game);
+    if (status !== 'ALL_SYNCED') {
+        return;
+    }
     const result = (await user_1.api(`storage/${resource}/${game}`, 'PATCH', data));
     if (!result) {
         cloudErrorHandler();
@@ -97,6 +101,10 @@ exports.updateResource = async (game, resource, data) => {
     return result;
 };
 exports.deleteResource = async (game, resource, id) => {
+    const status = await exports.checkCloudStatus(game);
+    if (status !== 'ALL_SYNCED') {
+        return;
+    }
     const result = (await user_1.api(`storage/${resource}/${game}/${id}`, 'DELETE'));
     console.log(result);
     if (!result || !result.success) {

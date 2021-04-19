@@ -55,7 +55,11 @@ exports.getTeam = async (req, res) => {
     }
     return res.json(team);
 };
-exports.addTeam = (req, res) => {
+exports.addTeam = async (req, res) => {
+    let cloudStatus = false;
+    if (__1.validateCloudAbility()) {
+        cloudStatus = (await cloud_1.checkCloudStatus(__1.customer.game)) === "ALL_SYNCED";
+    }
     const newTeam = {
         name: req.body.name,
         shortName: req.body.shortName,
@@ -68,7 +72,7 @@ exports.addTeam = (req, res) => {
         if (err) {
             return res.sendStatus(500);
         }
-        if (__1.validateCloudAbility()) {
+        if (cloudStatus) {
             await cloud_1.addResource(__1.customer.game, 'teams', team);
         }
         return res.json(team);

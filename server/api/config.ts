@@ -26,7 +26,7 @@ const defaultConfig: Config = {
 	port: 1349,
 	hlaePath: '',
 	afxCEFHudInteropPath: '',
-	sync: false
+	sync: true
 };
 
 export const loadConfig = async (): Promise<Config> => {
