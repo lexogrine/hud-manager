@@ -114,7 +114,7 @@ export default class Config extends React.Component<IProps, IState> {
 	import = (data: any, callback: any) => async () => {
 		try {
 			await api.files.sync(data);
-		} catch { }
+		} catch {}
 		this.setState({ data: {}, conflict: { teams: 0, players: 0 }, importModalOpen: false }, callback);
 	};
 	importCheck = (callback: any) => (files: FileList) => {
@@ -145,7 +145,7 @@ export default class Config extends React.Component<IProps, IState> {
 					importModalOpen: true,
 					data: db
 				});
-			} catch { }
+			} catch {}
 		};
 	};
 	download = (target: 'gsi' | 'cfgs' | 'db') => {
@@ -341,11 +341,11 @@ export default class Config extends React.Component<IProps, IState> {
 	toggleHandler = (event: any) => {
 		const val = event.target.checked;
 		this.setState(state => {
-			state.config.sync = val
+			state.config.sync = val;
 
 			return state;
 		});
-	}
+	};
 	toggleModal = () => {
 		this.setState({ importModalOpen: !this.state.importModalOpen });
 	};
@@ -422,20 +422,14 @@ export default class Config extends React.Component<IProps, IState> {
 									{update.installing
 										? 'Installing...'
 										: update.available
-											? 'Install update'
-											: 'Latest'}
+										? 'Install update'
+										: 'Latest'}
 								</Button>
 							</Col>
 						</ElectronOnly>
 						<Col md="12" className="config-entry">
-							<div className="config-description">
-								Cloud Synchronization
-							</div>
-							<Switch
-								isOn={this.state.config.sync}
-								id="sync-toggle"
-								handleToggle={this.toggleHandler}
-							/>
+							<div className="config-description">Cloud Synchronization</div>
+							<Switch isOn={this.state.config.sync} id="sync-toggle" handleToggle={this.toggleHandler} />
 						</Col>
 						<Col md="12" className="config-entry">
 							<div className="config-description">

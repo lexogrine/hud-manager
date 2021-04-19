@@ -43,8 +43,8 @@ export const getTeam: express.RequestHandler = async (req, res) => {
 };
 export const addTeam: express.RequestHandler = async (req, res) => {
 	let cloudStatus = false;
-	if(validateCloudAbility()){
-		cloudStatus = (await checkCloudStatus(customer.game as AvailableGames)) === "ALL_SYNCED";
+	if (validateCloudAbility()) {
+		cloudStatus = (await checkCloudStatus(customer.game as AvailableGames)) === 'ALL_SYNCED';
 	}
 	const newTeam = {
 		name: req.body.name,
@@ -72,6 +72,11 @@ export const updateTeam: express.RequestHandler = async (req, res) => {
 	if (!team) {
 		return res.sendStatus(404);
 	}
+	
+	let cloudStatus = false;
+	if (validateCloudAbility()) {
+		cloudStatus = (await checkCloudStatus(customer.game as AvailableGames)) === 'ALL_SYNCED';
+	}
 
 	const updated = {
 		name: req.body.name,
@@ -91,7 +96,7 @@ export const updateTeam: express.RequestHandler = async (req, res) => {
 			return res.sendStatus(500);
 		}
 
-		if (validateCloudAbility()) {
+		if (cloudStatus) {
 			await updateResource(customer.game as AvailableGames, 'teams', { ...updated, _id: req.params.id });
 		}
 		const team = await getTeamById(req.params.id);
@@ -106,12 +111,17 @@ export const deleteTeam: express.RequestHandler = async (req, res) => {
 	if (!team) {
 		return res.sendStatus(404);
 	}
+
+	let cloudStatus = false;
+	if (validateCloudAbility()) {
+		cloudStatus = (await checkCloudStatus(customer.game as AvailableGames)) === 'ALL_SYNCED';
+	}
 	//players.update({team:})
 	teams.remove({ _id: req.params.id }, async (err, n) => {
 		if (err) {
 			return res.sendStatus(500);
 		}
-		if (validateCloudAbility()) {
+		if (cloudStatus) {
 			await deleteResource(customer.game as AvailableGames, 'teams', req.params.id);
 		}
 		return res.sendStatus(n ? 200 : 404);

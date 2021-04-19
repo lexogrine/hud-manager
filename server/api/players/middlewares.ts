@@ -67,11 +67,17 @@ export const updatePlayer: express.RequestHandler = async (req, res) => {
 		updated.avatar = player.avatar;
 	}
 
+	let cloudStatus = false;
+	if (validateCloudAbility()) {
+		cloudStatus = (await checkCloudStatus(customer.game as AvailableGames)) === 'ALL_SYNCED';
+	}
+
+
 	players.update({ _id: req.params.id }, { $set: updated }, {}, async err => {
 		if (err) {
 			return res.sendStatus(500);
 		}
-		if (validateCloudAbility()) {
+		if (cloudStatus) {
 			await updateResource(customer.game as AvailableGames, 'players', { ...updated, _id: req.params.id });
 		}
 		const player = await getPlayerById(req.params.id);
@@ -80,8 +86,8 @@ export const updatePlayer: express.RequestHandler = async (req, res) => {
 };
 export const addPlayer: express.RequestHandler = async (req, res) => {
 	let cloudStatus = false;
-	if(validateCloudAbility()){
-		cloudStatus = (await checkCloudStatus(customer.game as AvailableGames)) === "ALL_SYNCED";
+	if (validateCloudAbility()) {
+		cloudStatus = (await checkCloudStatus(customer.game as AvailableGames)) === 'ALL_SYNCED';
 	}
 	const newPlayer = {
 		firstName: req.body.firstName,
@@ -112,12 +118,17 @@ export const deletePlayer: express.RequestHandler = async (req, res) => {
 	if (!player) {
 		return res.sendStatus(404);
 	}
+
+	let cloudStatus = false;
+	if (validateCloudAbility()) {
+		cloudStatus = (await checkCloudStatus(customer.game as AvailableGames)) === 'ALL_SYNCED';
+	}
+
 	players.remove({ _id: req.params.id }, async (err, n) => {
 		if (err) {
 			return res.sendStatus(500);
 		}
-		console.log(validateCloudAbility());
-		if (validateCloudAbility()) {
+		if (cloudStatus) {
 			await deleteResource(customer.game as AvailableGames, 'players', req.params.id);
 		}
 		return res.sendStatus(n ? 200 : 404);

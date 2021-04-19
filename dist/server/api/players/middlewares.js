@@ -79,11 +79,15 @@ exports.updatePlayer = async (req, res) => {
     if (req.body.avatar === undefined) {
         updated.avatar = player.avatar;
     }
+    let cloudStatus = false;
+    if (__1.validateCloudAbility()) {
+        cloudStatus = (await cloud_1.checkCloudStatus(__1.customer.game)) === 'ALL_SYNCED';
+    }
     players.update({ _id: req.params.id }, { $set: updated }, {}, async (err) => {
         if (err) {
             return res.sendStatus(500);
         }
-        if (__1.validateCloudAbility()) {
+        if (cloudStatus) {
             await cloud_1.updateResource(__1.customer.game, 'players', { ...updated, _id: req.params.id });
         }
         const player = await index_1.getPlayerById(req.params.id);
@@ -93,7 +97,7 @@ exports.updatePlayer = async (req, res) => {
 exports.addPlayer = async (req, res) => {
     let cloudStatus = false;
     if (__1.validateCloudAbility()) {
-        cloudStatus = (await cloud_1.checkCloudStatus(__1.customer.game)) === "ALL_SYNCED";
+        cloudStatus = (await cloud_1.checkCloudStatus(__1.customer.game)) === 'ALL_SYNCED';
     }
     const newPlayer = {
         firstName: req.body.firstName,
@@ -124,12 +128,15 @@ exports.deletePlayer = async (req, res) => {
     if (!player) {
         return res.sendStatus(404);
     }
+    let cloudStatus = false;
+    if (__1.validateCloudAbility()) {
+        cloudStatus = (await cloud_1.checkCloudStatus(__1.customer.game)) === 'ALL_SYNCED';
+    }
     players.remove({ _id: req.params.id }, async (err, n) => {
         if (err) {
             return res.sendStatus(500);
         }
-        console.log(__1.validateCloudAbility());
-        if (__1.validateCloudAbility()) {
+        if (cloudStatus) {
             await cloud_1.deleteResource(__1.customer.game, 'players', req.params.id);
         }
         return res.sendStatus(n ? 200 : 404);
