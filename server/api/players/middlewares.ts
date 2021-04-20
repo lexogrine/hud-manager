@@ -72,7 +72,6 @@ export const updatePlayer: express.RequestHandler = async (req, res) => {
 		cloudStatus = (await checkCloudStatus(customer.game as AvailableGames)) === 'ALL_SYNCED';
 	}
 
-
 	players.update({ _id: req.params.id }, { $set: updated }, {}, async err => {
 		if (err) {
 			return res.sendStatus(500);
@@ -181,7 +180,7 @@ export const getAvatarURLBySteamID: express.RequestHandler = async (req, res) =>
 };
 
 export const getFields: express.RequestHandler = async (req, res) => {
-	const fields = await F.getFields('players');
+	const fields = await F.getFields('players', customer.game as AvailableGames);
 	return res.json(fields);
 };
 
@@ -189,6 +188,6 @@ export const updateFields: express.RequestHandler = async (req, res) => {
 	if (!req.body) {
 		return res.sendStatus(422);
 	}
-	const newFields = await F.updateFields(req.body, 'players');
+	const newFields = await F.updateFields(req.body, 'players', customer.game as AvailableGames);
 	return res.json(newFields);
 };

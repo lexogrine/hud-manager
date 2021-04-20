@@ -32,6 +32,7 @@ const electron_1 = require("electron");
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
 const __1 = require("..");
+const fields_1 = require("../fields");
 const cloudErrorHandler = () => { };
 const getLastUpdateDateLocally = () => {
     const userData = electron_1.app.getPath('userData');
@@ -44,26 +45,26 @@ const getLastUpdateDateLocally = () => {
             lastUpdated = JSON.parse(fs_1.default.readFileSync(database, 'utf8'));
         }
         for (const game of I.availableGames) {
-            for (const resource of I.availableResources) {
-                if (!lastUpdated[game]) {
-                    lastUpdated[game] = {};
-                }
-                //if (!lastUpdated[game][resource]) lastUpdated[game][resource] = new Date(0).toISOString();
+            if (!lastUpdated[game]) {
+                lastUpdated[game] = {};
             }
+            //if (!lastUpdated[game][resource]) lastUpdated[game][resource] = new Date(0).toISOString();
         }
         if (saveOnFinish) {
             fs_1.default.writeFileSync(database, JSON.stringify(lastUpdated), 'utf8');
         }
         return lastUpdated;
     }
-    catch {
+    catch (e) {
+        console.log(e);
         for (const game of I.availableGames) {
-            for (const resource of I.availableResources) {
-                if (!lastUpdated[game]) {
-                    lastUpdated[game] = {};
-                }
-                //if (!lastUpdated[game][resource]) lastUpdated[game][resource] = new Date(0).toISOString();
+            if (!lastUpdated[game]) {
+                lastUpdated[game] = {};
             }
+            //if (!lastUpdated[game][resource]) lastUpdated[game][resource] = new Date(0).toISOString();
+        }
+        if (saveOnFinish) {
+            fs_1.default.writeFileSync(database, JSON.stringify(lastUpdated), 'utf8');
         }
         return lastUpdated;
     }
@@ -138,6 +139,9 @@ const downloadCloudData = async (game, resource) => {
             /*case 'matches':
                 replacer.matches = replaceLocalMatches;
                 break;*/
+            case 'customs':
+                replacer.customs = fields_1.replaceLocalCustomFieldStores;
+                break;
             case 'teams':
                 replacer.teams = teams_1.replaceLocalTeams;
                 break;
@@ -171,10 +175,11 @@ exports.downloadCloudToLocal = async (game) => {
     }
 };
 exports.uploadLocalToCloud = async (game) => {
-    const resources = await Promise.all([players_1.getPlayersList({ game }), teams_1.getTeamsList({ game }) /*, getMatches()*/]);
+    const resources = await Promise.all([players_1.getPlayersList({ game }), teams_1.getTeamsList({ game }), fields_1.getCustomFieldsDb(game) /*, getMatches()*/]);
     const mappedResources = {
         players: resources[0],
-        teams: resources[1]
+        teams: resources[1],
+        customs: resources[2]
         //matches: resources[2],
     };
     try {
@@ -213,7 +218,7 @@ exports.checkCloudStatus = async (game) => {
         for (const resourceStatus of result) {
             lastUpdateStatusOnline[resourceStatus.resource] = resourceStatus.status;
         }
-        const resources = await Promise.all([players_1.getPlayersList({ game }), teams_1.getTeamsList({ game }) /*, getMatches()*/]);
+        const resources = await Promise.all([players_1.getPlayersList({ game }), teams_1.getTeamsList({ game }), fields_1.getCustomFieldsDb(game) /*, getMatches()*/]);
         if (resources.every(resource => !resource.length)) {
             // no local resources
             // download db
@@ -223,7 +228,7 @@ exports.checkCloudStatus = async (game) => {
             return 'ALL_SYNCED';
         }
         const lastUpdateStatusLocal = getLastUpdateDateLocally();
-        if (I.availableResources.find(availableResource => !lastUpdateStatusLocal[game][availableResource])) {
+        if (I.availableResources.find(availableResource => !lastUpdateStatusLocal[game][availableResource] && lastUpdateStatusOnline[availableResource])) {
             // resources exist both locally and remotely, but local db wasnt ever synced
             // show options: download cloud, no sync
             console.log('SYNC CONFLICT, WHAT DO? #1');

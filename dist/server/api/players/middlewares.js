@@ -183,13 +183,13 @@ exports.getAvatarURLBySteamID = async (req, res) => {
     return res.json(response);
 };
 exports.getFields = async (req, res) => {
-    const fields = await F.getFields('players');
+    const fields = await F.getFields('players', __1.customer.game);
     return res.json(fields);
 };
 exports.updateFields = async (req, res) => {
     if (!req.body) {
         return res.sendStatus(422);
     }
-    const newFields = await F.updateFields(req.body, 'players');
+    const newFields = await F.updateFields(req.body, 'players', __1.customer.game);
     return res.json(newFields);
 };

@@ -151,13 +151,13 @@ exports.getLogoFile = async (req, res) => {
     res.end(imgBuffer);
 };
 exports.getFields = async (req, res) => {
-    const fields = await F.getFields('teams');
+    const fields = await F.getFields('teams', __1.customer.game);
     return res.json(fields);
 };
 exports.updateFields = async (req, res) => {
     if (!req.body) {
         return res.sendStatus(422);
     }
-    const newFields = await F.updateFields(req.body, 'teams');
+    const newFields = await F.updateFields(req.body, 'teams', __1.customer.game);
     return res.json(newFields);
 };

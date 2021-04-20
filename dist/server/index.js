@@ -35,7 +35,6 @@ const socket_1 = require("./socket");
 require("./sockets/index");
 const api_1 = __importDefault(require("./api"));
 const config_1 = require("./api/config");
-const fields_1 = require("./api/fields");
 const parsePayload = (config) => (req, res, next) => {
     try {
         if (req.body) {
@@ -67,7 +66,6 @@ exports.app.use(express_1.default.raw({ limit: '100Mb', type: 'application/json'
 exports.app.use(cors_1.default({ origin: '*', credentials: true }));
 async function init() {
     let config = await config_1.loadConfig();
-    await fields_1.initiateCustomFields();
     let port = await get_port_1.default({ port: config.port });
     if (port !== config.port) {
         port = await get_port_1.default({ port: get_port_1.makeRange(1300, 50000) });

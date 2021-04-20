@@ -8,6 +8,7 @@ import { app } from 'electron';
 import path from 'path';
 import fs from 'fs';
 import { customer } from '..';
+import { getCustomFieldsDb, replaceLocalCustomFieldStores } from '../fields';
 
 const cloudErrorHandler = () => {};
 
@@ -25,12 +26,10 @@ const getLastUpdateDateLocally = () => {
 		}
 
 		for (const game of I.availableGames) {
-			for (const resource of I.availableResources) {
 				if (!lastUpdated[game]) {
 					lastUpdated[game] = {} as I.ResourceUpdateStatus;
 				}
 				//if (!lastUpdated[game][resource]) lastUpdated[game][resource] = new Date(0).toISOString();
-			}
 		}
 
 		if (saveOnFinish) {
@@ -38,14 +37,16 @@ const getLastUpdateDateLocally = () => {
 		}
 
 		return lastUpdated;
-	} catch {
+	} catch(e) {
+		console.log(e);
 		for (const game of I.availableGames) {
-			for (const resource of I.availableResources) {
 				if (!lastUpdated[game]) {
 					lastUpdated[game] = {} as I.ResourceUpdateStatus;
 				}
 				//if (!lastUpdated[game][resource]) lastUpdated[game][resource] = new Date(0).toISOString();
-			}
+		}
+		if (saveOnFinish) {
+			fs.writeFileSync(database, JSON.stringify(lastUpdated), 'utf8');
 		}
 		return lastUpdated;
 	}
@@ -142,6 +143,9 @@ const downloadCloudData = async (game: I.AvailableGames, resource: I.AvailableRe
 			/*case 'matches':
 				replacer.matches = replaceLocalMatches;
 				break;*/
+			case 'customs':
+				replacer.customs = replaceLocalCustomFieldStores;
+				break;
 			case 'teams':
 				replacer.teams = replaceLocalTeams;
 				break;
@@ -181,11 +185,12 @@ export const downloadCloudToLocal = async (game: I.AvailableGames) => {
 };
 
 export const uploadLocalToCloud = async (game: I.AvailableGames) => {
-	const resources = await Promise.all([getPlayersList({ game }), getTeamsList({ game }) /*, getMatches()*/]);
+	const resources = await Promise.all([getPlayersList({ game }), getTeamsList({ game }),  getCustomFieldsDb(game) /*, getMatches()*/]);
 
 	const mappedResources = {
 		players: resources[0],
-		teams: resources[1]
+		teams: resources[1],
+		customs: resources[2]
 		//matches: resources[2],
 	} as { [resource in I.AvailableResources]: any };
 	try {
@@ -228,7 +233,7 @@ export const checkCloudStatus = async (game: I.AvailableGames) => {
 			lastUpdateStatusOnline[resourceStatus.resource] = resourceStatus.status;
 		}
 
-		const resources = await Promise.all([getPlayersList({ game }), getTeamsList({ game }) /*, getMatches()*/]);
+		const resources = await Promise.all([getPlayersList({ game }), getTeamsList({ game }),  getCustomFieldsDb(game) /*, getMatches()*/]);
 
 		if (resources.every(resource => !resource.length)) {
 			// no local resources
@@ -244,7 +249,7 @@ export const checkCloudStatus = async (game: I.AvailableGames) => {
 
 		const lastUpdateStatusLocal = getLastUpdateDateLocally();
 
-		if (I.availableResources.find(availableResource => !lastUpdateStatusLocal[game][availableResource])) {
+		if (I.availableResources.find(availableResource => !lastUpdateStatusLocal[game][availableResource] && lastUpdateStatusOnline[availableResource])) {
 			// resources exist both locally and remotely, but local db wasnt ever synced
 			// show options: download cloud, no sync
 			console.log('SYNC CONFLICT, WHAT DO? #1');

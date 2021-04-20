@@ -3,34 +3,67 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateFields = exports.getFields = exports.initiateCustomFields = void 0;
+exports.updateFields = exports.getFields = exports.getCustomFieldsDb = exports.replaceLocalCustomFieldStores = exports.initiateCustomFields = void 0;
 const database_1 = __importDefault(require("./../../../init/database"));
+const __1 = require("..");
+const cloud_1 = require("../cloud");
 const { custom } = database_1.default;
-exports.initiateCustomFields = () => new Promise(res => {
-    custom.findOne({}, (err, store) => {
+exports.initiateCustomFields = (game = 'csgo', dontCreateOnCall = false) => new Promise(res => {
+    const or = [{ game }];
+    if (game === 'csgo') {
+        or.push({ game: { $exists: false } });
+    }
+    custom.findOne({ $or: or }, (err, store) => {
         if (store) {
             return res(store);
         }
-        const customFields = { players: [], teams: [] };
+        if (dontCreateOnCall) {
+            return res(null);
+        }
+        const customFields = { players: [], teams: [], game };
         custom.insert(customFields, (err, entry) => {
             return res(entry);
         });
     });
 });
-exports.getFields = async (type) => {
-    const store = await exports.initiateCustomFields();
+exports.replaceLocalCustomFieldStores = (stores, game) => new Promise(res => {
+    const or = [{ game }];
+    if (game === 'csgo') {
+        or.push({ game: { $exists: false } });
+    }
+    custom.remove({ $or: or }, { multi: true }, err => {
+        if (err) {
+            return res(false);
+        }
+        custom.insert(stores, (err, docs) => {
+            return res(!err);
+        });
+    });
+});
+exports.getCustomFieldsDb = async (game) => {
+    const customFields = await exports.initiateCustomFields(game, true);
+    if (!customFields)
+        return [];
+    return [customFields];
+};
+exports.getFields = async (type, game) => {
+    const store = await exports.initiateCustomFields(game, true);
     if (!store)
         return [];
     return store[type];
 };
-exports.updateFields = async (fields, type) => {
-    const store = await exports.initiateCustomFields();
+exports.updateFields = async (fields, type, game) => {
+    const store = await exports.initiateCustomFields(game);
     const deletedFields = store[type].filter(field => !fields.find(newField => newField.name === field.name));
     const createdFields = fields.filter(newField => !store[type].find(field => field.name === newField.name));
+    let cloudStatus = false;
+    if (__1.validateCloudAbility()) {
+        cloudStatus = (await cloud_1.checkCloudStatus(__1.customer.game)) === 'ALL_SYNCED';
+    }
     return new Promise(res => {
         custom.update({}, { $set: { [type]: fields } }, { multi: true }, async () => {
             if (!deletedFields.length && !createdFields.length) {
-                return res(await exports.initiateCustomFields());
+                return res(await exports.initiateCustomFields(game));
             }
             const updateQuery = {
                 $unset: {},
@@ -43,7 +76,11 @@ exports.updateFields = async (fields, type) => {
                 updateQuery.$set[`extra.${createdField.name}`] = '';
             }
             database_1.default[type].update({}, updateQuery, { multi: true }, async () => {
-                res(await exports.initiateCustomFields());
+                const result = await exports.initiateCustomFields(game);
+                if (cloudStatus) {
+                    await cloud_1.updateResource(__1.customer.game, 'customs', result);
+                }
+                res(result);
             });
         });
     });

@@ -11,7 +11,6 @@ import './sockets/index';
 import router from './api';
 import { loadConfig, setConfig } from './api/config';
 import { Config } from '../types/interfaces';
-import { initiateCustomFields } from './api/fields';
 
 const parsePayload = (config: Config): express.RequestHandler => (req, res, next) => {
 	try {
@@ -47,7 +46,6 @@ app.use(cors({ origin: '*', credentials: true }));
 export default async function init() {
 	let config = await loadConfig();
 
-	await initiateCustomFields();
 
 	let port = await getPort({ port: config.port });
 	if (port !== config.port) {

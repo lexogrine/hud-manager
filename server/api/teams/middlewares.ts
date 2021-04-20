@@ -72,7 +72,7 @@ export const updateTeam: express.RequestHandler = async (req, res) => {
 	if (!team) {
 		return res.sendStatus(404);
 	}
-	
+
 	let cloudStatus = false;
 	if (validateCloudAbility()) {
 		cloudStatus = (await checkCloudStatus(customer.game as AvailableGames)) === 'ALL_SYNCED';
@@ -145,7 +145,7 @@ export const getLogoFile: express.RequestHandler = async (req, res) => {
 };
 
 export const getFields: express.RequestHandler = async (req, res) => {
-	const fields = await F.getFields('teams');
+	const fields = await F.getFields('teams', customer.game as AvailableGames);
 	return res.json(fields);
 };
 
@@ -153,6 +153,6 @@ export const updateFields: express.RequestHandler = async (req, res) => {
 	if (!req.body) {
 		return res.sendStatus(422);
 	}
-	const newFields = await F.updateFields(req.body, 'teams');
+	const newFields = await F.updateFields(req.body, 'teams', customer.game as AvailableGames);
 	return res.json(newFields);
 };
