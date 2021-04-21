@@ -36,16 +36,19 @@ export const getPlayersList = (query: any) =>
 		});
 	});
 
-export const replaceLocalPlayers = (newPlayers: Player[], game: AvailableGames) =>
+export const replaceLocalPlayers = (newPlayers: Player[], game: AvailableGames, existing: string[]) =>
 	new Promise<boolean>(res => {
-		const or: any[] = [{ game }];
+		const toRemove = { $or: [{ $in: newPlayers.map(store => store._id) }, { $nin: existing }]};
+
+		const or: any[] = [{ game, _id: toRemove }];
 		if (game === 'csgo') {
-			or.push({ game: { $exists: false } });
+			or.push({ game: { $exists: false }, _id: toRemove });
 		}
-		players.remove({ $or: or }, { multi: true }, err => {
+		players.remove({ $or: or }, { multi: true }, (err, n) => {
 			if (err) {
 				return res(false);
 			}
+			console.log('removed',n,'players')
 			players.insert(newPlayers, (err, docs) => {
 				return res(!err);
 			});
