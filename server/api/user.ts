@@ -1,4 +1,4 @@
-import express, { RequestHandler } from 'express';
+import express, { RequestHandler, response } from 'express';
 import { app } from 'electron';
 import jwt from 'jsonwebtoken';
 import nodeFetch, { RequestInit } from 'node-fetch';
@@ -10,11 +10,42 @@ import path from 'path';
 import { FileCookieStore } from 'tough-cookie-file-store';
 import fetchHandler from 'fetch-cookie';
 import { getMachineId } from './machine';
+import { SimpleWebSocket } from 'simple-websockets';
+import { ioPromise } from '../socket';
+
 
 const cookiePath = path.join(app.getPath('userData'), 'cookie.json');
 const cookieJar = new CookieJar(new FileCookieStore(cookiePath));
+
 export const fetch = fetchHandler(nodeFetch, cookieJar);
 
+let socket: SimpleWebSocket | null = null;
+
+const connectSocket = () => {
+	if(socket) return;
+	socket = new SimpleWebSocket('wss://hmapi-dev.lexogrine.pl/', {
+		headers: {
+			Cookie: cookieJar.getCookieStringSync('https://hmapi-dev.lexogrine.pl/')
+		}
+	});
+	socket.on("banned", () => {
+		ioPromise.then(io => {
+			io.emit("banned");
+		})
+	});
+	socket.on('identification', () => {
+		console.log('identification')
+	})
+	socket.on("socketeest", () => {
+		ioPromise.then(io => {
+			io.emit("socketeest");
+		})
+	})
+	socket.on('disconnect', () => {
+		socket = null;
+	});
+	
+}
 export const verifyGame: RequestHandler = (req, res, next) => {
 	if (!customer.game) {
 		return res.sendStatus(403);
@@ -66,13 +97,16 @@ const loadUser = async (loggedIn = false) => {
 	if (!userToken) {
 		return { success: false, message: loggedIn ? 'Your session has expired - try restarting the application' : '' };
 	}
-	if ('error' in userToken) {
+	if (typeof userToken !== "boolean" && 'error' in userToken) {
 		return { success: false, message: userToken.error };
 	}
 	const userData = verifyToken(userToken.token);
 	if (!userData) {
 		return { success: false, message: 'Your session has expired - try restarting the application' };
 	}
+
+	connectSocket();
+
 	customer.customer = userData;
 	return { success: true, message: '' };
 };
@@ -83,6 +117,9 @@ const login = async (username: string, password: string) => {
 	const response = await userHandlers.login(username, password, ver);
 	if (response.status === 404 || response.status === 401) {
 		return { success: false, message: 'Incorrect username or password.' };
+	}
+	if('error' in response){
+		return  { success: false, message: (response as any).error };
 	}
 	return await loadUser(true);
 };
@@ -107,6 +144,9 @@ export const getCurrent: express.RequestHandler = async (req, res) => {
 };
 export const logout: express.RequestHandler = async (req, res) => {
 	customer.customer = null;
+	if(socket){
+		socket._socket.close();
+	}
 	await userHandlers.logout();
 	return res.sendStatus(200);
 };

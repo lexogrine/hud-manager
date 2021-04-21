@@ -42,6 +42,10 @@ export default async function () {
 	const io = await ioPromise;
 
 	initGameConnection();
+	app.use('*', (req, res,next) => {
+		console.log(req.route);
+		return next();
+	})
 
 	app.route('/api/auth').get(user.getCurrent).post(user.loginHandler).delete(user.logout);
 

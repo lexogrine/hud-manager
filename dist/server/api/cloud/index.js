@@ -175,7 +175,11 @@ exports.downloadCloudToLocal = async (game) => {
     }
 };
 exports.uploadLocalToCloud = async (game) => {
-    const resources = await Promise.all([players_1.getPlayersList({ game }), teams_1.getTeamsList({ game }), fields_1.getCustomFieldsDb(game) /*, getMatches()*/]);
+    const resources = await Promise.all([
+        players_1.getPlayersList({ game }),
+        teams_1.getTeamsList({ game }),
+        fields_1.getCustomFieldsDb(game) /*, getMatches()*/
+    ]);
     const mappedResources = {
         players: resources[0],
         teams: resources[1],
@@ -218,7 +222,11 @@ exports.checkCloudStatus = async (game) => {
         for (const resourceStatus of result) {
             lastUpdateStatusOnline[resourceStatus.resource] = resourceStatus.status;
         }
-        const resources = await Promise.all([players_1.getPlayersList({ game }), teams_1.getTeamsList({ game }), fields_1.getCustomFieldsDb(game) /*, getMatches()*/]);
+        const resources = await Promise.all([
+            players_1.getPlayersList({ game }),
+            teams_1.getTeamsList({ game }),
+            fields_1.getCustomFieldsDb(game) /*, getMatches()*/
+        ]);
         if (resources.every(resource => !resource.length)) {
             // no local resources
             // download db

@@ -15,7 +15,7 @@ export const initiateCustomFields = (game: AvailableGames = 'csgo', dontCreateOn
 			if (store) {
 				return res(store);
 			}
-			if(dontCreateOnCall){
+			if (dontCreateOnCall) {
 				return res(null as any);
 			}
 			const customFields = { players: [], teams: [], game };
@@ -43,9 +43,9 @@ export const replaceLocalCustomFieldStores = (stores: CustomFieldStore[], game: 
 
 export const getCustomFieldsDb = async (game: AvailableGames) => {
 	const customFields = await initiateCustomFields(game, true);
-	if(!customFields) return [];
+	if (!customFields) return [];
 	return [customFields];
-}
+};
 
 export const getFields = async (type: keyof CustomFieldStore, game: AvailableGames) => {
 	const store = await initiateCustomFields(game, true);

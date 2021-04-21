@@ -74,7 +74,7 @@ async function init() {
     }
     console.log(`Server listening on ${port}`);
     exports.app.use(parsePayload(config));
-    api_1.default();
+    await api_1.default();
     const io = await socket_1.ioPromise;
     fs_1.default.watch(path_1.default.join(electron_1.app.getPath('home'), 'HUDs'), () => {
         io.emit('reloadHUDs');

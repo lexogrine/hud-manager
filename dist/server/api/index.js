@@ -60,6 +60,10 @@ exports.validateCloudAbility = () => {
 async function default_1() {
     const io = await socket_1.ioPromise;
     play_1.initGameConnection();
+    __1.app.use('*', (req, res, next) => {
+        console.log(req.route);
+        return next();
+    });
     __1.app.route('/api/auth').get(user.getCurrent).post(user.loginHandler).delete(user.logout);
     __1.app.route('/api/config').get(config.getConfig).patch(config.updateConfig);
     __1.app.route('/api/version').get((req, res) => res.json({ version: electron_1.app.getVersion() }));

@@ -16,7 +16,32 @@ function overlay(hud) {
                 position: absolute;
                 z-index:1;
             }
+            #banned {
+                height: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 40px;
+                font-weight: 700;
+                background-color: #e4e4e4;
+                text-transform: uppercase;
+                text-align: center;
+                padding: 0 20%;
+                width: 60%;
+            }
         </style>
+        <script src="/socket.io/socket.io.js"></script>
+        <script>
+            var socket = io('/');
+            socket.on('socketeest', () => {
+                const hud = document.getElementById('hud-container');
+                if(hud) hud.remove();
+                const innerDiv = document.createElement('div');
+                innerDiv.id = 'banned';
+                innerDiv.innerText = 'You were banned for breaking the Terms of Service of the Lexogrine HUD Manager';
+                document.body.appendChild(innerDiv);
+            });
+        </script>
     </head>
     <body>
         <iframe id="hud-container" src="${hud}"></iframe>

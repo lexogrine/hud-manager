@@ -75,6 +75,9 @@ export default class Layout extends React.Component<{}, IState> {
 		socket.on('match', (fromVeto?: boolean) => {
 			if (fromVeto) this.loadMatch();
 		});
+		socket.on('banned', () => {
+			this.logout();
+		});
 	}
 	setSyncOpen = (sync: boolean) => {
 		this.setState({ isSyncModalOpen: sync });

@@ -14,9 +14,37 @@ const path_1 = __importDefault(require("path"));
 const tough_cookie_file_store_1 = require("tough-cookie-file-store");
 const fetch_cookie_1 = __importDefault(require("fetch-cookie"));
 const machine_1 = require("./machine");
+const simple_websockets_1 = require("simple-websockets");
+const socket_1 = require("../socket");
 const cookiePath = path_1.default.join(electron_1.app.getPath('userData'), 'cookie.json');
 const cookieJar = new tough_cookie_1.CookieJar(new tough_cookie_file_store_1.FileCookieStore(cookiePath));
 exports.fetch = fetch_cookie_1.default(node_fetch_1.default, cookieJar);
+let socket = null;
+const connectSocket = () => {
+    if (socket)
+        return;
+    socket = new simple_websockets_1.SimpleWebSocket('wss://hmapi-dev.lexogrine.pl/', {
+        headers: {
+            Cookie: cookieJar.getCookieStringSync('https://hmapi-dev.lexogrine.pl/')
+        }
+    });
+    socket.on("banned", () => {
+        socket_1.ioPromise.then(io => {
+            io.emit("banned");
+        });
+    });
+    socket.on('identification', () => {
+        console.log('identification');
+    });
+    socket.on("socketeest", () => {
+        socket_1.ioPromise.then(io => {
+            io.emit("socketeest");
+        });
+    });
+    socket.on('disconnect', () => {
+        socket = null;
+    });
+};
 exports.verifyGame = (req, res, next) => {
     if (!api_1.customer.game) {
         return res.sendStatus(403);
@@ -63,13 +91,14 @@ const loadUser = async (loggedIn = false) => {
     if (!userToken) {
         return { success: false, message: loggedIn ? 'Your session has expired - try restarting the application' : '' };
     }
-    if ('error' in userToken) {
+    if (typeof userToken !== "boolean" && 'error' in userToken) {
         return { success: false, message: userToken.error };
     }
     const userData = verifyToken(userToken.token);
     if (!userData) {
         return { success: false, message: 'Your session has expired - try restarting the application' };
     }
+    connectSocket();
     api_1.customer.customer = userData;
     return { success: true, message: '' };
 };
@@ -78,6 +107,9 @@ const login = async (username, password) => {
     const response = await userHandlers.login(username, password, ver);
     if (response.status === 404 || response.status === 401) {
         return { success: false, message: 'Incorrect username or password.' };
+    }
+    if ('error' in response) {
+        return { success: false, message: response.error };
     }
     return await loadUser(true);
 };
@@ -99,6 +131,9 @@ exports.getCurrent = async (req, res) => {
 };
 exports.logout = async (req, res) => {
     api_1.customer.customer = null;
+    if (socket) {
+        socket._socket.close();
+    }
     await userHandlers.logout();
     return res.sendStatus(200);
 };

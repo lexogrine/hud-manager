@@ -46,7 +46,6 @@ app.use(cors({ origin: '*', credentials: true }));
 export default async function init() {
 	let config = await loadConfig();
 
-
 	let port = await getPort({ port: config.port });
 	if (port !== config.port) {
 		port = await getPort({ port: makeRange(1300, 50000) });
@@ -56,7 +55,7 @@ export default async function init() {
 	console.log(`Server listening on ${port}`);
 	app.use(parsePayload(config));
 
-	router();
+	await router();
 
 	const io = await ioPromise;
 
