@@ -31,7 +31,6 @@ export const replaceLocalCustomFieldStores = (
 	existing: string[]
 ) =>
 	new Promise<boolean>(res => {
-
 		const or: any[] = [
 			{ game, _id: { $nin: existing } },
 			{ game, _id: { $in: stores.map(store => store._id) } }

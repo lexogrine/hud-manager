@@ -27,7 +27,6 @@ export const getTeamsList = (query: any) =>
 
 export const replaceLocalTeams = (newTeams: Team[], game: AvailableGames, existing: string[]) =>
 	new Promise<boolean>(res => {
-
 		const or: any[] = [
 			{ game, _id: { $nin: existing } },
 			{ game, _id: { $in: newTeams.map(team => team._id) } }
