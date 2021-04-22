@@ -71,8 +71,9 @@ export default class Config extends React.Component<IProps, IState> {
 				accessible: true
 			},
 			bakkesModStatus: {
-				bakkesModDownloaded: false,
-				bakkesModInstalled: false,
+				bakkesModExeDownloaded: false,
+				bakkesModDataDownloaded: false,
+				bakkesModDataInstalled: false,
 				sosPluginDownloaded: false,
 				sosPluginInstalled: false,
 				sosConfigSet: false,
@@ -237,7 +238,7 @@ export default class Config extends React.Component<IProps, IState> {
 		if (this.state.bakkesModAutoconfBusy) return 'Busy...';
 
 		const status = this.state.bakkesModStatus;
-		if (!status.bakkesModInstalled) return 'BakkesMod not installed or never launched yet';
+		if (!status.bakkesModDataInstalled) return 'BakkesMod not installed';
 		if (!status.sosPluginInstalled) return 'SOS Plugin not installed';
 		if (!status.sosConfigSet) return 'Not configured';
 		return 'Installed';
@@ -248,21 +249,31 @@ export default class Config extends React.Component<IProps, IState> {
 		const status = await this.loadBakkesModStatus(true);
 
 		try {
-			if (!status.bakkesModInstalled) {
-				if (!status.bakkesModDownloaded) {
-					const downloadStatus: I.BakkesModAPIResponse = await api.bakkesmod.downloadMod();
+			if (!status.bakkesModDataInstalled) {
+				if (!status.bakkesModDataDownloaded) {
+					const downloadStatus: I.BakkesModAPIResponse = await api.bakkesmod.downloadModData();
 					if (!downloadStatus.success) {
 						this.setState({
-							bakkesModAutoconfError: downloadStatus.message || 'Failed to download BakkesMod',
+							bakkesModAutoconfError: downloadStatus.message || 'Failed to download BakkesMod data',
 							bakkesModAutoconfBusy: false
 						});
 						return;
 					}
 				}
-				const installStatus = await api.bakkesmod.installMod();
+				const installStatus = await api.bakkesmod.installModData();
 				if (!installStatus.success) {
 					this.setState({
-						bakkesModAutoconfError: installStatus.message || 'Failed to install BakkesMod',
+						bakkesModAutoconfError: installStatus.message || 'Failed to install BakkesMod data',
+						bakkesModAutoconfBusy: false
+					});
+					return;
+				}
+			}
+			if (!status.bakkesModExeDownloaded) {
+				const downloadStatus: I.BakkesModAPIResponse = await api.bakkesmod.downloadMod();
+				if (!downloadStatus.success) {
+					this.setState({
+						bakkesModAutoconfError: downloadStatus.message || 'Failed to download BakkesMod',
 						bakkesModAutoconfBusy: false
 					});
 					return;

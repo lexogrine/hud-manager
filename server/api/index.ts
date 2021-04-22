@@ -42,10 +42,10 @@ export default async function () {
 	const io = await ioPromise;
 
 	initGameConnection();
-	app.use('*', (req, res,next) => {
+	app.use('*', (req, res, next) => {
 		console.log(req.route);
 		return next();
-	})
+	});
 
 	app.route('/api/auth').get(user.getCurrent).post(user.loginHandler).delete(user.logout);
 
@@ -146,9 +146,13 @@ export default async function () {
 
 	app.route('/api/bakkesmod/download/mod').get(bakkesmod.downloadBakkesMod);
 
+	app.route('/api/bakkesmod/download/mod_data').get(bakkesmod.downloadBakkesModData);
+
 	app.route('/api/bakkesmod/download/sos').get(bakkesmod.downloadSosPlugin);
 
 	app.route('/api/bakkesmod/install/mod').get(bakkesmod.installBakkesMod);
+
+	app.route('/api/bakkesmod/install/mod_data').get(bakkesmod.installBakkesModData);
 
 	app.route('/api/bakkesmod/install/sos').get(bakkesmod.installSosPlugin);
 

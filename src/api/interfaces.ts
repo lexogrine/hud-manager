@@ -54,8 +54,9 @@ export interface Customer {
 }
 
 export interface BakkesModStatus {
-	bakkesModDownloaded: boolean;
-	bakkesModInstalled: boolean;
+	bakkesModExeDownloaded: boolean;
+	bakkesModDataDownloaded: boolean;
+	bakkesModDataInstalled: boolean;
 	sosPluginDownloaded: boolean;
 	sosPluginInstalled: boolean;
 	sosConfigSet: boolean;

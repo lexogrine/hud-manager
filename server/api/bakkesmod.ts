@@ -12,10 +12,15 @@ const tempDirPath = Application.getPath('temp');
 
 const bakkesModDirPath = path.join(process.env.APPDATA || '', '/bakkesmod/bakkesmod');
 const bakkesModConfigPath = path.join(bakkesModDirPath, 'cfg/plugins.cfg');
+
 const bakkesModDownloadUrl =
 	'https://github.com/bakkesmodorg/BakkesModInjectorCpp/releases/latest/download/BakkesModSetup.exe';
 const bakkesModDownloadFilePath = path.join(tempDirPath, 'lhm_bakkesmod.exe');
 const bakkesModPath = path.join(bakkesModDirPath, 'BakkesMod.exe');
+
+const bakkesModDataDownloadUrl =
+	'https://github.com/bakkesmodorg/BakkesModInjectorCpp/releases/latest/download/bakkesmod.zip';
+const bakkesModDataDownloadFilePath = path.join(tempDirPath, 'lhm_bakkesmod_data.zip');
 
 const sosPluginFiles = ['plugins/SOS.dll', 'plugins/settings/sos.set'];
 const sosPluginConfig = 'plugin load sos';
@@ -67,19 +72,19 @@ const verifyPluginList = () => {
 
 export const checkStatus: express.RequestHandler = async (req, res) => {
 	const status = {
-		bakkesModDownloaded: false,
-		bakkesModInstalled: false,
-		bakkesModStartedOnce: false,
+		bakkesModExeDownloaded: false,
+		bakkesModDataDownloaded: false,
+		bakkesModDataInstalled: false,
 		sosPluginDownloaded: false,
 		sosPluginInstalled: false,
 		sosConfigSet: false,
 		bakkesModRunning: false
 	};
 
-	if (fs.existsSync(bakkesModDownloadFilePath)) status.bakkesModDownloaded = true;
+	if (fs.existsSync(bakkesModDownloadFilePath)) status.bakkesModExeDownloaded = true;
+	if (fs.existsSync(bakkesModDataDownloadFilePath)) status.bakkesModDataDownloaded = true;
 	if (fs.existsSync(sosPluginDownloadFilePath)) status.sosPluginDownloaded = true;
-	if (fs.existsSync(bakkesModConfigPath)) status.bakkesModStartedOnce = true;
-	if (fs.existsSync(bakkesModPath)) status.bakkesModInstalled = true;
+	if (fs.existsSync(bakkesModConfigPath)) status.bakkesModDataInstalled = true;
 	if (fs.existsSync(path.join(bakkesModDirPath, sosPluginFiles[0]))) status.sosPluginInstalled = true;
 	if (verifyPluginList()) status.sosConfigSet = true;
 
@@ -95,6 +100,17 @@ export const downloadBakkesMod: express.RequestHandler = async (req, res) => {
 			return res.json({ success: true, path: bakkesModDownloadFilePath });
 		})
 		.pipe(fs.createWriteStream(bakkesModDownloadFilePath));
+};
+
+export const downloadBakkesModData: express.RequestHandler = async (req, res) => {
+	request(bakkesModDataDownloadUrl)
+		.on('error', () => {
+			return res.json({ success: false });
+		})
+		.on('end', () => {
+			return res.json({ success: true, path: bakkesModDataDownloadFilePath });
+		})
+		.pipe(fs.createWriteStream(bakkesModDataDownloadFilePath));
 };
 
 export const downloadSosPlugin: express.RequestHandler = async (req, res) => {
@@ -132,6 +148,27 @@ export const installBakkesMod: express.RequestHandler = async (req, res) => {
 		}
 		return res.json({ success: true });
 	});
+};
+
+export const installBakkesModData: express.RequestHandler = async (req, res) => {
+	if (!fs.existsSync(bakkesModDataDownloadFilePath))
+		return res.json({ success: false, message: 'BakkesMod data needs to be downloaded first' });
+
+	fs.mkdirSync(bakkesModDirPath, { recursive: true });
+
+	const unzipper = new DecompressZip(bakkesModDataDownloadFilePath);
+	unzipper.on('extract', async () => {
+		return res.json({ success: true });
+	});
+	unzipper.on('error', (e: any) => {
+		return res.json({
+			success: false,
+			message: 'Failed to unzip the BakkesMod data archive',
+			error: e
+		});
+	});
+
+	unzipper.extract({ path: bakkesModDirPath });
 };
 
 export const installSosPlugin: express.RequestHandler = async (req, res) => {
