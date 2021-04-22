@@ -34,9 +34,13 @@ const connectSocket = () => {
 		});
 	});
 	socket.on('db_update', async () => {
-		console.log("db update")
-		if(!customer.game) return;
+		if (!customer.game) return;
 		const io = await ioPromise;
+		const result = await checkCloudStatus(customer.game);
+		if(result !== "ALL_SYNCED"){
+			// TODO: Handle that
+			return;
+		}
 		io.emit('db_update');
 	});
 	socket.on('disconnect', () => {

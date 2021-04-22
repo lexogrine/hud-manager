@@ -63,8 +63,8 @@ const updateLastDateLocally = (game: I.AvailableGames, resources: I.ResourceResp
 	const database = path.join(userData, 'databases', 'lastUpdated.lhm');
 
 	fs.writeFileSync(database, JSON.stringify(lastUpdateLocal), 'utf8');
-	if(socket){
-		socket.send("init_db_update");
+	if (socket) {
+		socket.send('init_db_update');
 	}
 	return lastUpdateLocal;
 };
@@ -107,7 +107,6 @@ export const deleteResource = async (game: I.AvailableGames, resource: I.Availab
 		success: boolean;
 		lastUpdateTime: string;
 	};
-	console.log(result);
 	if (!result || !result.success) {
 		cloudErrorHandler();
 		return null;
@@ -116,7 +115,7 @@ export const deleteResource = async (game: I.AvailableGames, resource: I.Availab
 	return result;
 };
 
-export const getResource = async (game: I.AvailableGames, resource: I.AvailableResources, fromDate?: string) => {
+export const getResource = async (game: I.AvailableGames, resource: I.AvailableResources, fromDate?: string | null) => {
 	let url = `storage/${resource}/${game}`;
 	if (fromDate) {
 		url += `?fromDate=${fromDate}`;
@@ -141,7 +140,7 @@ export const getResource = async (game: I.AvailableGames, resource: I.AvailableR
  * If local data is older, download cloud
  */
 
-const downloadCloudData = async (game: I.AvailableGames, resource: I.AvailableResources, fromDate?: string) => {
+const downloadCloudData = async (game: I.AvailableGames, resource: I.AvailableResources, fromDate?: string | null) => {
 	const replacer = {} as I.Replacer;
 
 	for (const resource of I.availableResources) {
