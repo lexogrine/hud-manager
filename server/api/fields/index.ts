@@ -25,9 +25,13 @@ export const initiateCustomFields = (game: AvailableGames = 'csgo', dontCreateOn
 		});
 	});
 
-export const replaceLocalCustomFieldStores = (stores: (CustomFieldStore & { _id: string })[], game: AvailableGames, existing: string[]) =>
+export const replaceLocalCustomFieldStores = (
+	stores: (CustomFieldStore & { _id: string })[],
+	game: AvailableGames,
+	existing: string[]
+) =>
 	new Promise<boolean>(res => {
-		const toRemove = { $or: [{ $in: stores.map(store => store._id) }, { $nin: existing }]};
+		const toRemove = { $or: [{ $in: stores.map(store => store._id) }, { $nin: existing }] };
 		const or: any[] = [{ game, _id: toRemove }];
 		if (game === 'csgo') {
 			or.push({ game: { $exists: false }, _id: toRemove });

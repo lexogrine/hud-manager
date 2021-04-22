@@ -19,7 +19,7 @@ const cookieJar = new CookieJar(new FileCookieStore(cookiePath));
 
 export const fetch = fetchHandler(nodeFetch, cookieJar);
 
-let socket: SimpleWebSocket | null = null;
+export let socket: SimpleWebSocket | null = null;
 
 const connectSocket = () => {
 	if (socket) return;
@@ -33,7 +33,12 @@ const connectSocket = () => {
 			io.emit('banned');
 		});
 	});
-	socket.on('db_update', checkCloudStatus);
+	socket.on('db_update', async () => {
+		console.log("db update")
+		if(!customer.game) return;
+		const io = await ioPromise;
+		io.emit('db_update');
+	});
 	socket.on('disconnect', () => {
 		socket = null;
 	});

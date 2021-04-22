@@ -11,9 +11,9 @@ export const availableGames: AvailableGames[] = ['csgo', 'rocketleague'];
 export type ResourcesTypes = Player | Team | CustomFieldStore;
 
 export type CachedResponse = {
-	resources: ResourcesTypes[],
-	existing: string[]
-}
+	resources: ResourcesTypes[];
+	existing: string[];
+};
 
 export type CloudSyncStatus = 'NO_UPLOADED_RESOURCES' | 'ALL_SYNCED' | 'NO_SYNC_LOCAL' | 'UNKNOWN_ERROR';
 export interface Player {

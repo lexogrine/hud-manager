@@ -38,7 +38,7 @@ export const getPlayersList = (query: any) =>
 
 export const replaceLocalPlayers = (newPlayers: Player[], game: AvailableGames, existing: string[]) =>
 	new Promise<boolean>(res => {
-		const toRemove = { $or: [{ $in: newPlayers.map(store => store._id) }, { $nin: existing }]};
+		const toRemove = { $or: [{ $in: newPlayers.map(store => store._id) }, { $nin: existing }] };
 
 		const or: any[] = [{ game, _id: toRemove }];
 		if (game === 'csgo') {
@@ -48,7 +48,7 @@ export const replaceLocalPlayers = (newPlayers: Player[], game: AvailableGames, 
 			if (err) {
 				return res(false);
 			}
-			console.log('removed',n,'players')
+			console.log('removed', n, 'players');
 			players.insert(newPlayers, (err, docs) => {
 				return res(!err);
 			});

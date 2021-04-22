@@ -27,7 +27,7 @@ export const getTeamsList = (query: any) =>
 
 export const replaceLocalTeams = (newTeams: Team[], game: AvailableGames, existing: string[]) =>
 	new Promise<boolean>(res => {
-		const toRemove = { $or: [{ $in: newTeams.map(store => store._id) }, { $nin: existing }]};
+		const toRemove = { $or: [{ $in: newTeams.map(store => store._id) }, { $nin: existing }] };
 
 		const or: any[] = [{ game, _id: toRemove }];
 		if (game === 'csgo') {

@@ -1,4 +1,4 @@
-import { api } from './../user';
+import { api, socket } from './../user';
 import * as I from '../../../types/interfaces';
 import { loadConfig, setConfig } from '../config';
 import { getPlayersList, replaceLocalPlayers } from '../players';
@@ -63,7 +63,9 @@ const updateLastDateLocally = (game: I.AvailableGames, resources: I.ResourceResp
 	const database = path.join(userData, 'databases', 'lastUpdated.lhm');
 
 	fs.writeFileSync(database, JSON.stringify(lastUpdateLocal), 'utf8');
-
+	if(socket){
+		socket.send("init_db_update");
+	}
 	return lastUpdateLocal;
 };
 
@@ -116,7 +118,7 @@ export const deleteResource = async (game: I.AvailableGames, resource: I.Availab
 
 export const getResource = async (game: I.AvailableGames, resource: I.AvailableResources, fromDate?: string) => {
 	let url = `storage/${resource}/${game}`;
-	if(fromDate){
+	if (fromDate) {
 		url += `?fromDate=${fromDate}`;
 	}
 	const result = (await api(url)) as I.CachedResponse;
@@ -301,7 +303,9 @@ export const checkCloudStatus = async (game: I.AvailableGames) => {
 
 		// Local data older, download non-synced resources
 
-		await Promise.all(nonSyncedResources.map(resource => downloadCloudData(game, resource, lastUpdateStatusLocal[game][resource])));
+		await Promise.all(
+			nonSyncedResources.map(resource => downloadCloudData(game, resource, lastUpdateStatusLocal[game][resource]))
+		);
 
 		updateLastDateLocally(
 			game,
