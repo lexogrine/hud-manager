@@ -40,15 +40,19 @@ exports.getPlayersList = (query) => new Promise(res => {
         return res([...players].sort((a, b) => (a.username > b.username ? 1 : -1)));
     });
 });
-exports.replaceLocalPlayers = (newPlayers, game) => new Promise(res => {
-    const or = [{ game }];
+exports.replaceLocalPlayers = (newPlayers, game, existing) => new Promise(res => {
+    const or = [
+        { game, _id: { $nin: existing } },
+        { game, _id: { $in: newPlayers.map(player => player._id) } }
+    ];
     if (game === 'csgo') {
-        or.push({ game: { $exists: false } });
+        or.push({ game: { $exists: false }, _id: { $nin: existing } }, { game: { $exists: false }, _id: { $in: newPlayers.map(player => player._id) } });
     }
-    players.remove({ $or: or }, { multi: true }, err => {
+    players.remove({ $or: or }, { multi: true }, (err, n) => {
         if (err) {
             return res(false);
         }
+        console.log('removed', n, 'players');
         players.insert(newPlayers, (err, docs) => {
             return res(!err);
         });

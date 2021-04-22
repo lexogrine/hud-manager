@@ -26,10 +26,13 @@ exports.initiateCustomFields = (game = 'csgo', dontCreateOnCall = false) => new 
         });
     });
 });
-exports.replaceLocalCustomFieldStores = (stores, game) => new Promise(res => {
-    const or = [{ game }];
+exports.replaceLocalCustomFieldStores = (stores, game, existing) => new Promise(res => {
+    const or = [
+        { game, _id: { $nin: existing } },
+        { game, _id: { $in: stores.map(store => store._id) } }
+    ];
     if (game === 'csgo') {
-        or.push({ game: { $exists: false } });
+        or.push({ game: { $exists: false }, _id: { $nin: existing } }, { game: { $exists: false }, _id: { $in: stores.map(store => store._id) } });
     }
     custom.remove({ $or: or }, { multi: true }, err => {
         if (err) {

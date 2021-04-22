@@ -31,10 +31,16 @@ export const replaceLocalCustomFieldStores = (
 	existing: string[]
 ) =>
 	new Promise<boolean>(res => {
-		const toRemove = { $or: [{ $in: stores.map(store => store._id) }, { $nin: existing }] };
-		const or: any[] = [{ game, _id: toRemove }];
+
+		const or: any[] = [
+			{ game, _id: { $nin: existing } },
+			{ game, _id: { $in: stores.map(store => store._id) } }
+		];
 		if (game === 'csgo') {
-			or.push({ game: { $exists: false }, _id: toRemove });
+			or.push(
+				{ game: { $exists: false }, _id: { $nin: existing } },
+				{ game: { $exists: false }, _id: { $in: stores.map(store => store._id) } }
+			);
 		}
 		custom.remove({ $or: or }, { multi: true }, err => {
 			if (err) {
