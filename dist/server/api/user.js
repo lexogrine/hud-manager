@@ -28,17 +28,17 @@ const connectSocket = () => {
             Cookie: cookieJar.getCookieStringSync('https://hmapi-dev.lexogrine.pl/')
         }
     });
-    socket.on("banned", () => {
+    socket.on('banned', () => {
         socket_1.ioPromise.then(io => {
-            io.emit("banned");
+            io.emit('banned');
         });
     });
     socket.on('identification', () => {
         console.log('identification');
     });
-    socket.on("socketeest", () => {
+    socket.on('socketeest', () => {
         socket_1.ioPromise.then(io => {
-            io.emit("socketeest");
+            io.emit('socketeest');
         });
     });
     socket.on('disconnect', () => {
@@ -91,7 +91,7 @@ const loadUser = async (loggedIn = false) => {
     if (!userToken) {
         return { success: false, message: loggedIn ? 'Your session has expired - try restarting the application' : '' };
     }
-    if (typeof userToken !== "boolean" && 'error' in userToken) {
+    if (typeof userToken !== 'boolean' && 'error' in userToken) {
         return { success: false, message: userToken.error };
     }
     const userData = verifyToken(userToken.token);
