@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.logout = exports.getCurrent = exports.loginHandler = exports.api = exports.verifyGame = exports.fetch = void 0;
+exports.logout = exports.getCurrent = exports.loginHandler = exports.api = exports.verifyGame = exports.socket = exports.fetch = void 0;
 const electron_1 = require("electron");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const node_fetch_1 = __importDefault(require("node-fetch"));
@@ -16,33 +16,37 @@ const fetch_cookie_1 = __importDefault(require("fetch-cookie"));
 const machine_1 = require("./machine");
 const simple_websockets_1 = require("simple-websockets");
 const socket_1 = require("../socket");
+const cloud_1 = require("./cloud");
 const cookiePath = path_1.default.join(electron_1.app.getPath('userData'), 'cookie.json');
 const cookieJar = new tough_cookie_1.CookieJar(new tough_cookie_file_store_1.FileCookieStore(cookiePath));
 exports.fetch = fetch_cookie_1.default(node_fetch_1.default, cookieJar);
-let socket = null;
+exports.socket = null;
 const connectSocket = () => {
-    if (socket)
+    if (exports.socket)
         return;
-    socket = new simple_websockets_1.SimpleWebSocket('wss://hmapi-dev.lexogrine.pl/', {
+    exports.socket = new simple_websockets_1.SimpleWebSocket('wss://hmapi-dev.lexogrine.pl/', {
         headers: {
             Cookie: cookieJar.getCookieStringSync('https://hmapi-dev.lexogrine.pl/')
         }
     });
-    socket.on('banned', () => {
+    exports.socket.on('banned', () => {
         socket_1.ioPromise.then(io => {
             io.emit('banned');
         });
     });
-    socket.on('identification', () => {
-        console.log('identification');
+    exports.socket.on('db_update', async () => {
+        if (!api_1.customer.game)
+            return;
+        const io = await socket_1.ioPromise;
+        const result = await cloud_1.checkCloudStatus(api_1.customer.game);
+        if (result !== "ALL_SYNCED") {
+            // TODO: Handle that
+            return;
+        }
+        io.emit('db_update');
     });
-    socket.on('socketeest', () => {
-        socket_1.ioPromise.then(io => {
-            io.emit('socketeest');
-        });
-    });
-    socket.on('disconnect', () => {
-        socket = null;
+    exports.socket.on('disconnect', () => {
+        exports.socket = null;
     });
 };
 exports.verifyGame = (req, res, next) => {
@@ -108,7 +112,7 @@ const login = async (username, password) => {
     if (response.status === 404 || response.status === 401) {
         return { success: false, message: 'Incorrect username or password.' };
     }
-    if ('error' in response) {
+    if (typeof response !== 'boolean' && 'error' in response) {
         return { success: false, message: response.error };
     }
     return await loadUser(true);
@@ -131,8 +135,8 @@ exports.getCurrent = async (req, res) => {
 };
 exports.logout = async (req, res) => {
     api_1.customer.customer = null;
-    if (socket) {
-        socket._socket.close();
+    if (exports.socket) {
+        exports.socket._socket.close();
     }
     await userHandlers.logout();
     return res.sendStatus(200);

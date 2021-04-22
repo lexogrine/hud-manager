@@ -33,7 +33,7 @@ function overlay(hud) {
         <script src="/socket.io/socket.io.js"></script>
         <script>
             var socket = io('/');
-            socket.on('socketeest', () => {
+            socket.on('banned', () => {
                 const hud = document.getElementById('hud-container');
                 if(hud) hud.remove();
                 const innerDiv = document.createElement('div');

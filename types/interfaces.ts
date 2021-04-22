@@ -8,7 +8,12 @@ export const availableResources: AvailableResources[] = ['teams', 'players', 'cu
 
 export const availableGames: AvailableGames[] = ['csgo', 'rocketleague'];
 
-export type ResourcesTypes = Player | Team;
+export type ResourcesTypes = Player | Team | CustomFieldStore;
+
+export type CachedResponse = {
+	resources: ResourcesTypes[];
+	existing: string[];
+};
 
 export type CloudSyncStatus = 'NO_UPLOADED_RESOURCES' | 'ALL_SYNCED' | 'NO_SYNC_LOCAL' | 'UNKNOWN_ERROR';
 export interface Player {
@@ -266,7 +271,7 @@ export type LastUpdated = {
 };
 
 export type Replacer = {
-	[resource in AvailableResources]: (resource: any[], game: AvailableGames) => Promise<boolean>;
+	[resource in AvailableResources]: (resource: any[], game: AvailableGames, existing: string[]) => Promise<boolean>;
 };
 
 export interface ResourceResponseStatus {

@@ -78,6 +78,7 @@ export default class Layout extends React.Component<{}, IState> {
 		socket.on('banned', () => {
 			this.logout();
 		});
+		socket.on('db_update', this.state.data.reload);
 	}
 	setSyncOpen = (sync: boolean) => {
 		this.setState({ isSyncModalOpen: sync });

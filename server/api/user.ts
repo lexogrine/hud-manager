@@ -12,13 +12,14 @@ import fetchHandler from 'fetch-cookie';
 import { getMachineId } from './machine';
 import { SimpleWebSocket } from 'simple-websockets';
 import { ioPromise } from '../socket';
+import { checkCloudStatus } from './cloud';
 
 const cookiePath = path.join(app.getPath('userData'), 'cookie.json');
 const cookieJar = new CookieJar(new FileCookieStore(cookiePath));
 
 export const fetch = fetchHandler(nodeFetch, cookieJar);
 
-let socket: SimpleWebSocket | null = null;
+export let socket: SimpleWebSocket | null = null;
 
 const connectSocket = () => {
 	if (socket) return;
@@ -32,13 +33,15 @@ const connectSocket = () => {
 			io.emit('banned');
 		});
 	});
-	socket.on('identification', () => {
-		console.log('identification');
-	});
-	socket.on('socketeest', () => {
-		ioPromise.then(io => {
-			io.emit('socketeest');
-		});
+	socket.on('db_update', async () => {
+		if (!customer.game) return;
+		const io = await ioPromise;
+		const result = await checkCloudStatus(customer.game);
+		if (result !== 'ALL_SYNCED') {
+			// TODO: Handle that
+			return;
+		}
+		io.emit('db_update');
 	});
 	socket.on('disconnect', () => {
 		socket = null;
@@ -116,7 +119,7 @@ const login = async (username: string, password: string) => {
 	if (response.status === 404 || response.status === 401) {
 		return { success: false, message: 'Incorrect username or password.' };
 	}
-	if ('error' in response) {
+	if (typeof response !== 'boolean' && 'error' in response) {
 		return { success: false, message: (response as any).error };
 	}
 	return await loadUser(true);

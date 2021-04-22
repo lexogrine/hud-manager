@@ -27,10 +27,13 @@ exports.getTeamsList = (query) => new Promise(res => {
         return res([...teams].sort((a, b) => (a.name > b.name ? 1 : -1)));
     });
 });
-exports.replaceLocalTeams = (newTeams, game) => new Promise(res => {
-    const or = [{ game }];
+exports.replaceLocalTeams = (newTeams, game, existing) => new Promise(res => {
+    const or = [
+        { game, _id: { $nin: existing } },
+        { game, _id: { $in: newTeams.map(team => team._id) } }
+    ];
     if (game === 'csgo') {
-        or.push({ game: { $exists: false } });
+        or.push({ game: { $exists: false }, _id: { $nin: existing } }, { game: { $exists: false }, _id: { $in: newTeams.map(team => team._id) } });
     }
     teams.remove({ $or: or }, { multi: true }, err => {
         if (err) {
