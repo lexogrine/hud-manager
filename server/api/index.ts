@@ -146,7 +146,7 @@ export default async function () {
 
 	app.route('/api/bakkesmod/download/sos').get(bakkesmod.downloadSosPlugin);
 
-	app.route('/api/bakkesmod/install/mod').get(bakkesmod.installBakkesMod);
+	app.route('/api/bakkesmod/run').get(bakkesmod.runBakkesMod);
 
 	app.route('/api/bakkesmod/install/mod_data').get(bakkesmod.installBakkesModData);
 

@@ -174,8 +174,8 @@ export default {
 		downloadMod: async () => await apiV2<I.BakkesModAPIResponse>('bakkesmod/download/mod'),
 		downloadModData: async () => await apiV2<I.BakkesModAPIResponse>('bakkesmod/download/mod_data'),
 		downloadSos: async () => await apiV2<I.BakkesModAPIResponse>('bakkesmod/download/sos'),
-		installMod: async () => await apiV2<I.BakkesModAPIResponse>('bakkesmod/install/mod'),
 		installModData: async () => await apiV2<I.BakkesModAPIResponse>('bakkesmod/install/mod_data'),
-		installSos: async () => await apiV2<I.BakkesModAPIResponse>('bakkesmod/install/sos')
+		installSos: async () => await apiV2<I.BakkesModAPIResponse>('bakkesmod/install/sos'),
+		run: async () => await apiV2<I.BakkesModAPIResponse>('bakkesmod/run')
 	}
 };

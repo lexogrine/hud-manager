@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.installSosPlugin = exports.installBakkesModData = exports.installBakkesMod = exports.downloadSosPlugin = exports.downloadBakkesModData = exports.downloadBakkesMod = exports.checkStatus = void 0;
+exports.installSosPlugin = exports.installBakkesModData = exports.runBakkesMod = exports.downloadSosPlugin = exports.downloadBakkesModData = exports.downloadBakkesMod = exports.checkStatus = void 0;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const electron_1 = require("electron");
@@ -14,9 +14,8 @@ const DecompressZip = require('decompress-zip');
 const tempDirPath = electron_1.app.getPath('temp');
 const bakkesModDirPath = path_1.default.join(process.env.APPDATA || '', '/bakkesmod/bakkesmod');
 const bakkesModConfigPath = path_1.default.join(bakkesModDirPath, 'cfg/plugins.cfg');
-const bakkesModDownloadUrl = 'https://github.com/bakkesmodorg/BakkesModInjectorCpp/releases/latest/download/BakkesModSetup.exe';
-const bakkesModDownloadFilePath = path_1.default.join(tempDirPath, 'lhm_bakkesmod.exe');
-const bakkesModPath = path_1.default.join(bakkesModDirPath, 'BakkesMod.exe');
+const bakkesModDownloadUrl = 'https://github.com/bakkesmodorg/BakkesModInjectorCpp/releases/latest/download/BakkesMod.exe';
+const bakkesModExePath = path_1.default.join(bakkesModDirPath, 'lhm_bakkesmod.exe');
 const bakkesModDataDownloadUrl = 'https://github.com/bakkesmodorg/BakkesModInjectorCpp/releases/latest/download/bakkesmod.zip';
 const bakkesModDataDownloadFilePath = path_1.default.join(tempDirPath, 'lhm_bakkesmod_data.zip');
 const sosPluginFiles = ['plugins/SOS.dll', 'plugins/settings/sos.set'];
@@ -25,6 +24,7 @@ const sosPluginDownloadAPIPath = 'https://gitlab.com/api/v4/projects/16389912/re
 const sosPluginDownloadUrlPrefix = 'https://gitlab.com/bakkesplugins/sos/sos-plugin';
 const sosPluginDownloadFilePath = path_1.default.join(tempDirPath, 'lhm_sosplugin.zip');
 const sosPluginExtractPath = path_1.default.join(tempDirPath, 'lhm_sosplugin_unpack');
+const rocketLeagueUrl = 'com.epicgames.launcher://apps/Sugar?action=launch&silent=true';
 const move = (oldPath, newPath, overwrite) => {
     return new Promise((resolve, reject) => {
         const justMove = () => {
@@ -76,7 +76,7 @@ exports.checkStatus = async (req, res) => {
         sosConfigSet: false,
         bakkesModRunning: false
     };
-    if (fs_1.default.existsSync(bakkesModDownloadFilePath))
+    if (fs_1.default.existsSync(bakkesModExePath))
         status.bakkesModExeDownloaded = true;
     if (fs_1.default.existsSync(bakkesModDataDownloadFilePath))
         status.bakkesModDataDownloaded = true;
@@ -96,9 +96,9 @@ exports.downloadBakkesMod = async (req, res) => {
         return res.json({ success: false });
     })
         .on('end', () => {
-        return res.json({ success: true, path: bakkesModDownloadFilePath });
+        return res.json({ success: true, path: bakkesModExePath });
     })
-        .pipe(fs_1.default.createWriteStream(bakkesModDownloadFilePath));
+        .pipe(fs_1.default.createWriteStream(bakkesModExePath));
 };
 exports.downloadBakkesModData = async (req, res) => {
     request_1.default(bakkesModDataDownloadUrl)
@@ -127,21 +127,14 @@ exports.downloadSosPlugin = async (req, res) => {
             .pipe(fs_1.default.createWriteStream(sosPluginDownloadFilePath));
     });
 };
-exports.installBakkesMod = async (req, res) => {
-    if (!fs_1.default.existsSync(bakkesModDownloadFilePath))
+exports.runBakkesMod = async (req, res) => {
+    if (!fs_1.default.existsSync(bakkesModExePath))
         return res.json({ success: false, message: 'BakkesMod needs to be downloaded first' });
-    child_process_1.execFile(bakkesModDownloadFilePath, (error, _stdout, _stderr) => {
-        if (error) {
-            return res.json({ success: false, message: 'Failed to install BakkesMod', error });
-        }
-        if (!fs_1.default.existsSync(bakkesModConfigPath)) {
-            return res.json({
-                success: false,
-                message: 'BakkesMod needs to be started at least once before continuing'
-            });
-        }
-        return res.json({ success: true });
-    });
+    //execFile(bakkesModExePath);
+    child_process_1.spawn(bakkesModExePath, { detached: true, stdio: 'ignore' });
+    const startCommand = process.platform === 'win32' ? 'start' : 'xdg-open';
+    // exec(startCommand + ' ' + rocketLeagueUrl);
+    child_process_1.spawn(startCommand + ' ' + rocketLeagueUrl, { detached: true, stdio: 'ignore', shell: true });
 };
 exports.installBakkesModData = async (req, res) => {
     if (!fs_1.default.existsSync(bakkesModDataDownloadFilePath))

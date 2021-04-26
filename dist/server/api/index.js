@@ -118,7 +118,7 @@ async function default_1() {
     __1.app.route('/api/bakkesmod/download/mod').get(bakkesmod.downloadBakkesMod);
     __1.app.route('/api/bakkesmod/download/mod_data').get(bakkesmod.downloadBakkesModData);
     __1.app.route('/api/bakkesmod/download/sos').get(bakkesmod.downloadSosPlugin);
-    __1.app.route('/api/bakkesmod/install/mod').get(bakkesmod.installBakkesMod);
+    __1.app.route('/api/bakkesmod/run').get(bakkesmod.runBakkesMod);
     __1.app.route('/api/bakkesmod/install/mod_data').get(bakkesmod.installBakkesModData);
     __1.app.route('/api/bakkesmod/install/sos').get(bakkesmod.installSosPlugin);
     electron_1.globalShortcut.register('Alt+Shift+F', () => io.emit('refreshHUD'));

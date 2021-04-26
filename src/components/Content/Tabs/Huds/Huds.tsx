@@ -91,7 +91,16 @@ export default class Huds extends React.Component<IProps, IState> {
 		};
 	}
 
-	runGame = () => api.game.run(this.state.form);
+	runGame = async () => {
+		switch (this.props.cxt.game) {
+			case 'csgo':
+				api.game.run(this.state.form);
+				break;
+			case 'rocketleague':
+				api.bakkesmod.run();
+				break;
+		}
+	};
 
 	handleZIPs = (files: FileList) => {
 		const file = files[0];
