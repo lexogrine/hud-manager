@@ -44,7 +44,7 @@ const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHU
 		api.huds.start(dir);
 	};
 	const setHUD = (url: string, dir: string, isDev: boolean) => {
-		if(isActive){
+		if (isActive) {
 			socket.emit('set_active_hlae', null, '', false);
 		} else {
 			socket.emit('set_active_hlae', url, dir, isDev);
