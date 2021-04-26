@@ -43,6 +43,7 @@ function createCFG(customRadar: boolean, customKillfeed: boolean, afx: boolean, 
 
 interface IProps {
 	cxt: IContextData;
+	toggle: (tab: string, data?: any) => void;
 }
 
 interface IForm {
@@ -64,7 +65,7 @@ interface IState {
 }
 
 export default class Huds extends React.Component<IProps, IState> {
-	constructor(props: { cxt: IContextData }) {
+	constructor(props: IProps) {
 		super(props);
 		this.state = {
 			loadingHUDs: [],
@@ -238,6 +239,12 @@ export default class Huds extends React.Component<IProps, IState> {
 											onClick={api.game.runTest}
 										>
 											{!this.state.enableTest ? 'PAUSE TEST' : 'PLAY TEST'}
+										</Button>
+										<Button
+											className="round-btn run-game"
+											onClick={() => this.props.toggle('ar', this.state.huds)}
+										>
+											AR
 										</Button>
 									</ElectronOnly>
 								</div>

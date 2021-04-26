@@ -54,9 +54,6 @@ export const initGameConnection = async () => {
 		io.emit('enableTest', true, playTesting.isOnLoop);
 	};
 	app.post('/', assertUser, (req, res) => {
-		if (!customer.customer) {
-			return res.sendStatus(200);
-		}
 		runtimeConfig.last = req.body;
 
 		if (playTesting.intervalId) {

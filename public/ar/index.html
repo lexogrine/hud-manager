@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<!--
+
+## Usage:
+
+Launch CS:GO from HLAE with -afxInteropLight.
+
+Execute (will log warings / errors to debug.log in current directoy):
+afx-cefhud-interop.exe "--url=file:///C:/source/afx-cefhud-interop/afx-cefhud-interop/examples/default/index.html" --enable-experimental-web-platform-features --enable-logging --v=1
+Use CTRL + C in termianl to quit.
+
+For live execute:
+afx-cefhud-interop.exe "--url=file:///C:/source/afx-cefhud-interop/afx-cefhud-interop/examples/default/index.html" --enable-experimental-web-platform-features --enable-logging --log-severity=error
+
+Optional arguments:
+--afx-no-window
+
+Enter afx_interop connect 1 into CS:GO console.
+
+Console interface:
+afx_interop send cefhud [...]
+
+-->
+<html>
+<head>
+<title>Default example</title>
+</head>
+<body>
+<h1>Default example</h1>
+<p>Number of reconnects: <span id="reconnects">0</span></p>
+<p>Engine connected: <span id="engineStatus">n/a</span></p>
+<p>Drawing connected: <span id="drawingStatus">n/a</span></p>
+<script type="text/javascript" src="common.js"></script>
+<script>
+
+function AfxInterop(interop, args) {
+	
+	var self = this;
+	
+	this.interop = interop;
+	this.args = args;
+
+	this.drawingInteropId = null;
+	this.engineInteropId = null;
+
+	this.messagePromises = {};
+
+	this.reconnects = 0;
+
+	this.elReconnects = document.getElementById('reconnects');
+	this.elEngineStatus = document.getElementById('engineStatus');
+	this.elDrawingStatus = document.getElementById('drawingStatus');
+	
+	this.messageHandlers = {
+		"drawingCreated": async function(drawingInteropId) {
+			console.log("Created drawing interop #"+drawingInteropId);
+
+			this.drawingInteropId = drawingInteropId;
+			
+			await toPromise(self.interop, "createEngineInterop",
+				new URL("engine.html", window.location).toString(),
+				JSON.stringify({
+					"indexInteropId": this.interop.id,
+					"drawingInteropId": this.drawingInteropId,
+					"pipeName": "advancedfxInterop"
+				})
+			);
+		},
+		"engineCreated": async function(engineInteropId) {
+			console.log("Created engine interop #"+engineInteropId+", connecting ...");
+			this.engineInteropId = engineInteropId;
+
+			await this.reconnect();
+		},
+		"engineConnected": async function(engineInteropId) {
+			this.elEngineStatus.innerText = "connected";
+		},
+		"engineDisconnected": async function(engineInteropId) {
+			this.elEngineStatus.innerText = "DISCONNECTED";
+
+			await sleepPromise(1000);
+
+			await this.reconnect();
+		},
+		"drawingConnected": async function(engineInteropId) {
+			this.elDrawingStatus.innerText = "connected";
+		},
+		"drawingDisconnected": async function(engineInteropId) {
+			this.elDrawingStatus.innerText = "DISCONNECTED";
+		}
+	};
+	
+	interop.onMessage = function(senderId, message){
+		
+		const jMessage = JSON.parse(message);
+		
+		async function processMessage(jMessage)
+		{
+			try {
+				await self.messageHandlers[jMessage.id].apply(self, jMessage.args);
+			}
+			catch(e) {
+				logError(e);
+				if(!(e && e.soft))
+					throw e;
+			}
+		}
+		
+		function queueMessage(jMessage)
+		{
+			const port = jMessage.port || "0";
+			
+			var promise = self.messagePromises[port];
+			if(undefined === promise) promise = Promise.resolve();
+			
+			self.messagePromises[port] = promise.finally(()=>processMessage(jMessage));
+		}
+		
+		queueMessage(jMessage);
+	}
+
+	interop.onError = function(senderId, message){
+		self.onError(senderId, message);
+	};
+	
+	toPromise(this.interop, "createDrawingInterop",
+		new URL("drawing.html", window.location).toString(),
+		JSON.stringify({
+			"indexInteropId": this.interop.id,
+			"pipeName": "advancedfxInterop_drawing"
+		})
+	);
+}
+
+AfxInterop.prototype.onError = function(senderId, message) {
+	
+	if(this.drawingInteropId === senderId)
+		throw ("Drawing interop #"+senderId+" error: "+message);
+	else if(this.engineInteropId === senderId)
+		throw ("Engine interop #"+senderId+" error: "+message);
+	else
+		throw ("Interop #"+senderId+" error: "+message);
+}
+
+AfxInterop.prototype.reconnect = async function(senderId, message) {
+
+	self.messagePromises = {};
+
+	++this.reconnects;
+	this.elReconnects.innerText = this.reconnects;
+
+	await toPromise(this.interop, "sendMessage", this.engineInteropId, JSON.stringify({
+		"id": "connect",
+		"args": [this.interop.id]
+	}));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+//window.open("http://google.com");
+
+window.addEventListener('load', function(){
+
+	console.log(window.afxInterop.args);
+	new AfxInterop(window.afxInterop, JSON.parse(window.afxInterop.args))
+	
+}, false);
+
+</script>
+</body>
+</html>

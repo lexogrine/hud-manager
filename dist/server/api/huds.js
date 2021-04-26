@@ -22,7 +22,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.uploadHUD = exports.downloadHUD = exports.deleteHUD = exports.sendHUD = exports.closeHUD = exports.showHUD = exports.legacyCSS = exports.legacyJS = exports.renderLegacy = exports.renderAssets = exports.getThumbPath = exports.renderThumbnail = exports.renderOverlay = exports.render = exports.verifyOverlay = exports.renderHUD = exports.openHUDsDirectory = exports.getHUDPanelSetting = exports.getHUDKeyBinds = exports.getHUDData = exports.getHUDs = exports.listHUDs = void 0;
+
+exports.deleteHUD = exports.sendHUD = exports.closeHUD = exports.showHUD = exports.legacyCSS = exports.legacyJS = exports.renderLegacy = exports.renderAssets = exports.getThumbPath = exports.renderThumbnail = exports.renderOverlay = exports.render = exports.verifyOverlay = exports.renderHUD = exports.openHUDsDirectory = exports.getHUDPanelSetting = exports.getHUDKeyBinds = exports.getHUDData = exports.getHUDARSettings = exports.getHUDs = exports.listHUDs = void 0;
+
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
 const electron_1 = require("electron");
@@ -118,6 +120,21 @@ exports.listHUDs = async () => {
 exports.getHUDs = async (req, res) => {
     return res.json(await exports.listHUDs());
 };
+exports.getHUDARSettings = (dirName) => {
+    const dir = path.join(electron_1.app.getPath('home'), 'HUDs', dirName);
+    const arFileDir = path.join(dir, 'ar.json');
+    if (!fs.existsSync(arFileDir)) {
+        return null;
+    }
+    try {
+        const arFile = fs.readFileSync(arFileDir, { encoding: 'utf8' });
+        const ar = JSON.parse(arFile);
+        return ar;
+    }
+    catch (e) {
+        return null;
+    }
+};
 exports.getHUDData = async (dirName) => {
     const dir = path.join(electron_1.app.getPath('home'), 'HUDs', dirName);
     const configFileDir = path.join(dir, 'hud.json');
@@ -139,17 +156,24 @@ exports.getHUDData = async (dirName) => {
         config.game = config.game || 'csgo';
         const panel = exports.getHUDPanelSetting(dirName);
         const keybinds = exports.getHUDKeyBinds(dirName);
+
+        const ar = exports.getHUDARSettings(dirName);
+
         try {
             config.uuid = verifyUniqueID(dirName);
         }
         catch {
             return null;
         }
+
         if (panel) {
             config.panel = panel;
         }
         if (keybinds) {
             config.keybinds = keybinds;
+        }
+        if (ar) {
+            config.ar = ar;
         }
         config.url = `http://${config_1.internalIP}:${globalConfig.port}/hud/${dirName}/`;
         config.isDev = false;

@@ -178,6 +178,7 @@ export type KeyBind = {
 };
 
 export type PanelTemplate = {
+	ar?: boolean;
 	label: string;
 	name: string;
 	inputs: PanelInput[];
@@ -215,6 +216,7 @@ export interface HUD {
 	game: string;
 	killfeed: boolean;
 	panel?: PanelTemplate[];
+	ar?: PanelTemplate;
 	keybinds?: KeyBind[];
 	url: string;
 	allowAppsOnTop?: boolean;

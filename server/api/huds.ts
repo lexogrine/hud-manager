@@ -112,6 +112,21 @@ export const getHUDs: express.RequestHandler = async (req, res) => {
 	return res.json(await listHUDs());
 };
 
+export const getHUDARSettings = (dirName: string) => {
+	const dir = path.join(app.getPath('home'), 'HUDs', dirName);
+	const arFileDir = path.join(dir, 'ar.json');
+	if (!fs.existsSync(arFileDir)) {
+		return null;
+	}
+	try {
+		const arFile = fs.readFileSync(arFileDir, { encoding: 'utf8' });
+		const ar = JSON.parse(arFile);
+		return ar;
+	} catch (e) {
+		return null;
+	}
+};
+
 export const getHUDData = async (dirName: string): Promise<I.HUD | null> => {
 	const dir = path.join(app.getPath('home'), 'HUDs', dirName);
 	const configFileDir = path.join(dir, 'hud.json');
@@ -132,6 +147,7 @@ export const getHUDData = async (dirName: string): Promise<I.HUD | null> => {
 
 		const panel = getHUDPanelSetting(dirName);
 		const keybinds = getHUDKeyBinds(dirName);
+		const ar = getHUDARSettings(dirName);
 
 		try {
 			config.uuid = verifyUniqueID(dirName);
@@ -144,6 +160,9 @@ export const getHUDData = async (dirName: string): Promise<I.HUD | null> => {
 		}
 		if (keybinds) {
 			config.keybinds = keybinds;
+		}
+		if (ar) {
+			config.ar = ar;
 		}
 
 		config.url = `http://${internalIP}:${globalConfig.port}/hud/${dirName}/`;

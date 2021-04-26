@@ -31,6 +31,9 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 	const [form, setForm] = useState(emptyPlayer);
 	const [search, setSearch] = useState('');
 
+	const [sortBy, setSortBy] = useState<keyof I.Player>('username');
+	const [sortByType, setSortByType] = useState<'DESC' | 'ASC'>('ASC');
+
 	const [editModalState, setEditState] = useState(false);
 	const [fieldsModalState, setFieldsState] = useState(false);
 
@@ -39,6 +42,32 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 	const openCustomFields = () => {
 		setCustomFieldForm(quickClone(cxt.fields.players));
 		setFieldsState(true);
+	};
+
+	const sortPlayers = (players: I.Player[]) => {
+		const sortType = (result: -1 | 1) => {
+			if (sortByType === 'ASC') return result;
+			return result * -1;
+		};
+		if (sortBy === 'team') {
+			return [...players].sort((a, b) => {
+				const [aTeam, bTeam] = [
+					cxt.teams.find(team => team._id === a.team),
+					cxt.teams.find(team => team._id === b.team)
+				];
+				if (!a.team || !aTeam) return sortType(-1);
+				else if (!b.team || !bTeam) return sortType(1);
+				return sortType(aTeam.name < bTeam.name ? -1 : 1);
+			});
+		}
+		return [...players].sort((a, b) => sortType(a[sortBy] < b[sortBy] ? -1 : 1));
+	};
+
+	const toggleSortBy = (targetSortBy: keyof I.Player) => () => {
+		if (targetSortBy === sortBy) {
+			return setSortByType(sortByType === 'ASC' ? 'DESC' : 'ASC');
+		}
+		setSortBy(targetSortBy);
 	};
 
 	const saveFields = async () => {
@@ -255,10 +284,18 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 			<div className="tab-content-container no-padding">
 				<div className="item-list-entry heading">
 					<div className="picture">Avatar</div>
-					<div className="realName">Real Name</div>
-					<div className="username">Username</div>
-					<div className="team">Team</div>
-					<div className="country">Country</div>
+					<div className="realName" onClick={toggleSortBy('firstName')}>
+						Real Name
+					</div>
+					<div className="username" onClick={toggleSortBy('username')}>
+						Username
+					</div>
+					<div className="team" onClick={toggleSortBy('team')}>
+						Team
+					</div>
+					<div className="country" onClick={toggleSortBy('country')}>
+						Country
+					</div>
 					{visibleFields.map(field => (
 						<div className="custom-field" key={field._id}>
 							{field.name}
@@ -270,7 +307,7 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 						</Button>
 					</div>
 				</div>
-				{cxt.players.filter(filterPlayers).map(player => (
+				{sortPlayers(cxt.players.filter(filterPlayers)).map(player => (
 					<PlayerEntry
 						key={player._id}
 						hash={cxt.hash}
