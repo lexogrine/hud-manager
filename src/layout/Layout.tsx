@@ -85,7 +85,7 @@ export default class Layout extends React.Component<{}, IState> {
 			this.logout();
 		});
 		socket.on('db_update', this.state.data.reload);
-		
+
 		socket.on('config', () => {
 			this.loadConfig();
 		});
@@ -94,7 +94,7 @@ export default class Layout extends React.Component<{}, IState> {
 		const cfg = await api.config.get();
 
 		this.setState({ config: cfg }, () => {
-			if(!cfg.sync) return;
+			if (!cfg.sync) return;
 			this.sync();
 		});
 	};
