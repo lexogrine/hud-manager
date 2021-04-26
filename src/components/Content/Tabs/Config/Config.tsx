@@ -25,6 +25,12 @@ interface IProps {
 	gsiCheck: Function;
 }
 
+const GameOnly = ({ game, cxt, children }: { game: I.AvailableGames, cxt: IContextData, children: any }) => {
+	if (!cxt.game) return null;
+	if (game !== cxt.game) return null;
+	return children;
+}
+
 interface IState {
 	config: I.Config;
 	cfg: ConfigStatus;
@@ -115,7 +121,7 @@ export default class Config extends React.Component<IProps, IState> {
 	import = (data: any, callback: any) => async () => {
 		try {
 			await api.files.sync(data);
-		} catch {}
+		} catch { }
 		this.setState({ data: {}, conflict: { teams: 0, players: 0 }, importModalOpen: false }, callback);
 	};
 	importCheck = (callback: any) => (files: FileList) => {
@@ -146,7 +152,7 @@ export default class Config extends React.Component<IProps, IState> {
 					importModalOpen: true,
 					data: db
 				});
-			} catch {}
+			} catch { }
 		};
 	};
 	download = (target: 'gsi' | 'cfgs' | 'db') => {
@@ -372,6 +378,7 @@ export default class Config extends React.Component<IProps, IState> {
 	render() {
 		const { cxt } = this.props;
 		const { gsi, cfg, importModalOpen, conflict, data, ip, config, update } = this.state;
+		console.log(cxt.game);
 		return (
 			<Form>
 				<div className="tab-title-container">Settings</div>
@@ -433,8 +440,8 @@ export default class Config extends React.Component<IProps, IState> {
 									{update.installing
 										? 'Installing...'
 										: update.available
-										? 'Install update'
-										: 'Latest'}
+											? 'Install update'
+											: 'Latest'}
 								</Button>
 							</Col>
 						</ElectronOnly>
@@ -442,57 +449,66 @@ export default class Config extends React.Component<IProps, IState> {
 							<div className="config-description">Cloud Synchronization</div>
 							<Switch isOn={this.state.config.sync} id="sync-toggle" handleToggle={this.toggleHandler} />
 						</Col>
-						<Col md="12" className="config-entry">
-							<div className="config-description">
-								HLAE Path: {this.state.config.hlaePath ? 'Loaded' : 'Not loaded'}
-							</div>
-							<DragInput
-								id="hlae_input"
-								label="SET HLAE PATH"
-								accept=".exe"
-								onChange={this.loadEXE('hlaePath')}
-								className="path_selector"
-								removable
-							/>
-						</Col>
-						{
+
+
+						<GameOnly game="csgo" cxt={cxt}>
+
 							<Col md="12" className="config-entry">
 								<div className="config-description">
-									AFX CEF HUD Interop:{' '}
-									{this.state.config.afxCEFHudInteropPath ? 'Loaded' : 'Not loaded'}
+									HLAE Path: {this.state.config.hlaePath ? 'Loaded' : 'Not loaded'}
 								</div>
 								<DragInput
-									id="afx_input"
-									label="SET AFX PATH"
+									id="hlae_input"
+									label="SET HLAE PATH"
 									accept=".exe"
-									onChange={this.loadEXE('afxCEFHudInteropPath')}
+									onChange={this.loadEXE('hlaePath')}
 									className="path_selector"
 									removable
 								/>
 							</Col>
-						}
-						<Col md="12" className="config-entry">
-							<div className="config-description">
-								GameState Integration: {gsi.message || 'Loaded succesfully'}
-							</div>
-							<Button
-								className="purple-btn round-btn"
-								disabled={gsi.loading || gsi.success || !gsi.accessible}
-								onClick={this.createGSI}
-							>
-								Add GSI file
+							{
+								<Col md="12" className="config-entry">
+									<div className="config-description">
+										AFX CEF HUD Interop:{' '}
+										{this.state.config.afxCEFHudInteropPath ? 'Loaded' : 'Not loaded'}
+									</div>
+									<DragInput
+										id="afx_input"
+										label="SET AFX PATH"
+										accept=".exe"
+										onChange={this.loadEXE('afxCEFHudInteropPath')}
+										className="path_selector"
+										removable
+									/>
+								</Col>
+							}
+							<Col md="12" className="config-entry">
+								<div className="config-description">
+									GameState Integration: {gsi.message || 'Loaded succesfully'}
+								</div>
+								<Button
+									className="purple-btn round-btn"
+									disabled={gsi.loading || gsi.success || !gsi.accessible}
+									onClick={this.createGSI}
+								>
+									Add GSI file
 							</Button>
-						</Col>
-						<Col md="12" className="config-entry">
-							<div className="config-description">Configs: {cfg.message || 'Loaded succesfully'}</div>
-							<Button
-								className="purple-btn round-btn"
-								disabled={cfg.loading || cfg.success || !cfg.accessible}
-								onClick={this.createCFG}
-							>
-								Add config files
+							</Col>
+							<Col md="12" className="config-entry">
+								<div className="config-description">Configs: {cfg.message || 'Loaded succesfully'}</div>
+								<Button
+									className="purple-btn round-btn"
+									disabled={cfg.loading || cfg.success || !cfg.accessible}
+									onClick={this.createCFG}
+								>
+									Add config files
 							</Button>
-						</Col>
+							</Col>
+						</GameOnly>
+
+
+						<GameOnly game="rocketleague" cxt={cxt}>
+
 						<Col md="12" className="config-entry">
 							<div className="config-description">
 								<p>Rocket League integration: {this.getBakkesModStatusDescription()}</p>
@@ -517,6 +533,7 @@ export default class Config extends React.Component<IProps, IState> {
 								</Button>
 							</div>
 						</Col>
+						</GameOnly>
 						<Col md="12" className="config-entry">
 							<div className="config-description">Credits</div>
 							<Button className="lightblue-btn round-btn" onClick={() => this.props.toggle('credits')}>

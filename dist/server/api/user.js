@@ -39,7 +39,7 @@ const connectSocket = () => {
             return;
         const io = await socket_1.ioPromise;
         const result = await cloud_1.checkCloudStatus(api_1.customer.game);
-        if (result !== "ALL_SYNCED") {
+        if (result !== 'ALL_SYNCED') {
             // TODO: Handle that
             return;
         }

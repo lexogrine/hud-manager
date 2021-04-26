@@ -4,7 +4,7 @@ import api from '../../api/api';
 import Navbar from './Navbar/Navbar';
 import Tabs from './Tabs/Tabs';
 
-const Content = () => {
+const Content = ({ active, available, toggleSync }: { available: boolean, active: boolean, toggleSync: () => void }) => {
 	const [activeTab, setTab] = useState('huds');
 	const [data, setData] = useState(null);
 	const [gsi, setGSI] = useState(true);
@@ -32,6 +32,16 @@ const Content = () => {
 			<Col>
 				<Tabs activeTab={activeTab} data={data} toggle={toggle} gsiCheck={checkFiles} />
 			</Col>
+			<a className={`sync_button ${active ? 'active':""}`}
+					onClick={() => {
+						if(!available) return;
+						toggleSync();
+					}} 
+					href={ !available ? "https://lexogrine.com/manager/register" : undefined}
+					rel={"noopener noreferrer"}
+					target={ !available ? "_blank" : undefined }>
+				{ active ? 'CLOUD IS ACTIVE' : 'CLOUD IS NOT ACTIVE'}
+			</a>
 		</div>
 	);
 };

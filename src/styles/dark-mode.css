@@ -34,6 +34,28 @@ button.btn-primary {
     transition: opacity 0.5s, transform 0s 0.5s;
     background-color: rgba(107, 28, 255, 0.82);
 }
+.sync_button {
+    
+    width:163px;
+    height:29px;
+    font-size:10px;
+    font-weight:700;
+    position: absolute;
+    top: 77px;
+    right: 307px;
+    z-index: 5;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    border-radius:14px;
+    cursor:pointer;
+    background-color: #46494f;
+    color: white !important;
+    text-decoration: none !important;
+}
+.sync_button.active {
+    background-color: #53bf53;
+}
 .loading-container.hide {
     opacity:0;
     transform: scale(0);

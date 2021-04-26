@@ -29,6 +29,7 @@ interface IState {
 	picked: null | AvailableGames;
 	synchronizationStatus: CloudSyncStatus | null;
 	isSyncModalOpen: boolean;
+	config: I.ExtendedConfig | null;
 }
 export default class Layout extends React.Component<{}, IState> {
 	constructor(props: {}) {
@@ -45,7 +46,8 @@ export default class Layout extends React.Component<{}, IState> {
 						this.loadTeams(),
 						this.loadMatch(),
 						this.loadTournaments(),
-						this.getCustomFields()
+						this.getCustomFields(),
+						this.loadConfig()
 					]).then(this.rehash);
 				},
 				fields: { players: [], teams: [] },
@@ -59,15 +61,19 @@ export default class Layout extends React.Component<{}, IState> {
 			version: '-',
 			picked: null,
 			synchronizationStatus: null,
-			isSyncModalOpen: false
+			isSyncModalOpen: false,
+			config: null
 		};
 	}
 	async componentDidMount() {
 		//const socket = io.connect(`${config.isDev ? config.apiAddress : '/'}`);
 		api.games.getCurrent().then(result => {
+			const { data } = this.state;
+			data.game = result.game;
 			this.setState({
 				loadingGame: false,
-				picked: result.game
+				picked: result.game,
+				data
 			});
 		});
 		await this.getVersion();
@@ -80,6 +86,11 @@ export default class Layout extends React.Component<{}, IState> {
 		});
 		socket.on('db_update', this.state.data.reload);
 	}
+	loadConfig = async () => {
+		const cfg = await api.config.get();
+		
+		this.setState({config:cfg});
+	}
 	setSyncOpen = (sync: boolean) => {
 		this.setState({ isSyncModalOpen: sync });
 	};
@@ -90,7 +101,9 @@ export default class Layout extends React.Component<{}, IState> {
 		});
 	};
 	setGame = (game: AvailableGames) => {
-		this.setState({ picked: game }, this.sync);
+		const { data } = this.state;
+		data.game = game;
+		this.setState({ picked: game, data }, this.sync);
 	};
 	sync = () => {
 		if (!this.state.picked) return;
@@ -174,6 +187,12 @@ export default class Layout extends React.Component<{}, IState> {
 	setLoading = (loading: boolean, loginError?: string) => {
 		this.setState({ loadingLogin: loading, loginError: loginError || '' });
 	};
+	toggleSync = () => {
+		api.config.get().then(cfg => {
+			cfg.sync = !cfg.sync;
+			this.setState({config: cfg});
+		})
+	}
 	render() {
 		const { Provider } = ContextData;
 		const {
@@ -184,8 +203,11 @@ export default class Layout extends React.Component<{}, IState> {
 			version,
 			loadingGame,
 			isSyncModalOpen,
-			synchronizationStatus
+			synchronizationStatus,
+			config
 		} = this.state;
+		const available = (data.customer?.license?.type ==="professional" || data.customer?.license?.type === "enterprise");
+		const active = Boolean(available && config?.sync);
 		return (
 			<Provider value={this.state.data}>
 				<div className={`loaded ${isElectron ? 'electron' : ''}`}>
@@ -215,7 +237,7 @@ export default class Layout extends React.Component<{}, IState> {
 						reload={this.state.data.reload}
 					/>
 					<GamePicker isOpen={Boolean(data.customer && !this.state.picked)} setGame={this.setGame} />
-					<Content />
+					<Content active={active} available={available} toggleSync={this.toggleSync} />
 				</div>
 			</Provider>
 		);
