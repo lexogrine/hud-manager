@@ -57,15 +57,6 @@ exports.initGameConnection = async () => {
         radar.digestRadar(req.body);
         res.sendStatus(200);
     });
-    __2.app.post('/csgo/input/ar', assertUser, (req, res) => {
-        const { player } = req.body;
-        if (!player || !player.position || !player.forward)
-            return res.sendStatus(200);
-        const forward = player.forward.split(', ').map((n) => Number(n));
-        const position = player.position.split(', ').map((n) => Number(n));
-        io.to('csgo').emit('camera', { forward, position });
-        return res.sendStatus(200);
-    });
     __2.app.post('/api/test', assertUser, (_req, res) => {
         if (exports.playTesting.intervalId)
             stopSendingTestData();
