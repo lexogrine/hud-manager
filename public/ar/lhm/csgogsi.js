@@ -88,7 +88,7 @@ class CSGOGSI {
         this.maxListeners = 10;
         this.players = [];
     }
-    digest(raw) {
+    digest = (raw) => {
         if (!raw.allplayers || !raw.map || !raw.phase_countdowns) {
             return null;
         }

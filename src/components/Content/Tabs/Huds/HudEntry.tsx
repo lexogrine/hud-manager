@@ -43,8 +43,12 @@ const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHU
 	const startHUD = (dir: string) => {
 		api.huds.start(dir);
 	};
-	const setHUD = (url: string) => {
-		socket.emit('set_active_hlae', url);
+	const setHUD = (url: string, dir: string, isDev: boolean) => {
+		if(isActive){
+			socket.emit('set_active_hlae', null, '', false);
+		} else {
+			socket.emit('set_active_hlae', url, dir, isDev);
+		}
 	};
 	const deleteHUD = async () => {
 		try {
@@ -241,7 +245,7 @@ const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHU
 									<Switch
 										id={`hud-switch-${hud.dir}`}
 										isOn={isActive}
-										handleToggle={() => setHUD(hud.url)}
+										handleToggle={() => setHUD(hud.url, hud.dir, hud.isDev)}
 									/>
 								</div>
 							) : null}

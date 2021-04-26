@@ -21,7 +21,11 @@ let lastUpdate = new Date().getTime();
 exports.runtimeConfig = {
     last: null,
     devSocket: null,
-    currentHUD: null
+    currentHUD: {
+        url: null,
+        isDev: false,
+        dir: ''
+    }
 };
 exports.HUDState = new hudstatemanager_1.HUDStateManager();
 exports.GSI = new csgogsi_socket_1.CSGOGSI();

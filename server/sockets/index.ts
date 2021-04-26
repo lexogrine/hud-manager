@@ -60,17 +60,22 @@ ioPromise.then(io => {
 			socket.emit('hud_config', HUDState.get(hud, true));
 		});
 
-		socket.on('set_active_hlae', (hudUrl: string | null) => {
-			if (runtimeConfig.currentHUD === hudUrl) {
-				runtimeConfig.currentHUD = null;
+		socket.on('set_active_hlae', (hudUrl: string | null, dir: string, isDev: boolean) => {
+			if (runtimeConfig.currentHUD.url === hudUrl) {
+				runtimeConfig.currentHUD.url = null;
+				runtimeConfig.currentHUD.isDev = false;
+				runtimeConfig.currentHUD.dir = '';
 			} else {
-				runtimeConfig.currentHUD = hudUrl;
+				runtimeConfig.currentHUD.url = hudUrl;
+				runtimeConfig.currentHUD.isDev = isDev;
+				runtimeConfig.currentHUD.dir = dir;
 			}
-			io.emit('active_hlae', runtimeConfig.currentHUD);
+			io.emit('active_hlae', hudUrl, dir, isDev);
 		});
 
-		socket.on('get_active_hlae', () => {
-			io.emit('active_hlae', runtimeConfig.currentHUD);
+		socket.on('get_active_hlae_hud', () => {
+			const { url, dir, isDev } = runtimeConfig.currentHUD;
+			io.emit('active_hlae', url, dir, isDev);
 		});
 
 		socket.on('get_test_settings', () => {

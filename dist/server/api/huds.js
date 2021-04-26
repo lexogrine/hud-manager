@@ -256,6 +256,10 @@ exports.verifyOverlay = async (req, res, next) => {
         `http://${config_1.publicIP}:${cfg.port}/dev`,
         `http://localhost:${cfg.port}/dev`
     ];
+    if (requestUrl.startsWith(`http://localhost:${cfg.port}/dev/ar/`) ||
+        availableUrls.find(url => requestUrl.startsWith(`${url}/ar/`))) {
+        return next();
+    }
     if (requestUrl === `http://localhost:${cfg.port}/dev/thumb.png` ||
         availableUrls.find(url => `${url}/thumb.png` === requestUrl)) {
         return next();

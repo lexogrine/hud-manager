@@ -93,10 +93,7 @@ export default class Layout extends React.Component<{}, IState> {
 	loadConfig = async () => {
 		const cfg = await api.config.get();
 
-		this.setState({ config: cfg }, () => {
-			if (!cfg.sync) return;
-			this.sync();
-		});
+		this.setState({ config: cfg });
 	};
 	setSyncOpen = (sync: boolean) => {
 		this.setState({ isSyncModalOpen: sync });
@@ -199,7 +196,8 @@ export default class Layout extends React.Component<{}, IState> {
 		cfg.sync = !cfg.sync;
 
 		await api.config.update(cfg);
-		this.loadConfig();
+		await this.loadConfig();
+		this.sync();
 	};
 	render() {
 		const { Provider } = ContextData;

@@ -10,13 +10,19 @@ import hlaeServer from './hlae';
 import { app, server } from '.';
 import { HUDStateManager } from './api/huds/hudstatemanager';
 import './api/huds/devhud';
+import { string, boolean } from 'yargs';
 
 const radar = require('./../boltobserv/index.js');
 
 interface RuntimeConfig {
 	last: CSGORaw | null;
 	devSocket: Socket | null;
-	currentHUD: string | null;
+	currentHUD: { 
+		url: string | null;
+		isDev: boolean;
+		dir: string;
+	}
+	
 }
 
 let lastUpdate = new Date().getTime();
@@ -24,7 +30,11 @@ let lastUpdate = new Date().getTime();
 export const runtimeConfig: RuntimeConfig = {
 	last: null,
 	devSocket: null,
-	currentHUD: null
+	currentHUD: {
+		url: null,
+		isDev: false,
+		dir: ''
+	}
 };
 
 export const HUDState = new HUDStateManager();

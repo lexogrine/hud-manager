@@ -60,17 +60,22 @@ socket_1.ioPromise.then(io => {
         socket.on('get_config', (hud) => {
             socket.emit('hud_config', socket_1.HUDState.get(hud, true));
         });
-        socket.on('set_active_hlae', (hudUrl) => {
-            if (socket_1.runtimeConfig.currentHUD === hudUrl) {
-                socket_1.runtimeConfig.currentHUD = null;
+        socket.on('set_active_hlae', (hudUrl, dir, isDev) => {
+            if (socket_1.runtimeConfig.currentHUD.url === hudUrl) {
+                socket_1.runtimeConfig.currentHUD.url = null;
+                socket_1.runtimeConfig.currentHUD.isDev = false;
+                socket_1.runtimeConfig.currentHUD.dir = '';
             }
             else {
-                socket_1.runtimeConfig.currentHUD = hudUrl;
+                socket_1.runtimeConfig.currentHUD.url = hudUrl;
+                socket_1.runtimeConfig.currentHUD.isDev = isDev;
+                socket_1.runtimeConfig.currentHUD.dir = dir;
             }
-            io.emit('active_hlae', socket_1.runtimeConfig.currentHUD);
+            io.emit('active_hlae', hudUrl, dir, isDev);
         });
-        socket.on('get_active_hlae', () => {
-            io.emit('active_hlae', socket_1.runtimeConfig.currentHUD);
+        socket.on('get_active_hlae_hud', () => {
+            const { url, dir, isDev } = socket_1.runtimeConfig.currentHUD;
+            io.emit('active_hlae', url, dir, isDev);
         });
         socket.on('get_test_settings', () => {
             socket.emit('enableTest', !play_1.playTesting.intervalId, play_1.playTesting.isOnLoop);

@@ -44,64 +44,23 @@
         width: 100vw;
         overflow: hidden;
 	}
-
-	#playerCanvas {
-		width: 2000px;
-		display: flex;
-		flex-direction: column;
-		background: rgba(0, 0, 0, 1);
-		font-family: 'Montserrat';
-		font-size: 130px;
-		text-transform: uppercase;
-		padding-left: 100px;
-		position: absolute;
-		left: 4000px;
-	}
-	.teamName {
-		width: 100%;
-		height: 300px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		color: orange;
-	}
-	.playerEntry {
-		display: flex;
-		height: 250px;
-		align-items: center;
-	}
-
-	.playerUsername {
-		width: 1200px;
-	}
-
-	.playerStats {
-		width: 200px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		height: 100%;
-	}
 </style>
 
 <body>
-	<div id="gameEvents"></div>
 	<iframe src="/?hlaegui" style="border: none; overflow:hidden;"></iframe>
-	<div id="playerCanvas"></div>
-	<div style="clear: both"></div>
-	<script src="./h2c.js"></script>
+	<script src="./lhm/h2c.js"></script>
 	<script type="text/javascript" src="./common.js"></script>
 	<script type="text/javascript" src="./three.min.js"></script>
 	<script type="text/javascript" src="/socket.io/socket.io.min.js"></script>
 	<script type="module">
-		import { CSGOGSI } from './csgogsi.js';
+		import { CSGOGSI } from './lhm/csgogsi.js';
+		
+		let currentARModule = null;
 
 		const GSI = new CSGOGSI();
-
+		console.log("STARTING")
 		const socketio = io('/');
-		socketio.on('update', data => {
-			GSI.digest(data);
-		});
+		socketio.on('update', GSI.digest);
 
 		const horToVert = hFov => {
 			const hRadians = hFov * Math.PI / 180;
@@ -118,85 +77,56 @@
 		const gameFovToVert = fov => {
 			return horToVert(gameFovToRealFov(fov, 1920, 1080));
 		}
-		const degreeToRadian = (degree) => degree * Math.PI / 180;
+		var degreeToRadian = (degree) => degree * Math.PI / 180;
 
 		const scene = new THREE.Scene();
 
 		var camera = new THREE.PerspectiveCamera(74, 16 / 9, 0.1, 10000);
 
-		const renderer = new THREE.WebGLRenderer({ alpha: true, powerPreference: 'high-performance' });
+		const renderer = new THREE.WebGLRenderer({ alpha: true, powerPreference: 'high-performance', antialias: true });
+
 		renderer.setSize(1920, 1080);
+
 		document.body.appendChild(renderer.domElement);
 
-		const fontloader = new THREE.FontLoader();
+		
 
-		let latestMesh = null;
+		socketio.on('active_hlae', async (url, dir, isDev) => {
+			GSI.removeAllListeners("data");
 
-
-		fontloader.load('./montserrat.json', font => {
-			const dirLight = new THREE.DirectionalLight(0xffffff, 0.125);
-			dirLight.position.set(0, 0, 1).normalize();
-			scene.add(dirLight);
-
-			const pointLight = new THREE.PointLight(0xffffff, 1.5);
-			pointLight.position.set(-200, 2000, -200);
-			pointLight.color.setHex(0x10b336);
-			scene.add(pointLight);
-
-			const materials = [
-				new THREE.MeshPhongMaterial({ color: 0xffffff, flatShading: true }), // front
-				new THREE.MeshPhongMaterial({ color: 0xffffff }) // side
-			];
-
-			const geometry = new THREE.TextGeometry('AR INTEROP TEST', {
-				font: font,
-				size: 80,
-				height: 5,
-				curveSegments: 12,
-				bevelEnabled: true,
-				bevelThickness: 10,
-				bevelSize: 8,
-				bevelOffset: 0,
-				bevelSegments: 5
-			});
-			const mesh = new THREE.Mesh(geometry, materials);
-			mesh.position.set(-150, 1900, -150);
-			scene.add(mesh);
-		});
-
-		GSI.on('data', (data) => {
-			const { players } = data;
-			const playerCanvas = document.getElementById("playerCanvas");
-			const playersT = players.filter(player => player.team.side === "T");
-			const htmlEntry = `<div class="teamName T">Terrorists</div>` + playersT.map(player => `
-		<div class="playerEntry">
-			<div class="playerUsername">${player.name}</div>
-			<div class="playerStats">${player.stats.kills}</div>
-			<div class="playerStats">${player.stats.assists}</div>
-			<div class="playerStats">${player.stats.deaths}</div>
-		</div>
-	`).join('');
-			if (playerCanvas.innerHTML !== htmlEntry) {
-				playerCanvas.innerHTML = htmlEntry;
-				html2canvas(playerCanvas).then(canvas => {
-					const texture = new THREE.CanvasTexture(canvas);
-					texture.needsUpdate = true;
-					const scoreboard = new THREE.Mesh(
-						new THREE.PlaneGeometry(canvas.width/10, canvas.height/10, 1),
-						new THREE.MeshBasicMaterial({
-    						opacity: 0.5,
-							map: texture
-							//color: 0xffff00, side: THREE.DoubleSide
-						}));
-					scoreboard.position.set(150, 1900, 150);
-					scoreboard.rotateY(degreeToRadian(90));
-					if(latestMesh) scene.remove(latestMesh);
-					scene.add(scoreboard);
-					latestMesh = scoreboard;
-				});
+			const customStyleSheet = document.getElementById("customStylesheet");
+			if (customStyleSheet) {
+				customStyleSheet.remove();
 			}
+
+			if (currentARModule && currentARModule.cleanUpARModule) {
+				currentARModule.cleanUpARModule(scene, GSI);
+			}
+			if(!url) return;
+
+
+			let arModuleURL = `/huds/${dir}/ar/ar.js`;
+			if(isDev){
+				arModuleURL = '/dev/ar/ar.js';
+			}
+
+			const customCSS = document.createElement("link");
+			customCSS.setAttribute("rel", "stylesheet");
+			customCSS.setAttribute("type", "text/css");
+			customCSS.setAttribute("id", "customStylesheet");
+			customCSS.setAttribute("href", !isDev ? `/huds/${dir}/ar/index.css` : '/dev/ar/index.css');
+
+        	document.getElementsByTagName("head")[0].appendChild(customCSS);
+
+			const arModule = await import(arModuleURL);
+			currentARModule = arModule;
+			const { startARModule } = arModule;
+			startARModule(scene, camera, renderer, GSI)
 		});
-		renderer.render(scene, camera);
+		socketio.emit('get_active_hlae_hud');
+
+
+
 		const BOOL = {
 			FALSE: 0,
 			TRUE: 1
@@ -684,10 +614,6 @@
 
 			this.cefTextureHandle = null;
 			this.cefTextures = {};
-			//this.elIndicator = document.getElementById('indicator');
-			//this.elIndicator2 = document.getElementById('indicator2');
-			this.divGameEvents = document.getElementById('gameEvents');
-			this.elClientTime = document.getElementById('clientTime');
 
 			this.engineInteropId = null;
 
@@ -773,7 +699,6 @@
 					this.width = width;
 					this.height = height;
 					this.renderInfo = renderInfo;
-					//this.elClientTime.innerText = renderInfo.curTime;
 				},
 				"onGameEvent": async function (e) {
 					/*while(this.divGameEvents.childNodes.length > 10) this.divGameEvents.lastElementChild.remove();
@@ -787,10 +712,7 @@
 
 					const realX = -rX;
 					let realY = rY + 180;
-					//if(realY > 270){
-					//	realY -= 360;
-					//}
-					//this.divGameEvents.innerText = `FOV: ${fov}`;
+
 					const gameFov = gameFovToVert(fov);
 					if (camera.fov !== gameFov) {
 						camera.fov = gameFov;
@@ -800,29 +722,11 @@
 					camera.rotation.y = 0;
 					camera.rotation.z = 0;
 					camera.rotateY(degreeToRadian(realY));
-					camera.rotateX(degreeToRadian(realX)); // rotateX powinno ruszaćgóra dół
+					camera.rotateX(degreeToRadian(realX));
 					camera.position.x = tY;
 					camera.position.z = tX;
 					camera.position.y = tZ;
 					renderer.render(scene, camera);
-
-					/*
-					let horToVert = hFov => {
-			const hRadians = hFov * Math.PI / 180;
-		
-			const vRadians = Math.atan(Math.tan(hRadians * 0.5) * 9 / 16) * 2;
-		
-			return vRadians * 180 / Math.PI;
-		}
-		
-		let gameFovToRealFov = (fov, width, height) => {
-			return Math.atan(Math.tan(fov * Math.PI / 360) * (3*width) / (height*4)) * 360/Math.PI
-		}
-		
-		let gameFovToVert = fov => {
-			return horToVert(gameFovToRealFov(fov, 1920, 1080));
-		}
-					*/
 				},
 				"onHudEnd": async function (frameCount, pass) {
 
