@@ -50,9 +50,6 @@ exports.initGameConnection = async () => {
         io.emit('enableTest', true, exports.playTesting.isOnLoop);
     };
     __2.app.post('/', assertUser, (req, res) => {
-        if (!__1.customer.customer) {
-            return res.sendStatus(200);
-        }
         socket_1.runtimeConfig.last = req.body;
         if (exports.playTesting.intervalId) {
             clearInterval(exports.playTesting.intervalId);

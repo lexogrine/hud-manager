@@ -7,20 +7,20 @@ import { Row, Col, FormGroup, Input, Form, Button, Label } from 'reactstrap';
 import FileInput from './../../../DragFileInput';
 import isSvg from './../../../../isSvg';
 import ColorPicker from '../../../ColorPicker/ColorPicker';
+
 interface IProps {
+	section: I.PanelTemplate;
+	hud: string;
 	cxt: IContextData;
-	hud: I.HUD;
 }
 interface IState {
 	form: any;
-	active: string;
 }
-export default class ActionPanel extends React.Component<IProps, IState> {
+export default class ARSettings extends React.Component<IProps, IState> {
 	constructor(props: IProps) {
 		super(props);
 		this.state = {
-			form: {},
-			active: props.hud.panel?.[0]?.name || ''
+			form: {}
 		};
 	}
 	changeForm = (section: string, name: string, type: I.PanelInputType) => (e: any) => {
@@ -46,18 +46,18 @@ export default class ActionPanel extends React.Component<IProps, IState> {
 	};
 	componentWillUnmount = () => {};
 	componentDidMount() {
-		const { hud }: { hud: I.HUD } = this.props;
-		if (!hud.panel) return;
+		const { section, hud } = this.props;
+		if (!section) return;
 		const form: any = {};
-		for (const section of hud.panel) {
-			form[section.name] = {};
-			for (const input of section.inputs) {
-				if (input.type !== 'action') form[section.name][input.name] = '';
-				if (input.type === 'player' || input.type === 'team' || input.type === 'match')
-					form[section.name][input.name] = {};
-				if (input.type === 'checkbox') form[section.name][input.name] = false;
-			}
+
+		form[section.name] = {};
+		for (const input of section.inputs) {
+			if (input.type !== 'action') form[section.name][input.name] = '';
+			if (input.type === 'player' || input.type === 'team' || input.type === 'match')
+				form[section.name][input.name] = {};
+			if (input.type === 'checkbox') form[section.name][input.name] = false;
 		}
+
 		this.setState({ form });
 		socket.on('hud_config', (data: any) => {
 			if (!data) return;
@@ -65,7 +65,7 @@ export default class ActionPanel extends React.Component<IProps, IState> {
 			this.setState({ form });
 		});
 
-		socket.emit('get_config', hud.dir);
+		socket.emit('get_config', hud);
 	}
 
 	handleImages = (name: string, sectionName: string) => (files: FileList) => {
@@ -90,11 +90,11 @@ export default class ActionPanel extends React.Component<IProps, IState> {
 
 	sendSection(name: string) {
 		const section = this.state.form[name];
-		socket.emit('hud_config', { hud: this.props.hud.dir, section: name, config: section });
+		socket.emit('hud_config', { hud: this.props.hud, section: name, config: section });
 	}
 
 	sendAction = (action: any) => {
-		socket.emit('hud_action', { hud: this.props.hud.dir, action });
+		socket.emit('hud_action', { hud: this.props.hud, action });
 	};
 	startHUD(dir: string) {
 		api.huds.start(dir);
@@ -148,13 +148,11 @@ export default class ActionPanel extends React.Component<IProps, IState> {
 
 	getCheckboxes = (panel: I.PanelTemplate) => this.filterInputs(panel, 'checkbox');
 
-	setTab = (name: string) => () => this.setState({ active: name });
-
-	renderSection = (section: I.PanelTemplate) => {
-		const { cxt } = this.props;
+	renderSection = () => {
+		const { cxt, section } = this.props;
 		const { teams, matches, players } = cxt;
-		const { form, active } = this.state;
-		if (!active || active !== section.name || section.ar) return null;
+		const { form } = this.state;
+		if (!section.ar) return null;
 		return (
 			<div key={section.label} className="custom_form">
 				<div className="section_name">{section.label}</div>
@@ -385,23 +383,7 @@ export default class ActionPanel extends React.Component<IProps, IState> {
 
 	render() {
 		const { hud } = this.props;
-		if (!hud.panel) return '';
-		const { active } = this.state;
-		return (
-			<>
-				<div className="section_menu">
-					{hud.panel.map(section => (
-						<div
-							key={section.name}
-							className={`section_menu_button ${active === section.name ? 'active' : ''}`}
-							onClick={this.setTab(section.name)}
-						>
-							{section.label}
-						</div>
-					))}
-				</div>
-				<div className="section_panel_container">{hud.panel.map(this.renderSection)}</div>
-			</>
-		);
+		if (!hud) return '';
+		return <div className="section_panel_container">{this.renderSection()}</div>;
 	}
 }

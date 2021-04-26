@@ -17,6 +17,7 @@ import { socket } from '../Live/Live';
 import RemoveHUDModal from './RemoveModal';
 import { hashCode } from '../../../../hash';
 import { getMissingFields } from '../../../../utils';
+import { copyToClipboard } from '../../../../api/clipboard';
 import ElectronOnly from '../../../ElectronOnly';
 
 interface IProps {
@@ -260,8 +261,23 @@ const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHU
 									'Downloading...'
 								)}
 							</div>
-						</Col>
-					)}
+						) : null}
+					</Col>
+				</Row>
+				<Row>
+					<Col s={12}>
+						<div className="match_data">
+							<UncontrolledCollapse toggler={`#hud_link_${hashCode(hud.dir)}`}>
+								<code
+									onClick={() => {
+										copyToClipboard(hud.url);
+									}}
+								>
+									{hud.url}
+								</code>
+							</UncontrolledCollapse>
+						</div>
+					</Col>
 				</Row>
 				{isLocal ? (
 					<Row>

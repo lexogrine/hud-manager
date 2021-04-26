@@ -25,6 +25,7 @@ exports.getTeamsList = (query) => new Promise(res => {
             return res([]);
         }
         return res([...teams].sort((a, b) => (a.name > b.name ? 1 : -1)));
+
     });
 });
 exports.replaceLocalTeams = (newTeams, game, existing) => new Promise(res => {
@@ -42,5 +43,6 @@ exports.replaceLocalTeams = (newTeams, game, existing) => new Promise(res => {
         teams.insert(newTeams, (err, docs) => {
             return res(!err);
         });
+
     });
 });
