@@ -25,11 +25,11 @@ interface IProps {
 	gsiCheck: Function;
 }
 
-const GameOnly = ({ game, cxt, children }: { game: I.AvailableGames, cxt: IContextData, children: any }) => {
+const GameOnly = ({ game, cxt, children }: { game: I.AvailableGames; cxt: IContextData; children: any }) => {
 	if (!cxt.game) return null;
 	if (game !== cxt.game) return null;
 	return children;
-}
+};
 
 interface IState {
 	config: I.Config;
@@ -121,7 +121,7 @@ export default class Config extends React.Component<IProps, IState> {
 	import = (data: any, callback: any) => async () => {
 		try {
 			await api.files.sync(data);
-		} catch { }
+		} catch {}
 		this.setState({ data: {}, conflict: { teams: 0, players: 0 }, importModalOpen: false }, callback);
 	};
 	importCheck = (callback: any) => (files: FileList) => {
@@ -152,7 +152,7 @@ export default class Config extends React.Component<IProps, IState> {
 					importModalOpen: true,
 					data: db
 				});
-			} catch { }
+			} catch {}
 		};
 	};
 	download = (target: 'gsi' | 'cfgs' | 'db') => {
@@ -440,8 +440,8 @@ export default class Config extends React.Component<IProps, IState> {
 									{update.installing
 										? 'Installing...'
 										: update.available
-											? 'Install update'
-											: 'Latest'}
+										? 'Install update'
+										: 'Latest'}
 								</Button>
 							</Col>
 						</ElectronOnly>
@@ -450,9 +450,7 @@ export default class Config extends React.Component<IProps, IState> {
 							<Switch isOn={this.state.config.sync} id="sync-toggle" handleToggle={this.toggleHandler} />
 						</Col>
 
-
 						<GameOnly game="csgo" cxt={cxt}>
-
 							<Col md="12" className="config-entry">
 								<div className="config-description">
 									HLAE Path: {this.state.config.hlaePath ? 'Loaded' : 'Not loaded'}
@@ -492,7 +490,7 @@ export default class Config extends React.Component<IProps, IState> {
 									onClick={this.createGSI}
 								>
 									Add GSI file
-							</Button>
+								</Button>
 							</Col>
 							<Col md="12" className="config-entry">
 								<div className="config-description">Configs: {cfg.message || 'Loaded succesfully'}</div>
@@ -502,37 +500,35 @@ export default class Config extends React.Component<IProps, IState> {
 									onClick={this.createCFG}
 								>
 									Add config files
-							</Button>
+								</Button>
 							</Col>
 						</GameOnly>
 
-
 						<GameOnly game="rocketleague" cxt={cxt}>
-
-						<Col md="12" className="config-entry">
-							<div className="config-description">
-								<p>Rocket League integration: {this.getBakkesModStatusDescription()}</p>
-								{this.state.bakkesModAutoconfError && <p>[{this.state.bakkesModAutoconfError}]</p>}
-							</div>
-							<div className="download-container">
-								<Button
-									className="purple-btn round-btn"
-									disabled={this.state.bakkesModAutoconfBusy}
-									onClick={() => this.loadBakkesModStatus()}
-								>
-									Refresh
-								</Button>
-								<Button
-									className="purple-btn round-btn"
-									disabled={
-										this.state.bakkesModAutoconfBusy || this.state.bakkesModStatus.sosConfigSet
-									}
-									onClick={this.installRLIntegration}
-								>
-									Install
-								</Button>
-							</div>
-						</Col>
+							<Col md="12" className="config-entry">
+								<div className="config-description">
+									<p>Rocket League integration: {this.getBakkesModStatusDescription()}</p>
+									{this.state.bakkesModAutoconfError && <p>[{this.state.bakkesModAutoconfError}]</p>}
+								</div>
+								<div className="download-container">
+									<Button
+										className="purple-btn round-btn"
+										disabled={this.state.bakkesModAutoconfBusy}
+										onClick={() => this.loadBakkesModStatus()}
+									>
+										Refresh
+									</Button>
+									<Button
+										className="purple-btn round-btn"
+										disabled={
+											this.state.bakkesModAutoconfBusy || this.state.bakkesModStatus.sosConfigSet
+										}
+										onClick={this.installRLIntegration}
+									>
+										Install
+									</Button>
+								</div>
+							</Col>
 						</GameOnly>
 						<Col md="12" className="config-entry">
 							<div className="config-description">Credits</div>

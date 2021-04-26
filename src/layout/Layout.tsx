@@ -88,9 +88,9 @@ export default class Layout extends React.Component<{}, IState> {
 	}
 	loadConfig = async () => {
 		const cfg = await api.config.get();
-		
-		this.setState({config:cfg});
-	}
+
+		this.setState({ config: cfg });
+	};
 	setSyncOpen = (sync: boolean) => {
 		this.setState({ isSyncModalOpen: sync });
 	};
@@ -190,9 +190,9 @@ export default class Layout extends React.Component<{}, IState> {
 	toggleSync = () => {
 		api.config.get().then(cfg => {
 			cfg.sync = !cfg.sync;
-			this.setState({config: cfg});
-		})
-	}
+			this.setState({ config: cfg });
+		});
+	};
 	render() {
 		const { Provider } = ContextData;
 		const {
@@ -206,7 +206,8 @@ export default class Layout extends React.Component<{}, IState> {
 			synchronizationStatus,
 			config
 		} = this.state;
-		const available = (data.customer?.license?.type ==="professional" || data.customer?.license?.type === "enterprise");
+		const available =
+			data.customer?.license?.type === 'professional' || data.customer?.license?.type === 'enterprise';
 		const active = Boolean(available && config?.sync);
 		return (
 			<Provider value={this.state.data}>
