@@ -1,0 +1,1381 @@
+<!DOCTYPE html>
+<html>
+<style>
+	html {
+		overflow: hidden;
+	}
+
+	html,
+	body,
+	div {
+		margin: 0;
+		color: white;
+		text-shadow: 0 0 2px black;
+		padding: 0;
+	}
+
+	.main {
+		margin: 1.5rem;
+		padding: 1.5rem;
+		color: #fff;
+	}
+
+	.indicator {
+		float: right;
+		width: 3rem;
+		height: 3rem;
+		border: 3px solid red;
+		background: #000;
+	}
+
+	.indicator.white {
+		background: #fff;
+	}
+
+	canvas {
+		position: absolute;
+		left: 0;
+		top: 0;
+	}
+
+	iframe {
+        height: 100vh;
+        background-color: rgba(0, 0, 0, 0);
+        width: 100vw;
+        overflow: hidden;
+	}
+
+	#playerCanvas {
+		width: 2000px;
+		display: flex;
+		flex-direction: column;
+		background: rgba(0, 0, 0, 1);
+		font-family: 'Montserrat';
+		font-size: 130px;
+		text-transform: uppercase;
+		padding-left: 100px;
+		position: absolute;
+		left: 4000px;
+	}
+	.teamName {
+		width: 100%;
+		height: 300px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: orange;
+	}
+	.playerEntry {
+		display: flex;
+		height: 250px;
+		align-items: center;
+	}
+
+	.playerUsername {
+		width: 1200px;
+	}
+
+	.playerStats {
+		width: 200px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		height: 100%;
+	}
+</style>
+
+<body>
+	<div id="gameEvents"></div>
+	<iframe src="/?hlaegui" style="border: none; overflow:hidden;"></iframe>
+	<div id="playerCanvas"></div>
+	<div style="clear: both"></div>
+	<script src="./h2c.js"></script>
+	<script type="text/javascript" src="./common.js"></script>
+	<script type="text/javascript" src="./three.min.js"></script>
+	<script type="text/javascript" src="/socket.io/socket.io.min.js"></script>
+	<script type="module">
+		import { CSGOGSI } from './csgogsi.js';
+
+		const GSI = new CSGOGSI();
+
+		const socketio = io('/');
+		socketio.on('update', data => {
+			GSI.digest(data);
+		});
+
+		const horToVert = hFov => {
+			const hRadians = hFov * Math.PI / 180;
+
+			const vRadians = Math.atan(Math.tan(hRadians * 0.5) * 9 / 16) * 2;
+
+			return vRadians * 180 / Math.PI;
+		}
+
+		const gameFovToRealFov = (fov, width, height) => {
+			return Math.atan(Math.tan(fov * Math.PI / 360) * (3 * width) / (height * 4)) * 360 / Math.PI
+		}
+
+		const gameFovToVert = fov => {
+			return horToVert(gameFovToRealFov(fov, 1920, 1080));
+		}
+		const degreeToRadian = (degree) => degree * Math.PI / 180;
+
+		const scene = new THREE.Scene();
+
+		var camera = new THREE.PerspectiveCamera(74, 16 / 9, 0.1, 10000);
+
+		const renderer = new THREE.WebGLRenderer({ alpha: true, powerPreference: 'high-performance' });
+		renderer.setSize(1920, 1080);
+		document.body.appendChild(renderer.domElement);
+
+		const fontloader = new THREE.FontLoader();
+
+		let latestMesh = null;
+
+
+		fontloader.load('./montserrat.json', font => {
+			const dirLight = new THREE.DirectionalLight(0xffffff, 0.125);
+			dirLight.position.set(0, 0, 1).normalize();
+			scene.add(dirLight);
+
+			const pointLight = new THREE.PointLight(0xffffff, 1.5);
+			pointLight.position.set(-200, 2000, -200);
+			pointLight.color.setHex(0x10b336);
+			scene.add(pointLight);
+
+			const materials = [
+				new THREE.MeshPhongMaterial({ color: 0xffffff, flatShading: true }), // front
+				new THREE.MeshPhongMaterial({ color: 0xffffff }) // side
+			];
+
+			const geometry = new THREE.TextGeometry('AR INTEROP TEST', {
+				font: font,
+				size: 80,
+				height: 5,
+				curveSegments: 12,
+				bevelEnabled: true,
+				bevelThickness: 10,
+				bevelSize: 8,
+				bevelOffset: 0,
+				bevelSegments: 5
+			});
+			const mesh = new THREE.Mesh(geometry, materials);
+			mesh.position.set(-150, 1900, -150);
+			scene.add(mesh);
+		});
+
+		GSI.on('data', (data) => {
+			const { players } = data;
+			const playerCanvas = document.getElementById("playerCanvas");
+			const playersT = players.filter(player => player.team.side === "T");
+			const htmlEntry = `<div class="teamName T">Terrorists</div>` + playersT.map(player => `
+		<div class="playerEntry">
+			<div class="playerUsername">${player.name}</div>
+			<div class="playerStats">${player.stats.kills}</div>
+			<div class="playerStats">${player.stats.assists}</div>
+			<div class="playerStats">${player.stats.deaths}</div>
+		</div>
+	`).join('');
+			if (playerCanvas.innerHTML !== htmlEntry) {
+				playerCanvas.innerHTML = htmlEntry;
+				html2canvas(playerCanvas).then(canvas => {
+					const texture = new THREE.CanvasTexture(canvas);
+					texture.needsUpdate = true;
+					const scoreboard = new THREE.Mesh(
+						new THREE.PlaneGeometry(canvas.width/10, canvas.height/10, 1),
+						new THREE.MeshBasicMaterial({
+    						opacity: 0.5,
+							map: texture
+							//color: 0xffff00, side: THREE.DoubleSide
+						}));
+					scoreboard.position.set(150, 1900, 150);
+					scoreboard.rotateY(degreeToRadian(90));
+					if(latestMesh) scene.remove(latestMesh);
+					scene.add(scoreboard);
+					latestMesh = scoreboard;
+				});
+			}
+		});
+		renderer.render(scene, camera);
+		const BOOL = {
+			FALSE: 0,
+			TRUE: 1
+		}
+
+		const D3DRENDERSTATETYPE = {
+			D3DRS_ZENABLE: 7,    /* D3DZBUFFERTYPE (or TRUE/FALSE for legacy) */
+			D3DRS_FILLMODE: 8,    /* D3DFILLMODE */
+			D3DRS_SHADEMODE: 9,    /* D3DSHADEMODE */
+			D3DRS_ZWRITEENABLE: 14,   /* TRUE to enable z writes */
+			D3DRS_ALPHATESTENABLE: 15,   /* TRUE to enable alpha tests */
+			D3DRS_LASTPIXEL: 16,   /* TRUE for last-pixel on lines */
+			D3DRS_SRCBLEND: 19,   /* D3DBLEND */
+			D3DRS_DESTBLEND: 20,   /* D3DBLEND */
+			D3DRS_CULLMODE: 22,   /* D3DCULL */
+			D3DRS_ZFUNC: 23,   /* D3DCMPFUNC */
+			D3DRS_ALPHAREF: 24,   /* D3DFIXED */
+			D3DRS_ALPHAFUNC: 25,   /* D3DCMPFUNC */
+			D3DRS_DITHERENABLE: 26,   /* TRUE to enable dithering */
+			D3DRS_ALPHABLENDENABLE: 27,   /* TRUE to enable alpha blending */
+			D3DRS_FOGENABLE: 28,   /* TRUE to enable fog blending */
+			D3DRS_SPECULARENABLE: 29,   /* TRUE to enable specular */
+			D3DRS_FOGCOLOR: 34,   /* D3DCOLOR */
+			D3DRS_FOGTABLEMODE: 35,   /* D3DFOGMODE */
+			D3DRS_FOGSTART: 36,   /* Fog start (for both vertex and pixel fog) */
+			D3DRS_FOGEND: 37,   /* Fog end      */
+			D3DRS_FOGDENSITY: 38,   /* Fog density  */
+			D3DRS_RANGEFOGENABLE: 48,   /* Enables range-based fog */
+			D3DRS_STENCILENABLE: 52,   /* BOOL enable/disable stenciling */
+			D3DRS_STENCILFAIL: 53,   /* D3DSTENCILOP to do if stencil test fails */
+			D3DRS_STENCILZFAIL: 54,   /* D3DSTENCILOP to do if stencil test passes and Z test fails */
+			D3DRS_STENCILPASS: 55,   /* D3DSTENCILOP to do if both stencil and Z tests pass */
+			D3DRS_STENCILFUNC: 56,   /* D3DCMPFUNC fn.  Stencil Test passes if ((ref & mask) stencilfn (stencil & mask)) is true */
+			D3DRS_STENCILREF: 57,   /* Reference value used in stencil test */
+			D3DRS_STENCILMASK: 58,   /* Mask value used in stencil test */
+			D3DRS_STENCILWRITEMASK: 59,   /* Write mask applied to values written to stencil buffer */
+			D3DRS_TEXTUREFACTOR: 60,   /* D3DCOLOR used for multi-texture blend */
+			D3DRS_WRAP0: 128,  /* wrap for 1st texture coord. set */
+			D3DRS_WRAP1: 129,  /* wrap for 2nd texture coord. set */
+			D3DRS_WRAP2: 130,  /* wrap for 3rd texture coord. set */
+			D3DRS_WRAP3: 131,  /* wrap for 4th texture coord. set */
+			D3DRS_WRAP4: 132,  /* wrap for 5th texture coord. set */
+			D3DRS_WRAP5: 133,  /* wrap for 6th texture coord. set */
+			D3DRS_WRAP6: 134,  /* wrap for 7th texture coord. set */
+			D3DRS_WRAP7: 135,  /* wrap for 8th texture coord. set */
+			D3DRS_CLIPPING: 136,
+			D3DRS_LIGHTING: 137,
+			D3DRS_AMBIENT: 139,
+			D3DRS_FOGVERTEXMODE: 140,
+			D3DRS_COLORVERTEX: 141,
+			D3DRS_LOCALVIEWER: 142,
+			D3DRS_NORMALIZENORMALS: 143,
+			D3DRS_DIFFUSEMATERIALSOURCE: 145,
+			D3DRS_SPECULARMATERIALSOURCE: 146,
+			D3DRS_AMBIENTMATERIALSOURCE: 147,
+			D3DRS_EMISSIVEMATERIALSOURCE: 148,
+			D3DRS_VERTEXBLEND: 151,
+			D3DRS_CLIPPLANEENABLE: 152,
+			D3DRS_POINTSIZE: 154,   /* float point size */
+			D3DRS_POINTSIZE_MIN: 155,   /* float point size min threshold */
+			D3DRS_POINTSPRITEENABLE: 156,   /* BOOL point texture coord control */
+			D3DRS_POINTSCALEENABLE: 157,   /* BOOL point size scale enable */
+			D3DRS_POINTSCALE_A: 158,   /* float point attenuation A value */
+			D3DRS_POINTSCALE_B: 159,   /* float point attenuation B value */
+			D3DRS_POINTSCALE_C: 160,   /* float point attenuation C value */
+			D3DRS_MULTISAMPLEANTIALIAS: 161,  // BOOL - set to do FSAA with multisample buffer
+			D3DRS_MULTISAMPLEMASK: 162,  // DWORD - per-sample enable/disable
+			D3DRS_PATCHEDGESTYLE: 163,  // Sets whether patch edges will use float style tessellation
+			D3DRS_DEBUGMONITORTOKEN: 165,  // DEBUG ONLY - token to debug monitor
+			D3DRS_POINTSIZE_MAX: 166,   /* float point size max threshold */
+			D3DRS_INDEXEDVERTEXBLENDENABLE: 167,
+			D3DRS_COLORWRITEENABLE: 168,  // per-channel write enable
+			D3DRS_TWEENFACTOR: 170,   // float tween factor
+			D3DRS_BLENDOP: 171,   // D3DBLENDOP setting
+			D3DRS_POSITIONDEGREE: 172,   // NPatch position interpolation degree. D3DDEGREE_LINEAR or D3DDEGREE_CUBIC (default)
+			D3DRS_NORMALDEGREE: 173,   // NPatch normal interpolation degree. D3DDEGREE_LINEAR (default) or D3DDEGREE_QUADRATIC
+			D3DRS_SCISSORTESTENABLE: 174,
+			D3DRS_SLOPESCALEDEPTHBIAS: 175,
+			D3DRS_ANTIALIASEDLINEENABLE: 176,
+			D3DRS_MINTESSELLATIONLEVEL: 178,
+			D3DRS_MAXTESSELLATIONLEVEL: 179,
+			D3DRS_ADAPTIVETESS_X: 180,
+			D3DRS_ADAPTIVETESS_Y: 181,
+			D3DRS_ADAPTIVETESS_Z: 182,
+			D3DRS_ADAPTIVETESS_W: 183,
+			D3DRS_ENABLEADAPTIVETESSELLATION: 184,
+			D3DRS_TWOSIDEDSTENCILMODE: 185,   /* BOOL enable/disable 2 sided stenciling */
+			D3DRS_CCW_STENCILFAIL: 186,   /* D3DSTENCILOP to do if ccw stencil test fails */
+			D3DRS_CCW_STENCILZFAIL: 187,   /* D3DSTENCILOP to do if ccw stencil test passes and Z test fails */
+			D3DRS_CCW_STENCILPASS: 188,   /* D3DSTENCILOP to do if both ccw stencil and Z tests pass */
+			D3DRS_CCW_STENCILFUNC: 189,   /* D3DCMPFUNC fn.  ccw Stencil Test passes if ((ref & mask) stencilfn (stencil & mask)) is true */
+			D3DRS_COLORWRITEENABLE1: 190,   /* Additional ColorWriteEnables for the devices that support D3DPMISCCAPS_INDEPENDENTWRITEMASKS */
+			D3DRS_COLORWRITEENABLE2: 191,   /* Additional ColorWriteEnables for the devices that support D3DPMISCCAPS_INDEPENDENTWRITEMASKS */
+			D3DRS_COLORWRITEENABLE3: 192,   /* Additional ColorWriteEnables for the devices that support D3DPMISCCAPS_INDEPENDENTWRITEMASKS */
+			D3DRS_BLENDFACTOR: 193,   /* D3DCOLOR used for a constant blend factor during alpha blending for devices that support D3DPBLENDCAPS_BLENDFACTOR */
+			D3DRS_SRGBWRITEENABLE: 194,   /* Enable rendertarget writes to be DE-linearized to SRGB (for formats that expose D3DUSAGE_QUERY_SRGBWRITE) */
+			D3DRS_DEPTHBIAS: 195,
+			D3DRS_WRAP8: 198,   /* Additional wrap states for vs_3_0+ attributes with D3DDECLUSAGE_TEXCOORD */
+			D3DRS_WRAP9: 199,
+			D3DRS_WRAP10: 200,
+			D3DRS_WRAP11: 201,
+			D3DRS_WRAP12: 202,
+			D3DRS_WRAP13: 203,
+			D3DRS_WRAP14: 204,
+			D3DRS_WRAP15: 205,
+			D3DRS_SEPARATEALPHABLENDENABLE: 206,  /* TRUE to enable a separate blending function for the alpha channel */
+			D3DRS_SRCBLENDALPHA: 207,  /* SRC blend factor for the alpha channel when D3DRS_SEPARATEDESTALPHAENABLE is TRUE */
+			D3DRS_DESTBLENDALPHA: 208,  /* DST blend factor for the alpha channel when D3DRS_SEPARATEDESTALPHAENABLE is TRUE */
+			D3DRS_BLENDOPALPHA: 209   /* Blending operation for the alpha channel when D3DRS_SEPARATEDESTALPHAENABLE is TRUE */
+		};
+
+		const D3DBLEND = {
+			D3DBLEND_ZERO: 1,
+			D3DBLEND_ONE: 2,
+			D3DBLEND_SRCCOLOR: 3,
+			D3DBLEND_INVSRCCOLOR: 4,
+			D3DBLEND_SRCALPHA: 5,
+			D3DBLEND_INVSRCALPHA: 6,
+			D3DBLEND_DESTALPHA: 7,
+			D3DBLEND_INVDESTALPHA: 8,
+			D3DBLEND_DESTCOLOR: 9,
+			D3DBLEND_INVDESTCOLOR: 10,
+			D3DBLEND_SRCALPHASAT: 11,
+			D3DBLEND_BOTHSRCALPHA: 12,
+			D3DBLEND_BOTHINVSRCALPHA: 13,
+			D3DBLEND_BLENDFACTOR: 14, /* Only supported if D3DPBLENDCAPS_BLENDFACTOR is on */
+			D3DBLEND_INVBLENDFACTOR: 15, /* Only supported if D3DPBLENDCAPS_BLENDFACTOR is on */
+			/* D3D9Ex only -- */
+
+			D3DBLEND_SRCCOLOR2: 16,
+			D3DBLEND_INVSRCCOLOR2: 17
+
+			/* -- D3D9Ex only */
+		};
+
+		const D3DZBUFFERTYPE = {
+			D3DZB_FALSE: 0,
+			D3DZB_TRUE: 1, // Z buffering
+			D3DZB_USEW: 2  // W buffering
+		};
+
+		const D3DCMPFUNC = {
+			D3DCMP_NEVER: 1,
+			D3DCMP_LESS: 2,
+			D3DCMP_EQUAL: 3,
+			D3DCMP_LESSEQUAL: 4,
+			D3DCMP_GREATER: 5,
+			D3DCMP_NOTEQUAL: 6,
+			D3DCMP_GREATEREQUAL: 7,
+			D3DCMP_ALWAYS: 8
+		};
+
+		const D3DCULL = {
+			D3DCULL_NONE: 1,
+			D3DCULL_CW: 2,
+			D3DCULL_CCW: 3
+		};
+
+		const D3DRS_COLORWRITEENABLE = {
+			D3DCOLORWRITEENABLE_RED: (1 << 0),
+			D3DCOLORWRITEENABLE_GREEN: (1 << 1),
+			D3DCOLORWRITEENABLE_BLUE: (1 << 2),
+			D3DCOLORWRITEENABLE_ALPHA: (1 << 3)
+		};
+
+		const D3DDECLTYPE = {
+			D3DDECLTYPE_FLOAT1: 0,
+			D3DDECLTYPE_FLOAT2: 1,
+			D3DDECLTYPE_FLOAT3: 2,
+			D3DDECLTYPE_FLOAT4: 3,
+			D3DDECLTYPE_D3DCOLOR: 4,
+			D3DDECLTYPE_UBYTE4: 5,
+			D3DDECLTYPE_SHORT2: 6,
+			D3DDECLTYPE_SHORT4: 7,
+			D3DDECLTYPE_UBYTE4N: 8,
+			D3DDECLTYPE_SHORT2N: 9,
+			D3DDECLTYPE_SHORT4N: 10,
+			D3DDECLTYPE_USHORT2N: 11,
+			D3DDECLTYPE_USHORT4N: 12,
+			D3DDECLTYPE_UDEC3: 13,
+			D3DDECLTYPE_DEC3N: 14,
+			D3DDECLTYPE_FLOAT16_2: 15,
+			D3DDECLTYPE_FLOAT16_4: 16,
+			D3DDECLTYPE_UNUSED: 17
+		};
+
+		const D3DDECLMETHOD = {
+			D3DDECLMETHOD_DEFAULT: 0,
+			D3DDECLMETHOD_PARTIALU: 1,
+			D3DDECLMETHOD_PARTIALV: 2,
+			D3DDECLMETHOD_CROSSUV: 3,
+			D3DDECLMETHOD_UV: 4,
+			D3DDECLMETHOD_LOOKUP: 5,
+			D3DDECLMETHOD_LOOKUPPRESAMPLED: 6
+		};
+
+		const D3DDECLUSAGE = {
+			D3DDECLUSAGE_POSITION: 0,
+			D3DDECLUSAGE_BLENDWEIGHT: 1,
+			D3DDECLUSAGE_BLENDINDICES: 2,
+			D3DDECLUSAGE_NORMAL: 3,
+			D3DDECLUSAGE_PSIZE: 4,
+			D3DDECLUSAGE_TEXCOORD: 5,
+			D3DDECLUSAGE_TANGENT: 6,
+			D3DDECLUSAGE_BINORMAL: 7,
+			D3DDECLUSAGE_TESSFACTOR: 8,
+			D3DDECLUSAGE_POSITIONT: 9,
+			D3DDECLUSAGE_COLOR: 10,
+			D3DDECLUSAGE_FOG: 11,
+			D3DDECLUSAGE_DEPTH: 12,
+			D3DDECLUSAGE_SAMPLE: 13
+		};
+
+		const D3DFILLMODE = {
+			D3DFILL_POINT: 1,
+			D3DFILL_WIREFRAME: 2,
+			D3DFILL_SOLID: 3
+		};
+
+		const D3DTEXTURESTAGESTATETYPE = {
+			D3DTSS_COLOROP: 1, /* D3DTEXTUREOP - per-stage blending controls for color channels */
+			D3DTSS_COLORARG1: 2, /* D3DTA_* (texture arg) */
+			D3DTSS_COLORARG2: 3, /* D3DTA_* (texture arg) */
+			D3DTSS_ALPHAOP: 4, /* D3DTEXTUREOP - per-stage blending controls for alpha channel */
+			D3DTSS_ALPHAARG1: 5, /* D3DTA_* (texture arg) */
+			D3DTSS_ALPHAARG2: 6, /* D3DTA_* (texture arg) */
+			D3DTSS_BUMPENVMAT00: 7, /* float (bump mapping matrix) */
+			D3DTSS_BUMPENVMAT01: 8, /* float (bump mapping matrix) */
+			D3DTSS_BUMPENVMAT10: 9, /* float (bump mapping matrix) */
+			D3DTSS_BUMPENVMAT11: 10, /* float (bump mapping matrix) */
+			D3DTSS_TEXCOORDINDEX: 11, /* identifies which set of texture coordinates index this texture */
+			D3DTSS_BUMPENVLSCALE: 22, /* float scale for bump map luminance */
+			D3DTSS_BUMPENVLOFFSET: 23, /* float offset for bump map luminance */
+			D3DTSS_TEXTURETRANSFORMFLAGS: 24, /* D3DTEXTURETRANSFORMFLAGS controls texture transform */
+			D3DTSS_COLORARG0: 26, /* D3DTA_* third arg for triadic ops */
+			D3DTSS_ALPHAARG0: 27, /* D3DTA_* third arg for triadic ops */
+			D3DTSS_RESULTARG: 28, /* D3DTA_* arg for result (CURRENT or TEMP) */
+			D3DTSS_CONSTANT: 32  /* Per-stage constant D3DTA_CONSTANT */
+		};
+
+		const D3DTEXTUREOP = {
+			// Control
+			D3DTOP_DISABLE: 1,      // disables stage
+			D3DTOP_SELECTARG1: 2,      // the default
+			D3DTOP_SELECTARG2: 3,
+
+			// Modulate
+			D3DTOP_MODULATE: 4,      // multiply args together
+			D3DTOP_MODULATE2X: 5,      // multiply and  1 bit
+			D3DTOP_MODULATE4X: 6,      // multiply and  2 bits
+
+			// Add
+			D3DTOP_ADD: 7,   // add arguments together
+			D3DTOP_ADDSIGNED: 8,   // add with -0.5 bias
+			D3DTOP_ADDSIGNED2X: 9,   // as above but left  1 bit
+			D3DTOP_SUBTRACT: 10,   // Arg1 - Arg2, with no saturation
+			D3DTOP_ADDSMOOTH: 11,   // add 2 args, subtract product
+			// Arg1 + Arg2 - Arg1*Arg2
+			// : Arg1 + (1-Arg1)*Arg2
+
+			// Linear alpha blend: Arg1*(Alpha) + Arg2*(1-Alpha)
+			D3DTOP_BLENDDIFFUSEALPHA: 12, // iterated alpha
+			D3DTOP_BLENDTEXTUREALPHA: 13, // texture alpha
+			D3DTOP_BLENDFACTORALPHA: 14, // alpha from D3DRS_TEXTUREFACTOR
+
+			// Linear alpha blend with pre-multiplied arg1 input: Arg1 + Arg2*(1-Alpha)
+			D3DTOP_BLENDTEXTUREALPHAPM: 15, // texture alpha
+			D3DTOP_BLENDCURRENTALPHA: 16, // by alpha of current color
+
+			// Specular mapping
+			D3DTOP_PREMODULATE: 17,     // modulate with next texture before use
+			D3DTOP_MODULATEALPHA_ADDCOLOR: 18,     // Arg1.RGB + Arg1.A*Arg2.RGB
+			// COLOROP only
+			D3DTOP_MODULATECOLOR_ADDALPHA: 19,     // Arg1.RGB*Arg2.RGB + Arg1.A
+			// COLOROP only
+			D3DTOP_MODULATEINVALPHA_ADDCOLOR: 20,  // (1-Arg1.A)*Arg2.RGB + Arg1.RGB
+			// COLOROP only
+			D3DTOP_MODULATEINVCOLOR_ADDALPHA: 21,  // (1-Arg1.RGB)*Arg2.RGB + Arg1.A
+			// COLOROP only
+
+			// Bump mapping
+			D3DTOP_BUMPENVMAP: 22, // per pixel env map perturbation
+			D3DTOP_BUMPENVMAPLUMINANCE: 23, // with luminance channel
+
+			// This can do either diffuse or specular bump mapping with correct input.
+			// Performs the function (Arg1.R*Arg2.R + Arg1.G*Arg2.G + Arg1.B*Arg2.B)
+			// where each component has been scaled and offset to make it signed.
+			// The result is replicated into all four (including alpha) channels.
+			// This is a valid COLOROP only.
+			D3DTOP_DOTPRODUCT3: 24,
+
+			// Triadic ops
+			D3DTOP_MULTIPLYADD: 25, // Arg0 + Arg1*Arg2
+			D3DTOP_LERP: 26  // (Arg0)*Arg1 + (1-Arg0)*Arg2
+		};
+
+		const D3DTEXTUREARG = {
+			D3DTA_SELECTMASK: 0x0000000f, // mask for arg selector
+			D3DTA_DIFFUSE: 0x00000000, // select diffuse color (read only)
+			D3DTA_CURRENT: 0x00000001, // select stage destination register (read/write)
+			D3DTA_TEXTURE: 0x00000002, // select texture color (read only)
+			D3DTA_TFACTOR: 0x00000003, // select D3DRS_TEXTUREFACTOR (read only)
+			D3DTA_SPECULAR: 0x00000004, // select specular color (read only)
+			D3DTA_TEMP: 0x00000005, // select temporary register color (read/write)
+			D3DTA_CONSTANT: 0x00000006, // select texture stage constant
+			D3DTA_COMPLEMENT: 0x00000010, // take 1.0 - x (read modifier)
+			D3DTA_ALPHAREPLICATE: 0x00000020  // replicate alpha to color components (read modifier)
+		};
+
+		const D3DTEXTUREFILTERTYPE = {
+			D3DTEXF_NONE: 0,    // filtering disabled (valid for mip filter only)
+			D3DTEXF_POINT: 1,    // nearest
+			D3DTEXF_LINEAR: 2,    // linear interpolation
+			D3DTEXF_ANISOTROPIC: 3,    // anisotropic
+			D3DTEXF_PYRAMIDALQUAD: 6,    // 4-sample tent
+			D3DTEXF_GAUSSIANQUAD: 7,    // 4-sample gaussian
+			/* D3D9Ex only -- */
+
+			D3DTEXF_CONVOLUTIONMONO: 8     // Convolution filter for monochrome textures
+
+			/* -- D3D9Ex only */
+		};
+
+		const D3DSAMPLERSTATETYPE = {
+			D3DSAMP_ADDRESSU: 1,  /* D3DTEXTUREADDRESS for U coordinate */
+			D3DSAMP_ADDRESSV: 2,  /* D3DTEXTUREADDRESS for V coordinate */
+			D3DSAMP_ADDRESSW: 3,  /* D3DTEXTUREADDRESS for W coordinate */
+			D3DSAMP_BORDERCOLOR: 4,  /* D3DCOLOR */
+			D3DSAMP_MAGFILTER: 5,  /* D3DTEXTUREFILTER filter to use for magnification */
+			D3DSAMP_MINFILTER: 6,  /* D3DTEXTUREFILTER filter to use for minification */
+			D3DSAMP_MIPFILTER: 7,  /* D3DTEXTUREFILTER filter to use between mipmaps during minification */
+			D3DSAMP_MIPMAPLODBIAS: 8,  /* float Mipmap LOD bias */
+			D3DSAMP_MAXMIPLEVEL: 9,  /* DWORD 0..(n-1) LOD index of largest map to use (0 :: largest) */
+			D3DSAMP_MAXANISOTROPY: 10, /* DWORD maximum anisotropy */
+			D3DSAMP_SRGBTEXTURE: 11, /* Default : 0 (which means Gamma 1.0,
+								   no correction required.) else correct for
+								   Gamma : 2.2 */
+			D3DSAMP_ELEMENTINDEX: 12, /* When multi-element texture is assigned to sampler, this
+									indicates which element index to use.  Default : 0.  */
+			D3DSAMP_DMAPOFFSET: 13  /* Offset in vertices in the pre-sampled displacement map.
+									Only valid for D3DDMAPSAMPLER sampler  */
+		};
+
+		const D3DUSAGE = {
+			D3DUSAGE_RENDERTARGET: 0x00000001,
+			D3DUSAGE_DEPTHSTENCIL: 0x00000002,
+			D3DUSAGE_DYNAMIC: 0x00000200,
+			/* D3D9Ex only -- */
+
+			D3DUSAGE_NONSECURE: 0x00800000,
+
+			/* -- D3D9Ex only */
+
+			// When passed to CheckDeviceFormat, D3DUSAGE_AUTOGENMIPMAP may return
+			// D3DOK_NOAUTOGEN if the device doesn't support autogeneration for that format.
+			// D3DOK_NOAUTOGEN is a success code, not a failure code... the SUCCEEDED and FAILED macros
+			// will return true and false respectively for this code.
+			D3DUSAGE_AUTOGENMIPMAP: 0x00000400,
+			D3DUSAGE_DMAP: 0x00004000,
+
+			// The following usages are valid only for querying CheckDeviceFormat
+			D3DUSAGE_QUERY_LEGACYBUMPMAP: 0x00008000,
+			D3DUSAGE_QUERY_SRGBREAD: 0x00010000,
+			D3DUSAGE_QUERY_FILTER: 0x00020000,
+			D3DUSAGE_QUERY_SRGBWRITE: 0x00040000,
+			D3DUSAGE_QUERY_POSTPIXELSHADER_BLENDING: 0x00080000,
+			D3DUSAGE_QUERY_VERTEXTEXTURE: 0x00100000,
+			D3DUSAGE_QUERY_WRAPANDMIP: 0x00200000,
+
+			/* Usages for Vertex/Index buffers */
+			D3DUSAGE_WRITEONLY: 0x00000008,
+			D3DUSAGE_SOFTWAREPROCESSING: 0x00000010,
+			D3DUSAGE_DONOTCLIP: 0x00000020,
+			D3DUSAGE_POINTS: 0x00000040,
+			D3DUSAGE_RTPATCHES: 0x00000080,
+			D3DUSAGE_NPATCHES: 0x00000100,
+
+			/* D3D9Ex only -- */
+
+			D3DUSAGE_TEXTAPI: 0x10000000,
+			D3DUSAGE_RESTRICTED_CONTENT: 0x00000800,
+			D3DUSAGE_RESTRICT_SHARED_RESOURCE: 0x00002000,
+			D3DUSAGE_RESTRICT_SHARED_RESOURCE_DRIVER: 0x00001000,
+
+			/* -- D3D9Ex only */
+		};
+
+		const D3DPOOL = {
+			D3DPOOL_DEFAULT: 0,
+			D3DPOOL_MANAGED: 1,
+			D3DPOOL_SYSTEMMEM: 2,
+			D3DPOOL_SCRATCH: 3
+		};
+
+		const D3DPRIMITIVETYPE = {
+			D3DPT_POINTLIST: 1,
+			D3DPT_LINELIST: 2,
+			D3DPT_LINESTRIP: 3,
+			D3DPT_TRIANGLELIST: 4,
+			D3DPT_TRIANGLESTRIP: 5,
+			D3DPT_TRIANGLEFAN: 6
+		};
+
+		const D3DTRANSFORMSTATETYPE = {
+			D3DTS_VIEW: 2,
+			D3DTS_PROJECTION: 3,
+			D3DTS_TEXTURE0: 16,
+			D3DTS_TEXTURE1: 17,
+			D3DTS_TEXTURE2: 18,
+			D3DTS_TEXTURE3: 19,
+			D3DTS_TEXTURE4: 20,
+			D3DTS_TEXTURE5: 21,
+			D3DTS_TEXTURE6: 22,
+			D3DTS_TEXTURE7: 23,
+
+			D3DTS_WORLD: (256 + 0),
+			D3DTS_WORLD1: (256 + 1),
+			D3DTS_WORLD2: (256 + 2),
+			D3DTS_WORLD3: (256 + 3),
+		};
+
+		function SUCCEEDED(hr) {
+			return typeof hr == "number" && hr >= 0;
+		}
+
+		function FAILED(hr) {
+			return typeof hr != "number" && hr.hr < 0;
+		}
+
+		function failedHResultToError(hr, message) {
+			errorStr = message === undefined ? "" : message + ": ";
+			errorStr = errorStr + "HRESULT is FAILED: " + hr.hr + ", GetLastError: " + hr.lastError;
+			var error = new Error(errorStr);
+			error.hResult = hr.hr;
+			error.lastError = hr.lastError;
+			return error;
+		}
+
+		function transposeMatrix(matrix) {
+			var result = Array(16);
+
+			for (var i = 0; i < 4; ++i) {
+				for (var j = 0; j < 4; ++j) {
+					result[4 * j + i] = matrix[4 * i + j];
+				}
+			}
+
+			return result;
+		}
+
+		////////////////////////////////////////////////////////////////////////////////
+
+		function base64ToArrayBuffer(base64_string) {
+			var data = atob(base64_string);
+			var arrayBuffer = new ArrayBuffer(data.length);
+			var arrayBufferView = new Uint8Array(arrayBuffer);
+			for (var i = 0; i < data.length; ++i) {
+				arrayBufferView[i] = data.charCodeAt(i);
+			}
+			return arrayBuffer;
+		}
+
+		function decodeUTF16LE(arrayBuffer) {
+			var dv = new DataView(arrayBuffer);
+			var cp = [];
+			for (var i = 0; i < arrayBuffer.byteLength; i += 2) {
+				cp.push(
+					dv.getUint8(i) |
+					(dv.getUint8(i + 1) << 8)
+				);
+			}
+			return String.fromCharCode.apply(String, cp);
+		}
+
+		////////////////////////////////////////////////////////////////////////////////
+
+		function AfxDrawingInterop(interop, args) {
+
+			var self = this;
+
+			interop.setPipeName(args.pipeName);
+
+			this.interop = interop;
+			this.args = args;
+
+			this.cefTextureHandle = null;
+			this.cefTextures = {};
+			//this.elIndicator = document.getElementById('indicator');
+			//this.elIndicator2 = document.getElementById('indicator2');
+			this.divGameEvents = document.getElementById('gameEvents');
+			this.elClientTime = document.getElementById('clientTime');
+
+			this.engineInteropId = null;
+
+			this.connected = false;
+			this.messagePromises = {};
+
+			this.renderQueue = [];
+			this.firstRender = true;
+
+			this.shaderData = {
+				"afx_drawtexture_vs20": this.compileShader(this.stringToAfxData(`
+			matrix World;
+			matrix View;
+			matrix Projection;
+
+			struct VS_INPUT
+			{
+				float3 pos : POSITION;
+				float2 t0 : TEXCOORD0;
+			};
+			
+			struct VS_OUTPUT
+			{
+				float4 pos : POSITION;
+				float4 c : COLOR;
+				float2 t0 : TEXCOORD0;
+			};
+
+			VS_OUTPUT main( const VS_INPUT i )
+			{
+				VS_OUTPUT o;
+				
+				o.pos = float4(i.pos, 1);
+				o.pos = mul( o.pos, World );
+    			o.pos = mul( o.pos, View );
+    			o.pos = mul( o.pos, Projection );	
+				o.pos /= o.pos.w;			
+				o.c = float4(o.pos.x,0,o.pos.y,1);
+				o.t0 = i.t0;
+				
+				return o;
+			}
+		`), null, null, null, "main", "vs_2_0", 0, 0, 0, null),
+				"afx_drawtexture_ps20": this.compileShader(this.stringToAfxData(`
+			sampler g_sTextureSampler : register( s0 );
+
+			struct PS_INPUT
+			{
+				float2 t0 : TEXCOORD0;
+			};
+
+			float4 main( const PS_INPUT i ) : COLOR
+			{
+				return tex2D(g_sTextureSampler, i.t0);
+			}
+		`), null, null, null, "main", "ps_2_0", 0, 0, 0, null),
+			};
+
+			this.shaders = {
+				"afx_drawtexture_vs20": null,
+				"afx_drawtexture_ps20": null,
+			};
+
+			this.messageHandlers = {
+				"connect": async function (senderId) {
+					this.engineInteropId = senderId;
+					await this.connect(senderId);
+				},
+				"disconnect": async function (senderId) {
+					await toPromise(this, "disconnect");
+				},
+				"onRenderViewBegin": async function (renderInfo) {
+
+					//this.elIndicator2.classList.toggle("white");
+
+					var width = renderInfo.view.width - renderInfo.view.x;
+					var height = renderInfo.view.height - renderInfo.view.y;
+
+					if (this.width !== width || this.height !== height) {
+						await toPromise(self.interop, "setSize", width, height);
+					}
+
+					this.width = width;
+					this.height = height;
+					this.renderInfo = renderInfo;
+					//this.elClientTime.innerText = renderInfo.curTime;
+				},
+				"onGameEvent": async function (e) {
+					/*while(this.divGameEvents.childNodes.length > 10) this.divGameEvents.lastElementChild.remove();
+		
+					var docP = document.createElement('p');
+					docP.appendChild(document.createTextNode(JSON.stringify(e)));
+					this.divGameEvents.insertBefore(docP, this.divGameEvents.firstElementChild);*/
+				},
+				"onViewOverride": async function (positionInfo) {
+					const { tX, tY, tZ, rX, rY, rZ, fov } = positionInfo;
+
+					const realX = -rX;
+					let realY = rY + 180;
+					//if(realY > 270){
+					//	realY -= 360;
+					//}
+					//this.divGameEvents.innerText = `FOV: ${fov}`;
+					const gameFov = gameFovToVert(fov);
+					if (camera.fov !== gameFov) {
+						camera.fov = gameFov;
+						camera.updateProjectionMatrix();
+					}
+					camera.rotation.x = 0;
+					camera.rotation.y = 0;
+					camera.rotation.z = 0;
+					camera.rotateY(degreeToRadian(realY));
+					camera.rotateX(degreeToRadian(realX)); // rotateX powinno ruszaćgóra dół
+					camera.position.x = tY;
+					camera.position.z = tX;
+					camera.position.y = tZ;
+					renderer.render(scene, camera);
+
+					/*
+					let horToVert = hFov => {
+			const hRadians = hFov * Math.PI / 180;
+		
+			const vRadians = Math.atan(Math.tan(hRadians * 0.5) * 9 / 16) * 2;
+		
+			return vRadians * 180 / Math.PI;
+		}
+		
+		let gameFovToRealFov = (fov, width, height) => {
+			return Math.atan(Math.tan(fov * Math.PI / 360) * (3*width) / (height*4)) * 360/Math.PI
+		}
+		
+		let gameFovToVert = fov => {
+			return horToVert(gameFovToRealFov(fov, 1920, 1080));
+		}
+					*/
+				},
+				"onHudEnd": async function (frameCount, pass) {
+
+					//this.elIndicator.classList.toggle("white",(frameCount % 2) == 0);
+
+					async function doRender(cefTextureHandle, frameCount, pass, width, height, renderInfo) {
+						var inFlow = await toPromise(self.interop, "pumpBegin", frameCount, pass);
+
+						if (!inFlow) {
+							logError("out of flow");
+							return;
+						}
+
+						try {
+							if (cefTextureHandle.invalid) throw toSoftError(new Error("cefTextureHandle.invalid"));
+
+							var cefTexture = self.getCefTexture(cefTextureHandle);
+
+							if (null === self.shaders["afx_drawtexture_vs20"]) {
+								var refVertexShader = [undefined];
+								var hr = await toPromise(self.interop, "d3d9CreateVertexShader", self.shaderData["afx_drawtexture_vs20"], refVertexShader);
+								if (FAILED(hr)) throw toSoftError(failedHResultToError(hr));
+								self.shaders["afx_drawtexture_vs20"] = refVertexShader[0];
+							}
+
+							if (null === self.shaders["afx_drawtexture_ps20"]) {
+								var refPixelShader = [undefined];
+								var hr = await toPromise(self.interop, "d3d9CreatePixelShader", self.shaderData["afx_drawtexture_ps20"], refPixelShader);
+								if (FAILED(hr)) throw toSoftError(failedHResultToError(hr));
+								self.shaders["afx_drawtexture_ps20"] = refPixelShader[0];
+							}
+
+							if (null === self.vertexDeclarations["pos3_uv2"]) {
+								var refVertexDeclaration = [undefined];
+								var hr = await toPromise(self.interop, "d3d9CreateVertexDeclaration", self.vertexElements["pos3_uv2"], refVertexDeclaration);
+								if (FAILED(hr)) throw toSoftError(failedHResultToError(hr));
+								self.vertexDeclarations["pos3_uv2"] = refVertexDeclaration[0];
+							}
+
+							if (!cefTexture) {
+								var refTexture = [undefined];
+								const D3DFMT_A8R8G8B8 = 21;
+								var hr = await toPromise(self.interop, "d3d9CreateTexture", width, height, 1, D3DUSAGE.D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3DPOOL.D3DPOOL_DEFAULT, refTexture, [cefTextureHandle]);
+								if (FAILED(hr)) throw toSoftError(failedHResultToError(hr, "CreateTexture failed for cefTextureHandle: (" + cefTextureHandle.hi + ", " + cefTextureHandle.lo + ")"));
+
+								cefTexture = refTexture[0];
+
+								console.log("New texture for cefTextureHandle: (" + cefTextureHandle.hi + ", " + cefTextureHandle.lo + ")");
+								self.setCefTexture(cefTextureHandle, cefTexture);
+							}
+
+							await self.drawRect2d(cefTexture, renderInfo.view.x, renderInfo.view.y, renderInfo.view.width, renderInfo.view.height, 0, 0, 1, 1);
+							await toPromise(self.interop, "waitForClientGpu");
+						}
+						catch (error) {
+							if (error && error.soft) {
+								logError(error);
+							}
+							else throw error;
+						}
+
+						await toPromise(self.interop, "pumpEnd");
+					}
+
+					await new Promise((resolve, reject) => {
+						self.renderQueue.push(function (cefTextureHandle) {
+							doRender(cefTextureHandle, frameCount, pass, self.width, self.height, self.renderInfo).then(() => {
+								resolve();
+							}).catch((e) => {
+								reject(e);
+							});
+						});
+
+						async function render() {
+							await toPromise(self.interop, "sendExternalBeginFrame");
+							if (self.firstRender) {
+								// This is utterly neccessary to unstuck the CEF rendering queue initially:
+								self.firstRender = false;
+								for (var i = 0; i < 25; ++i) await toPromise(self.interop, "sendExternalBeginFrame");
+							}
+						}
+
+						render().then(() => { });
+					});
+				}
+			};
+
+			interop.onMessage = function (senderId, message) {
+
+				const jMessage = JSON.parse(message);
+
+				async function processMessage(jMessage) {
+					try {
+						await self.messageHandlers[jMessage.id].apply(self, jMessage.args);
+					}
+					catch (e) {
+						logError(e);
+						if (!(e && e.soft))
+							await toPromise(self, "disconnect");
+					}
+				}
+
+				function queueMessage(jMessage) {
+					const port = jMessage.port || 0;
+
+					var promise = self.messagePromises[port];
+					if (undefined === promise) promise = Promise.resolve();
+
+					self.messagePromises[port] = promise.finally(() => processMessage(jMessage));
+				}
+
+				queueMessage(jMessage);
+			}
+
+			interop.onDeviceReset = function () {
+				self.onDeviceReset().catch((e) => {
+					logError(e);
+					if (!(e && e.soft))
+						return toPromise(self, "disconnect");
+				});
+			};
+
+			interop.onAcceleratedPaint = function (cefTextureHandle) {
+				if (0 < self.renderQueue.length)
+					self.renderQueue.shift()(cefTextureHandle);
+			}
+
+			interop.onReleaseShareHandle = function (cefTextureHandle) {
+
+				async function release(cefTextureHandle) {
+					var cefTexture = self.getCefTexture(cefTextureHandle);
+					if (cefTexture) {
+						if (this.connected) {
+							try {
+								var hr = await toPromise(cefTexture, "release");
+								if (FAILED(hr)) throw failedHResultToError(hr);
+							}
+							catch (e) {
+								logError(e);
+							}
+						}
+
+						self.removeCefTexture(cefTextureHandle);
+					}
+				}
+
+				release(cefTextureHandle).catch((e) => {
+					logError(e);
+					if (!(e && e.soft))
+						return toPromise(self, "disconnect");
+				});
+			}
+
+			this.vertexElements = {
+				"pos3_uv2": this.buildD3d9VertexElements([
+					{
+						"stream": 0,
+						"offset": 0,
+						"type": D3DDECLTYPE.D3DDECLTYPE_FLOAT3,
+						"method": D3DDECLMETHOD.D3DDECLMETHOD_DEFAULT,
+						"usage": D3DDECLUSAGE.D3DDECLUSAGE_POSITION, "usageIndex": 0
+					},
+					{
+						"stream": 0,
+						"offset": 3 * 4,
+						"type": D3DDECLTYPE.D3DDECLTYPE_FLOAT2,
+						"method": D3DDECLMETHOD.D3DDECLMETHOD_DEFAULT,
+						"usage": D3DDECLUSAGE.D3DDECLUSAGE_TEXCOORD, "usageIndex": 0
+					},
+				])
+			};
+
+			this.vertexDeclarations = {
+				"pos3_uv2": null
+			};
+
+			this.vertexBuffers = {
+				"rect": null
+			}
+
+			toPromise(self.interop, "sendMessage", this.args.indexInteropId, JSON.stringify({
+				"id": "drawingCreated",
+				"args": [interop.id]
+			}));
+		}
+
+		AfxDrawingInterop.prototype.onDeviceReset = async function () {
+
+			// We currently re-create all resources, even non-pooled ones.
+			// TODO: change the above.
+
+			while (0 < this.cefTextures.length) {
+				var hiKey = Object.keys(this.cefTextures)[0];
+				var loKey = Object.keys(this.cefTextures[hiKey])[0];
+
+				var cefTextureHandle = this.interop.createHandleFromLoHi(loKey, hiKey);
+
+				var cefTexture = this.getCefTexture(cefTextureHandle);
+
+				var hr = await toPromise(cefTexture, "release");
+				if (FAILED(hr)) throw failedHResultToError(hr);
+
+				this.removeCefTexture(cefTextureHandle);
+			}
+
+			if (this.shaders["afx_drawtexture_vs20"]) {
+				var hr = await toPromise(this.shaders["afx_drawtexture_vs20"], "release");
+				if (FAILED(hr)) throw failedHResultToError(hr);
+				this.shaders["afx_drawtexture_vs20"] = null;
+			}
+			if (this.shaders["afx_drawtexture_ps20"]) {
+				var hr = await toPromise(this.shaders["afx_drawtexture_ps20"], "release");
+				if (FAILED(hr)) throw failedHResultToError(hr);
+				this.shaders["afx_drawtexture_ps20"] = null;
+			}
+			if (this.vertexDeclarations["pos3_uv2"]) {
+				var hr = await toPromise(this.vertexDeclarations["pos3_uv2"], "release");
+				if (FAILED(hr)) throw failedHResultToError(hr);
+				this.vertexDeclarations["pos3_uv2"] = null;
+			}
+		}
+
+		/**
+		 * @remarks NOT NULL TERMINATED!
+		 */
+		AfxDrawingInterop.prototype.stringToAfxData = function (value) {
+			var dd = this.interop.createDrawingData(value.length);
+			var dv = new DataView(dd);
+
+			for (var i = 0; i < value.length; ++i) {
+				dv.setUint8(i, value.charCodeAt(i));
+			}
+
+			return dd;
+		}
+
+		/**
+		 * @param includes MUST BE null.
+		 * @remarks https://docs.microsoft.com/en-us/windows/win32/api/d3dcompiler/nf-d3dcompiler-d3dcompile2
+		 */
+		AfxDrawingInterop.prototype.compileShader = function (srcData, sourceName, defines, includes, entryPoint, target, flags1, flags2, secondaryDataFlags, secondaryData) {
+
+			var result = this.interop.d3dCompile2(
+				srcData,
+				sourceName,
+				defines,
+				includes,
+				entryPoint,
+				target,
+				flags1,
+				flags2,
+				secondaryDataFlags,
+				secondaryData
+			);
+
+			if (0 !== result.hResult) {
+				var errorStr = "[UNKNOWN]";
+				if (null !== result.errorMsgs) {
+					var decoder = new TextDecoder('utf-8', { fatal: true });
+					var cefIsBuggy = new ArrayBuffer(result.errorMsgs.byteLength);
+					var dvIn = new DataView(result.errorMsgs);
+					var dvOut = new DataView(cefIsBuggy);
+					for (var i = 0; i < cefIsBuggy.byteLength; ++i) dvOut.setUint8(i, dvIn.getUint8(i));
+					errorStr = decoder.decode(cefIsBuggy);
+				}
+				throw errorStr;
+			}
+
+			return result.code;
+		}
+
+		AfxDrawingInterop.prototype.drawRect2d = async function (texture, x, y, width, height, x0, y0, x1, y1) {
+
+			var self = this;
+
+			// Orthographic projection matrix:
+			const L = 0.5 + x;
+			const R = 0.5 + x + width;
+			const T = 0.5 + y;
+			const B = 0.5 + y + height;
+			const mat_identity = [
+				1.0, 0.0, 0.0, 0.0,
+				0.0, 1.0, 0.0, 0.0,
+				0.0, 0.0, 1.0, 0.0,
+				0.0, 0.0, 0.0, 1.0
+			];
+			const mat_projection = [
+				2.0 / (R - L), 0.0, 0.0, 0.0,
+				0.0, 2.0 / (T - B), 0.0, 0.0,
+				0.0, 0.0, 0.5, 0.0,
+				(L + R) / (L - R), (T + B) / (B - T), 0.5, 1.0
+			];
+
+			//
+			var vertexStreamZeroData = this.interop.createDrawingData(4 * ((3 + 2) * 4));
+			{
+				var dv = new DataView(vertexStreamZeroData);
+
+				dv.setFloat32(0 * 4, 0, true);
+				dv.setFloat32(1 * 4, height, true);
+				dv.setFloat32(2 * 4, 0, true);
+				dv.setFloat32(3 * 4, x0, true);
+				dv.setFloat32(4 * 4, y0, true);
+
+				dv.setFloat32(5 * 4, 0, true);
+				dv.setFloat32(6 * 4, 0, true);
+				dv.setFloat32(7 * 4, 0, true);
+				dv.setFloat32(8 * 4, x0, true);
+				dv.setFloat32(9 * 4, y1, true);
+
+				dv.setFloat32(10 * 4, width, true);
+				dv.setFloat32(11 * 4, height, true);
+				dv.setFloat32(12 * 4, 0, true);
+				dv.setFloat32(13 * 4, x1, true);
+				dv.setFloat32(14 * 4, y0, true);
+
+				dv.setFloat32(15 * 4, width, true);
+				dv.setFloat32(16 * 4, 0, true);
+				dv.setFloat32(17 * 4, 0, true);
+				dv.setFloat32(18 * 4, x1, true);
+				dv.setFloat32(19 * 4, y1, true);
+			}
+
+			//
+
+			async function toSoftError(error) {
+				error.soft = true;
+
+				await toPromise(self.interop, "endCleanState");
+
+				return error;
+			}
+
+			//
+
+			await toPromise(self.interop, "beginCleanState");
+
+			var hr = await toPromise(self.interop, "d3d9SetVertexDeclaration", this.vertexDeclarations["pos3_uv2"]);
+			if (FAILED(hr)) throw await toSoftError(failedHResultToError(hr));
+
+			var hr = await toPromise(self.interop, "d3d9SetViewport", {
+				"x": x,
+				"y": y,
+				"width": width,
+				"height": height,
+				"minZ": 0.0,
+				"maxZ": 1.0
+			});
+			if (FAILED(hr)) throw await toSoftError(failedHResultToError(hr));
+
+			var hr = await toPromise(self.interop, "d3d9SetRenderState", D3DRENDERSTATETYPE.D3DRS_SRGBWRITEENABLE, BOOL.FALSE);
+			if (FAILED(hr)) throw await toSoftError(failedHResultToError(hr));
+
+			var hr = await toPromise(self.interop, "d3d9SetRenderState", D3DRENDERSTATETYPE.D3DRS_COLORWRITEENABLE, D3DRS_COLORWRITEENABLE.D3DCOLORWRITEENABLE_ALPHA | D3DRS_COLORWRITEENABLE.D3DCOLORWRITEENABLE_BLUE | D3DRS_COLORWRITEENABLE.D3DCOLORWRITEENABLE_GREEN | D3DRS_COLORWRITEENABLE.D3DCOLORWRITEENABLE_RED);
+			if (FAILED(hr)) throw await toSoftError(failedHResultToError(hr));
+
+			var hr = await toPromise(self.interop, "d3d9SetRenderState", D3DRENDERSTATETYPE.D3DRS_SEPARATEALPHABLENDENABLE, BOOL.FALSE);
+			if (FAILED(hr)) throw await toSoftError(failedHResultToError(hr));
+
+			var hr = await toPromise(self.interop, "d3d9SetVertexShader", null);
+			if (FAILED(hr)) throw await toSoftError(failedHResultToError(hr));
+
+			var hr = await toPromise(self.interop, "d3d9SetPixelShader", this.shaders["afx_drawtexture_ps20"]);
+			if (FAILED(hr)) throw await toSoftError(failedHResultToError(hr));
+
+			var hr = await toPromise(self.interop, "d3d9SetRenderState", D3DRENDERSTATETYPE.D3DRS_CULLMODE, D3DCULL.D3DCULL_NONE);
+			if (FAILED(hr)) throw await toSoftError(failedHResultToError(hr));
+
+			var hr = await toPromise(self.interop, "d3d9SetRenderState", D3DRENDERSTATETYPE.D3DRS_ZWRITEENABLE, BOOL.FALSE);
+			if (FAILED(hr)) throw await toSoftError(failedHResultToError(hr));
+
+			var hr = await toPromise(self.interop, "d3d9SetRenderState", D3DRENDERSTATETYPE.D3DRS_ZFUNC, D3DCMPFUNC.D3DCMP_ALWAYS);
+			if (FAILED(hr)) throw await toSoftError(failedHResultToError(hr));
+
+			var hr = await toPromise(self.interop, "d3d9SetRenderState", D3DRENDERSTATETYPE.D3DRS_ZENABLE, D3DZBUFFERTYPE.D3DZB_FALSE);
+			if (FAILED(hr)) throw await toSoftError(failedHResultToError(hr));
+
+			var hr = await toPromise(self.interop, "d3d9SetRenderState", D3DRENDERSTATETYPE.D3DRS_ALPHABLENDENABLE, BOOL.TRUE);
+			if (FAILED(hr)) throw await toSoftError(failedHResultToError(hr));
+
+			var hr = await toPromise(self.interop, "d3d9SetRenderState", D3DRENDERSTATETYPE.D3DRS_ALPHATESTENABLE, BOOL.FALSE);
+			if (FAILED(hr)) throw await toSoftError(failedHResultToError(hr));
+
+			var hr = await toPromise(self.interop, "d3d9SetRenderState", D3DRENDERSTATETYPE.D3DRS_MULTISAMPLEANTIALIAS, BOOL.FALSE);
+			if (FAILED(hr)) throw await toSoftError(failedHResultToError(hr));
+
+			var hr = await toPromise(self.interop, "d3d9SetRenderState", D3DRENDERSTATETYPE.D3DRS_LIGHTING, BOOL.FALSE);
+			if (FAILED(hr)) throw await toSoftError(failedHResultToError(hr));
+
+			var hr = await toPromise(self.interop, "d3d9SetRenderState", D3DRENDERSTATETYPE.D3DRS_SRCBLEND, D3DBLEND.D3DBLEND_SRCALPHA);
+			if (FAILED(hr)) throw await toSoftError(failedHResultToError(hr));
+
+			var hr = await toPromise(self.interop, "d3d9SetRenderState", D3DRENDERSTATETYPE.D3DRS_DESTBLEND, D3DBLEND.D3DBLEND_INVSRCALPHA);
+			if (FAILED(hr)) throw await toSoftError(failedHResultToError(hr));
+
+			var hr = await toPromise(self.interop, "d3d9SetRenderState", D3DRENDERSTATETYPE.D3DRS_FILLMODE, D3DFILLMODE.D3DFILL_SOLID);
+			if (FAILED(hr)) throw await toSoftError(failedHResultToError(hr));
+
+			var hr = await toPromise(self.interop, "d3d9SetTextureStageState", 0, D3DTEXTURESTAGESTATETYPE.D3DTSS_COLOROP, D3DTEXTUREOP.D3DTOP_SELECTARG1);
+			if (FAILED(hr)) throw await toSoftError(failedHResultToError(hr));
+
+			var hr = await toPromise(self.interop, "d3d9SetTextureStageState", 0, D3DTEXTURESTAGESTATETYPE.D3DTSS_COLORARG1, D3DTEXTUREARG.D3DTA_TEXTURE);
+			if (FAILED(hr)) throw await toSoftError(failedHResultToError(hr));
+
+			var hr = await toPromise(self.interop, "d3d9SetTextureStageState", 0, D3DTEXTURESTAGESTATETYPE.D3DTSS_ALPHAOP, D3DTEXTUREOP.D3DTOP_SELECTARG1);
+			if (FAILED(hr)) throw await toSoftError(failedHResultToError(hr));
+
+			var hr = await toPromise(self.interop, "d3d9SetTextureStageState", 0, D3DTEXTURESTAGESTATETYPE.D3DTSS_ALPHAARG1, D3DTEXTUREARG.D3DTA_TEXTURE);
+			if (FAILED(hr)) throw await toSoftError(failedHResultToError(hr));
+
+			var hr = await toPromise(self.interop, "d3d9SetSamplerState", 0, D3DSAMPLERSTATETYPE.D3DSAMP_MINFILTER, D3DTEXTUREFILTERTYPE.D3DTEXF_LINEAR);
+			if (FAILED(hr)) throw await toSoftError(failedHResultToError(hr));
+
+			var hr = await toPromise(self.interop, "d3d9SetSamplerState", 0, D3DSAMPLERSTATETYPE.D3DSAMP_MAGFILTER, D3DTEXTUREFILTERTYPE.D3DTEXF_LINEAR);
+			if (FAILED(hr)) throw await toSoftError(failedHResultToError(hr));
+
+			var hr = await toPromise(self.interop, "d3d9SetSamplerState", 0, D3DSAMPLERSTATETYPE.D3DSAMP_SRGBTEXTURE, BOOL.FALSE);
+			if (FAILED(hr)) throw await toSoftError(failedHResultToError(hr));
+
+			var hr = await toPromise(self.interop, "d3d9SetTexture", 0, texture);
+			if (FAILED(hr)) throw await toSoftError(failedHResultToError(hr));
+
+			var hr = await toPromise(self.interop, "d3d9SetTransform", D3DTRANSFORMSTATETYPE.D3DTS_WORLD, mat_identity);
+			if (FAILED(hr)) throw await toSoftError(failedHResultToError(hr));
+
+			var hr = await toPromise(self.interop, "d3d9SetTransform", D3DTRANSFORMSTATETYPE.D3DTS_VIEW, mat_identity);
+			if (FAILED(hr)) throw await toSoftError(failedHResultToError(hr));
+
+			var hr = await toPromise(self.interop, "d3d9SetTransform", D3DTRANSFORMSTATETYPE.D3DTS_PROJECTION, mat_projection);
+			if (FAILED(hr)) throw await toSoftError(failedHResultToError(hr));
+
+			var hr = await toPromise(self.interop, "d3d9DrawPrimitiveUP", D3DPRIMITIVETYPE.D3DPT_TRIANGLESTRIP, 2, vertexStreamZeroData, 5 * 4);
+			if (FAILED(hr)) throw await toSoftError(failedHResultToError(hr));
+
+			await toPromise(self.interop, "endCleanState");
+		}
+
+
+		AfxDrawingInterop.prototype.buildD3d9VertexElements = function (definitions) {
+
+			var dd = this.interop.createDrawingData(8 * (definitions.length + 1));
+			var dv = new DataView(dd);
+			var i = 0;
+			for (; i < definitions.length; ++i) {
+				var definition = definitions[i];
+				dv.setUint16(i * 8 + 0, definition["stream"], true);
+				dv.setUint16(i * 8 + 2, definition["offset"], true);
+				dv.setUint8(i * 8 + 4, definition["type"]);
+				dv.setUint8(i * 8 + 5, definition["method"]);
+				dv.setUint8(i * 8 + 6, definition["usage"]);
+				dv.setUint8(i * 8 + 7, definition["usageIndex"]);
+			}
+
+			// append D3DDECL_END:
+			dv.setUint16(i * 8 + 0, 0xff, true);
+			dv.setUint16(i * 8 + 2, 0, true);
+			dv.setUint8(i * 8 + 4, 17);
+			dv.setUint8(i * 8 + 5, 0);
+			dv.setUint8(i * 8 + 6, 0);
+			dv.setUint8(i * 8 + 7, 0);
+
+			return dd;
+		}
+
+		AfxDrawingInterop.prototype.connect = async function () {
+
+			this.connected = true;
+
+			await toPromise(this.interop, "connect");
+
+			await toPromise(this.interop, "sendMessage", this.args.indexInteropId, JSON.stringify({
+				"id": "drawingConnected",
+				"args": [this.interop.id]
+			}));
+
+			await toPromise(this.interop, "sendMessage", this.engineInteropId, JSON.stringify({
+				"id": "drawingConnected",
+				"args": [this.interop.id]
+			}));
+		}
+
+		AfxDrawingInterop.prototype.disconnect = async function () {
+
+			while (0 < this.renderQueue.length) {
+				console.log("Waiting for renderer to finish before disconnecting ...");
+				await sleepPromise(250);
+			}
+
+			this.interop.cancel();
+			this.messagePromises = {}
+
+			if (this.connected) {
+				this.connected = false;
+
+				try {
+					await toPromise(this.interop, "close")
+				}
+				catch (e) {
+					logError(e);
+				}
+
+				this.cefTextures = {};
+				this.shaders["afx_drawtexture_vs20"] = null;
+				this.shaders["afx_drawtexture_ps20"] = null;
+				this.vertexDeclarations["pos3_uv2"] = null;
+
+
+				await toPromise(this.interop, "sendMessage", this.engineInteropId, JSON.stringify({
+					"id": "drawingDisconnected",
+					"port": "1",
+					"args": [this.interop.id]
+				}));
+
+				await toPromise(this.interop, "sendMessage", this.args.indexInteropId, JSON.stringify({
+					"id": "drawingDisconnected",
+					"args": [this.interop.id]
+				}));
+			}
+		}
+
+		AfxDrawingInterop.prototype.setCefTexture = function (cefTextureHandle, cefTexture) {
+			if (!this.cefTextures[cefTextureHandle.hi]) {
+				this.cefTextures[cefTextureHandle.hi] = {};
+			}
+			this.cefTextures[cefTextureHandle.hi][cefTextureHandle.lo] = cefTexture;
+		}
+
+		AfxDrawingInterop.prototype.getCefTexture = function (cefTextureHandle) {
+			var loSet = this.cefTextures[cefTextureHandle.hi];
+			if (loSet) {
+				return loSet[cefTextureHandle.lo];
+			}
+		}
+
+		AfxDrawingInterop.prototype.removeCefTexture = function (cefTextureHandle) {
+			var loSet = this.cefTextures[cefTextureHandle.hi];
+			if (loSet) {
+				delete loSet[cefTextureHandle.lo];
+			}
+			if (0 == loSet.length) {
+				delete this.cefTextures[cefTextureHandle.hi];
+			}
+		}
+
+		////////////////////////////////////////////////////////////////////////////////
+
+		window.addEventListener('load', function () {
+
+			new AfxDrawingInterop(window.afxInterop, JSON.parse(window.afxInterop.args))
+
+		}, false);
+
+	</script>
+</body>
+
+</html>

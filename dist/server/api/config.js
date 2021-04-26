@@ -109,6 +109,10 @@ exports.verifyUrl = async (url) => {
     if (bases.find(base => url.startsWith(`${base}/dev`))) {
         return true;
     }
+    
+	if(bases.find(base => url.startsWith(`${base}/ar/drawing.html`))){
+		return true;
+	}
     const base = bases.find(base => url.startsWith(base));
     if (!base)
         return false;
