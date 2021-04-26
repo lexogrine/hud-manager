@@ -1,4 +1,4 @@
-import { CustomFieldEntry } from '../../types/interfaces';
+import { CustomFieldEntry, AvailableGames, CloudSyncStatus } from '../../types/interfaces';
 import config from './config';
 import * as I from './interfaces';
 const apiUrl = config.apiAddress;
@@ -109,13 +109,23 @@ export default {
 		runTest: () => apiV2('test', 'POST'),
 		toggleLoop: () => apiV2('test/loop', 'POST')
 	},
+	games: {
+		getCurrent: (): Promise<{ game: AvailableGames }> => apiV2(`games/current`),
+		startServices: (game: AvailableGames): Promise<{ result: CloudSyncStatus }> => apiV2(`games/start/${game}`)
+	},
+	cloud: {
+		upload: () => apiV2('cloud/upload', 'POST'),
+		download: () => apiV2('cloud/download', 'POST')
+	},
 	huds: {
 		get: async (): Promise<I.HUD[]> => await apiV2('huds'),
 		start: async (hudDir: string) => await apiV2(`huds/${hudDir}/start`, 'POST'),
 		close: async (hudDir: string) => await apiV2(`huds/${hudDir}/close`, 'POST'),
 		openDirectory: async () => await apiV2(`huds`, 'POST'),
-		upload: async (hud: string, name: string) => await apiV2(`huds/add`, 'POST', { hud, name }),
-		delete: async (hudDir: string) => await apiV2(`huds?hudDir=${hudDir}`, 'DELETE')
+		save: async (hud: string, name: string) => await apiV2(`huds/add`, 'POST', { hud, name }),
+		delete: async (hudDir: string) => await apiV2(`huds?hudDir=${hudDir}`, 'DELETE'),
+		download: (uuid: string): Promise<{ result: I.HUD | null }> => apiV2(`huds/download/${uuid}`),
+		upload: (hudDir: string): Promise<any> => apiV2(`huds/upload/${hudDir}`, 'POST')
 	},
 	machine: {
 		get: async (): Promise<{ id: string }> => await apiV2('machine')
@@ -158,5 +168,14 @@ export default {
 		},
 		sync: async (db: DB) => await apiV2<any>('import', 'POST', db),
 		syncCheck: async (db: DB) => await apiV2<any>('import/verify', 'POST', db)
+	},
+	bakkesmod: {
+		check: async () => await apiV2<I.BakkesModStatusResponse>('bakkesmod/check'),
+		downloadMod: async () => await apiV2<I.BakkesModAPIResponse>('bakkesmod/download/mod'),
+		downloadModData: async () => await apiV2<I.BakkesModAPIResponse>('bakkesmod/download/mod_data'),
+		downloadSos: async () => await apiV2<I.BakkesModAPIResponse>('bakkesmod/download/sos'),
+		installMod: async () => await apiV2<I.BakkesModAPIResponse>('bakkesmod/install/mod'),
+		installModData: async () => await apiV2<I.BakkesModAPIResponse>('bakkesmod/install/mod_data'),
+		installSos: async () => await apiV2<I.BakkesModAPIResponse>('bakkesmod/install/sos')
 	}
 };

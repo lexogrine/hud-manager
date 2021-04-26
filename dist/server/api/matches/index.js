@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateRound = exports.reverseSide = exports.updateMatch = exports.getCurrent = exports.deleteMatch = exports.addMatch = exports.updateMatches = exports.setMatches = exports.getMatchById = exports.getMatches = void 0;
+exports.replaceLocalMatches = exports.updateRound = exports.reverseSide = exports.updateMatch = exports.getCurrent = exports.deleteMatch = exports.addMatch = exports.updateMatches = exports.setMatches = exports.getMatchById = exports.getMatches = void 0;
 const socket_1 = require("./../../socket");
 const database_1 = __importDefault(require("./../../../init/database"));
 const teams_1 = require("./../teams");
@@ -87,16 +87,22 @@ exports.addMatch = (match) => new Promise(res => {
         match.id = v4_1.default();
     }
     match.current = false;
-    matchesDb.insert(match, (err, doc) => {
+    matchesDb.insert(match, async (err, doc) => {
         if (err)
             return res(null);
+        /* if (validateCloudAbility()) {
+            await addResource(customer.game as AvailableGames, 'matches', doc);
+        } */
         return res(doc);
     });
 });
 exports.deleteMatch = (id) => new Promise(res => {
-    matchesDb.remove({ id }, err => {
+    matchesDb.remove({ id }, async (err) => {
         if (err)
             return res(false);
+        /* if (validateCloudAbility()) {
+            await deleteResource(customer.game as AvailableGames, 'matches', id);
+        } */
         return res(true);
     });
 });
@@ -153,6 +159,9 @@ exports.updateMatch = (match) => new Promise(res => {
                     extra: right.extra
                 };
             }
+            /* if (validateCloudAbility()) {
+                await updateResource(customer.game as AvailableGames, 'matches', match);
+            } */
             if (err)
                 return res(false);
             return res(true);
@@ -242,3 +251,17 @@ exports.updateRound = async (game) => {
     });
     return exports.updateMatch(match);
 };
+exports.replaceLocalMatches = (newMatches, game) => new Promise(res => {
+    const or = [{ game }];
+    if (game === 'csgo') {
+        or.push({ game: { $exists: false } });
+    }
+    matchesDb.remove({ $or: or }, { multi: true }, err => {
+        if (err) {
+            return res(false);
+        }
+        matchesDb.insert(newMatches, (err, docs) => {
+            return res(!err);
+        });
+    });
+});

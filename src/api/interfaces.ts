@@ -1,3 +1,5 @@
+import { LicenseType } from './../../types/interfaces';
+
 export type {
 	PanelInput,
 	SelectActionInput,
@@ -6,6 +8,7 @@ export type {
 	KeyBind,
 	PanelTemplate,
 	HUD,
+	Player,
 	Match,
 	MatchTeam,
 	Veto,
@@ -15,30 +18,13 @@ export type {
 	ExtendedConfig,
 	CFG,
 	CustomFieldEntry,
+	LicenseType,
 	CustomFieldStore,
+	Team,
+	AvailableGames,
+	AvailableResources,
 	onExtraChangeFunction
 } from './../../types/interfaces';
-
-export interface Player {
-	_id: string;
-	firstName: string;
-	lastName: string;
-	username: string;
-	avatar: string;
-	country: string;
-	steamid: string;
-	team: string;
-	extra: Record<string, string>;
-}
-
-export interface Team {
-	_id: string;
-	name: string;
-	country: string;
-	shortName: string;
-	logo: string;
-	extra: Record<string, string>;
-}
 
 export interface CFGGSIResponse {
 	success: boolean;
@@ -53,8 +39,6 @@ export interface User {
 	admin: boolean;
 	banned: boolean;
 }
-
-export type LicenseType = 'free' | 'professional' | 'enterprise';
 export interface License {
 	id: number;
 	type: LicenseType;
@@ -67,4 +51,25 @@ export interface Customer {
 	license: License;
 	iat: number;
 	exp: number;
+}
+
+export interface BakkesModStatus {
+	bakkesModExeDownloaded: boolean;
+	bakkesModDataDownloaded: boolean;
+	bakkesModDataInstalled: boolean;
+	sosPluginDownloaded: boolean;
+	sosPluginInstalled: boolean;
+	sosConfigSet: boolean;
+	bakkesModRunning: boolean;
+}
+
+export interface BakkesModAPIResponse {
+	success: boolean;
+	message?: string;
+	error?: any;
+	path?: string;
+}
+
+export interface BakkesModStatusResponse extends BakkesModAPIResponse {
+	status: BakkesModStatus;
 }

@@ -21,9 +21,10 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const __1 = require("../..");
 const M = __importStar(require("./middlewares"));
+const user_1 = require("../user");
 const initRoute = () => {
-    __1.app.route('/api/match').get(M.getMatchesRoute).post(M.addMatchRoute);
-    __1.app.route('/api/match/current').get(M.getCurrentMatchRoute);
+    __1.app.route('/api/match').get(user_1.verifyGame, M.getMatchesRoute).post(user_1.verifyGame, M.addMatchRoute);
+    __1.app.route('/api/match/current').get(user_1.verifyGame, M.getCurrentMatchRoute);
     __1.app.route('/api/match/:id').get(M.getMatchRoute).patch(M.updateMatchRoute).delete(M.deleteMatchRoute);
     __1.app.route('/api/maps').get(M.getMaps);
 };

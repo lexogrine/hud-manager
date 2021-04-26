@@ -22,7 +22,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteHUD = exports.uploadHUD = exports.closeHUD = exports.showHUD = exports.legacyCSS = exports.legacyJS = exports.renderLegacy = exports.renderAssets = exports.getThumbPath = exports.renderThumbnail = exports.renderOverlay = exports.render = exports.verifyOverlay = exports.renderHUD = exports.openHUDsDirectory = exports.getHUDPanelSetting = exports.getHUDKeyBinds = exports.getHUDData = exports.getHUDARSettings = exports.getHUDs = exports.listHUDs = void 0;
+
+exports.deleteHUD = exports.sendHUD = exports.closeHUD = exports.showHUD = exports.legacyCSS = exports.legacyJS = exports.renderLegacy = exports.renderAssets = exports.getThumbPath = exports.renderThumbnail = exports.renderOverlay = exports.render = exports.verifyOverlay = exports.renderHUD = exports.openHUDsDirectory = exports.getHUDPanelSetting = exports.getHUDKeyBinds = exports.getHUDData = exports.getHUDARSettings = exports.getHUDs = exports.listHUDs = void 0;
+
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
 const electron_1 = require("electron");
@@ -31,7 +33,15 @@ const config_1 = require("./config");
 const socket_1 = require("./../socket");
 const huds_1 = __importDefault(require("./../../init/huds"));
 const overlay_1 = __importDefault(require("./overlay"));
+const v4_1 = __importDefault(require("uuid/v4"));
+const user_1 = require("./user");
+const archiver_1 = __importDefault(require("archiver"));
+const _1 = require(".");
 const DecompressZip = require('decompress-zip');
+const getRandomString = () => (Math.random() * 1000 + 1)
+    .toString(36)
+    .replace(/[^a-z]+/g, '')
+    .substr(0, 15);
 const remove = (pathToRemove) => {
     if (!fs.existsSync(pathToRemove)) {
         return;
@@ -53,7 +63,37 @@ const remove = (pathToRemove) => {
     });
     fs.rmdirSync(pathToRemove);
 };
+const verifyUniqueID = (hudDir) => {
+    const dir = path.join(electron_1.app.getPath('home'), 'HUDs', hudDir, 'uuid.lhm');
+    if (fs.existsSync(dir)) {
+        return fs.readFileSync(dir, 'utf8');
+    }
+    const uuid = v4_1.default();
+    fs.writeFileSync(dir, uuid, 'utf8');
+    return uuid;
+};
+const getOnlineHUDs = async () => {
+    if (!_1.customer.game)
+        return [];
+    try {
+        const onlineHUDData = ((await user_1.api(`storage/file/${_1.customer.game}`)) || []);
+        const huds = onlineHUDData.map(data => {
+            const hud = {
+                ...data.extra,
+                uuid: data.uuid
+            };
+            return hud;
+        });
+        return huds;
+    }
+    catch {
+        return [];
+    }
+};
 exports.listHUDs = async () => {
+    if (!_1.customer || !_1.customer.game)
+        return [];
+    const onlineHUDs = await getOnlineHUDs();
     const dir = path.join(electron_1.app.getPath('home'), 'HUDs');
     const filtered = fs
         .readdirSync(dir, { withFileTypes: true })
@@ -63,7 +103,19 @@ exports.listHUDs = async () => {
     if (socket_1.HUDState.devHUD) {
         huds.unshift(socket_1.HUDState.devHUD);
     }
-    return huds;
+    const onlineOnlyHUDs = onlineHUDs.filter(hud => !huds.map(hud => hud.uuid).includes(hud.uuid));
+    huds.push(...onlineOnlyHUDs);
+    const mapHUDStatus = (hud) => {
+        hud.status = 'LOCAL';
+        if (onlineOnlyHUDs.map(hud => hud.uuid).includes(hud.uuid)) {
+            hud.status = 'REMOTE';
+        }
+        else if (onlineHUDs.map(hud => hud.uuid).includes(hud.uuid)) {
+            hud.status = 'SYNCED';
+        }
+        return hud;
+    };
+    return huds.map(mapHUDStatus).filter(hud => _1.customer.game === hud.game || (_1.customer.game === 'csgo' && !hud.game));
 };
 exports.getHUDs = async (req, res) => {
     return res.json(await exports.listHUDs());
@@ -101,9 +153,19 @@ exports.getHUDData = async (dirName) => {
         const configFile = fs.readFileSync(configFileDir, { encoding: 'utf8' });
         const config = JSON.parse(configFile);
         config.dir = dirName;
+        config.game = config.game || 'csgo';
         const panel = exports.getHUDPanelSetting(dirName);
         const keybinds = exports.getHUDKeyBinds(dirName);
+
         const ar = exports.getHUDARSettings(dirName);
+
+        try {
+            config.uuid = verifyUniqueID(dirName);
+        }
+        catch {
+            return null;
+        }
+
         if (panel) {
             config.panel = panel;
         }
@@ -302,7 +364,7 @@ exports.closeHUD = (req, res) => {
     }
     return res.sendStatus(404);
 };
-exports.uploadHUD = async (req, res) => {
+exports.sendHUD = async (req, res) => {
     if (!req.body.hud || !req.body.name)
         return res.sendStatus(422);
     const response = await loadHUD(req.body.hud, req.body.name);
@@ -346,11 +408,7 @@ function removeArchives() {
         catch { }
     });
 }
-async function loadHUD(base64, name) {
-    const getRandomString = () => (Math.random() * 1000 + 1)
-        .toString(36)
-        .replace(/[^a-z]+/g, '')
-        .substr(0, 15);
+async function loadHUD(base64, name, existingUUID) {
     removeArchives();
     return new Promise(res => {
         let hudDirName = name.replace(/[^a-zA-Z0-9-_]/g, '');
@@ -373,6 +431,7 @@ async function loadHUD(base64, name) {
                     }
                     const hudData = await exports.getHUDData(path.basename(hudPath));
                     removeArchives();
+                    fs.writeFileSync(path.join(hudPath, 'uuid.lhm'), existingUUID || v4_1.default(), 'utf8');
                     res(hudData);
                 }
                 else {
@@ -400,3 +459,49 @@ async function loadHUD(base64, name) {
         }
     });
 }
+// const wait = (ms: number) => new Promise(r => setTimeout(r, ms));
+exports.downloadHUD = async (req, res) => {
+    const uuid = req.params.uuid;
+    if (!_1.customer.game || !uuid)
+        return res.sendStatus(422);
+    const hudData = ((await user_1.api(`storage/file/${_1.customer.game}/hud/${uuid}`)) || null);
+    const name = hudData?.data?.extra?.name;
+    if (hudData?.data?.data?.type !== 'Buffer' || !name)
+        return res.sendStatus(422);
+    const data = hudData.data.data;
+    if (typeof data === 'number')
+        return res.sendStatus(422);
+    const hudBufferString = Buffer.from(data).toString('base64');
+    const result = await loadHUD(hudBufferString, name, uuid);
+    return res.json({ result });
+};
+const archiveHUD = (hudDir) => new Promise((res, rej) => {
+    const dir = path.join(electron_1.app.getPath('home'), 'HUDs', hudDir);
+    const fileName = `${v4_1.default()}.zip`;
+    const archive = archiver_1.default('zip', {
+        zlib: { level: 9 } // Sets the compression level.
+    });
+    const outputFilePath = path.join(electron_1.app.getPath('home'), 'HUDs', fileName);
+    const output = fs.createWriteStream(outputFilePath);
+    output.on('close', () => res(outputFilePath));
+    archive.pipe(output);
+    archive.directory(dir, false);
+    archive.finalize();
+});
+exports.uploadHUD = async (req, res) => {
+    const hudDir = req.params.hudDir;
+    if (!_1.customer.game || !hudDir)
+        return res.sendStatus(422);
+    const hud = await exports.getHUDData(hudDir);
+    if (!hud || !hud.uuid)
+        return res.sendStatus(422);
+    const archivePath = await archiveHUD(hudDir);
+    const archiveBase64 = fs.readFileSync(archivePath, 'base64');
+    const hudUploadResponse = await user_1.api(`storage/file/${_1.customer.game}/hud/${hud.uuid}`, 'POST', {
+        file: archiveBase64,
+        extra: hud
+    });
+    fs.unlinkSync(archivePath);
+    return res.json({ hudUploadResponse });
+};
+exports.listHUDs().then(huds => huds.filter(hud => !!hud.dir).map(hud => verifyUniqueID(hud.dir)));

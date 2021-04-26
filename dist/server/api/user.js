@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.logout = exports.getCurrent = exports.loginHandler = void 0;
+exports.logout = exports.getCurrent = exports.loginHandler = exports.api = exports.verifyGame = exports.socket = exports.fetch = void 0;
 const electron_1 = require("electron");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const node_fetch_1 = __importDefault(require("node-fetch"));
@@ -14,11 +14,49 @@ const path_1 = __importDefault(require("path"));
 const tough_cookie_file_store_1 = require("tough-cookie-file-store");
 const fetch_cookie_1 = __importDefault(require("fetch-cookie"));
 const machine_1 = require("./machine");
+const simple_websockets_1 = require("simple-websockets");
+const socket_1 = require("../socket");
+const cloud_1 = require("./cloud");
 const cookiePath = path_1.default.join(electron_1.app.getPath('userData'), 'cookie.json');
 const cookieJar = new tough_cookie_1.CookieJar(new tough_cookie_file_store_1.FileCookieStore(cookiePath));
-const fetch = fetch_cookie_1.default(node_fetch_1.default, cookieJar);
-const api = (url, method = 'GET', body) => {
-    const options = {
+exports.fetch = fetch_cookie_1.default(node_fetch_1.default, cookieJar);
+exports.socket = null;
+const connectSocket = () => {
+    if (exports.socket)
+        return;
+    exports.socket = new simple_websockets_1.SimpleWebSocket('wss://hmapi-dev.lexogrine.pl/', {
+        headers: {
+            Cookie: cookieJar.getCookieStringSync('https://hmapi-dev.lexogrine.pl/')
+        }
+    });
+    exports.socket.on('banned', () => {
+        socket_1.ioPromise.then(io => {
+            io.emit('banned');
+        });
+    });
+    exports.socket.on('db_update', async () => {
+        if (!api_1.customer.game)
+            return;
+        const io = await socket_1.ioPromise;
+        const result = await cloud_1.checkCloudStatus(api_1.customer.game);
+        if (result !== "ALL_SYNCED") {
+            // TODO: Handle that
+            return;
+        }
+        io.emit('db_update');
+    });
+    exports.socket.on('disconnect', () => {
+        exports.socket = null;
+    });
+};
+exports.verifyGame = (req, res, next) => {
+    if (!api_1.customer.game) {
+        return res.sendStatus(403);
+    }
+    return next();
+};
+exports.api = (url, method = 'GET', body, opts) => {
+    const options = opts || {
         method,
         headers: {
             Accept: 'application/json',
@@ -29,15 +67,15 @@ const api = (url, method = 'GET', body) => {
         options.body = JSON.stringify(body);
     }
     let data = null;
-    return fetch(`https://hmapi.lexogrine.com/${url}`, options).then(res => {
+    return exports.fetch(`https://hmapi-dev.lexogrine.pl/${url}`, options).then(res => {
         data = res;
         return res.json().catch(() => data && data.status < 300);
     });
 };
 const userHandlers = {
-    get: (machineId) => api(`auth/${machineId}`),
-    login: (username, password, ver) => api('auth', 'POST', { username, password, ver }),
-    logout: () => api('auth', 'DELETE')
+    get: (machineId) => exports.api(`auth/${machineId}`),
+    login: (username, password, ver) => exports.api('auth', 'POST', { username, password, ver }),
+    logout: () => exports.api('auth', 'DELETE')
 };
 const verifyToken = (token) => {
     try {
@@ -57,13 +95,14 @@ const loadUser = async (loggedIn = false) => {
     if (!userToken) {
         return { success: false, message: loggedIn ? 'Your session has expired - try restarting the application' : '' };
     }
-    if ('error' in userToken) {
+    if (typeof userToken !== 'boolean' && 'error' in userToken) {
         return { success: false, message: userToken.error };
     }
     const userData = verifyToken(userToken.token);
     if (!userData) {
         return { success: false, message: 'Your session has expired - try restarting the application' };
     }
+    connectSocket();
     api_1.customer.customer = userData;
     return { success: true, message: '' };
 };
@@ -72,6 +111,9 @@ const login = async (username, password) => {
     const response = await userHandlers.login(username, password, ver);
     if (response.status === 404 || response.status === 401) {
         return { success: false, message: 'Incorrect username or password.' };
+    }
+    if (typeof response !== 'boolean' && 'error' in response) {
+        return { success: false, message: response.error };
     }
     return await loadUser(true);
 };
@@ -85,12 +127,17 @@ exports.getCurrent = async (req, res) => {
     }
     const response = await loadUser();
     if (api_1.customer.customer) {
+        if (api_1.customer.customer.license.type === 'professional') {
+        }
         return res.json(api_1.customer.customer);
     }
     return res.status(403).json(response);
 };
 exports.logout = async (req, res) => {
     api_1.customer.customer = null;
+    if (exports.socket) {
+        exports.socket._socket.close();
+    }
     await userHandlers.logout();
     return res.sendStatus(200);
 };

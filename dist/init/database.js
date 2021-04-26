@@ -7,7 +7,7 @@ const nedb_1 = __importDefault(require("nedb"));
 const path_1 = __importDefault(require("path"));
 const electron_1 = require("electron");
 const directory = path_1.default.join(electron_1.app.getPath('userData'), 'databases');
-exports.default = {
+const databases = {
     players: new nedb_1.default({ filename: path_1.default.join(directory, 'players'), autoload: true }),
     teams: new nedb_1.default({ filename: path_1.default.join(directory, 'teams'), autoload: true }),
     config: new nedb_1.default({ filename: path_1.default.join(directory, 'config'), autoload: true }),
@@ -15,3 +15,4 @@ exports.default = {
     custom: new nedb_1.default({ filename: path_1.default.join(directory, 'custom'), autoload: true }),
     tournaments: new nedb_1.default({ filename: path_1.default.join(directory, 'tournaments'), autoload: true })
 };
+exports.default = databases;

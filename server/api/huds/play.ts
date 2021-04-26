@@ -3,6 +3,8 @@ import { customer } from '..';
 import { app } from '../..';
 import { GSI, ioPromise, runtimeConfig } from '../../socket';
 import { testData } from '../testing';
+import WebSocket from 'ws';
+
 const radar = require('./../../../boltobserv/index.js');
 
 const assertUser: express.RequestHandler = (req, res, next) => {
@@ -40,7 +42,7 @@ export const initGameConnection = async () => {
 					return;
 				}
 			}
-			io.to('csgo').emit('update', testData[testDataIndex]);
+			io.to('game').emit('update', testData[testDataIndex]);
 			testDataIndex++;
 		}, 16);
 	};
@@ -60,7 +62,7 @@ export const initGameConnection = async () => {
 			io.emit('enableTest', true, playTesting.isOnLoop);
 		}
 
-		io.to('csgo').emit('update', req.body);
+		io.to('game').emit('update', req.body);
 		GSI.digest(req.body);
 		radar.digestRadar(req.body);
 		res.sendStatus(200);
@@ -77,4 +79,23 @@ export const initGameConnection = async () => {
 		io.emit('enableTest', !playTesting.intervalId, playTesting.isOnLoop);
 		res.sendStatus(200);
 	});
+
+	const connectToRocketLeague = () => {
+		const ws = new WebSocket('ws://localhost:49122');
+
+		const onData = (data: WebSocket.Data) => {
+			io.to('rocketleague').emit('update', data);
+		};
+
+		ws.on('message', onData);
+
+		ws.on('close', () => {
+			ws.off('message', onData);
+			setTimeout(connectToRocketLeague, 1000);
+		});
+
+		ws.on('error', ws.close);
+	};
+
+	connectToRocketLeague();
 };
