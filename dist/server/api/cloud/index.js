@@ -214,6 +214,7 @@ exports.checkCloudStatus = async (game) => {
     if (cfg.sync === false)
         return 'ALL_SYNCED';
     if (!cfg.sync) {
+        console.log('updating sync to true...');
         await config_1.setConfig({ ...cfg, sync: true });
     }
     try {

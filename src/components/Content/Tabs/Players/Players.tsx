@@ -60,7 +60,7 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 				return sortType(aTeam.name < bTeam.name ? -1 : 1);
 			});
 		}
-		return [...players].sort((a, b) => sortType(a[sortBy] < b[sortBy] ? -1 : 1));
+		return [...players].sort((a, b) => sortType((a[sortBy] as any) < (b[sortBy] as any) ? -1 : 1));
 	};
 
 	const toggleSortBy = (targetSortBy: keyof I.Player) => () => {

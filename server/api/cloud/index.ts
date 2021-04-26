@@ -225,6 +225,7 @@ export const checkCloudStatus = async (game: I.AvailableGames) => {
 	if (cfg.sync === false) return 'ALL_SYNCED';
 
 	if (!cfg.sync) {
+		console.log('updating sync to true...');
 		await setConfig({ ...cfg, sync: true });
 	}
 

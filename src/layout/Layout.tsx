@@ -187,11 +187,12 @@ export default class Layout extends React.Component<{}, IState> {
 	setLoading = (loading: boolean, loginError?: string) => {
 		this.setState({ loadingLogin: loading, loginError: loginError || '' });
 	};
-	toggleSync = () => {
-		api.config.get().then(cfg => {
-			cfg.sync = !cfg.sync;
-			this.setState({ config: cfg });
-		});
+	toggleSync = async () => {
+		const cfg = await api.config.get();
+		cfg.sync = !cfg.sync;
+
+		await api.config.update(cfg);
+		this.setState({ config: cfg });
 	};
 	render() {
 		const { Provider } = ContextData;

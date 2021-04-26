@@ -22,9 +22,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-
-exports.deleteHUD = exports.sendHUD = exports.closeHUD = exports.showHUD = exports.legacyCSS = exports.legacyJS = exports.renderLegacy = exports.renderAssets = exports.getThumbPath = exports.renderThumbnail = exports.renderOverlay = exports.render = exports.verifyOverlay = exports.renderHUD = exports.openHUDsDirectory = exports.getHUDPanelSetting = exports.getHUDKeyBinds = exports.getHUDData = exports.getHUDARSettings = exports.getHUDs = exports.listHUDs = void 0;
-
+exports.uploadHUD = exports.downloadHUD = exports.deleteHUD = exports.sendHUD = exports.closeHUD = exports.showHUD = exports.legacyCSS = exports.legacyJS = exports.renderLegacy = exports.renderAssets = exports.getThumbPath = exports.renderThumbnail = exports.renderOverlay = exports.render = exports.verifyOverlay = exports.renderHUD = exports.openHUDsDirectory = exports.getHUDPanelSetting = exports.getHUDKeyBinds = exports.getHUDData = exports.getHUDARSettings = exports.getHUDs = exports.listHUDs = void 0;
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
 const electron_1 = require("electron");
@@ -156,16 +154,13 @@ exports.getHUDData = async (dirName) => {
         config.game = config.game || 'csgo';
         const panel = exports.getHUDPanelSetting(dirName);
         const keybinds = exports.getHUDKeyBinds(dirName);
-
         const ar = exports.getHUDARSettings(dirName);
-
         try {
             config.uuid = verifyUniqueID(dirName);
         }
         catch {
             return null;
         }
-
         if (panel) {
             config.panel = panel;
         }
