@@ -8,6 +8,7 @@ import ImportModal from './ImportModal';
 import { IContextData } from '../../../Context';
 import ElectronOnly from '../../../ElectronOnly';
 import Switch from '../../../Switch/Switch';
+import { socket } from '../Live/Live';
 
 const { isElectron } = config;
 
@@ -322,6 +323,9 @@ export default class Config extends React.Component<IProps, IState> {
 		this.checkGSI();
 		this.checkUpdate();
 		this.loadBakkesModStatus();
+		socket.on('config', () => {
+			this.getConfig();
+		});
 	}
 	checkUpdate = () => {
 		if (!isElectron) return;
@@ -378,7 +382,6 @@ export default class Config extends React.Component<IProps, IState> {
 	render() {
 		const { cxt } = this.props;
 		const { gsi, cfg, importModalOpen, conflict, data, ip, config, update } = this.state;
-		console.log(cxt.game);
 		return (
 			<Form>
 				<div className="tab-title-container">Settings</div>

@@ -85,11 +85,18 @@ export default class Layout extends React.Component<{}, IState> {
 			this.logout();
 		});
 		socket.on('db_update', this.state.data.reload);
+		
+		socket.on('config', () => {
+			this.loadConfig();
+		});
 	}
 	loadConfig = async () => {
 		const cfg = await api.config.get();
 
-		this.setState({ config: cfg });
+		this.setState({ config: cfg }, () => {
+			if(!cfg.sync) return;
+			this.sync();
+		});
 	};
 	setSyncOpen = (sync: boolean) => {
 		this.setState({ isSyncModalOpen: sync });
@@ -192,7 +199,7 @@ export default class Layout extends React.Component<{}, IState> {
 		cfg.sync = !cfg.sync;
 
 		await api.config.update(cfg);
-		this.setState({ config: cfg });
+		this.loadConfig();
 	};
 	render() {
 		const { Provider } = ContextData;
