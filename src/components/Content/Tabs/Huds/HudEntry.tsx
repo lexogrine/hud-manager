@@ -49,7 +49,7 @@ const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHU
 	const deleteHUD = async () => {
 		try {
 			await api.huds.delete(hud.dir);
-		} catch { }
+		} catch {}
 		toggleModal();
 	};
 	const downloadHUD = (uuid: string) => {
@@ -129,7 +129,7 @@ const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHU
 							<img
 								src={`${Config.isDev ? Config.apiAddress : '/'}${
 									hud.isDev ? 'dev/thumb.png' : `huds/${hud.dir}/thumbnail`
-									}`}
+								}`}
 								alt={`${hud.name}`}
 							/>
 						) : null}
@@ -185,8 +185,8 @@ const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHU
 								</Col>
 							</Row>
 						) : (
-								''
-							)}
+							''
+						)}
 					</Col>
 					{isLocal ? (
 						<Col style={{ flex: 1 }} className="hud-options">
@@ -207,8 +207,8 @@ const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHU
 										alt="HUD panel"
 									/>
 								) : (
-										''
-									)}
+									''
+								)}
 								{Config.isElectron ? (
 									<img
 										src={Display}
@@ -228,8 +228,8 @@ const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHU
 												}}
 											/>
 										) : (
-												'Uploading...'
-											)
+											'Uploading...'
+										)
 									) : null}
 								</ElectronOnly>
 								{Config.isElectron && !hud.isDev ? (
@@ -247,23 +247,22 @@ const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHU
 							) : null}
 						</Col>
 					) : (
-							<Col style={{ flex: 1 }} className="hud-options">
-								<div className="centered">
-									{!isLoading ? (
-										<img
-											src={downloadIcon}
-											className="action"
-											onClick={() => {
-												downloadHUD(hud.uuid);
-											}}
-										/>
-									) : (
-											'Downloading...'
-										)}
-								</div>
-							</Col>
-						)
-					}
+						<Col style={{ flex: 1 }} className="hud-options">
+							<div className="centered">
+								{!isLoading ? (
+									<img
+										src={downloadIcon}
+										className="action"
+										onClick={() => {
+											downloadHUD(hud.uuid);
+										}}
+									/>
+								) : (
+									'Downloading...'
+								)}
+							</div>
+						</Col>
+					)}
 				</Row>
 				{isLocal ? (
 					<Row>
