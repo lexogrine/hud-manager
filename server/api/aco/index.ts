@@ -10,7 +10,7 @@ export async function getACOByMapName(mapName: string): Promise<MapConfig | null
 			if (err) {
 				return res(null);
 			}
-			
+
 			return res(acoConfig);
 		});
 	});
@@ -26,28 +26,29 @@ export const getACOs = () =>
 		});
 	});
 
-export const updateACO = (config: MapConfig) => new Promise<MapConfig | null>(res => {
-	getACOByMapName(config.map).then(oldConfig => {
-		if(!oldConfig){
-			aco.insert(config, (err, newConfig) => {
-				if(err){
-					return res(null);
-				}
-				return res(newConfig);
-			})
-		} else {
-			aco.update({ map: config.map }, config, {}, (err, n) => {
-				if(err){
-					return res(null);
-				}
-				getACOs().then(acos => {
-					areas.areas = acos;
+export const updateACO = (config: MapConfig) =>
+	new Promise<MapConfig | null>(res => {
+		getACOByMapName(config.map).then(oldConfig => {
+			if (!oldConfig) {
+				aco.insert(config, (err, newConfig) => {
+					if (err) {
+						return res(null);
+					}
+					return res(newConfig);
 				});
-				return res(config);
-			});
-		}
+			} else {
+				aco.update({ map: config.map }, config, {}, (err, n) => {
+					if (err) {
+						return res(null);
+					}
+					getACOs().then(acos => {
+						areas.areas = acos;
+					});
+					return res(config);
+				});
+			}
+		});
 	});
-});
 /*
 export const replaceLocalTeams = (newTeams: Team[], game: AvailableGames, existing: string[]) =>
 	new Promise<boolean>(res => {

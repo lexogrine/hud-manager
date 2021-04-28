@@ -12,18 +12,10 @@ export class MIRVPGL {
 		this.init(ioPromise);
 	}
 
-    execute = (config: string) => {
-		if(!this.socket) return;
-		this.socket.send(
-			new Uint8Array(
-				Buffer.from(
-					`exec\0${config}\0`,
-					'utf8'
-				)
-			),
-			{ binary: true }
-		);
-    }
+	execute = (config: string) => {
+		if (!this.socket) return;
+		this.socket.send(new Uint8Array(Buffer.from(`exec\0${config}\0`, 'utf8')), { binary: true });
+	};
 
 	private init = async (ioPromise: Promise<Server<DefaultEventsMap, DefaultEventsMap>>) => {
 		const io = await ioPromise;
@@ -54,8 +46,7 @@ export class MIRVPGL {
 
 			const socket = this.socket;
 
-			if(!socket) return;
-			
+			if (!socket) return;
 
 			const gameEventUnserializer = new GameEventUnserializer(enrichments);
 
@@ -116,10 +107,10 @@ export class MIRVPGL {
 							io.to('game').emit('update_mirv', gameEvent);
 						}
 					}
-				} catch (err) { }
+				} catch (err) {}
 			});
 		});
-	}
+	};
 }
 /*
 const init = async () => {

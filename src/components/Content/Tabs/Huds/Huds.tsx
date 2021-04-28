@@ -243,7 +243,7 @@ export default class Huds extends React.Component<IProps, IState> {
 												onClick={this.runGame}
 											>
 												RUN GAME
-										</Button>
+											</Button>
 											<Button
 												className="round-btn run-game"
 												// disabled={!this.state.enableTest}
@@ -268,15 +268,17 @@ export default class Huds extends React.Component<IProps, IState> {
 									<div className="warning">
 										<ElectronOnly>
 											{(killfeed || afx) && !config.hlaePath ? (
-												<div>Specify HLAE path in Settings in order to use custom killfeeds</div>
+												<div>
+													Specify HLAE path in Settings in order to use custom killfeeds
+												</div>
 											) : null}
 											{afx && !config.afxCEFHudInteropPath ? (
 												<div>Specify AFX Interop path in Settings in order to use AFX mode</div>
 											) : null}
 											{afx && config.afxCEFHudInteropPath && config.hlaePath ? (
 												<div>
-													When using AFX mode, after joining the match click on the SET button -
-													no need to start the overlay.
+													When using AFX mode, after joining the match click on the SET button
+													- no need to start the overlay.
 												</div>
 											) : null}
 										</ElectronOnly>
@@ -315,8 +317,8 @@ export default class Huds extends React.Component<IProps, IState> {
 							</Col>
 						</Row>
 					) : (
-							''
-						)}
+						''
+					)}
 				</div>
 			</React.Fragment>
 		);

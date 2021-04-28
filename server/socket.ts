@@ -6,7 +6,7 @@ import { internalIP, loadConfig, publicIP } from './api/config';
 import { createNextMatch } from './api/tournaments';
 import { customer } from './api';
 import { isDev } from '../electron';
-import /*hlaeServer,*/ { MIRVPGL } from './hlae';
+import { /*hlaeServer,*/ MIRVPGL } from './hlae';
 import { app, server } from '.';
 import { HUDStateManager } from './api/huds/hudstatemanager';
 import './api/huds/devhud';

@@ -6,7 +6,6 @@ import { testData } from '../testing';
 import WebSocket from 'ws';
 import { director } from '../../aco';
 
-
 const radar = require('./../../../boltobserv/index.js');
 
 const assertUser: express.RequestHandler = (req, res, next) => {

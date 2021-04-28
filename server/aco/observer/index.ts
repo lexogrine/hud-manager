@@ -4,45 +4,47 @@ import { MapAreaConfig } from '../../../types/interfaces';
 import areas from '../areas';
 
 export interface MapAreaConfigWithPlayers extends MapAreaConfig {
-    players: Player[];
+	players: Player[];
 }
 
 export const getActiveAreas = (mapName: string, players: Player[]) => {
-    const config = areas.areas.find(cfg => cfg.map === mapName);
-    if (!config) {
-        return [];
-    }
+	const config = areas.areas.find(cfg => cfg.map === mapName);
+	if (!config) {
+		return [];
+	}
 
-    const alivePlayers = players.filter(player => player.state.health > 0);
+	const alivePlayers = players.filter(player => player.state.health > 0);
 
-    if (!alivePlayers.length) {
-        return [];
-    }
+	if (!alivePlayers.length) {
+		return [];
+	}
 
-    const areasWithPlayers = config.areas.map(area => {
-        const cornersWithFirstAtEnd = [...area.polygonCorners, area.polygonCorners[0]];
-        const playersInside = players.filter(player => isInPolygon(player.position, [cornersWithFirstAtEnd]));
-        return {
-            ...area,
-            players: playersInside
-        } as MapAreaConfigWithPlayers;
-    }).filter(area => area.players.length > 0);
+	const areasWithPlayers = config.areas
+		.map(area => {
+			const cornersWithFirstAtEnd = [...area.polygonCorners, area.polygonCorners[0]];
+			const playersInside = players.filter(player => isInPolygon(player.position, [cornersWithFirstAtEnd]));
+			return {
+				...area,
+				players: playersInside
+			} as MapAreaConfigWithPlayers;
+		})
+		.filter(area => area.players.length > 0);
 
-    return areasWithPlayers;
-}
+	return areasWithPlayers;
+};
 
 export const getBestArea = (mapName: string, players: Player[]) => {
-    const active = getActiveAreas(mapName, players).sort((a, b) => b.players.length - a.players.length);
+	const active = getActiveAreas(mapName, players).sort((a, b) => b.players.length - a.players.length);
 
-    if(!active.length) return null;
+	if (!active.length) return null;
 
-    const maxPlayersIncluded = active[0].players.length;
+	const maxPlayersIncluded = active[0].players.length;
 
-    const equalAreas = active.filter(area => area.players.length === maxPlayersIncluded);
+	const equalAreas = active.filter(area => area.players.length === maxPlayersIncluded);
 
-    if(equalAreas.length === 1){
-        return equalAreas[0];
-    }
+	if (equalAreas.length === 1) {
+		return equalAreas[0];
+	}
 
-    return equalAreas.sort((a, b) => b.priority - a.priority)[0];
-}
+	return equalAreas.sort((a, b) => b.priority - a.priority)[0];
+};

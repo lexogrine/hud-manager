@@ -16,15 +16,15 @@ export type CachedResponse = {
 };
 
 export interface MapAreaConfig {
-    name: string;
-    polygonCorners: number[][];
-    configs: string[];
-    priority: number;
+	name: string;
+	polygonCorners: number[][];
+	configs: string[];
+	priority: number;
 }
 
 export interface MapConfig {
-    map: string;
-    areas: MapAreaConfig[];
+	map: string;
+	areas: MapAreaConfig[];
 }
 
 export type CloudSyncStatus = 'NO_UPLOADED_RESOURCES' | 'ALL_SYNCED' | 'NO_SYNC_LOCAL' | 'UNKNOWN_ERROR';

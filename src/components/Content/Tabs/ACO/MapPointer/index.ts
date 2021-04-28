@@ -8,39 +8,39 @@ import de_nuke from './de_nuke';
 import de_vertigo from './de_vertigo';
 
 export interface ScaleConfig {
-    origin: {
-        x:number,
-        y:number
-    },
-    pxPerUX: number,
-    pxPerUY: number
+	origin: {
+		x: number;
+		y: number;
+	};
+	pxPerUX: number;
+	pxPerUY: number;
 }
 
 export interface SingleLayer {
-    config: ScaleConfig,
-    file: string
+	config: ScaleConfig;
+	file: string;
 }
 
 interface DoubleLayer {
-    configs: {
-        id: string,
-        config: ScaleConfig,
-        isVisible: (height: number) => boolean
-    }[],
-    file: string
+	configs: {
+		id: string;
+		config: ScaleConfig;
+		isVisible: (height: number) => boolean;
+	}[];
+	file: string;
 }
 
 export type MapConfig = SingleLayer | DoubleLayer;
 
-const maps: { [key: string] : MapConfig} = {
-    de_mirage,
-    de_cache,
-    de_inferno,
-    de_dust2,
-    de_train,
-    de_overpass,
-    de_nuke,
-    de_vertigo
-}
+const maps: { [key: string]: MapConfig } = {
+	de_mirage,
+	de_cache,
+	de_inferno,
+	de_dust2,
+	de_train,
+	de_overpass,
+	de_nuke,
+	de_vertigo
+};
 
 export default maps;

@@ -30,7 +30,7 @@ const connectSocket = () => {
 	});
 
 	socket.on('connection', () => {
-		console.log('CONNECTED')
+		console.log('CONNECTED');
 	});
 
 	socket._socket.onerror = () => {};
@@ -52,7 +52,7 @@ const connectSocket = () => {
 	});
 	socket.on('disconnect', () => {
 		socket = null;
-        setTimeout(connectSocket, 2000)
+		setTimeout(connectSocket, 2000);
 	});
 };
 export const verifyGame: RequestHandler = (req, res, next) => {

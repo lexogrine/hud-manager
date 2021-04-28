@@ -1,7 +1,6 @@
 import express from 'express';
 import { getACOByMapName, getACOs, updateACO } from './index';
 
-
 export const getACO: express.RequestHandler = async (req, res) => {
 	const acos = await getACOs();
 	return res.json(acos);
