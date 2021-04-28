@@ -51,7 +51,7 @@ interface IForm {
 	killfeed: boolean;
 	radar: boolean;
 	afx: boolean;
-	ar:boolean;
+	ar: boolean;
 	autoexec: boolean;
 }
 

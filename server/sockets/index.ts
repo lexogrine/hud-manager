@@ -30,10 +30,10 @@ ioPromise.then(io => {
 		});
 		socket.on('unregister', () => {
 			socket.rooms.forEach(roomName => {
-				if(roomName === socket.id || availableGames.includes(roomName as any) || roomName === 'game') return;
+				if (roomName === socket.id || availableGames.includes(roomName as any) || roomName === 'game') return;
 				socket.leave(roomName);
 			});
-		})
+		});
 		socket.on('register', async (name: string, isDev: boolean, game = 'csgo') => {
 			if (!isDev || HUDState.devHUD) {
 				socket.on('hud_inner_action', (action: any) => {

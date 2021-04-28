@@ -30,7 +30,7 @@ export const customer: I.CustomerData = {
 
 export const validateCloudAbility = async () => {
 	const cfg = await config.loadConfig();
-	if(!cfg.sync) return false;
+	if (!cfg.sync) return false;
 	if (
 		!customer.customer ||
 		!customer.customer.license ||

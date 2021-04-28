@@ -158,7 +158,7 @@ export const run: express.RequestHandler = async (req, res) => {
 		return res.sendStatus(422);
 	}
 
-	const cfgData: { radar: boolean; killfeed: boolean; afx: boolean; autoexec: boolean, ar: boolean } = req.body;
+	const cfgData: { radar: boolean; killfeed: boolean; afx: boolean; autoexec: boolean; ar: boolean } = req.body;
 	const cfg = createCFG(cfgData.radar, cfgData.killfeed, cfgData.afx, config.port, cfgData.autoexec);
 
 	const exec = cfg.file ? `+exec ${cfg.file}` : '';
@@ -210,7 +210,11 @@ export const run: express.RequestHandler = async (req, res) => {
 		const steam = spawn(`"${exePath}"`, args, { detached: true, shell: true, stdio: 'ignore' });
 		steam.unref();
 		if (cfgData.afx && !AFXInterop.process) {
-			const process = spawn(`${config.afxCEFHudInteropPath}`, [`--url=${afxURL}`, '--enable-experimental-web-platform-features', '--afx-no-window'], { stdio: 'ignore' });
+			const process = spawn(
+				`${config.afxCEFHudInteropPath}`,
+				[`--url=${afxURL}`, '--enable-experimental-web-platform-features', '--afx-no-window'],
+				{ stdio: 'ignore' }
+			);
 			AFXInterop.process = process;
 		}
 	} catch (e) {
