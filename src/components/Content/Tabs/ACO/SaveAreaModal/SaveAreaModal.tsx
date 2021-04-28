@@ -12,7 +12,7 @@ interface IProps {
 const SaveAreaModal = ({ isOpen, areaName, setAreaName, close, saveArea }: IProps) => {
 	return (
 		<Modal isOpen={isOpen} toggle={close} className="veto_modal">
-			<ModalHeader>Enter unique name for config</ModalHeader>
+			<ModalHeader>Enter unique name for area</ModalHeader>
 			<ModalBody>
 				<div className="games-picker">
 					<FormGroup>

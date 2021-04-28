@@ -71,4 +71,4 @@ export const replaceLocalTeams = (newTeams: Team[], game: AvailableGames, existi
             });
         });
     });
-*/ 
+*/

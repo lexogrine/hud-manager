@@ -1,6 +1,9 @@
 import { Director } from './director';
 import { GSI } from '../socket';
 
-const director = new Director(GSI);
+const createDirector = () => {
+    return new Director(GSI);
+}
 
-export { director };
+
+export { createDirector };

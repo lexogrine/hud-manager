@@ -23,8 +23,9 @@ exports.playTesting = {
 };
 exports.initGameConnection = async () => {
     const io = await socket_1.ioPromise;
-    aco_1.director.pgl = socket_1.mirvPgl;
-    aco_1.director.start();
+    const director = aco_1.createDirector();
+    director.pgl = socket_1.mirvPgl;
+    director.start();
     let testDataIndex = 0;
     const startSendingTestData = () => {
         if (exports.playTesting.intervalId)

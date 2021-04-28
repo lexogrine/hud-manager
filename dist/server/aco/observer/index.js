@@ -15,14 +15,16 @@ exports.getActiveAreas = (mapName, players) => {
     if (!alivePlayers.length) {
         return [];
     }
-    const areasWithPlayers = config.areas.map(area => {
+    const areasWithPlayers = config.areas
+        .map(area => {
         const cornersWithFirstAtEnd = [...area.polygonCorners, area.polygonCorners[0]];
         const playersInside = players.filter(player => polygon_1.isInPolygon(player.position, [cornersWithFirstAtEnd]));
         return {
             ...area,
             players: playersInside
         };
-    }).filter(area => area.players.length > 0);
+    })
+        .filter(area => area.players.length > 0);
     return areasWithPlayers;
 };
 exports.getBestArea = (mapName, players) => {

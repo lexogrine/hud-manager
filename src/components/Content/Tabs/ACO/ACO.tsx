@@ -64,6 +64,7 @@ const ACO = ({ toggle }: IProps) => {
 			.then(() => {
 				setModalOpen(false);
 				setNewArea(null);
+				setNewAreaName('');
 			});
 	};
 

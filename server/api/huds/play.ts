@@ -4,7 +4,7 @@ import { app } from '../..';
 import { GSI, ioPromise, runtimeConfig, mirvPgl } from '../../socket';
 import { testData } from '../testing';
 import WebSocket from 'ws';
-import { director } from '../../aco';
+import { createDirector } from '../../aco';
 
 const radar = require('./../../../boltobserv/index.js');
 
@@ -22,6 +22,8 @@ export const playTesting: { intervalId: NodeJS.Timeout | null; isOnLoop: boolean
 
 export const initGameConnection = async () => {
 	const io = await ioPromise;
+
+	const director = createDirector();
 
 	director.pgl = mirvPgl;
 

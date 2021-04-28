@@ -33,21 +33,21 @@ exports.isInPolygon = (p, polygon) => {
             }
             u2 = nextP[0] - p[0];
             if (v2 > 0 && v1 <= 0) {
-                f = (u1 * v2) - (u2 * v1);
+                f = u1 * v2 - u2 * v1;
                 if (f > 0)
                     k = k + 1;
                 else if (f === 0)
                     return 0;
             }
             else if (v1 > 0 && v2 <= 0) {
-                f = (u1 * v2) - (u2 * v1);
+                f = u1 * v2 - u2 * v1;
                 if (f < 0)
                     k = k + 1;
                 else if (f === 0)
                     return 0;
             }
             else if (v2 === 0 && v1 < 0) {
-                f = (u1 * v2) - (u2 * v1);
+                f = u1 * v2 - u2 * v1;
                 if (f === 0)
                     return 0;
             }
