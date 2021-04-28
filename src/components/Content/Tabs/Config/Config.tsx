@@ -26,7 +26,7 @@ interface IProps {
 	gsiCheck: Function;
 }
 
-const GameOnly = ({ game, cxt, children }: { game: I.AvailableGames; cxt: IContextData; children: any }) => {
+export const GameOnly = ({ game, cxt, children }: { game: I.AvailableGames; cxt: IContextData; children: any }) => {
 	if (!cxt.game) return null;
 	if (game !== cxt.game) return null;
 	return children;

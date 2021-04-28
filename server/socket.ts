@@ -6,7 +6,7 @@ import { internalIP, loadConfig, publicIP } from './api/config';
 import { createNextMatch } from './api/tournaments';
 import { customer } from './api';
 import { isDev } from '../electron';
-import hlaeServer from './hlae';
+import /*hlaeServer,*/ { MIRVPGL } from './hlae';
 import { app, server } from '.';
 import { HUDStateManager } from './api/huds/hudstatemanager';
 import './api/huds/devhud';
@@ -60,9 +60,11 @@ export const ioPromise = loadConfig().then(cfg => {
 	});
 });
 
+export const mirvPgl = new MIRVPGL(ioPromise);
+
 ioPromise.then(io => {
 	radar.startRadar(app, io);
-	hlaeServer();
+	//hlaeServer();
 
 	const onRoundEnd = async (score: Score) => {
 		const lastGSIEntry = GSI.last;

@@ -9,6 +9,7 @@ const __2 = require("../..");
 const socket_1 = require("../../socket");
 const testing_1 = require("../testing");
 const ws_1 = __importDefault(require("ws"));
+const aco_1 = require("../../aco");
 const radar = require('./../../../boltobserv/index.js');
 const assertUser = (req, res, next) => {
     if (!__1.customer.customer) {
@@ -22,6 +23,8 @@ exports.playTesting = {
 };
 exports.initGameConnection = async () => {
     const io = await socket_1.ioPromise;
+    aco_1.director.pgl = socket_1.mirvPgl;
+    aco_1.director.start();
     let testDataIndex = 0;
     const startSendingTestData = () => {
         if (exports.playTesting.intervalId)

@@ -15,6 +15,7 @@ import { initGameConnection } from './huds/play';
 import TournamentHandler from './tournaments/routes';
 import MatchHandler from './matches/routes';
 import PlayerHandler from './players/routes';
+import ACOHandler from './aco/routes';
 import * as match from './matches';
 import TeamHandler from './teams/routes';
 import { createProxyMiddleware } from 'http-proxy-middleware';
@@ -56,6 +57,8 @@ export default async function () {
 	PlayerHandler();
 
 	TeamHandler();
+
+	ACOHandler();
 
 	app.route('/api/games/start/:game').get(async (req, res) => {
 		const game = req.params.game as I.AvailableGames;

@@ -10,6 +10,7 @@ import AR from './AR/AR';
 import Credits from './Credits/Credits';
 import Live from './Live/Live';
 import { ContextData } from './../../Context';
+import ACO from './ACO/ACO';
 
 interface IProps {
 	activeTab: string;
@@ -45,6 +46,9 @@ const Tabs = ({ activeTab, data, toggle, gsiCheck }: IProps) => (
 				</TabPane>
 				<TabPane tabId="ar">
 					<AR cxt={cxt} toggle={toggle} huds={data}></AR>
+				</TabPane>
+				<TabPane tabId="aco">
+					<ACO cxt={cxt} toggle={toggle}></ACO>
 				</TabPane>
 				<TabPane tabId="credits">
 					<Credits></Credits>

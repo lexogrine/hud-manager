@@ -11,6 +11,7 @@ import DragInput from './../../../DragFileInput';
 import HudEntry from './HudEntry';
 import goBack from './../../../../styles/goBack.png';
 import config from './../../../../api/config';
+import { GameOnly } from '../Config/Config';
 const isElectron = config.isElectron;
 
 function createCFG(customRadar: boolean, customKillfeed: boolean, afx: boolean, port: number, autoexec = true): I.CFG {
@@ -178,104 +179,112 @@ export default class Huds extends React.Component<IProps, IState> {
 			<React.Fragment>
 				<div className="tab-title-container">HUDs</div>
 				<div className={`tab-content-container no-padding ${!isElectron ? 'full-scroll' : ''}`}>
-					<Row className="config-container">
-						<Col md="12" className="config-entry wrap">
-							<div className="config-area">
-								<div className="config-description">Custom radar</div>
-								<Switch
-									isOn={this.state.form.radar}
-									id="radar-toggle"
-									handleToggle={this.changeForm('radar')}
-								/>
-							</div>
-							<div className="config-area">
-								<div className="config-description">Custom killfeed</div>
-								<Switch
-									isOn={this.state.form.killfeed}
-									id="killfeed-toggle"
-									handleToggle={this.changeForm('killfeed')}
-								/>
-							</div>
-							<div className="config-area">
-								<div className="config-description">Embedded HUD</div>
-								<Switch
-									isOn={this.state.form.afx}
-									id="afx-toggle"
-									handleToggle={this.changeForm('afx')}
-								/>
-							</div>
-							<ElectronOnly>
+					<GameOnly game="csgo" cxt={this.props.cxt}>
+						<Row className="config-container">
+							<Col md="12" className="config-entry wrap">
 								<div className="config-area">
-									<div className="config-description">Play test loop</div>
+									<div className="config-description">Custom radar</div>
 									<Switch
-										isOn={this.state.isOnLoop}
-										id="autoexec-toggle"
-										handleToggle={api.game.toggleLoop}
+										isOn={this.state.form.radar}
+										id="radar-toggle"
+										handleToggle={this.changeForm('radar')}
 									/>
 								</div>
-							</ElectronOnly>
-							<div className="config-area">
-								<div className="config-description">Auto-execute</div>
-								<Switch
-									isOn={this.state.form.autoexec}
-									id="autoexec-toggle"
-									handleToggle={this.changeForm('autoexec')}
-								/>
-							</div>
-						</Col>
-						<Col md="12" className="config-entry">
-							<div className="running-game-container">
-								<div>
-									<div className="config-description">Console:</div>
-									<code className="exec-code">
-										exec {createCFG(radar, killfeed, afx, config.port).file}
-									</code>
-									<ElectronOnly>
-										<div className="config-description">OR</div>
-										<Button
-											className="round-btn run-game"
-											disabled={
-												(killfeed && !config.hlaePath) ||
-												(afx && (!config.hlaePath || !config.afxCEFHudInteropPath))
-											}
-											onClick={this.runGame}
-										>
-											RUN GAME
-										</Button>
-										<Button
-											className="round-btn run-game"
-											// disabled={!this.state.enableTest}
-											onClick={api.game.runTest}
-										>
-											{!this.state.enableTest ? 'PAUSE TEST' : 'PLAY TEST'}
-										</Button>
-										<Button
-											className="round-btn run-game"
-											onClick={() => this.props.toggle('ar', this.state.huds)}
-										>
-											AR
-										</Button>
-									</ElectronOnly>
+								<div className="config-area">
+									<div className="config-description">Custom killfeed</div>
+									<Switch
+										isOn={this.state.form.killfeed}
+										id="killfeed-toggle"
+										handleToggle={this.changeForm('killfeed')}
+									/>
 								</div>
-								<div className="warning">
-									<ElectronOnly>
-										{(killfeed || afx) && !config.hlaePath ? (
-											<div>Specify HLAE path in Settings in order to use custom killfeeds</div>
-										) : null}
-										{afx && !config.afxCEFHudInteropPath ? (
-											<div>Specify AFX Interop path in Settings in order to use AFX mode</div>
-										) : null}
-										{afx && config.afxCEFHudInteropPath && config.hlaePath ? (
-											<div>
-												When using AFX mode, after joining the match click on the SET button -
-												no need to start the overlay.
-											</div>
-										) : null}
-									</ElectronOnly>
+								<div className="config-area">
+									<div className="config-description">Embedded HUD</div>
+									<Switch
+										isOn={this.state.form.afx}
+										id="afx-toggle"
+										handleToggle={this.changeForm('afx')}
+									/>
 								</div>
-							</div>
-						</Col>
-					</Row>
+								<ElectronOnly>
+									<div className="config-area">
+										<div className="config-description">Play test loop</div>
+										<Switch
+											isOn={this.state.isOnLoop}
+											id="gamelopp-toggle"
+											handleToggle={api.game.toggleLoop}
+										/>
+									</div>
+								</ElectronOnly>
+								<div className="config-area">
+									<div className="config-description">Auto-execute</div>
+									<Switch
+										isOn={this.state.form.autoexec}
+										id="autoexec-toggle"
+										handleToggle={this.changeForm('autoexec')}
+									/>
+								</div>
+							</Col>
+							<Col md="12" className="config-entry">
+								<div className="running-game-container">
+									<div>
+										<div className="config-description">Console:</div>
+										<code className="exec-code">
+											exec {createCFG(radar, killfeed, afx, config.port).file}
+										</code>
+										<ElectronOnly>
+											<div className="config-description">OR</div>
+											<Button
+												className="round-btn run-game"
+												disabled={
+													(killfeed && !config.hlaePath) ||
+													(afx && (!config.hlaePath || !config.afxCEFHudInteropPath))
+												}
+												onClick={this.runGame}
+											>
+												RUN GAME
+										</Button>
+											<Button
+												className="round-btn run-game"
+												// disabled={!this.state.enableTest}
+												onClick={api.game.runTest}
+											>
+												{!this.state.enableTest ? 'PAUSE TEST' : 'PLAY TEST'}
+											</Button>
+											<Button
+												className="round-btn run-game"
+												onClick={() => this.props.toggle('ar', this.state.huds)}
+											>
+												AR
+											</Button>
+											<Button
+												className="round-btn run-game"
+												onClick={() => this.props.toggle('aco', this.state.huds)}
+											>
+												ACO
+											</Button>
+										</ElectronOnly>
+									</div>
+									<div className="warning">
+										<ElectronOnly>
+											{(killfeed || afx) && !config.hlaePath ? (
+												<div>Specify HLAE path in Settings in order to use custom killfeeds</div>
+											) : null}
+											{afx && !config.afxCEFHudInteropPath ? (
+												<div>Specify AFX Interop path in Settings in order to use AFX mode</div>
+											) : null}
+											{afx && config.afxCEFHudInteropPath && config.hlaePath ? (
+												<div>
+													When using AFX mode, after joining the match click on the SET button -
+													no need to start the overlay.
+												</div>
+											) : null}
+										</ElectronOnly>
+									</div>
+								</div>
+							</Col>
+						</Row>
+					</GameOnly>
 
 					<Row className="padded">
 						<Col>
@@ -306,8 +315,8 @@ export default class Huds extends React.Component<IProps, IState> {
 							</Col>
 						</Row>
 					) : (
-						''
-					)}
+							''
+						)}
 				</div>
 			</React.Fragment>
 		);

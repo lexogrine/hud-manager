@@ -30,7 +30,6 @@ ioPromise.then(io => {
 					io.to(isDev && HUDState.devHUD ? HUDState.devHUD.dir : name).emit(`hud_action`, action);
 				});
 			}
-			console.log('registered', game);
 			socket.join(game);
 			if (!isDev) {
 				socket.join(name);

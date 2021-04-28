@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ioPromise = exports.GSI = exports.HUDState = exports.runtimeConfig = void 0;
+exports.mirvPgl = exports.ioPromise = exports.GSI = exports.HUDState = exports.runtimeConfig = void 0;
 const socket_io_1 = require("socket.io");
 const csgogsi_socket_1 = require("csgogsi-socket");
 const node_fetch_1 = __importDefault(require("node-fetch"));
@@ -12,7 +12,7 @@ const config_1 = require("./api/config");
 const tournaments_1 = require("./api/tournaments");
 const api_1 = require("./api");
 const electron_1 = require("../electron");
-const hlae_1 = __importDefault(require("./hlae"));
+const hlae_1 = require("./hlae");
 const _1 = require(".");
 const hudstatemanager_1 = require("./api/huds/hudstatemanager");
 require("./api/huds/devhud");
@@ -45,9 +45,10 @@ exports.ioPromise = config_1.loadConfig().then(cfg => {
         }
     });
 });
+exports.mirvPgl = new hlae_1.MIRVPGL(exports.ioPromise);
 exports.ioPromise.then(io => {
     radar.startRadar(_1.app, io);
-    hlae_1.default();
+    //hlaeServer();
     const onRoundEnd = async (score) => {
         const lastGSIEntry = exports.GSI.last;
         if (lastGSIEntry)

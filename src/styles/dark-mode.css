@@ -278,3 +278,53 @@ button.btn-primary {
 .game-img {
     margin: 20px 0;
 }
+.aco_picker {
+    position: relative;
+    width:512px;
+}
+.aco_area {
+    width:100%;
+    height:100%;
+    cursor: pointer;
+    position: absolute;
+    opacity: 0.5;
+    clip-path: polygon(0 0, 0 0, 0 0, 0 0);
+}
+.aco_config_title {
+    height: 41px;
+    background-color: rgba(255,255,255,0.03);
+    padding-left:23px;
+    display: flex;
+    align-items: center;
+}
+.aco_area_config {
+    height: 82px;
+    padding-left:23px;
+    padding-right:23px;
+    display: flex;
+    align-items: center;
+}
+.aco_area_config:nth-child(2n) {
+    background-color: #202328;
+}
+.aco_area_config:nth-child(2n+1) {
+    background-color: #2f3238;
+}
+.aco_area_config img {
+    margin-left: auto;
+    cursor: pointer;
+}
+.btn-container {
+    display: flex;
+}
+.btn.add_aco_config {
+    margin: 0;
+    flex:1;
+    margin-top:20px;
+}
+.aco_dot {
+    position: absolute;
+    border-radius:50%;
+    width:5px;
+    height:5px;
+}

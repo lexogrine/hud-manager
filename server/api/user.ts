@@ -28,6 +28,13 @@ const connectSocket = () => {
 			Cookie: cookieJar.getCookieStringSync('https://hmapi-dev.lexogrine.pl/')
 		}
 	});
+
+	socket.on('connection', () => {
+		console.log('CONNECTED')
+	});
+
+	socket._socket.onerror = () => {};
+
 	socket.on('banned', () => {
 		ioPromise.then(io => {
 			io.emit('banned');
@@ -45,6 +52,7 @@ const connectSocket = () => {
 	});
 	socket.on('disconnect', () => {
 		socket = null;
+        setTimeout(connectSocket, 2000)
 	});
 };
 export const verifyGame: RequestHandler = (req, res, next) => {

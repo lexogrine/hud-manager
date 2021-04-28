@@ -169,6 +169,10 @@ export default {
 		sync: async (db: DB) => await apiV2<any>('import', 'POST', db),
 		syncCheck: async (db: DB) => await apiV2<any>('import/verify', 'POST', db)
 	},
+	aco: {
+		get: (): Promise<I.MapConfig[]> => apiV2('aco'),
+		set: (config: I.MapConfig) => apiV2('aco', 'POST', config)
+	},
 	bakkesmod: {
 		check: async () => await apiV2<I.BakkesModStatusResponse>('bakkesmod/check'),
 		downloadMod: async () => await apiV2<I.BakkesModAPIResponse>('bakkesmod/download/mod'),

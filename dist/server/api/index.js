@@ -39,8 +39,9 @@ const play_1 = require("./huds/play");
 const routes_1 = __importDefault(require("./tournaments/routes"));
 const routes_2 = __importDefault(require("./matches/routes"));
 const routes_3 = __importDefault(require("./players/routes"));
+const routes_4 = __importDefault(require("./aco/routes"));
 const match = __importStar(require("./matches"));
-const routes_4 = __importDefault(require("./teams/routes"));
+const routes_5 = __importDefault(require("./teams/routes"));
 const http_proxy_middleware_1 = require("http-proxy-middleware");
 const socket_1 = require("../socket");
 const __1 = require("..");
@@ -66,6 +67,7 @@ async function default_1() {
     routes_1.default();
     routes_2.default();
     routes_3.default();
+    routes_5.default();
     routes_4.default();
     __1.app.route('/api/games/start/:game').get(async (req, res) => {
         const game = req.params.game;

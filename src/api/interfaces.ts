@@ -23,7 +23,9 @@ export type {
 	Team,
 	AvailableGames,
 	AvailableResources,
-	onExtraChangeFunction
+	onExtraChangeFunction,
+	MapAreaConfig,
+	MapConfig
 } from './../../types/interfaces';
 
 export interface CFGGSIResponse {

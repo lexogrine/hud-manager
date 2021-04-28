@@ -29,6 +29,10 @@ const connectSocket = () => {
             Cookie: cookieJar.getCookieStringSync('https://hmapi-dev.lexogrine.pl/')
         }
     });
+    exports.socket.on('connection', () => {
+        console.log('CONNECTED');
+    });
+    exports.socket._socket.onerror = () => { };
     exports.socket.on('banned', () => {
         socket_1.ioPromise.then(io => {
             io.emit('banned');
@@ -47,6 +51,7 @@ const connectSocket = () => {
     });
     exports.socket.on('disconnect', () => {
         exports.socket = null;
+        setTimeout(connectSocket, 2000);
     });
 };
 exports.verifyGame = (req, res, next) => {

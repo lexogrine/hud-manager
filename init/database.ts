@@ -11,7 +11,8 @@ const databases = {
 	config: new Datastore<I.Config>({ filename: path.join(directory, 'config'), autoload: true }),
 	matches: new Datastore<I.Match>({ filename: path.join(directory, 'matches'), autoload: true }),
 	custom: new Datastore<I.CustomFieldStore>({ filename: path.join(directory, 'custom'), autoload: true }),
-	tournaments: new Datastore<I.Tournament>({ filename: path.join(directory, 'tournaments'), autoload: true })
+	tournaments: new Datastore<I.Tournament>({ filename: path.join(directory, 'tournaments'), autoload: true }),
+	aco: new Datastore<I.MapConfig>({ filename: path.join(directory, 'aco'), autoload: true })
 };
 
 export default databases;

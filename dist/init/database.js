@@ -13,6 +13,7 @@ const databases = {
     config: new nedb_1.default({ filename: path_1.default.join(directory, 'config'), autoload: true }),
     matches: new nedb_1.default({ filename: path_1.default.join(directory, 'matches'), autoload: true }),
     custom: new nedb_1.default({ filename: path_1.default.join(directory, 'custom'), autoload: true }),
-    tournaments: new nedb_1.default({ filename: path_1.default.join(directory, 'tournaments'), autoload: true })
+    tournaments: new nedb_1.default({ filename: path_1.default.join(directory, 'tournaments'), autoload: true }),
+    aco: new nedb_1.default({ filename: path_1.default.join(directory, 'aco'), autoload: true })
 };
 exports.default = databases;
