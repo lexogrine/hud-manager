@@ -20,7 +20,7 @@ const radar = require('./../boltobserv/index.js');
 let lastUpdate = new Date().getTime();
 exports.runtimeConfig = {
     last: null,
-    devSocket: null,
+    devSocket: [],
     currentHUD: {
         url: null,
         isDev: false,

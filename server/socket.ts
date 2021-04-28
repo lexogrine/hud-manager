@@ -16,7 +16,7 @@ const radar = require('./../boltobserv/index.js');
 
 interface RuntimeConfig {
 	last: CSGORaw | null;
-	devSocket: Socket | null;
+	devSocket: Socket[] ;
 	currentHUD: {
 		url: string | null;
 		isDev: boolean;
@@ -28,7 +28,7 @@ let lastUpdate = new Date().getTime();
 
 export const runtimeConfig: RuntimeConfig = {
 	last: null,
-	devSocket: null,
+	devSocket: [],
 	currentHUD: {
 		url: null,
 		isDev: false,

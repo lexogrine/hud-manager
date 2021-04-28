@@ -54,13 +54,27 @@
 	<script type="text/javascript" src="/socket.io/socket.io.min.js"></script>
 	<script type="module">
 		import { CSGOGSI } from './lhm/csgogsi.js';
+		import { ActionManager } from './lhm/actions.js';
+
+		var actions = new ActionManager();
 		
+		if(globalThis && !globalThis.actions){
+			globalThis.actions = actions;
+		}
+
 		let currentARModule = null;
 
 		const GSI = new CSGOGSI();
-		console.log("STARTING")
+		//console.log("STARTING")
 		const socketio = io('/');
 		socketio.on('update', GSI.digest);
+		
+		socketio.on(`hud_action`, (data) => {
+			actions.execute(data.action, data.data);
+		});
+		socketio.on('keybindAction', (action) => {
+			//actions.execute(action);
+		});
 
 		const horToVert = hFov => {
 			const hRadians = hFov * Math.PI / 180;
@@ -92,6 +106,8 @@
 		
 
 		socketio.on('active_hlae', async (url, dir, isDev) => {
+			socketio.emit('unregister')
+			//console.log('unreg')
 			GSI.removeAllListeners("data");
 
 			const customStyleSheet = document.getElementById("customStylesheet");
@@ -109,6 +125,8 @@
 			if(isDev){
 				arModuleURL = '/dev/ar/ar.js';
 			}
+
+			socketio.emit("register", isDev ? (Math.random() * 1000 + 1).toString(36).replace(/[^a-z]+/g, '').substr(0, 15) : dir, isDev);
 
 			const customCSS = document.createElement("link");
 			customCSS.setAttribute("rel", "stylesheet");

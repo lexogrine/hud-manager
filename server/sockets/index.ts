@@ -3,6 +3,7 @@ import { HUDStateManager } from '../api/huds/hudstatemanager';
 import { reverseSide } from '../api/matches';
 import { HUDState, ioPromise, runtimeConfig } from '../socket';
 import { playTesting } from './../api/huds/play';
+import { availableGames } from '../../types/interfaces';
 
 ioPromise.then(io => {
 	io.on('connection', socket => {
@@ -24,6 +25,15 @@ ioPromise.then(io => {
 			socket.on('readerReverseSide', reverseSide);
 		});
 		socket.emit('readyToRegister');
+		socket.on('disconnect', () => {
+			runtimeConfig.devSocket = runtimeConfig.devSocket.filter(devSocket => devSocket !== socket);
+		});
+		socket.on('unregister', () => {
+			socket.rooms.forEach(roomName => {
+				if(roomName === socket.id || availableGames.includes(roomName as any) || roomName === 'game') return;
+				socket.leave(roomName);
+			});
+		})
 		socket.on('register', async (name: string, isDev: boolean, game = 'csgo') => {
 			if (!isDev || HUDState.devHUD) {
 				socket.on('hud_inner_action', (action: any) => {
@@ -38,7 +48,7 @@ ioPromise.then(io => {
 				io.to(name).emit('hud_config', extended);
 				return;
 			}
-			runtimeConfig.devSocket = socket;
+			runtimeConfig.devSocket.push(socket);
 			if (HUDState.devHUD) {
 				socket.join(HUDState.devHUD.dir);
 				const hudData = HUDState.get(HUDState.devHUD.dir);

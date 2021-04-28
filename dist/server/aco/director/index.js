@@ -53,7 +53,6 @@ class Director {
         this.status = false;
         this.currentArea = null;
         this.lastSwitch = 0;
-        console.log(GSI);
         this.GSI.on('data', this.handleObserver);
         this.pgl = null;
     }

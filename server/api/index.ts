@@ -28,7 +28,9 @@ export const customer: I.CustomerData = {
 	game: null
 };
 
-export const validateCloudAbility = () => {
+export const validateCloudAbility = async () => {
+	const cfg = await config.loadConfig();
+	if(!cfg.sync) return false;
 	if (
 		!customer.customer ||
 		!customer.customer.license ||

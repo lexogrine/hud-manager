@@ -5,6 +5,7 @@ const hudstatemanager_1 = require("../api/huds/hudstatemanager");
 const matches_1 = require("../api/matches");
 const socket_1 = require("../socket");
 const play_1 = require("./../api/huds/play");
+const interfaces_1 = require("../../types/interfaces");
 socket_1.ioPromise.then(io => {
     io.on('connection', socket => {
         const ref = socket.request?.headers?.referer || '';
@@ -25,6 +26,16 @@ socket_1.ioPromise.then(io => {
             socket.on('readerReverseSide', matches_1.reverseSide);
         });
         socket.emit('readyToRegister');
+        socket.on('disconnect', () => {
+            socket_1.runtimeConfig.devSocket = socket_1.runtimeConfig.devSocket.filter(devSocket => devSocket !== socket);
+        });
+        socket.on('unregister', () => {
+            socket.rooms.forEach(roomName => {
+                if (roomName === socket.id || interfaces_1.availableGames.includes(roomName) || roomName === 'game')
+                    return;
+                socket.leave(roomName);
+            });
+        });
         socket.on('register', async (name, isDev, game = 'csgo') => {
             if (!isDev || socket_1.HUDState.devHUD) {
                 socket.on('hud_inner_action', (action) => {
@@ -39,7 +50,7 @@ socket_1.ioPromise.then(io => {
                 io.to(name).emit('hud_config', extended);
                 return;
             }
-            socket_1.runtimeConfig.devSocket = socket;
+            socket_1.runtimeConfig.devSocket.push(socket);
             if (socket_1.HUDState.devHUD) {
                 socket.join(socket_1.HUDState.devHUD.dir);
                 const hudData = socket_1.HUDState.get(socket_1.HUDState.devHUD.dir);

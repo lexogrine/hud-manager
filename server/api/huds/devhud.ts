@@ -85,7 +85,7 @@ portListener.onChange(async status => {
 				}
 				hud.url = `http://localhost:${cfg.port}/development/`;
 				HUDState.devHUD = hud;
-				if (runtimeConfig.devSocket) {
+				if (runtimeConfig.devSocket.length) {
 					const hudData = HUDState.get(hud.dir);
 					const extended = await HUDStateManager.extend(hudData);
 					io.to(hud.dir).emit('hud_config', extended);

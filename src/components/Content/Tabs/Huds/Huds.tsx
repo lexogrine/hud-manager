@@ -51,6 +51,7 @@ interface IForm {
 	killfeed: boolean;
 	radar: boolean;
 	afx: boolean;
+	ar:boolean;
 	autoexec: boolean;
 }
 
@@ -83,7 +84,8 @@ export default class Huds extends React.Component<IProps, IState> {
 				killfeed: false,
 				radar: false,
 				afx: false,
-				autoexec: true
+				autoexec: true,
+				ar: false
 			},
 			active: null,
 			currentHUD: null,
@@ -216,6 +218,14 @@ export default class Huds extends React.Component<IProps, IState> {
 										/>
 									</div>
 								</ElectronOnly>
+								<div className="config-area">
+									<div className="config-description">AR (experimental)</div>
+									<Switch
+										isOn={this.state.form.ar}
+										id="ar-toggle"
+										handleToggle={this.changeForm('ar')}
+									/>
+								</div>
 								<div className="config-area">
 									<div className="config-description">Auto-execute</div>
 									<Switch

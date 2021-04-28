@@ -67,11 +67,8 @@ class Director {
 		this.lastSwitch = new Date().getTime();
 		this.currentArea = area.name;
 
-		const tableData = area.players.map(player => ({ name: player.name, position: player.position }));
-		console.log('Players in area');
-		console.table(tableData);
+		//const tableData = area.players.map(player => ({ name: player.name, position: player.position }));
 		if (this.pgl) {
-			console.log('executing...', config);
 			this.pgl.execute(config);
 		}
 	};
