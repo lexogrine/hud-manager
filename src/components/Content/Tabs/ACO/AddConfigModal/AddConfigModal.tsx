@@ -27,7 +27,15 @@ const AddConfigModal = ({ isOpen, close, save }: IProps) => {
 				</div>
 			</ModalBody>
 			<ModalFooter className="no-padding">
-				<Button color="primary" className="modal-save" onClick={() => { save(config); setConfig(''); }} disabled={!config}>
+				<Button
+					color="primary"
+					className="modal-save"
+					onClick={() => {
+						save(config);
+						setConfig('');
+					}}
+					disabled={!config}
+				>
 					Save
 				</Button>
 			</ModalFooter>
