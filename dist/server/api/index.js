@@ -50,7 +50,10 @@ exports.customer = {
     customer: null,
     game: null
 };
-exports.validateCloudAbility = () => {
+exports.validateCloudAbility = async () => {
+    const cfg = await config.loadConfig();
+    if (!cfg.sync)
+        return false;
     if (!exports.customer.customer ||
         !exports.customer.customer.license ||
         (exports.customer.customer.license.type !== 'enterprise' && exports.customer.customer.license.type !== 'professional')) {
