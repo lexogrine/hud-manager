@@ -32,7 +32,7 @@
 		background: #fff;
 	}
 
-	canvas {
+	canvas, #css3drenderer {
 		position: absolute;
 		left: 0;
 		top: 0;
@@ -51,6 +51,7 @@
 	<script src="./lhm/h2c.js"></script>
 	<script type="text/javascript" src="./common.js"></script>
 	<script type="text/javascript" src="./three.min.js"></script>
+	<script type="text/javascript" src="./css3drenderer.js"></script>
 	<script type="text/javascript" src="/socket.io/socket.io.min.js"></script>
 	<script type="module">
 		import { CSGOGSI } from './lhm/csgogsi.js';
@@ -95,15 +96,24 @@
 
 		const scene = new THREE.Scene();
 
-		var camera = new THREE.PerspectiveCamera(74, 16 / 9, 0.1, 10000);
+		const camera = new THREE.PerspectiveCamera(74, 16 / 9, 0.1, 10000);
 
-		const renderer = new THREE.WebGLRenderer({ alpha: true, powerPreference: 'high-performance', antialias: true });
 
-		renderer.setSize(1920, 1080);
+		const WEBGL = new THREE.WebGLRenderer({ alpha: true, powerPreference: 'high-performance', antialias: true });
+		const CSS3D = new THREE.CSS3DRenderer();
 
-		document.body.appendChild(renderer.domElement);
+		WEBGL.domElement.id = 'css3drenderer';
 
+		WEBGL.setSize(1920, 1080);
+		CSS3D.setSize(1920, 1080);
 		
+		document.body.appendChild(WEBGL.domElement);
+		document.body.appendChild(CSS3D.domElement);
+
+		const renderers = {
+			CSS3D,
+			WEBGL
+		}
 
 		socketio.on('active_hlae', async (url, dir, isDev) => {
 			socketio.emit('unregister')
@@ -139,7 +149,7 @@
 			const arModule = await import(arModuleURL);
 			currentARModule = arModule;
 			const { startARModule } = arModule;
-			startARModule(scene, camera, renderer, GSI)
+			startARModule(scene, camera, renderers, GSI)
 		});
 		socketio.emit('get_active_hlae_hud');
 
@@ -744,7 +754,9 @@
 					camera.position.x = tY;
 					camera.position.z = tX;
 					camera.position.y = tZ;
-					renderer.render(scene, camera);
+
+					renderers.WEBGL.render(scene, camera);
+					renderers.CSS3D.render(scene, camera);
 				},
 				"onHudEnd": async function (frameCount, pass) {
 
