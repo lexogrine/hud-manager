@@ -43,7 +43,7 @@ export const getTeam: express.RequestHandler = async (req, res) => {
 };
 export const addTeam: express.RequestHandler = async (req, res) => {
 	let cloudStatus = false;
-	if (validateCloudAbility()) {
+	if (await validateCloudAbility()) {
 		cloudStatus = (await checkCloudStatus(customer.game as AvailableGames)) === 'ALL_SYNCED';
 	}
 	const newTeam = {
@@ -74,7 +74,7 @@ export const updateTeam: express.RequestHandler = async (req, res) => {
 	}
 
 	let cloudStatus = false;
-	if (validateCloudAbility()) {
+	if (await validateCloudAbility()) {
 		cloudStatus = (await checkCloudStatus(customer.game as AvailableGames)) === 'ALL_SYNCED';
 	}
 
@@ -113,7 +113,7 @@ export const deleteTeam: express.RequestHandler = async (req, res) => {
 	}
 
 	let cloudStatus = false;
-	if (validateCloudAbility()) {
+	if (await validateCloudAbility()) {
 		cloudStatus = (await checkCloudStatus(customer.game as AvailableGames)) === 'ALL_SYNCED';
 	}
 	//players.update({team:})

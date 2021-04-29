@@ -70,7 +70,7 @@ export const updateFields = async (fields: CustomFieldEntry[], type: keyof Custo
 	const createdFields = fields.filter(newField => !store[type].find(field => field.name === newField.name));
 
 	let cloudStatus = false;
-	if (validateCloudAbility()) {
+	if (await validateCloudAbility()) {
 		cloudStatus = (await checkCloudStatus(customer.game as AvailableGames)) === 'ALL_SYNCED';
 	}
 

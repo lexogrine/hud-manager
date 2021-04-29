@@ -60,7 +60,7 @@ exports.updateFields = async (fields, type, game) => {
     const deletedFields = store[type].filter(field => !fields.find(newField => newField.name === field.name));
     const createdFields = fields.filter(newField => !store[type].find(field => field.name === newField.name));
     let cloudStatus = false;
-    if (__1.validateCloudAbility()) {
+    if (await __1.validateCloudAbility()) {
         cloudStatus = (await cloud_1.checkCloudStatus(__1.customer.game)) === 'ALL_SYNCED';
     }
     return new Promise(res => {

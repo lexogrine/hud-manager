@@ -80,7 +80,7 @@ exports.updatePlayer = async (req, res) => {
         updated.avatar = player.avatar;
     }
     let cloudStatus = false;
-    if (__1.validateCloudAbility()) {
+    if (await __1.validateCloudAbility()) {
         cloudStatus = (await cloud_1.checkCloudStatus(__1.customer.game)) === 'ALL_SYNCED';
     }
     players.update({ _id: req.params.id }, { $set: updated }, {}, async (err) => {
@@ -96,7 +96,7 @@ exports.updatePlayer = async (req, res) => {
 };
 exports.addPlayer = async (req, res) => {
     let cloudStatus = false;
-    if (__1.validateCloudAbility()) {
+    if (await __1.validateCloudAbility()) {
         cloudStatus = (await cloud_1.checkCloudStatus(__1.customer.game)) === 'ALL_SYNCED';
     }
     const newPlayer = {
@@ -129,7 +129,7 @@ exports.deletePlayer = async (req, res) => {
         return res.sendStatus(404);
     }
     let cloudStatus = false;
-    if (__1.validateCloudAbility()) {
+    if (await __1.validateCloudAbility()) {
         cloudStatus = (await cloud_1.checkCloudStatus(__1.customer.game)) === 'ALL_SYNCED';
     }
     players.remove({ _id: req.params.id }, async (err, n) => {

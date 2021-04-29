@@ -68,7 +68,7 @@ export const updatePlayer: express.RequestHandler = async (req, res) => {
 	}
 
 	let cloudStatus = false;
-	if (validateCloudAbility()) {
+	if (await validateCloudAbility()) {
 		cloudStatus = (await checkCloudStatus(customer.game as AvailableGames)) === 'ALL_SYNCED';
 	}
 
@@ -85,7 +85,7 @@ export const updatePlayer: express.RequestHandler = async (req, res) => {
 };
 export const addPlayer: express.RequestHandler = async (req, res) => {
 	let cloudStatus = false;
-	if (validateCloudAbility()) {
+	if (await validateCloudAbility()) {
 		cloudStatus = (await checkCloudStatus(customer.game as AvailableGames)) === 'ALL_SYNCED';
 	}
 	const newPlayer = {
@@ -119,7 +119,7 @@ export const deletePlayer: express.RequestHandler = async (req, res) => {
 	}
 
 	let cloudStatus = false;
-	if (validateCloudAbility()) {
+	if (await validateCloudAbility()) {
 		cloudStatus = (await checkCloudStatus(customer.game as AvailableGames)) === 'ALL_SYNCED';
 	}
 
