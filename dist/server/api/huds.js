@@ -22,7 +22,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.uploadHUD = exports.downloadHUD = exports.deleteHUD = exports.sendHUD = exports.closeHUD = exports.showHUD = exports.legacyCSS = exports.legacyJS = exports.renderLegacy = exports.renderAssets = exports.getThumbPath = exports.renderThumbnail = exports.renderOverlay = exports.render = exports.verifyOverlay = exports.renderHUD = exports.openHUDsDirectory = exports.getHUDPanelSetting = exports.getHUDKeyBinds = exports.getHUDData = exports.getHUDARSettings = exports.getHUDs = exports.listHUDs = void 0;
+exports.uploadHUD = exports.downloadHUD = exports.deleteHUD = exports.sendHUD = exports.closeHUD = exports.showHUD = exports.legacyCSS = exports.legacyJS = exports.renderLegacy = exports.renderAssets = exports.getThumbPath = exports.renderThumbnail = exports.renderOverlay = exports.render = exports.verifyOverlay = exports.renderHUD = exports.openHUDsDirectory = exports.getHUDPanelSetting = exports.getHUDKeyBinds = exports.getHUDData = exports.getHUDARSettings = exports.getHUDCustomAsset = exports.getHUDs = exports.listHUDs = void 0;
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
 const electron_1 = require("electron");
@@ -35,6 +35,7 @@ const v4_1 = __importDefault(require("uuid/v4"));
 const user_1 = require("./user");
 const archiver_1 = __importDefault(require("archiver"));
 const _1 = require(".");
+const isSvg_1 = __importDefault(require("../../src/isSvg"));
 const DecompressZip = require('decompress-zip');
 const getRandomString = () => (Math.random() * 1000 + 1)
     .toString(36)
@@ -117,6 +118,46 @@ exports.listHUDs = async () => {
 };
 exports.getHUDs = async (req, res) => {
     return res.json(await exports.listHUDs());
+};
+const isJSON = (data) => {
+    if (!data || typeof data !== "string")
+        return false;
+    try {
+        const json = JSON.parse(data);
+        return true;
+    }
+    catch {
+        return false;
+    }
+};
+exports.getHUDCustomAsset = async (req, res) => {
+    const { hudDir, section, asset } = req.params;
+    const hudData = socket_1.HUDState.get(hudDir, true);
+    const data = hudData?.[section]?.[asset];
+    const panel = await exports.getHUDPanelSetting(hudDir);
+    if (!data) {
+        return res.sendStatus(404);
+    }
+    if (isJSON(data)) {
+        return res.json(data);
+    }
+    if (!panel || !Array.isArray(panel)) {
+        return res.send(data);
+    }
+    const sectionEntry = panel.find(sectionData => sectionData.name === section);
+    if (!sectionEntry) {
+        return res.send(data);
+    }
+    const inputEntry = sectionEntry.inputs.find(inputData => inputData.name === asset);
+    if (!inputEntry || inputEntry.type !== "image") {
+        return res.send(data);
+    }
+    const imgBuffer = Buffer.from(data, 'base64');
+    res.writeHead(200, {
+        'Content-Type': isSvg_1.default(imgBuffer) ? 'image/svg+xml' : 'image/png',
+        'Content-Length': imgBuffer.length
+    });
+    return res.end(imgBuffer);
 };
 exports.getHUDARSettings = (dirName) => {
     const dir = path.join(electron_1.app.getPath('home'), 'HUDs', dirName);

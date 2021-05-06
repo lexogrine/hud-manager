@@ -11,6 +11,7 @@ import uuidv4 from 'uuid/v4';
 import { api } from './user';
 import archiver from 'archiver';
 import { customer } from '.';
+import isSvg from '../../src/isSvg';
 
 const DecompressZip = require('decompress-zip');
 
@@ -110,6 +111,48 @@ export const listHUDs = async () => {
 
 export const getHUDs: express.RequestHandler = async (req, res) => {
 	return res.json(await listHUDs());
+};
+const isJSON = (data: any) => {
+	if (!data || typeof data !== 'string') return false;
+	try {
+		const json = JSON.parse(data);
+		return true;
+	} catch {
+		return false;
+	}
+};
+export const getHUDCustomAsset: express.RequestHandler = async (req, res) => {
+	const { hudDir, section, asset } = req.params;
+
+	const hudData = HUDState.get(hudDir, true);
+	const data = hudData?.[section]?.[asset];
+
+	const panel = (await getHUDPanelSetting(hudDir)) as I.PanelTemplate[];
+	if (!data) {
+		return res.sendStatus(404);
+	}
+	if (isJSON(data)) {
+		return res.json(data);
+	}
+	if (!panel || !Array.isArray(panel)) {
+		return res.send(data);
+	}
+
+	const sectionEntry = panel.find(sectionData => sectionData.name === section);
+	if (!sectionEntry) {
+		return res.send(data);
+	}
+	const inputEntry = sectionEntry.inputs.find(inputData => inputData.name === asset);
+	if (!inputEntry || inputEntry.type !== 'image') {
+		return res.send(data);
+	}
+
+	const imgBuffer = Buffer.from(data, 'base64');
+	res.writeHead(200, {
+		'Content-Type': isSvg(imgBuffer) ? 'image/svg+xml' : 'image/png',
+		'Content-Length': imgBuffer.length
+	});
+	return res.end(imgBuffer);
 };
 
 export const getHUDARSettings = (dirName: string) => {

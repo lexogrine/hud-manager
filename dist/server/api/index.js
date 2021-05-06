@@ -99,6 +99,7 @@ async function default_1() {
     __1.app.route('/api/huds/close').post(huds.closeHUD);
     __1.app.route('/api/huds/:hudDir/start').post(huds.showHUD);
     __1.app.route('/api/huds/download/:uuid').get(huds.downloadHUD);
+    __1.app.route('/api/huds/:hudDir/:section/:asset').get(huds.getHUDCustomAsset);
     __1.app.route('/api/huds/upload/:hudDir').post(huds.uploadHUD);
     __1.app.route('/api/gsi').get(gsi.checkGSIFile).put(gsi.createGSIFile);
     __1.app.route('/api/import').post(sync.importDb);

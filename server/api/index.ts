@@ -100,6 +100,8 @@ export default async function () {
 
 	app.route('/api/huds/download/:uuid').get(huds.downloadHUD);
 
+	app.route('/api/huds/:hudDir/:section/:asset').get(huds.getHUDCustomAsset);
+
 	app.route('/api/huds/upload/:hudDir').post(huds.uploadHUD);
 
 	app.route('/api/gsi').get(gsi.checkGSIFile).put(gsi.createGSIFile);
