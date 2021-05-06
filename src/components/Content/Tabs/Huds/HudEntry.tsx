@@ -19,6 +19,8 @@ import { hashCode } from '../../../../hash';
 import { getMissingFields } from '../../../../utils';
 import { copyToClipboard } from '../../../../api/clipboard';
 import ElectronOnly from '../../../ElectronOnly';
+import { GameOnly } from '../Config/Config';
+import { IContextData } from '../../../Context';
 
 interface IProps {
 	hud: I.HUD;
@@ -28,9 +30,10 @@ interface IProps {
 	loadHUDs: () => Promise<void>;
 	setHUDLoading: (uuid: string, isLoading: boolean) => void;
 	isLoading: boolean;
+	cxt: IContextData
 }
 
-const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHUDs, setHUDLoading }: IProps) => {
+const HudEntry = ({ cxt, isLoading, hud, isActive, toggleConfig, customFields, loadHUDs, setHUDLoading }: IProps) => {
 	const gameToTag = (game: string) => {
 		if (game === 'rocketleague') {
 			return '[RL]';
@@ -53,7 +56,7 @@ const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHU
 	const deleteHUD = async () => {
 		try {
 			await api.huds.delete(hud.dir);
-		} catch {}
+		} catch { }
 		toggleModal();
 	};
 	const downloadHUD = (uuid: string) => {
@@ -133,7 +136,7 @@ const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHU
 							<img
 								src={`${Config.isDev ? Config.apiAddress : '/'}${
 									hud.isDev ? 'dev/thumb.png' : `huds/${hud.dir}/thumbnail`
-								}`}
+									}`}
 								alt={`${hud.name}`}
 							/>
 						) : null}
@@ -189,84 +192,128 @@ const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHU
 								</Col>
 							</Row>
 						) : (
-							''
-						)}
+								''
+							)}
 					</Col>
 					{isLocal ? (
 						<Col style={{ flex: 1 }} className="hud-options">
 							<div className="centered">
 								{isLocal ? (
-									<img
-										src={HyperLink}
-										id={`hud_link_${hashCode(hud.dir)}`}
-										className="action"
-										alt="Local network HUD URL"
-									/>
+									<Tip
+										id={`hud_link_button_${hashCode(hud.dir)}`}
+										label={
+											<img
+												src={HyperLink}
+												id={`hud_link_${hashCode(hud.dir)}`}
+												className="action"
+												alt="Local network HUD URL"
+											/>
+										}
+									>
+										Toggle HUD URL
+									</Tip>
 								) : null}
 								{hud.panel?.length ? (
-									<img
-										src={Settings}
-										onClick={toggleConfig(hud)}
-										className="action"
-										alt="HUD panel"
-									/>
+									<Tip
+										id={`hud_settings_button_${hashCode(hud.dir)}`}
+										label={
+											<img
+												src={Settings}
+												onClick={toggleConfig(hud)}
+												className="action"
+												alt="HUD panel"
+											/>
+										}
+									>
+										Go to HUD settings
+									</Tip>
 								) : (
-									''
-								)}
+										''
+									)}
 								{Config.isElectron ? (
-									<img
-										src={Display}
-										onClick={() => startHUD(hud.dir)}
-										className="action"
-										alt="Start HUD"
-									/>
+									<Tip
+										id={`hud_overlay_button_${hashCode(hud.dir)}`}
+										label={
+											<img
+												src={Display}
+												onClick={() => startHUD(hud.dir)}
+												className="action"
+												alt="Start HUD"
+											/>
+										}
+									>
+										Start HUD overlay
+									</Tip>
 								) : null}
 								<ElectronOnly>
 									{isNotRemote ? (
 										!isLoading ? (
-											<img
-												src={uploadIcon}
-												className="action"
-												onClick={() => {
-													uploadHUD(hud.dir, hud.uuid);
-												}}
-											/>
+											<Tip
+												id={`hud_upload_button_${hashCode(hud.dir)}`}
+												label={
+													<img
+														src={uploadIcon}
+														className="action"
+														onClick={() => {
+															uploadHUD(hud.dir, hud.uuid);
+														}}
+													/>
+												}
+											>
+												Upload HUD
+											</Tip>
 										) : (
-											'Uploading...'
-										)
+												'Uploading...'
+											)
 									) : null}
 								</ElectronOnly>
 								{Config.isElectron && !hud.isDev ? (
-									<img src={trash} onClick={toggleModal} className="action" alt="Delete HUD" />
+									<Tip
+										id={`hud_delete_button_${hashCode(hud.dir)}`}
+										label={
+											<img src={trash} onClick={toggleModal} className="action" alt="Delete HUD" />
+										}
+									>
+										Delete HUD locally
+									</Tip>
 								) : null}
 							</div>
-							{Config.isElectron ? (
-								<div className="hud-toggle">
-									<Switch
-										id={`hud-switch-${hud.dir}`}
-										isOn={isActive}
-										handleToggle={() => setHUD(hud.url, hud.dir, hud.isDev)}
-									/>
-								</div>
-							) : null}
+							<GameOnly game="csgo" cxt={cxt}>
+								<ElectronOnly>
+									<Tip
+										id={`hud_toggle_button_${hashCode(hud.dir)}`}
+										label={
+											<div className="hud-toggle">
+												<Switch
+													id={`hud-switch-${hud.dir}`}
+													isOn={isActive}
+													handleToggle={() => setHUD(hud.url, hud.dir, hud.isDev)}
+												/>
+											</div>
+										}
+									>
+										Toggle HUD (Embedded only)
+									</Tip>
+								</ElectronOnly>
+							</GameOnly>
 						</Col>
 					) : (
-						<Col style={{ flex: 1 }} className="hud-options">
-							<div className="centered">
-								{!isLoading ? (
-									<img
-										src={downloadIcon}
-										className="action"
-										onClick={() => {
-											downloadHUD(hud.uuid);
-										}}
-									/>
-								) : (
-									'Downloading...'
-								)}
-							</div>
-						</Col>
-					)}
+							<Col style={{ flex: 1 }} className="hud-options">
+								<div className="centered">
+									{!isLoading ? (
+										<img
+											src={downloadIcon}
+											className="action"
+											onClick={() => {
+												downloadHUD(hud.uuid);
+											}}
+										/>
+									) : (
+											'Downloading...'
+										)}
+								</div>
+							</Col>
+						)}
 				</Row>
 				{isLocal ? (
 					<Row>

@@ -109,6 +109,9 @@ export default class Layout extends React.Component<{}, IState> {
 		data.game = game;
 		this.setState({ picked: game, data }, this.sync);
 	};
+	clearGame = () => {
+		this.setState({picked: null});
+	}
 	sync = () => {
 		if (!this.state.picked) return;
 		api.games.startServices(this.state.picked).then(response => {
@@ -221,7 +224,7 @@ export default class Layout extends React.Component<{}, IState> {
 					{data.customer ? (
 						<div className={`license-status ${isElectron ? 'electron' : ''}`}>
 							{data.customer.license.type} {version}
-							<div onClick={this.sync}>Sync check</div>
+							<div onClick={this.clearGame}>Set game</div>
 							<ElectronOnly>
 								<div className="logout-button" onClick={this.logout}>
 									Logout

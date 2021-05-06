@@ -1472,3 +1472,6 @@ input:checked ~ .customCheckbox {
     margin: 0 6px;
     cursor: pointer;
 }
+.hud-options span {
+    display: flex;
+}

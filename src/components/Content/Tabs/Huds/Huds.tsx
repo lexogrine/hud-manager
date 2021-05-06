@@ -297,6 +297,46 @@ export default class Huds extends React.Component<IProps, IState> {
 							</Col>
 						</Row>
 					</GameOnly>
+					<GameOnly game="rocketleague" cxt={this.props.cxt}>
+						<Row className="config-container">
+							<Col md="12" className="config-entry">
+								<div className="running-game-container">
+									<div>
+										<ElectronOnly>
+											<Button
+												className="round-btn run-game"
+												disabled={
+													(killfeed && !config.hlaePath) ||
+													(afx && (!config.hlaePath || !config.afxCEFHudInteropPath))
+												}
+												onClick={this.runGame}
+											>
+												RUN GAME
+											</Button>
+										</ElectronOnly>
+									</div>
+									<div className="warning">
+										<ElectronOnly>
+											{(killfeed || afx) && !config.hlaePath ? (
+												<div>
+													Specify HLAE path in Settings in order to use custom killfeeds
+												</div>
+											) : null}
+											{afx && !config.afxCEFHudInteropPath ? (
+												<div>Specify AFX Interop path in Settings in order to use AFX mode</div>
+											) : null}
+											{afx && config.afxCEFHudInteropPath && config.hlaePath ? (
+												<div>
+													When using AFX mode, after joining the match click on the SET button
+													- no need to start the overlay.
+												</div>
+											) : null}
+										</ElectronOnly>
+									</div>
+								</div>
+							</Col>
+						</Row>
+					</GameOnly>
 
 					<Row className="padded">
 						<Col>
@@ -310,6 +350,7 @@ export default class Huds extends React.Component<IProps, IState> {
 									toggleConfig={this.toggleConfig}
 									isActive={hud.url === this.state.currentHUD}
 									customFields={this.props.cxt.fields}
+									cxt={this.props.cxt}
 									loadHUDs={this.loadHUDs}
 									setHUDLoading={this.setHUDLoading}
 									isLoading={!!hud.uuid && this.state.loadingHUDs.includes(hud.uuid)}
