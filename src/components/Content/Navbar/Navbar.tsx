@@ -67,6 +67,17 @@ const Navbar = ({ activeTab, toggle, files }: IProps) => (
 		</NavItem>
 		<NavItem className="hover-pointer">
 			<NavLink
+				active={activeTab === 'aco'}
+				onClick={() => {
+					toggle('aco');
+				}}
+			>
+				<img src={Tabs.Live} alt="ACO" />
+				<div>ACO</div>
+			</NavLink>
+		</NavItem>
+		<NavItem className="hover-pointer">
+			<NavLink
 				active={activeTab === 'live'}
 				onClick={() => {
 					toggle('live');

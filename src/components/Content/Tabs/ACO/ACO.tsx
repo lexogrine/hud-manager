@@ -183,7 +183,7 @@ const ACO = ({ toggle }: IProps) => {
 							<div className="aco_config_title">Configs:</div>
 							{activeConfig.configs.map(config => (
 								<div key={config} className="aco_area_config">
-									{config.length > 30 ? config.substring(0, 30) + '...' : config}
+									<div>{config}</div>
 									<img
 										src={trash}
 										className="action"
