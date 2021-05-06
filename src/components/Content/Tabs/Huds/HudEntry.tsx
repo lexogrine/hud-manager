@@ -30,7 +30,7 @@ interface IProps {
 	loadHUDs: () => Promise<void>;
 	setHUDLoading: (uuid: string, isLoading: boolean) => void;
 	isLoading: boolean;
-	cxt: IContextData
+	cxt: IContextData;
 }
 
 const HudEntry = ({ cxt, isLoading, hud, isActive, toggleConfig, customFields, loadHUDs, setHUDLoading }: IProps) => {
@@ -56,7 +56,7 @@ const HudEntry = ({ cxt, isLoading, hud, isActive, toggleConfig, customFields, l
 	const deleteHUD = async () => {
 		try {
 			await api.huds.delete(hud.dir);
-		} catch { }
+		} catch {}
 		toggleModal();
 	};
 	const downloadHUD = (uuid: string) => {
@@ -136,7 +136,7 @@ const HudEntry = ({ cxt, isLoading, hud, isActive, toggleConfig, customFields, l
 							<img
 								src={`${Config.isDev ? Config.apiAddress : '/'}${
 									hud.isDev ? 'dev/thumb.png' : `huds/${hud.dir}/thumbnail`
-									}`}
+								}`}
 								alt={`${hud.name}`}
 							/>
 						) : null}
@@ -192,8 +192,8 @@ const HudEntry = ({ cxt, isLoading, hud, isActive, toggleConfig, customFields, l
 								</Col>
 							</Row>
 						) : (
-								''
-							)}
+							''
+						)}
 					</Col>
 					{isLocal ? (
 						<Col style={{ flex: 1 }} className="hud-options">
@@ -228,8 +228,8 @@ const HudEntry = ({ cxt, isLoading, hud, isActive, toggleConfig, customFields, l
 										Go to HUD settings
 									</Tip>
 								) : (
-										''
-									)}
+									''
+								)}
 								{Config.isElectron ? (
 									<Tip
 										id={`hud_overlay_button_${hashCode(hud.dir)}`}
@@ -263,15 +263,20 @@ const HudEntry = ({ cxt, isLoading, hud, isActive, toggleConfig, customFields, l
 												Upload HUD
 											</Tip>
 										) : (
-												'Uploading...'
-											)
+											'Uploading...'
+										)
 									) : null}
 								</ElectronOnly>
 								{Config.isElectron && !hud.isDev ? (
 									<Tip
 										id={`hud_delete_button_${hashCode(hud.dir)}`}
 										label={
-											<img src={trash} onClick={toggleModal} className="action" alt="Delete HUD" />
+											<img
+												src={trash}
+												onClick={toggleModal}
+												className="action"
+												alt="Delete HUD"
+											/>
 										}
 									>
 										Delete HUD locally
@@ -298,22 +303,22 @@ const HudEntry = ({ cxt, isLoading, hud, isActive, toggleConfig, customFields, l
 							</GameOnly>
 						</Col>
 					) : (
-							<Col style={{ flex: 1 }} className="hud-options">
-								<div className="centered">
-									{!isLoading ? (
-										<img
-											src={downloadIcon}
-											className="action"
-											onClick={() => {
-												downloadHUD(hud.uuid);
-											}}
-										/>
-									) : (
-											'Downloading...'
-										)}
-								</div>
-							</Col>
-						)}
+						<Col style={{ flex: 1 }} className="hud-options">
+							<div className="centered">
+								{!isLoading ? (
+									<img
+										src={downloadIcon}
+										className="action"
+										onClick={() => {
+											downloadHUD(hud.uuid);
+										}}
+									/>
+								) : (
+									'Downloading...'
+								)}
+							</div>
+						</Col>
+					)}
 				</Row>
 				{isLocal ? (
 					<Row>

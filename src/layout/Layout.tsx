@@ -110,8 +110,8 @@ export default class Layout extends React.Component<{}, IState> {
 		this.setState({ picked: game, data }, this.sync);
 	};
 	clearGame = () => {
-		this.setState({picked: null});
-	}
+		this.setState({ picked: null });
+	};
 	sync = () => {
 		if (!this.state.picked) return;
 		api.games.startServices(this.state.picked).then(response => {

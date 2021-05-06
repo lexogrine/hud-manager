@@ -304,6 +304,12 @@ button.btn-primary {
     display: flex;
     align-items: center;
 }
+.aco_area_config div {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-right: 30px;
+}
 .aco_area_config:nth-child(2n) {
     background-color: #202328;
 }

@@ -17,12 +17,12 @@ body {
 .navbar-container > li {
     width:100%;
     height: calc(calc(100vh - 64px)/6);
-    max-height: 135px;
+    max-height: 120px;
 }
 .navbar-container > li > a{
     width:100%;
     height: calc(calc(100vh - 64px)/6 - 1px);
-    max-height: 134px;
+    max-height: 120px;
     background-color: #2b2e34; 
     display: flex;
     align-items: center;
@@ -86,7 +86,7 @@ body {
 .tab-content-container {
     padding: 53px;
     padding-bottom: 0;
-    margin-left: 143px;
+    margin-left: 120px;
     margin-top: 135px;
     position: relative;
     height: calc(100vh - 135px - 71px);
@@ -199,6 +199,7 @@ body {
 #settings a {
     border-bottom: none !important;
     height: 135px;
+    max-height: unset;
 }
 
 .exec-code {
@@ -217,9 +218,9 @@ body {
 }
 .main-buttons-container {
     position: fixed;
-    width: calc(100% - 143px);
+    width: calc(100% - 120px);
     bottom: 0;
-    left: 143px;
+    left: 120px;
     padding: 0;
     height:71px;
     display:flex;
@@ -262,7 +263,7 @@ input.form-control:focus, select.form-control:focus {
     background: linear-gradient(to bottom right, #78c1f6, #6b1fff);
 }
 .navbar-container {
-    width:143px;
+    width:120px;
     display: block !important;
     border:none;
     position: fixed;
@@ -1084,7 +1085,7 @@ form .card > .card-body > button.btn {
     border-radius: 0 !important;
     
     flex-direction: column;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
 }
 .nav-tabs .nav-item {
