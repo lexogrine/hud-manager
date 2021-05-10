@@ -32,7 +32,6 @@ export const GameOnly = ({ game, children }: { game: I.AvailableGames; children:
 			if (!cxt.game) return null;
 			if (game !== cxt.game) return null;
 			return children;
-
 		}}
 	</ContextData.Consumer>
 );
@@ -127,7 +126,7 @@ export default class Config extends React.Component<IProps, IState> {
 	import = (data: any, callback: any) => async () => {
 		try {
 			await api.files.sync(data);
-		} catch { }
+		} catch {}
 		this.setState({ data: {}, conflict: { teams: 0, players: 0 }, importModalOpen: false }, callback);
 	};
 	importCheck = (callback: any) => (files: FileList) => {
@@ -158,7 +157,7 @@ export default class Config extends React.Component<IProps, IState> {
 					importModalOpen: true,
 					data: db
 				});
-			} catch { }
+			} catch {}
 		};
 	};
 	download = (target: 'gsi' | 'cfgs' | 'db') => {
@@ -448,8 +447,8 @@ export default class Config extends React.Component<IProps, IState> {
 									{update.installing
 										? 'Installing...'
 										: update.available
-											? 'Install update'
-											: 'Latest'}
+										? 'Install update'
+										: 'Latest'}
 								</Button>
 							</Col>
 						</ElectronOnly>

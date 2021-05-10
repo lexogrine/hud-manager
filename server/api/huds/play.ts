@@ -34,7 +34,7 @@ export const initGameConnection = async () => {
 		socket.on('toggleDirector', () => {
 			director.status ? director.stop() : director.start();
 			socket.emit('directorStatus', director.status);
-		})
+		});
 	});
 
 	let testDataIndex = 0;

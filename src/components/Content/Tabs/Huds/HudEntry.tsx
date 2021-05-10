@@ -54,7 +54,7 @@ const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHU
 	const deleteHUD = async () => {
 		try {
 			await api.huds.delete(hud.dir);
-		} catch { }
+		} catch {}
 		toggleModal();
 	};
 	const downloadHUD = (uuid: string) => {
@@ -134,7 +134,7 @@ const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHU
 							<img
 								src={`${Config.isDev ? Config.apiAddress : '/'}${
 									hud.isDev ? 'dev/thumb.png' : `huds/${hud.dir}/thumbnail`
-									}`}
+								}`}
 								alt={`${hud.name}`}
 							/>
 						) : null}
@@ -190,8 +190,8 @@ const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHU
 								</Col>
 							</Row>
 						) : (
-								''
-							)}
+							''
+						)}
 					</Col>
 					{isLocal ? (
 						<Col style={{ flex: 1 }} className="hud-options">
@@ -226,8 +226,8 @@ const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHU
 										Go to HUD settings
 									</Tip>
 								) : (
-										''
-									)}
+									''
+								)}
 								{Config.isElectron ? (
 									<Tip
 										id={`hud_overlay_button_${hashCode(hud.dir)}`}
@@ -261,8 +261,8 @@ const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHU
 												Upload HUD
 											</Tip>
 										) : (
-												'Uploading...'
-											)
+											'Uploading...'
+										)
 									) : null}
 								</ElectronOnly>
 								{Config.isElectron && !hud.isDev ? (
@@ -301,22 +301,22 @@ const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHU
 							</GameOnly>
 						</Col>
 					) : (
-							<Col style={{ flex: 1 }} className="hud-options">
-								<div className="centered">
-									{!isLoading ? (
-										<img
-											src={downloadIcon}
-											className="action"
-											onClick={() => {
-												downloadHUD(hud.uuid);
-											}}
-										/>
-									) : (
-											'Downloading...'
-										)}
-								</div>
-							</Col>
-						)}
+						<Col style={{ flex: 1 }} className="hud-options">
+							<div className="centered">
+								{!isLoading ? (
+									<img
+										src={downloadIcon}
+										className="action"
+										onClick={() => {
+											downloadHUD(hud.uuid);
+										}}
+									/>
+								) : (
+									'Downloading...'
+								)}
+							</div>
+						</Col>
+					)}
 				</Row>
 				{isLocal ? (
 					<Row>
@@ -337,7 +337,6 @@ const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHU
 									>
 										Click to copy
 									</Tip>
-
 								</UncontrolledCollapse>
 							</div>
 						</Col>

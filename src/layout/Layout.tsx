@@ -246,7 +246,12 @@ export default class Layout extends React.Component<{}, IState> {
 						reload={this.state.data.reload}
 					/>
 					<GamePicker isOpen={Boolean(data.customer && !this.state.picked)} setGame={this.setGame} />
-					<Content active={active} available={available} toggleSync={this.toggleSync} clearGame={this.clearGame} />
+					<Content
+						active={active}
+						available={available}
+						toggleSync={this.toggleSync}
+						clearGame={this.clearGame}
+					/>
 				</div>
 			</Provider>
 		);

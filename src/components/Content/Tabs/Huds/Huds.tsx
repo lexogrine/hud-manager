@@ -64,7 +64,7 @@ interface IState {
 	currentHUD: string | null;
 	enableTest: boolean;
 	isOnLoop: boolean;
-	blocked: string[]
+	blocked: string[];
 }
 
 export default class Huds extends React.Component<IProps, IState> {
@@ -124,8 +124,8 @@ export default class Huds extends React.Component<IProps, IState> {
 		const { form } = this.state;
 		form[name] = !form[name];
 		this.setState({ form }, () => {
-			if(name === "ar"){
-				this.forceBlock(true, 'afx')
+			if (name === 'ar') {
+				this.forceBlock(true, 'afx');
 			}
 		});
 	};
@@ -167,13 +167,13 @@ export default class Huds extends React.Component<IProps, IState> {
 	toggleConfig = (hud?: I.HUD) => () => {
 		this.setState({ active: hud || null });
 	};
-	forceBlock = (status: boolean, ...blockedToggles: (keyof IForm)[]) =>{
+	forceBlock = (status: boolean, ...blockedToggles: (keyof IForm)[]) => {
 		this.setState((state: any) => {
-			for(const blocked of blockedToggles){
-				if(blocked in state.form){
+			for (const blocked of blockedToggles) {
+				if (blocked in state.form) {
 					state.form[blocked] = status;
 				}
-				if(state.blocked.includes(blocked)){
+				if (state.blocked.includes(blocked)) {
 					state.blocked = state.blocked.filter((el: string) => el !== blocked);
 				} else {
 					state.blocked.push(blocked);
@@ -181,7 +181,7 @@ export default class Huds extends React.Component<IProps, IState> {
 			}
 			return state;
 		});
-	}
+	};
 
 	render() {
 		const { killfeed, radar, afx } = this.state.form;
@@ -203,7 +203,7 @@ export default class Huds extends React.Component<IProps, IState> {
 			<React.Fragment>
 				<div className="tab-title-container">HUDs</div>
 				<div className={`tab-content-container no-padding ${!isElectron ? 'full-scroll' : ''}`}>
-					<GameOnly game="csgo" >
+					<GameOnly game="csgo">
 						<Row className="config-container">
 							<Col md="12" className="config-entry wrap">
 								<div className="config-area">
@@ -212,7 +212,7 @@ export default class Huds extends React.Component<IProps, IState> {
 										isOn={this.state.form.radar}
 										id="radar-toggle"
 										handleToggle={this.changeForm('radar')}
-										disabled={this.state.blocked.includes("radar")}
+										disabled={this.state.blocked.includes('radar')}
 									/>
 								</div>
 								<div className="config-area">
@@ -221,7 +221,7 @@ export default class Huds extends React.Component<IProps, IState> {
 										isOn={this.state.form.killfeed}
 										id="killfeed-toggle"
 										handleToggle={this.changeForm('killfeed')}
-										disabled={this.state.blocked.includes("killfeed")}
+										disabled={this.state.blocked.includes('killfeed')}
 									/>
 								</div>
 								<div className="config-area">
@@ -230,7 +230,7 @@ export default class Huds extends React.Component<IProps, IState> {
 										isOn={this.state.form.afx}
 										id="afx-toggle"
 										handleToggle={this.changeForm('afx')}
-										disabled={this.state.blocked.includes("afx")}
+										disabled={this.state.blocked.includes('afx')}
 									/>
 								</div>
 								<ElectronOnly>
@@ -249,7 +249,7 @@ export default class Huds extends React.Component<IProps, IState> {
 										isOn={this.state.form.ar}
 										id="ar-toggle"
 										handleToggle={this.changeForm('ar')}
-										disabled={this.state.blocked.includes("ar")}
+										disabled={this.state.blocked.includes('ar')}
 									/>
 								</div>
 								<div className="config-area">
@@ -258,7 +258,7 @@ export default class Huds extends React.Component<IProps, IState> {
 										isOn={this.state.form.autoexec}
 										id="autoexec-toggle"
 										handleToggle={this.changeForm('autoexec')}
-										disabled={this.state.blocked.includes("autoexec")}
+										disabled={this.state.blocked.includes('autoexec')}
 									/>
 								</div>
 							</Col>
@@ -304,7 +304,10 @@ export default class Huds extends React.Component<IProps, IState> {
 												</div>
 											) : null}
 											{killfeed ? (
-												<div>If you only want ACO without killfeed, remove <code>_killfeed</code> from execute line</div>
+												<div>
+													If you only want ACO without killfeed, remove <code>_killfeed</code>{' '}
+													from execute line
+												</div>
 											) : null}
 											{afx && !config.afxCEFHudInteropPath ? (
 												<div>Specify AFX Interop path in Settings in order to use AFX mode</div>

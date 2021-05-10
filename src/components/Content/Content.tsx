@@ -43,10 +43,7 @@ const Content = ({
 				<Tabs activeTab={activeTab} data={data} toggle={toggle} gsiCheck={checkFiles} />
 			</Col>
 			<div className="top_buttons">
-				<div
-					className={`sync_button`}
-					onClick={clearGame}
-				>
+				<div className={`sync_button`} onClick={clearGame}>
 					CHANGE GAME
 				</div>
 				<a

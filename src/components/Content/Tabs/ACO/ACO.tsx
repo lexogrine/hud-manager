@@ -10,7 +10,6 @@ import AddConfigModal from './AddConfigModal/AddConfigModal';
 import { socket } from '../Live/Live';
 import Switch from '../../../Switch/Switch';
 
-
 const ACO = () => {
 	const [acos, setACOs] = useState<MapConfig[]>([]);
 	const [activeMap, setActiveMap] = useState<string>('de_mirage');
@@ -19,9 +18,7 @@ const ACO = () => {
 	const [isModalOpened, setModalOpen] = useState(false);
 	const [isConfigOpened, setConfigOpen] = useState(false);
 
-	const [ directorStatus, setDirectorStatus ] = useState(false);
-
-
+	const [directorStatus, setDirectorStatus] = useState(false);
 
 	const [newAreaName, setNewAreaName] = useState('');
 
@@ -120,19 +117,19 @@ const ACO = () => {
 				saveArea={saveArea}
 			/>
 			<AddConfigModal close={() => setConfigOpen(false)} isOpen={isConfigOpened} save={saveConfig} />
-			<div className="tab-title-container">
-				ACO
-			</div>
+			<div className="tab-title-container">ACO</div>
 			<div className={`tab-content-container full-scroll`}>
 				<Row className="padded">
 					<div style={{ width: '512px', marginRight: '25px' }}>
-						<div style={{display: 'flex', justifyContent:'space-between', marginBottom: '10px'}}>
+						<div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
 							Director status:
-						<Switch
-							isOn={directorStatus}
-							id="switch-director"
-							handleToggle={() => { socket.emit('toggleDirector') }}
-						/>
+							<Switch
+								isOn={directorStatus}
+								id="switch-director"
+								handleToggle={() => {
+									socket.emit('toggleDirector');
+								}}
+							/>
 						</div>
 						<FormGroup>
 							<Input type="select" id="map_pick" name="map_pick" value={activeMap} onChange={onChange}>

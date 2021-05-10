@@ -26,7 +26,7 @@ export const getActiveGameMatches = (): Promise<Match[]> => {
 		$or.push({ game: { $exists: false } });
 	}
 	return getMatches({ $or });
-}
+};
 
 export async function getMatchById(id: string): Promise<Match | null> {
 	return new Promise(res => {
@@ -125,7 +125,7 @@ export const getCurrent = async () => {
 	const activeGameMatches = await getActiveGameMatches();
 
 	return activeGameMatches.find(match => match.current);
-}
+};
 
 /*
 export const setCurrent = (id: string) =>
