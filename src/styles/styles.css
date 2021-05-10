@@ -263,12 +263,17 @@ input.form-control:focus, select.form-control:focus {
     background: linear-gradient(to bottom right, #78c1f6, #6b1fff);
 }
 .navbar-container {
-    width:120px;
+    width:125px;
     display: block !important;
     border:none;
     position: fixed;
     z-index: 2;
     background-color: #2b2e34;
+    overflow: auto;
+    height: calc(100% - 64px);
+}
+.navbar-container::-webkit-scrollbar-thumb {
+    background-color: #1d1e21;
 }
 img.smallLogo {
     max-height:64px;

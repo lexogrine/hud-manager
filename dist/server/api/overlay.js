@@ -6,6 +6,12 @@ function overlay(hud) {
 <html>
     <head>
         <style>
+            @font-face {
+                font-family: 'Montserrat';
+                font-style: normal;
+                font-weight: 200;
+                src: url('/Montserrat-ExtraLight.ttf') format('truetype');
+            }
             html, body, #hud-container {
                 margin: 0;
                 width:100%;
@@ -22,25 +28,32 @@ function overlay(hud) {
                 align-items: center;
                 justify-content: center;
                 font-size: 40px;
-                font-weight: 700;
-                background-color: #e4e4e4;
+                font-weight: 100;
+                background-color: #24272d;
                 text-transform: uppercase;
                 text-align: center;
                 padding: 0 20%;
                 width: 60%;
+                flex-direction: column;
+                font-family: "Montserrat";
+                color: white;
+            }
+            #banned img {
+                margin-bottom: 93px;
             }
         </style>
         <script src="/socket.io/socket.io.js"></script>
         <script>
-            var socket = io('/');
-            socket.on('banned', () => {
+            const loadBannedPage = () => {
                 const hud = document.getElementById('hud-container');
                 if(hud) hud.remove();
                 const innerDiv = document.createElement('div');
                 innerDiv.id = 'banned';
-                innerDiv.innerText = 'You were banned for breaking the Terms of Service of the Lexogrine HUD Manager';
+                innerDiv.innerHTML = '<img src="/banned.png" />You have been banned for breaking TOS<br/>of the Lexogrine HUD Manager';
                 document.body.appendChild(innerDiv);
-            });
+            }
+            var socket = io('/');
+            socket.on('banned', loadBannedPage);
         </script>
     </head>
     <body>

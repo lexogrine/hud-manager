@@ -7,11 +7,13 @@ import Tabs from './Tabs/Tabs';
 const Content = ({
 	active,
 	available,
-	toggleSync
+	toggleSync,
+	clearGame
 }: {
 	available: boolean;
 	active: boolean;
 	toggleSync: () => void;
+	clearGame: () => void;
 }) => {
 	const [activeTab, setTab] = useState('huds');
 	const [data, setData] = useState(null);
@@ -40,18 +42,26 @@ const Content = ({
 			<Col>
 				<Tabs activeTab={activeTab} data={data} toggle={toggle} gsiCheck={checkFiles} />
 			</Col>
-			<a
-				className={`sync_button ${active ? 'active' : ''}`}
-				onClick={() => {
-					if (!available) return;
-					toggleSync();
-				}}
-				href={!available ? 'https://lexogrine.com/manager/register' : undefined}
-				rel={'noopener noreferrer'}
-				target={!available ? '_blank' : undefined}
-			>
-				{active ? 'CLOUD IS ACTIVE' : 'CLOUD IS NOT ACTIVE'}
-			</a>
+			<div className="top_buttons">
+				<div
+					className={`sync_button`}
+					onClick={clearGame}
+				>
+					CHANGE GAME
+				</div>
+				<a
+					className={`sync_button ${active ? 'active' : ''}`}
+					onClick={() => {
+						if (!available) return;
+						toggleSync();
+					}}
+					href={!available ? 'https://lexogrine.com/manager/register' : undefined}
+					rel={'noopener noreferrer'}
+					target={!available ? '_blank' : undefined}
+				>
+					{active ? 'CLOUD IS ACTIVE' : 'CLOUD IS NOT ACTIVE'}
+				</a>
+			</div>
 		</div>
 	);
 };

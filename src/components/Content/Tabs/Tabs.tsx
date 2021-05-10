@@ -48,7 +48,7 @@ const Tabs = ({ activeTab, data, toggle, gsiCheck }: IProps) => (
 					<AR cxt={cxt} toggle={toggle} huds={data}></AR>
 				</TabPane>
 				<TabPane tabId="aco">
-					<ACO cxt={cxt} toggle={toggle}></ACO>
+					<ACO ></ACO>
 				</TabPane>
 				<TabPane tabId="credits">
 					<Credits></Credits>

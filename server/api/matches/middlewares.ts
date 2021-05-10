@@ -4,9 +4,15 @@ import path from 'path';
 import fs from 'fs';
 import * as M from './index';
 import { ioPromise } from '../../socket';
+import { customer } from '..';
 
 export const getMatchesRoute: express.RequestHandler = async (req, res) => {
-	const matches = (await M.getMatches()).map(match => {
+	const game = customer.game;
+	const $or: any[] = [{ game }];
+	if (game === 'csgo') {
+		$or.push({ game: { $exists: false } });
+	}
+	const matches = (await M.getMatches({ $or })).map(match => {
 		if ('full' in req.query) return match;
 		return {
 			...match,
@@ -30,6 +36,7 @@ export const getMatchRoute: express.RequestHandler = async (req, res) => {
 };
 
 export const addMatchRoute: RequestHandler = async (req, res) => {
+	req.body.game = customer.game;
 	const match = await M.addMatch(req.body);
 	return res.sendStatus(match ? 200 : 500);
 };

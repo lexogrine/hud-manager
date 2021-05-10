@@ -26,6 +26,15 @@ exports.initGameConnection = async () => {
     const director = aco_1.createDirector();
     director.pgl = socket_1.mirvPgl;
     director.start();
+    io.on('connection', socket => {
+        socket.on('getDirectorStatus', () => {
+            socket.emit('directorStatus', director.status);
+        });
+        socket.on('toggleDirector', () => {
+            director.status ? director.stop() : director.start();
+            socket.emit('directorStatus', director.status);
+        });
+    });
     let testDataIndex = 0;
     const startSendingTestData = () => {
         if (exports.playTesting.intervalId)

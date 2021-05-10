@@ -28,8 +28,14 @@ const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
 const M = __importStar(require("./index"));
 const socket_1 = require("../../socket");
+const __1 = require("..");
 exports.getMatchesRoute = async (req, res) => {
-    const matches = (await M.getMatches()).map(match => {
+    const game = __1.customer.game;
+    const $or = [{ game }];
+    if (game === 'csgo') {
+        $or.push({ game: { $exists: false } });
+    }
+    const matches = (await M.getMatches({ $or })).map(match => {
         if ('full' in req.query)
             return match;
         return {
@@ -50,6 +56,7 @@ exports.getMatchRoute = async (req, res) => {
     return res.json(match);
 };
 exports.addMatchRoute = async (req, res) => {
+    req.body.game = __1.customer.game;
     const match = await M.addMatch(req.body);
     return res.sendStatus(match ? 200 : 500);
 };

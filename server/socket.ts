@@ -1,7 +1,7 @@
 import { Server, Socket } from 'socket.io';
 import { CSGOGSI, CSGORaw, Score } from 'csgogsi-socket';
 import fetch from 'node-fetch';
-import { getMatches, updateRound, updateMatch } from './api/matches';
+import { updateRound, updateMatch, getActiveGameMatches } from './api/matches';
 import { internalIP, loadConfig, publicIP } from './api/config';
 import { createNextMatch } from './api/tournaments';
 import { customer } from './api';
@@ -10,7 +10,6 @@ import { /*hlaeServer,*/ MIRVPGL } from './hlae';
 import { app, server } from '.';
 import { HUDStateManager } from './api/huds/hudstatemanager';
 import './api/huds/devhud';
-import { string, boolean } from 'yargs';
 
 const radar = require('./../boltobserv/index.js');
 
@@ -75,7 +74,7 @@ ioPromise.then(io => {
 		if (score.winner && score.winner.logo) {
 			score.winner.logo = '';
 		}
-		const matches = await getMatches();
+		const matches = await getActiveGameMatches();
 		const match = matches.filter(match => match.current)[0];
 		if (!match) return;
 		const { vetos } = match;

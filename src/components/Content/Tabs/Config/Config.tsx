@@ -5,7 +5,7 @@ import api from './../../../../api/api';
 import config from './../../../../api/config';
 import DragInput from './../../../DragFileInput';
 import ImportModal from './ImportModal';
-import { IContextData } from '../../../Context';
+import { IContextData, ContextData } from '../../../Context';
 import ElectronOnly from '../../../ElectronOnly';
 import Switch from '../../../Switch/Switch';
 import { socket } from '../Live/Live';
@@ -26,11 +26,16 @@ interface IProps {
 	gsiCheck: Function;
 }
 
-export const GameOnly = ({ game, cxt, children }: { game: I.AvailableGames; cxt: IContextData; children: any }) => {
-	if (!cxt.game) return null;
-	if (game !== cxt.game) return null;
-	return children;
-};
+export const GameOnly = ({ game, children }: { game: I.AvailableGames; children: any }) => (
+	<ContextData.Consumer>
+		{cxt => {
+			if (!cxt.game) return null;
+			if (game !== cxt.game) return null;
+			return children;
+
+		}}
+	</ContextData.Consumer>
+);
 
 interface IState {
 	config: I.Config;
@@ -122,7 +127,7 @@ export default class Config extends React.Component<IProps, IState> {
 	import = (data: any, callback: any) => async () => {
 		try {
 			await api.files.sync(data);
-		} catch {}
+		} catch { }
 		this.setState({ data: {}, conflict: { teams: 0, players: 0 }, importModalOpen: false }, callback);
 	};
 	importCheck = (callback: any) => (files: FileList) => {
@@ -153,7 +158,7 @@ export default class Config extends React.Component<IProps, IState> {
 					importModalOpen: true,
 					data: db
 				});
-			} catch {}
+			} catch { }
 		};
 	};
 	download = (target: 'gsi' | 'cfgs' | 'db') => {
@@ -443,8 +448,8 @@ export default class Config extends React.Component<IProps, IState> {
 									{update.installing
 										? 'Installing...'
 										: update.available
-										? 'Install update'
-										: 'Latest'}
+											? 'Install update'
+											: 'Latest'}
 								</Button>
 							</Col>
 						</ElectronOnly>
@@ -453,7 +458,7 @@ export default class Config extends React.Component<IProps, IState> {
 							<Switch isOn={this.state.config.sync} id="sync-toggle" handleToggle={this.toggleHandler} />
 						</Col>
 
-						<GameOnly game="csgo" cxt={cxt}>
+						<GameOnly game="csgo">
 							<Col md="12" className="config-entry">
 								<div className="config-description">
 									HLAE Path: {this.state.config.hlaePath ? 'Loaded' : 'Not loaded'}
@@ -507,7 +512,7 @@ export default class Config extends React.Component<IProps, IState> {
 							</Col>
 						</GameOnly>
 
-						<GameOnly game="rocketleague" cxt={cxt}>
+						<GameOnly game="rocketleague">
 							<Col md="12" className="config-entry">
 								<div className="config-description">
 									<p>Rocket League integration: {this.getBakkesModStatusDescription()}</p>

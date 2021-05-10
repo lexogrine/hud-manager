@@ -6,7 +6,7 @@ class Director {
 	GSI: CSGOGSI;
 	pgl: MIRVPGL | null;
 
-	private status: boolean;
+	status: boolean;
 	private currentArea: string | null;
 	private lastSwitch: number;
 

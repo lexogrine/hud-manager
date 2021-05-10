@@ -59,7 +59,7 @@ exports.ioPromise.then(io => {
         if (score.winner && score.winner.logo) {
             score.winner.logo = '';
         }
-        const matches = await matches_1.getMatches();
+        const matches = await matches_1.getActiveGameMatches();
         const match = matches.filter(match => match.current)[0];
         if (!match)
             return;

@@ -64,6 +64,7 @@ interface IState {
 	currentHUD: string | null;
 	enableTest: boolean;
 	isOnLoop: boolean;
+	blocked: string[]
 }
 
 export default class Huds extends React.Component<IProps, IState> {
@@ -90,7 +91,8 @@ export default class Huds extends React.Component<IProps, IState> {
 			active: null,
 			currentHUD: null,
 			enableTest: true,
-			isOnLoop: false
+			isOnLoop: false,
+			blocked: []
 		};
 	}
 
@@ -121,7 +123,11 @@ export default class Huds extends React.Component<IProps, IState> {
 	changeForm = (name: keyof IForm) => () => {
 		const { form } = this.state;
 		form[name] = !form[name];
-		this.setState({ form });
+		this.setState({ form }, () => {
+			if(name === "ar"){
+				this.forceBlock(true, 'afx')
+			}
+		});
 	};
 	getConfig = async () => {
 		const config = await api.config.get();
@@ -161,6 +167,22 @@ export default class Huds extends React.Component<IProps, IState> {
 	toggleConfig = (hud?: I.HUD) => () => {
 		this.setState({ active: hud || null });
 	};
+	forceBlock = (status: boolean, ...blockedToggles: (keyof IForm)[]) =>{
+		this.setState((state: any) => {
+			for(const blocked of blockedToggles){
+				if(blocked in state.form){
+					state.form[blocked] = status;
+				}
+				if(state.blocked.includes(blocked)){
+					state.blocked = state.blocked.filter((el: string) => el !== blocked);
+				} else {
+					state.blocked.push(blocked);
+				}
+			}
+			return state;
+		});
+	}
+
 	render() {
 		const { killfeed, radar, afx } = this.state.form;
 		const { active, config } = this.state;
@@ -181,23 +203,25 @@ export default class Huds extends React.Component<IProps, IState> {
 			<React.Fragment>
 				<div className="tab-title-container">HUDs</div>
 				<div className={`tab-content-container no-padding ${!isElectron ? 'full-scroll' : ''}`}>
-					<GameOnly game="csgo" cxt={this.props.cxt}>
+					<GameOnly game="csgo" >
 						<Row className="config-container">
 							<Col md="12" className="config-entry wrap">
 								<div className="config-area">
-									<div className="config-description">Custom radar</div>
+									<div className="config-description">Radar</div>
 									<Switch
 										isOn={this.state.form.radar}
 										id="radar-toggle"
 										handleToggle={this.changeForm('radar')}
+										disabled={this.state.blocked.includes("radar")}
 									/>
 								</div>
 								<div className="config-area">
-									<div className="config-description">Custom killfeed</div>
+									<div className="config-description">Killfeed or ACO</div>
 									<Switch
 										isOn={this.state.form.killfeed}
 										id="killfeed-toggle"
 										handleToggle={this.changeForm('killfeed')}
+										disabled={this.state.blocked.includes("killfeed")}
 									/>
 								</div>
 								<div className="config-area">
@@ -206,6 +230,7 @@ export default class Huds extends React.Component<IProps, IState> {
 										isOn={this.state.form.afx}
 										id="afx-toggle"
 										handleToggle={this.changeForm('afx')}
+										disabled={this.state.blocked.includes("afx")}
 									/>
 								</div>
 								<ElectronOnly>
@@ -224,6 +249,7 @@ export default class Huds extends React.Component<IProps, IState> {
 										isOn={this.state.form.ar}
 										id="ar-toggle"
 										handleToggle={this.changeForm('ar')}
+										disabled={this.state.blocked.includes("ar")}
 									/>
 								</div>
 								<div className="config-area">
@@ -232,6 +258,7 @@ export default class Huds extends React.Component<IProps, IState> {
 										isOn={this.state.form.autoexec}
 										id="autoexec-toggle"
 										handleToggle={this.changeForm('autoexec')}
+										disabled={this.state.blocked.includes("autoexec")}
 									/>
 								</div>
 							</Col>
@@ -267,12 +294,6 @@ export default class Huds extends React.Component<IProps, IState> {
 											>
 												AR
 											</Button>
-											<Button
-												className="round-btn run-game"
-												onClick={() => this.props.toggle('aco', this.state.huds)}
-											>
-												ACO
-											</Button>
 										</ElectronOnly>
 									</div>
 									<div className="warning">
@@ -281,6 +302,9 @@ export default class Huds extends React.Component<IProps, IState> {
 												<div>
 													Specify HLAE path in Settings in order to use custom killfeeds
 												</div>
+											) : null}
+											{killfeed ? (
+												<div>If you only want ACO without killfeed, remove <code>_killfeed</code> from execute line</div>
 											) : null}
 											{afx && !config.afxCEFHudInteropPath ? (
 												<div>Specify AFX Interop path in Settings in order to use AFX mode</div>
@@ -297,7 +321,7 @@ export default class Huds extends React.Component<IProps, IState> {
 							</Col>
 						</Row>
 					</GameOnly>
-					<GameOnly game="rocketleague" cxt={this.props.cxt}>
+					<GameOnly game="rocketleague">
 						<Row className="config-container">
 							<Col md="12" className="config-entry">
 								<div className="running-game-container">
@@ -350,7 +374,6 @@ export default class Huds extends React.Component<IProps, IState> {
 									toggleConfig={this.toggleConfig}
 									isActive={hud.url === this.state.currentHUD}
 									customFields={this.props.cxt.fields}
-									cxt={this.props.cxt}
 									loadHUDs={this.loadHUDs}
 									setHUDLoading={this.setHUDLoading}
 									isLoading={!!hud.uuid && this.state.loadingHUDs.includes(hud.uuid)}

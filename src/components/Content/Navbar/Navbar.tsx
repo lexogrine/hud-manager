@@ -1,6 +1,7 @@
 import React from 'react';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import * as Tabs from './TabIcons';
+import { GameOnly } from '../Tabs/Config/Config';
 
 interface IProps {
 	activeTab: string;
@@ -65,28 +66,30 @@ const Navbar = ({ activeTab, toggle, files }: IProps) => (
 				<div>HUDs</div>
 			</NavLink>
 		</NavItem>
-		<NavItem className="hover-pointer">
-			<NavLink
-				active={activeTab === 'aco'}
-				onClick={() => {
-					toggle('aco');
-				}}
-			>
-				<img src={Tabs.Live} alt="ACO" />
-				<div>ACO</div>
-			</NavLink>
-		</NavItem>
-		<NavItem className="hover-pointer">
-			<NavLink
-				active={activeTab === 'live'}
-				onClick={() => {
-					toggle('live');
-				}}
-			>
-				<img src={Tabs.Live} alt="Live" />
-				<div>Live</div>
-			</NavLink>
-		</NavItem>
+		<GameOnly game="csgo">
+			<NavItem className="hover-pointer">
+				<NavLink
+					active={activeTab === 'aco'}
+					onClick={() => {
+						toggle('aco');
+					}}
+				>
+					<img src={Tabs.Live} alt="ACO" />
+					<div>ACO</div>
+				</NavLink>
+			</NavItem>
+			<NavItem className="hover-pointer">
+				<NavLink
+					active={activeTab === 'live'}
+					onClick={() => {
+						toggle('live');
+					}}
+				>
+					<img src={Tabs.Live} alt="Live" />
+					<div>Live</div>
+				</NavLink>
+			</NavItem>
+		</GameOnly>
 		<NavItem className="hover-pointer" id="settings">
 			<NavLink
 				active={activeTab === 'config'}

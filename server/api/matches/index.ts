@@ -4,14 +4,13 @@ import db from './../../../init/database';
 import { getTeamById } from './../teams';
 import uuidv4 from 'uuid/v4';
 import { CSGO, RoundOutcome } from 'csgogsi-socket';
-import { validateCloudAbility, customer } from '..';
-import { addResource, deleteResource, updateResource } from '../cloud';
+import { customer } from '..';
 
 const matchesDb = db.matches;
 
-export const getMatches = (): Promise<Match[]> => {
+export const getMatches = (query: any): Promise<Match[]> => {
 	return new Promise(res => {
-		matchesDb.find({}, (err: Error, matches: Match[]) => {
+		matchesDb.find(query, (err: Error, matches: Match[]) => {
 			if (err) {
 				return res([]);
 			}
@@ -19,6 +18,15 @@ export const getMatches = (): Promise<Match[]> => {
 		});
 	});
 };
+
+export const getActiveGameMatches = (): Promise<Match[]> => {
+	const game = customer.game;
+	const $or: any[] = [{ game }];
+	if (game === 'csgo') {
+		$or.push({ game: { $exists: false } });
+	}
+	return getMatches({ $or });
+}
 
 export async function getMatchById(id: string): Promise<Match | null> {
 	return new Promise(res => {
@@ -113,15 +121,12 @@ export const deleteMatch = (id: string) =>
 		});
 	});
 
-export const getCurrent = () =>
-	new Promise<Match | null>(res => {
-		matchesDb.findOne({ current: true }, (err, match) => {
-			if (err || !match) {
-				return res(null);
-			}
-			return res(match);
-		});
-	});
+export const getCurrent = async () => {
+	const activeGameMatches = await getActiveGameMatches();
+
+	return activeGameMatches.find(match => match.current);
+}
+
 /*
 export const setCurrent = (id: string) =>
 	new Promise(res => {
@@ -142,7 +147,7 @@ export const updateMatch = (match: Match) =>
 			matchesDb.update(
 				{
 					$where: function () {
-						return this.current && this.id !== match.id;
+						return this.current && this.id !== match.id && this.game === match.game;
 					}
 				},
 				{ $set: { current: false } },
@@ -183,8 +188,8 @@ export const updateMatch = (match: Match) =>
 
 export const reverseSide = async () => {
 	const io = await ioPromise;
-	const matches = await getMatches();
-	const current = matches.find(match => match.current);
+	const matches = await getActiveGameMatches();
+	const current = matches.find(match => match.current && match.game === customer.game);
 	if (!current) return;
 	if (current.vetos.filter(veto => veto.teamId).length > 0 && !GSI.last) {
 		return;
@@ -245,7 +250,7 @@ export const updateRound = async (game: CSGO) => {
 		};
 	}
 
-	const matches = await getMatches();
+	const matches = await getActiveGameMatches();
 	const match = matches.find(match => match.current);
 
 	if (!match) return;

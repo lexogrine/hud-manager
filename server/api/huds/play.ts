@@ -27,7 +27,15 @@ export const initGameConnection = async () => {
 
 	director.pgl = mirvPgl;
 
-	director.start();
+	io.on('connection', socket => {
+		socket.on('getDirectorStatus', () => {
+			socket.emit('directorStatus', director.status);
+		});
+		socket.on('toggleDirector', () => {
+			director.status ? director.stop() : director.start();
+			socket.emit('directorStatus', director.status);
+		})
+	});
 
 	let testDataIndex = 0;
 

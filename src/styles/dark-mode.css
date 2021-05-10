@@ -40,9 +40,6 @@ button.btn-primary {
     height:29px;
     font-size:10px;
     font-weight:700;
-    position: absolute;
-    top: 77px;
-    right: 307px;
     z-index: 5;
     display:flex;
     align-items: center;
@@ -51,10 +48,19 @@ button.btn-primary {
     cursor:pointer;
     background-color: #46494f;
     color: white !important;
+    margin: 0 5px;
     text-decoration: none !important;
 }
 .sync_button.active {
     background-color: #53bf53;
+}
+.top_buttons {
+        position: absolute;
+        top: 118px;
+        right: 220px;
+        z-index: 5;
+        display: flex;
+    
 }
 .loading-container.hide {
     opacity:0;

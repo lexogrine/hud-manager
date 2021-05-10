@@ -224,7 +224,6 @@ export default class Layout extends React.Component<{}, IState> {
 					{data.customer ? (
 						<div className={`license-status ${isElectron ? 'electron' : ''}`}>
 							{data.customer.license.type} {version}
-							<div onClick={this.clearGame}>Set game</div>
 							<ElectronOnly>
 								<div className="logout-button" onClick={this.logout}>
 									Logout
@@ -247,7 +246,7 @@ export default class Layout extends React.Component<{}, IState> {
 						reload={this.state.data.reload}
 					/>
 					<GamePicker isOpen={Boolean(data.customer && !this.state.picked)} setGame={this.setGame} />
-					<Content active={active} available={available} toggleSync={this.toggleSync} />
+					<Content active={active} available={available} toggleSync={this.toggleSync} clearGame={this.clearGame} />
 				</div>
 			</Provider>
 		);

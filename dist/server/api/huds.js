@@ -120,7 +120,7 @@ exports.getHUDs = async (req, res) => {
     return res.json(await exports.listHUDs());
 };
 const isJSON = (data) => {
-    if (!data || typeof data !== "string")
+    if (!data || typeof data !== 'string')
         return false;
     try {
         const json = JSON.parse(data);
@@ -134,7 +134,7 @@ exports.getHUDCustomAsset = async (req, res) => {
     const { hudDir, section, asset } = req.params;
     const hudData = socket_1.HUDState.get(hudDir, true);
     const data = hudData?.[section]?.[asset];
-    const panel = await exports.getHUDPanelSetting(hudDir);
+    const panel = (await exports.getHUDPanelSetting(hudDir));
     if (!data) {
         return res.sendStatus(404);
     }
@@ -149,7 +149,7 @@ exports.getHUDCustomAsset = async (req, res) => {
         return res.send(data);
     }
     const inputEntry = sectionEntry.inputs.find(inputData => inputData.name === asset);
-    if (!inputEntry || inputEntry.type !== "image") {
+    if (!inputEntry || inputEntry.type !== 'image') {
         return res.send(data);
     }
     const imgBuffer = Buffer.from(data, 'base64');

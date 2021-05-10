@@ -1,6 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { IContextData } from './../../../../components/Context';
-import goBack from './../../../../styles/goBack.png';
 import { Row, FormGroup, Input } from 'reactstrap';
 import maps from './MapPointer';
 import trash from './../../../../styles/trash.svg';
@@ -9,19 +7,21 @@ import { MapAreaConfig, MapConfig } from '../../../../api/interfaces';
 import api from '../../../../api/api';
 import SaveAreaModal from './SaveAreaModal/SaveAreaModal';
 import AddConfigModal from './AddConfigModal/AddConfigModal';
+import { socket } from '../Live/Live';
+import Switch from '../../../Switch/Switch';
 
-interface IProps {
-	cxt: IContextData;
-	toggle: (tab: string, data?: any) => void;
-}
 
-const ACO = ({ toggle }: IProps) => {
+const ACO = () => {
 	const [acos, setACOs] = useState<MapConfig[]>([]);
 	const [activeMap, setActiveMap] = useState<string>('de_mirage');
 	const [activeConfig, setActiveConfig] = useState<MapAreaConfig | null>(null);
 	const [newArea, setNewArea] = useState<number[][] | null>(null);
 	const [isModalOpened, setModalOpen] = useState(false);
 	const [isConfigOpened, setConfigOpen] = useState(false);
+
+	const [ directorStatus, setDirectorStatus ] = useState(false);
+
+
 
 	const [newAreaName, setNewAreaName] = useState('');
 
@@ -98,6 +98,10 @@ const ACO = ({ toggle }: IProps) => {
 
 	useEffect(() => {
 		loadACOs();
+		socket.on('directorStatus', (status: boolean) => {
+			setDirectorStatus(status);
+		});
+		socket.emit('getDirectorStatus');
 	}, []);
 
 	const activeMapConfig = maps[activeMap];
@@ -117,12 +121,19 @@ const ACO = ({ toggle }: IProps) => {
 			/>
 			<AddConfigModal close={() => setConfigOpen(false)} isOpen={isConfigOpened} save={saveConfig} />
 			<div className="tab-title-container">
-				<img src={goBack} onClick={() => toggle('huds')} className="go-back-button" alt="Go back" />
 				ACO
 			</div>
 			<div className={`tab-content-container full-scroll`}>
 				<Row className="padded">
 					<div style={{ width: '512px', marginRight: '25px' }}>
+						<div style={{display: 'flex', justifyContent:'space-between', marginBottom: '10px'}}>
+							Director status:
+						<Switch
+							isOn={directorStatus}
+							id="switch-director"
+							handleToggle={() => { socket.emit('toggleDirector') }}
+						/>
+						</div>
 						<FormGroup>
 							<Input type="select" id="map_pick" name="map_pick" value={activeMap} onChange={onChange}>
 								<option value="de_mirage">de_mirage</option>
