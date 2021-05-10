@@ -25,7 +25,6 @@ exports.initGameConnection = async () => {
     const io = await socket_1.ioPromise;
     const director = aco_1.createDirector();
     director.pgl = socket_1.mirvPgl;
-    director.start();
     io.on('connection', socket => {
         socket.on('getDirectorStatus', () => {
             socket.emit('directorStatus', director.status);
