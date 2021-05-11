@@ -16,6 +16,7 @@ If you are in the business of broadcasting professional CS:GO matches, the Lexog
   * [Testing](#testing)
   * [Player cam feed](#player-cam-feed)
   * [Custom database fields](#custom-database-fields)
+  * [AR](#ar)
 * [Settings](#settings)
 * [AFX Mode](#embedded-hud)
 * [HUD API](#hud-api)
@@ -138,6 +139,19 @@ Lexogrine HUD Manager exposes RTMP server on port 8000 (rmtp://localhost/live, s
 ## Custom database fields
 
 In case usual database structure is not enough, from 1.10 it is possible to expand structure. LHM provides option to add text, match, player, team, color and image field to players and teams database. Values of the specific fields are attached on `extra` object, so if we wanted to add `theme` property with `color` type on the team, in-HUD the value would accessible by `team.extra.color`. If you rely on those custom fields on a day-to-day basis, you can show them next to the other properties as an additional column.
+
+## AR
+
+AR (Augmented Reality) is an option to add models / screens / objects in 3D space to the game. This is currently very experimental, and requires different setup.
+ - Download and unzip HLAE
+ - Replace AfxHookSource.dll with the one from here ( https://github.com/advancedfx/afx-cefhud-interop/releases/tag/v7.0.0-48e3c55 ) or newer version from release page
+ - Download afx-cefhud-interop from https://github.com/advancedfx/afx-cefhud-interop/releases/tag/v7.0.0-1530590 or newer version from release page
+ - Set HLAE's and AFX's path in LHM
+ - Toggle AR in HUDs tab and start game
+
+To see which HUDs have AR elements, click on AR button to filter them out. Important - for HUDs to load correctly you need to toggle them once in game, not before.
+
+In the future we will allow for AR modules, which will work independently from HUDs.
 
 
 ## Embedded HUD
