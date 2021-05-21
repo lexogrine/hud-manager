@@ -30,6 +30,9 @@ exports.initGameConnection = async () => {
             socket.emit('directorStatus', director.status);
         });
         socket.on('toggleDirector', () => {
+            if (!__1.customer.customer || !__1.customer.customer.license || __1.customer.customer.license?.type === "free" || __1.customer.customer.license?.type === "personal") {
+                return;
+            }
             director.status ? director.stop() : director.start();
             socket.emit('directorStatus', director.status);
         });
