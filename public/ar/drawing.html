@@ -89,8 +89,8 @@
 			return Math.atan(Math.tan(fov * Math.PI / 360) * (3 * width) / (height * 4)) * 360 / Math.PI
 		}
 
-		const gameFovToVert = fov => {
-			return horToVert(gameFovToRealFov(fov, 1920, 1080));
+		const gameFovToVert = (fov, width = 1920, height = 1080) => {
+			return horToVert(gameFovToRealFov(fov, width, height));
 		}
 		var degreeToRadian = (degree) => degree * Math.PI / 180;
 
@@ -102,7 +102,7 @@
 		const WEBGL = new THREE.WebGLRenderer({ alpha: true, powerPreference: 'high-performance', antialias: true });
 		const CSS3D = new THREE.CSS3DRenderer();
 
-		WEBGL.domElement.id = 'css3drenderer';
+		CSS3D.domElement.id = 'css3drenderer';
 
 		WEBGL.setSize(1920, 1080);
 		CSS3D.setSize(1920, 1080);
@@ -741,7 +741,7 @@
 					const realX = -rX;
 					let realY = rY + 180;
 
-					const gameFov = gameFovToVert(fov);
+					const gameFov = gameFovToVert(fov, this.width, this.height);
 					if (camera.fov !== gameFov) {
 						camera.fov = gameFov;
 						camera.updateProjectionMatrix();
