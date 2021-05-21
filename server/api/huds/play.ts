@@ -32,7 +32,12 @@ export const initGameConnection = async () => {
 			socket.emit('directorStatus', director.status);
 		});
 		socket.on('toggleDirector', () => {
-			if(!customer.customer || !customer.customer.license || customer.customer.license?.type === "free" || customer.customer.license?.type === "personal"){
+			if (
+				!customer.customer ||
+				!customer.customer.license ||
+				customer.customer.license?.type === 'free' ||
+				customer.customer.license?.type === 'personal'
+			) {
 				return;
 			}
 			director.status ? director.stop() : director.start();

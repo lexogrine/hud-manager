@@ -70,8 +70,10 @@ const Navbar = ({ activeTab, toggle, files }: IProps) => (
 		</NavItem>
 		<GameOnly game="csgo">
 			<ContextData.Consumer>
-				{data => (
-					!data?.customer?.license?.type || (data.customer?.license.type === "free" || data.customer.license.type === "personal") ? (
+				{data =>
+					!data?.customer?.license?.type ||
+					data.customer?.license.type === 'free' ||
+					data.customer.license.type === 'personal' ? (
 						<Tip
 							id="aco_nav"
 							label={
@@ -88,21 +90,23 @@ const Navbar = ({ activeTab, toggle, files }: IProps) => (
 									</NavLink>
 								</NavItem>
 							}
-						>Professional only</Tip>
+						>
+							Professional only
+						</Tip>
 					) : (
-							<NavItem className="hover-pointer">
-								<NavLink
-									active={activeTab === 'aco'}
-									onClick={() => {
-										toggle('aco');
-									}}
-								>
-									<img src={Tabs.Live} alt="ACO" />
-									<div>ACO</div>
-								</NavLink>
-							</NavItem>
-						)
-				)}
+						<NavItem className="hover-pointer">
+							<NavLink
+								active={activeTab === 'aco'}
+								onClick={() => {
+									toggle('aco');
+								}}
+							>
+								<img src={Tabs.Live} alt="ACO" />
+								<div>ACO</div>
+							</NavLink>
+						</NavItem>
+					)
+				}
 			</ContextData.Consumer>
 			<NavItem className="hover-pointer">
 				<NavLink
