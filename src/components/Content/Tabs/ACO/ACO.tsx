@@ -21,6 +21,7 @@ const ACO = () => {
 	const [directorStatus, setDirectorStatus] = useState(false);
 
 	const [newAreaName, setNewAreaName] = useState('');
+	const [newAreaPriority, setNewAreaPriority] = useState(0);
 
 	const loadACOs = async () => {
 		const acos = await api.aco.get();
@@ -115,6 +116,8 @@ const ACO = () => {
 				areaName={newAreaName}
 				setAreaName={setNewAreaName}
 				saveArea={saveArea}
+				setAreaPriority={setNewAreaPriority}
+				areaPriority={newAreaPriority}
 			/>
 			<AddConfigModal close={() => setConfigOpen(false)} isOpen={isConfigOpened} save={saveConfig} />
 			<div className="tab-title-container">ACO</div>
@@ -141,6 +144,7 @@ const ACO = () => {
 								<option value="de_overpass">de_overpass</option>
 								<option value="de_nuke">de_nuke</option>
 								<option value="de_vertigo">de_vertigo</option>
+								<option value="de_ancient">de_ancient</option>
 							</Input>
 						</FormGroup>
 						<MapPointer
@@ -153,6 +157,7 @@ const ACO = () => {
 									? [{ name: 'newarea', polygonCorners: newArea, configs: [], priority: 0 }]
 									: areas
 							}
+							addingNew={!!newArea}
 						/>
 						<div className="btn-container">
 							{!newArea ? (
@@ -188,7 +193,7 @@ const ACO = () => {
 					</div>
 					{activeConfig ? (
 						<div style={{ flex: 1, minWidth: '386px' }}>
-							<div className="aco_config_title">Configs:</div>
+							<div className="aco_config_title">AREA: {activeConfig.name} | PRIORITY: {activeConfig.priority}</div>
 							{activeConfig.configs.map(config => (
 								<div key={config} className="aco_area_config">
 									<div>{config}</div>

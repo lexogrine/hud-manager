@@ -2,9 +2,9 @@ import { CSGO } from 'csgogsi-socket';
 
 export type AvailableGames = 'csgo' | 'rocketleague';
 
-export type AvailableResources = 'teams' | 'players' | 'customs' /* | 'matches'*/;
+export type AvailableResources = 'teams' | 'players' | 'customs' | 'mapconfigs' /* | 'matches'*/;
 
-export const availableResources: AvailableResources[] = ['teams', 'players', 'customs' /*, 'matches'*/];
+export const availableResources: AvailableResources[] = ['teams', 'players', 'customs','mapconfigs' /*, 'matches'*/];
 
 export const availableGames: AvailableGames[] = ['csgo', 'rocketleague'];
 
@@ -25,6 +25,9 @@ export interface MapAreaConfig {
 export interface MapConfig {
 	map: string;
 	areas: MapAreaConfig[];
+}
+export interface MapConfigID extends MapConfig {
+	_id:string
 }
 
 export type CloudSyncStatus = 'NO_UPLOADED_RESOURCES' | 'ALL_SYNCED' | 'NO_SYNC_LOCAL' | 'UNKNOWN_ERROR';

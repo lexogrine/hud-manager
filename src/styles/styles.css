@@ -411,6 +411,9 @@ img.smallLogo {
 .entry-main .preview.dust2 {
     background-image: url('./maps/dust2.jpg');
 }
+.entry-main .preview.ancient {
+    background-image: url('./maps/ancient.png');
+}
 .entry-main .preview.nuke {
     background-image: url('./maps/nuke.jpg');
 }

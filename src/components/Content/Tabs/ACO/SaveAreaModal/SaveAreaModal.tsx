@@ -7,12 +7,14 @@ interface IProps {
 	setAreaName: (name: string) => void;
 	close: () => void;
 	saveArea: () => void;
+	setAreaPriority: (priority: number) => void;
+	areaPriority: number;
 }
 
-const SaveAreaModal = ({ isOpen, areaName, setAreaName, close, saveArea }: IProps) => {
+const SaveAreaModal = ({ isOpen, areaName, setAreaName, close, saveArea, setAreaPriority, areaPriority }: IProps) => {
 	return (
 		<Modal isOpen={isOpen} toggle={close} className="veto_modal">
-			<ModalHeader>Enter unique name for area</ModalHeader>
+			<ModalHeader>Set priority & unique name</ModalHeader>
 			<ModalBody>
 				<div className="games-picker">
 					<FormGroup>
@@ -23,6 +25,14 @@ const SaveAreaModal = ({ isOpen, areaName, setAreaName, close, saveArea }: IProp
 							onChange={e => setAreaName(e.target.value)}
 							placeholder="New area name"
 							value={areaName}
+						/>
+						<Input
+							type="number"
+							name="newAreaPriority"
+							id="newAreaPriority"
+							onChange={e => setAreaPriority(Number(e.target.value))}
+							placeholder="New area priority level"
+							value={areaPriority}
 						/>
 					</FormGroup>
 				</div>

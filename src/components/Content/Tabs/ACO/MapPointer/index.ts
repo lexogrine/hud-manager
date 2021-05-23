@@ -6,6 +6,7 @@ import de_train from './de_train';
 import de_overpass from './de_overpass';
 import de_nuke from './de_nuke';
 import de_vertigo from './de_vertigo';
+import de_ancient from './de_ancient';
 
 export interface ScaleConfig {
 	origin: {
@@ -40,7 +41,8 @@ const maps: { [key: string]: MapConfig } = {
 	de_train,
 	de_overpass,
 	de_nuke,
-	de_vertigo
+	de_vertigo,
+	de_ancient
 };
 
 export default maps;

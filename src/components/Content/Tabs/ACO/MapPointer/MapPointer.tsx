@@ -8,6 +8,7 @@ interface IProps {
 	onPointAdd: (x: number, y: number) => void;
 	areas: MapAreaConfig[];
 	onClickArea: (area: MapAreaConfig) => void;
+	addingNew: boolean;
 }
 const hashCode = (str: string) => {
 	let hash = 0;
@@ -23,7 +24,7 @@ const textToRGB = (i: string) => {
 
 	return '#' + '00000'.substring(0, 6 - c.length) + c;
 };
-const MapPointer = ({ config, file, onPointAdd, areas, onClickArea }: IProps) => {
+const MapPointer = ({ config, file, onPointAdd, areas, onClickArea, addingNew }: IProps) => {
 	const radarToGameUnits = (x: number, y: number) => {
 		const realOffsetX = x - config.origin.x;
 		const realOffsetY = y - config.origin.y;
@@ -55,7 +56,7 @@ const MapPointer = ({ config, file, onPointAdd, areas, onClickArea }: IProps) =>
 			{areas.map(area => (
 				<React.Fragment key={area.name}>
 					<div
-						onClick={() => onClickArea(area)}
+						onClick={() => !addingNew && onClickArea(area)}
 						className="aco_area"
 						style={{ clipPath: generatePolygon(area), backgroundColor: textToRGB(area.name) }}
 					/>

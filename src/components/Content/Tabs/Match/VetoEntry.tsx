@@ -4,6 +4,7 @@ import * as I from '../../../../api/interfaces';
 import VetoModal from './VetoModal';
 import EditScoreModal from './EditScoreModal';
 import { hash } from '../../../../hash';
+import { GameOnly } from '../Config/Config';
 
 interface Props {
 	map: number;
@@ -23,16 +24,16 @@ const VetoScore = ({ veto, left, right }: { veto: I.Veto; left: I.Team | null; r
 			{left.logo ? (
 				<img src={`${left.logo}?hash=${hash()}`} alt={`${left.name} logo`} className="team-logo" />
 			) : (
-				''
-			)}
+					''
+				)}
 			<div className="score">{veto.score[left._id] || 0}</div>
 			<div className="versus">VS</div>
 			<div className="score">{veto.score[right._id] || 0}</div>
 			{right.logo ? (
 				<img src={`${right.logo}?hash=${hash()}`} alt={`${right.name} logo`} className="team-logo" />
 			) : (
-				''
-			)}
+					''
+				)}
 			<div className={`win-icon ${veto.winner === right._id ? 'active' : ''}`}>WINS</div>
 		</div>
 	);
@@ -98,68 +99,70 @@ const VetoEntry = ({ map, veto, vetoTeams, onSave, maps }: Props) => {
 		secTeam = vetoTeams[1];
 	}
 	return (
-		<div className={`entry-container ${veto.teamId === '' ? 'empty' : ''} ${veto.teamId ? veto.type : ''}`}>
-			{vetoTeams.length !== 2 ? (
-				'Pick both teams to set vetos'
-			) : (
-				<>
-					<div className="entry-main">
-						<div
-							className={`veto-description force-no-break ${
-								isMenuExpanded && team && secTeam && veto.score ? 'hide' : ''
-							} `}
-						>
-							<div className={`veto-title`}>VETO {map + 1}:</div>
-							<div className={`veto-summary`}>{generateDescription(veto, team, secTeam)}</div>
-						</div>
-						<VetoScore veto={veto} left={team} right={secTeam} />
-						{veto.mapName ? (
-							<div
-								className={`preview ${veto.mapName.replace('de_', '')} ${veto.type}`}
-								onClick={() => setVetoModal(!isVetoModalOpen)}
-							>
-								{veto.mapName.replace('de_', '')}
-							</div>
-						) : null}
-						<div className={`side-menu-container ${isMenuExpanded ? 'expanded' : 'collapsed'}`}>
-							<div className={`side-menu`}>
-								<div className="toggler" onClick={() => setMenuExpanded(!isMenuExpanded)}></div>
-								<Button onClick={resetScore} className="edit-veto purple-btn">
-									Reset score
-								</Button>
+		<GameOnly game="csgo">
+			<div className={`entry-container ${veto.teamId === '' ? 'empty' : ''} ${veto.teamId ? veto.type : ''}`}>
+				{vetoTeams.length !== 2 ? (
+					'Pick both teams to set vetos'
+				) : (
+						<>
+							<div className="entry-main">
+								<div
+									className={`veto-description force-no-break ${
+										isMenuExpanded && team && secTeam && veto.score ? 'hide' : ''
+										} `}
+								>
+									<div className={`veto-title`}>VETO {map + 1}:</div>
+									<div className={`veto-summary`}>{generateDescription(veto, team, secTeam)}</div>
+								</div>
+								<VetoScore veto={veto} left={team} right={secTeam} />
 								{veto.mapName ? (
-									<Button onClick={() => setScoreOpen(!isScoreOpen)} className="edit-veto purple-btn">
-										Set score
-									</Button>
+									<div
+										className={`preview ${veto.mapName.replace('de_', '')} ${veto.type}`}
+										onClick={() => setVetoModal(!isVetoModalOpen)}
+									>
+										{veto.mapName.replace('de_', '')}
+									</div>
 								) : null}
-								<Button onClick={() => setVetoModal(!isVetoModalOpen)} className="edit-veto purple-btn">
-									Edit
+								<div className={`side-menu-container ${isMenuExpanded ? 'expanded' : 'collapsed'}`}>
+									<div className={`side-menu`}>
+										<div className="toggler" onClick={() => setMenuExpanded(!isMenuExpanded)}></div>
+										<Button onClick={resetScore} className="edit-veto purple-btn">
+											Reset score
 								</Button>
+										{veto.mapName ? (
+											<Button onClick={() => setScoreOpen(!isScoreOpen)} className="edit-veto purple-btn">
+												Set score
+											</Button>
+										) : null}
+										<Button onClick={() => setVetoModal(!isVetoModalOpen)} className="edit-veto purple-btn">
+											Edit
+								</Button>
+									</div>
+								</div>
 							</div>
-						</div>
-					</div>
-					{veto.mapName ? (
-						<EditScoreModal
-							setWinner={setWinner}
-							teams={vetoTeams}
-							toggle={() => setScoreOpen(!isScoreOpen)}
-							isOpen={isScoreOpen}
-							veto={veto}
-							saveScore={setScore}
-						/>
-					) : null}
-					<VetoModal
-						maps={maps}
-						map={map}
-						veto={veto}
-						teams={vetoTeams}
-						isOpen={isVetoModalOpen}
-						toggle={() => setVetoModal(!isVetoModalOpen)}
-						onChange={onSave}
-					/>
-				</>
-			)}
-		</div>
+							{veto.mapName ? (
+								<EditScoreModal
+									setWinner={setWinner}
+									teams={vetoTeams}
+									toggle={() => setScoreOpen(!isScoreOpen)}
+									isOpen={isScoreOpen}
+									veto={veto}
+									saveScore={setScore}
+								/>
+							) : null}
+							<VetoModal
+								maps={maps}
+								map={map}
+								veto={veto}
+								teams={vetoTeams}
+								isOpen={isVetoModalOpen}
+								toggle={() => setVetoModal(!isVetoModalOpen)}
+								onChange={onSave}
+							/>
+						</>
+					)}
+			</div>
+		</GameOnly>
 	);
 };
 

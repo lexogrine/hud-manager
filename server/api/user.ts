@@ -21,11 +21,12 @@ export const fetch = fetchHandler(nodeFetch, cookieJar);
 
 export let socket: SimpleWebSocket | null = null;
 
+
 const connectSocket = () => {
 	if (socket) return;
-	socket = new SimpleWebSocket('wss://hmapi-dev.lexogrine.pl/', {
+	socket = new SimpleWebSocket('ws://localhost:5000/', {
 		headers: {
-			Cookie: cookieJar.getCookieStringSync('https://hmapi-dev.lexogrine.pl/')
+			Cookie: cookieJar.getCookieStringSync('http://localhost:5000/')
 		}
 	});
 
@@ -74,7 +75,7 @@ export const api = (url: string, method = 'GET', body?: any, opts?: RequestInit)
 		options.body = JSON.stringify(body);
 	}
 	let data: any = null;
-	return fetch(`https://hmapi-dev.lexogrine.pl/${url}`, options).then(res => {
+	return fetch(`http://localhost:5000/${url}`, options).then(res => {
 		data = res;
 		return res.json().catch(() => data && data.status < 300);
 	});

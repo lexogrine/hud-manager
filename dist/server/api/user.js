@@ -24,9 +24,9 @@ exports.socket = null;
 const connectSocket = () => {
     if (exports.socket)
         return;
-    exports.socket = new simple_websockets_1.SimpleWebSocket('wss://hmapi-dev.lexogrine.pl/', {
+    exports.socket = new simple_websockets_1.SimpleWebSocket('ws://localhost:5000/', {
         headers: {
-            Cookie: cookieJar.getCookieStringSync('https://hmapi-dev.lexogrine.pl/')
+            Cookie: cookieJar.getCookieStringSync('http://localhost:5000/')
         }
     });
     exports.socket.on('connection', () => {
@@ -72,7 +72,7 @@ exports.api = (url, method = 'GET', body, opts) => {
         options.body = JSON.stringify(body);
     }
     let data = null;
-    return exports.fetch(`https://hmapi-dev.lexogrine.pl/${url}`, options).then(res => {
+    return exports.fetch(`http://localhost:5000/${url}`, options).then(res => {
         data = res;
         return res.json().catch(() => data && data.status < 300);
     });

@@ -78,11 +78,16 @@ exports.updateMatchRoute = async (req, res) => {
     return res.sendStatus(match ? 200 : 500);
 };
 exports.getMaps = (req, res) => {
-    const defaultMaps = ['de_mirage', 'de_dust2', 'de_inferno', 'de_nuke', 'de_train', 'de_overpass', 'de_vertigo'];
+    const defaultMaps = ['de_mirage', 'de_dust2', 'de_inferno', 'de_nuke', 'de_train', 'de_overpass', 'de_vertigo', 'de_ancient'];
     const mapFilePath = path_1.default.join(electron_1.app.getPath('userData'), 'maps.json');
     try {
         const maps = JSON.parse(fs_1.default.readFileSync(mapFilePath, 'utf8'));
         if (Array.isArray(maps)) {
+            for (const defaultMap of defaultMaps) {
+                if (!maps.includes(defaultMap)) {
+                    maps.push(defaultMap);
+                }
+            }
             return res.json(maps);
         }
         return res.json(defaultMaps);

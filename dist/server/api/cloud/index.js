@@ -28,6 +28,7 @@ const I = __importStar(require("../../../types/interfaces"));
 const config_1 = require("../config");
 const players_1 = require("../players");
 const teams_1 = require("../teams");
+const aco_1 = require("../aco");
 const electron_1 = require("electron");
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
@@ -154,6 +155,9 @@ const downloadCloudData = async (game, resource, fromDate) => {
             case 'players':
                 replacer.players = players_1.replaceLocalPlayers;
                 break;
+            case 'mapconfigs':
+                replacer.mapconfigs = aco_1.replaceLocalMapConfigs;
+                break;
         }
     }
     try {
@@ -184,12 +188,14 @@ exports.uploadLocalToCloud = async (game) => {
     const resources = await Promise.all([
         players_1.getPlayersList({ game }),
         teams_1.getTeamsList({ game }),
-        fields_1.getCustomFieldsDb(game) /*, getMatches()*/
+        fields_1.getCustomFieldsDb(game),
+        aco_1.getACOs() /*, getMatches()*/
     ]);
     const mappedResources = {
         players: resources[0],
         teams: resources[1],
-        customs: resources[2]
+        customs: resources[2],
+        mapconfigs: resources[3]
         //matches: resources[2],
     };
     try {
@@ -232,7 +238,8 @@ exports.checkCloudStatus = async (game) => {
         const resources = await Promise.all([
             players_1.getPlayersList({ game }),
             teams_1.getTeamsList({ game }),
-            fields_1.getCustomFieldsDb(game) /*, getMatches()*/
+            fields_1.getCustomFieldsDb(game),
+            aco_1.getACOs() /*, getMatches()*/
         ]);
         if (resources.every(resource => !resource.length)) {
             // no local resources

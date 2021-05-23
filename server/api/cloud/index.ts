@@ -3,12 +3,14 @@ import * as I from '../../../types/interfaces';
 import { loadConfig, setConfig } from '../config';
 import { getPlayersList, replaceLocalPlayers } from '../players';
 import { getTeamsList, replaceLocalTeams } from '../teams';
+import { getACOs, replaceLocalMapConfigs } from '../aco';
 import { getMatches, replaceLocalMatches } from '../matches';
 import { app } from 'electron';
 import path from 'path';
 import fs from 'fs';
 import { customer } from '..';
 import { getCustomFieldsDb, replaceLocalCustomFieldStores } from '../fields';
+import c from 'fetch-cookie';
 
 const cloudErrorHandler = () => {};
 
@@ -157,6 +159,9 @@ const downloadCloudData = async (game: I.AvailableGames, resource: I.AvailableRe
 			case 'players':
 				replacer.players = replaceLocalPlayers;
 				break;
+			case 'mapconfigs':
+				replacer.mapconfigs = replaceLocalMapConfigs;
+				break;
 		}
 	}
 	try {
@@ -194,13 +199,15 @@ export const uploadLocalToCloud = async (game: I.AvailableGames) => {
 	const resources = await Promise.all([
 		getPlayersList({ game }),
 		getTeamsList({ game }),
-		getCustomFieldsDb(game) /*, getMatches()*/
+		getCustomFieldsDb(game),
+		getACOs() /*, getMatches()*/
 	]);
 
 	const mappedResources = {
 		players: resources[0],
 		teams: resources[1],
-		customs: resources[2]
+		customs: resources[2],
+		mapconfigs: resources[3]
 		//matches: resources[2],
 	} as { [resource in I.AvailableResources]: any };
 	try {
@@ -247,7 +254,8 @@ export const checkCloudStatus = async (game: I.AvailableGames) => {
 		const resources = await Promise.all([
 			getPlayersList({ game }),
 			getTeamsList({ game }),
-			getCustomFieldsDb(game) /*, getMatches()*/
+			getCustomFieldsDb(game),
+			getACOs() /*, getMatches()*/
 		]);
 
 		if (resources.every(resource => !resource.length)) {
