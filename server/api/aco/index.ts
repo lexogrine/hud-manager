@@ -6,7 +6,6 @@ import { checkCloudStatus, addResource, updateResource } from '../cloud';
 
 const { aco } = db;
 
-
 export async function getACOByMapName(mapName: string): Promise<MapConfig | null> {
 	return new Promise(res => {
 		aco.findOne({ map: mapName }, (err, acoConfig) => {
@@ -33,7 +32,7 @@ export const loadNewConfigs = () => {
 	getACOs().then(acos => {
 		areas.areas = acos;
 	});
-}
+};
 export const updateACO = (config: MapConfig | MapConfigID) =>
 	new Promise<MapConfig | null>(res => {
 		getACOByMapName(config.map).then(async oldConfig => {
@@ -53,7 +52,7 @@ export const updateACO = (config: MapConfig | MapConfigID) =>
 					return res(newConfig);
 				});
 			} else {
-				if (!("_id" in config)) {
+				if (!('_id' in config)) {
 					return res(null);
 				}
 				aco.update({ _id: config._id }, config, {}, async (err, n) => {
@@ -62,7 +61,10 @@ export const updateACO = (config: MapConfig | MapConfigID) =>
 					}
 					loadNewConfigs();
 					if (cloudStatus) {
-						await updateResource(customer.game as AvailableGames, 'mapconfigs', { ...config, _id: config._id });
+						await updateResource(customer.game as AvailableGames, 'mapconfigs', {
+							...config,
+							_id: config._id
+						});
 					}
 					return res(config);
 				});
@@ -92,7 +94,5 @@ export const replaceLocalMapConfigs = (newMapConfigs: MapConfigID[], game: Avail
 			});
 		});
 	});
-
-
 
 loadNewConfigs();

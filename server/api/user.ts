@@ -21,7 +21,6 @@ export const fetch = fetchHandler(nodeFetch, cookieJar);
 
 export let socket: SimpleWebSocket | null = null;
 
-
 const connectSocket = () => {
 	if (socket) return;
 	socket = new SimpleWebSocket('ws://localhost:5000/', {

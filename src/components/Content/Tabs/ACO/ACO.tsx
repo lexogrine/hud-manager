@@ -193,7 +193,9 @@ const ACO = () => {
 					</div>
 					{activeConfig ? (
 						<div style={{ flex: 1, minWidth: '386px' }}>
-							<div className="aco_config_title">AREA: {activeConfig.name} | PRIORITY: {activeConfig.priority}</div>
+							<div className="aco_config_title">
+								AREA: {activeConfig.name} | PRIORITY: {activeConfig.priority}
+							</div>
 							{activeConfig.configs.map(config => (
 								<div key={config} className="aco_area_config">
 									<div>{config}</div>

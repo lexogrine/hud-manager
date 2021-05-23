@@ -4,7 +4,7 @@ export type AvailableGames = 'csgo' | 'rocketleague';
 
 export type AvailableResources = 'teams' | 'players' | 'customs' | 'mapconfigs' /* | 'matches'*/;
 
-export const availableResources: AvailableResources[] = ['teams', 'players', 'customs','mapconfigs' /*, 'matches'*/];
+export const availableResources: AvailableResources[] = ['teams', 'players', 'customs', 'mapconfigs' /*, 'matches'*/];
 
 export const availableGames: AvailableGames[] = ['csgo', 'rocketleague'];
 
@@ -27,7 +27,7 @@ export interface MapConfig {
 	areas: MapAreaConfig[];
 }
 export interface MapConfigID extends MapConfig {
-	_id:string
+	_id: string;
 }
 
 export type CloudSyncStatus = 'NO_UPLOADED_RESOURCES' | 'ALL_SYNCED' | 'NO_SYNC_LOCAL' | 'UNKNOWN_ERROR';
