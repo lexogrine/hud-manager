@@ -73,7 +73,7 @@ const MapPointer = ({ config, file, onPointAdd, areas, onClickArea, addingNew }:
 					))}
 				</React.Fragment>
 			))}
-			<img src={file} style={{ width: '512px', backgroundColor: 'grey' }} onClick={handleClick} />
+			<img src={file} style={{ width: '512px' }} onClick={handleClick} />
 		</div>
 	);
 };
