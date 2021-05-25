@@ -21,11 +21,13 @@ export const fetch = fetchHandler(nodeFetch, cookieJar);
 
 export let socket: SimpleWebSocket | null = null;
 
+const USE_LOCAL_BACKEND = true;
+
 const connectSocket = () => {
 	if (socket) return;
-	socket = new SimpleWebSocket('ws://localhost:5000/', {
+	socket = new SimpleWebSocket(USE_LOCAL_BACKEND ? 'ws://localhost:5000' : 'wss://hmapi-dev.lexogrine.pl/', {
 		headers: {
-			Cookie: cookieJar.getCookieStringSync('http://localhost:5000/')
+			Cookie: cookieJar.getCookieStringSync(USE_LOCAL_BACKEND ? 'http://localhost:5000/' : 'https://hmapi-dev.lexogrine.pl/')
 		}
 	});
 
@@ -74,7 +76,7 @@ export const api = (url: string, method = 'GET', body?: any, opts?: RequestInit)
 		options.body = JSON.stringify(body);
 	}
 	let data: any = null;
-	return fetch(`http://localhost:5000/${url}`, options).then(res => {
+	return fetch(USE_LOCAL_BACKEND ? `http://localhost:5000/${url}` : `https://hmapi-dev.lexogrine.pl/${url}`, options).then(res => {
 		data = res;
 		return res.json().catch(() => data && data.status < 300);
 	});

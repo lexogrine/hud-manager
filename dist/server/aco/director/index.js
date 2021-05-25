@@ -3,6 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Director = void 0;
 const csgogsi_1 = require("csgogsi");
 const observer_1 = require("../observer");
+const CONFIG_INTERVAL = 4000;
+const AREA_INTERVAL = 1500;
 class Director {
     constructor(GSI) {
         this.start = () => {
@@ -27,11 +29,18 @@ class Director {
         };
         this.switchToArea = (area) => {
             const isAreaTheSame = this.currentArea === area.name;
-            const isAreaShowingForMorethanInterval = new Date().getTime() - this.lastSwitch > 4000;
-            if (isAreaTheSame || !isAreaShowingForMorethanInterval)
+            const isAreaShowingForMorethanInterval = new Date().getTime() - this.lastSwitch > AREA_INTERVAL;
+            if (!isAreaShowingForMorethanInterval)
                 return;
-            const randomIndex = Math.floor(Math.random() * area.configs.length);
-            const config = area.configs[randomIndex];
+            if (isAreaTheSame && new Date().getTime() - this.lastSwitch <= CONFIG_INTERVAL) {
+                return;
+            }
+            let configIndex = 0;
+            if (area.configs.length > 1) {
+                const notUsedConfigs = area.configs.filter(config => config !== this.currentConfig);
+                configIndex = Math.floor(Math.random() * notUsedConfigs.length);
+            }
+            const config = area.configs[configIndex];
             if (!config)
                 return;
             this.switchHLAE(config, area);
@@ -49,6 +58,7 @@ class Director {
         this.GSI = GSI || new csgogsi_1.CSGOGSI();
         this.status = false;
         this.currentArea = null;
+        this.currentConfig = null;
         this.lastSwitch = 0;
         this.GSI.on('data', this.handleObserver);
         this.pgl = null;

@@ -1087,6 +1087,8 @@ form .card > .card-body > button.btn {
     height: unset;
     border-bottom: 1px solid grey;
     border-radius: 0;
+    position: relative;
+    top: 20px;
 }
 .nav-tabs .nav-link {
     user-select: none;

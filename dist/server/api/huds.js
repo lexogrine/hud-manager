@@ -36,6 +36,7 @@ const user_1 = require("./user");
 const archiver_1 = __importDefault(require("archiver"));
 const _1 = require(".");
 const isSvg_1 = __importDefault(require("../../src/isSvg"));
+const node_fetch_1 = __importDefault(require("node-fetch"));
 const DecompressZip = require('decompress-zip');
 const getRandomString = () => (Math.random() * 1000 + 1)
     .toString(36)
@@ -506,12 +507,19 @@ exports.downloadHUD = async (req, res) => {
         return res.sendStatus(422);
     const hudData = ((await user_1.api(`storage/file/${_1.customer.game}/hud/${uuid}`)) || null);
     const name = hudData?.data?.extra?.name;
-    if (hudData?.data?.data?.type !== 'Buffer' || !name)
-        return res.sendStatus(422);
-    const data = hudData.data.data;
-    if (typeof data === 'number')
-        return res.sendStatus(422);
-    const hudBufferString = Buffer.from(data).toString('base64');
+    if (!name) {
+        return res.sendStatus(404);
+    }
+    const presignedURLResponse = await user_1.api(`storage/file/url/GET/${uuid}`);
+    if (!presignedURLResponse || !presignedURLResponse.url) {
+        return res.sendStatus(404);
+    }
+    const response = await node_fetch_1.default(presignedURLResponse.url);
+    if (!response.ok) {
+        return res.sendStatus(404);
+    }
+    const buffer = await response.buffer();
+    const hudBufferString = buffer.toString('base64');
     const result = await loadHUD(hudBufferString, name, uuid);
     return res.json({ result });
 };
@@ -535,12 +543,31 @@ exports.uploadHUD = async (req, res) => {
     const hud = await exports.getHUDData(hudDir);
     if (!hud || !hud.uuid)
         return res.sendStatus(422);
-    const archivePath = await archiveHUD(hudDir);
-    const archiveBase64 = fs.readFileSync(archivePath, 'base64');
+    const presignedURLResponse = await user_1.api(`storage/file/url/PUT/${hud.uuid}`);
+    if (!presignedURLResponse || !presignedURLResponse.url) {
+        return res.sendStatus(404);
+    }
     const hudUploadResponse = await user_1.api(`storage/file/${_1.customer.game}/hud/${hud.uuid}`, 'POST', {
-        file: archiveBase64,
         extra: hud
     });
+    console.log(hudUploadResponse);
+    if (!hudUploadResponse || !hudUploadResponse.result) {
+        return res.sendStatus(404);
+    }
+    const archivePath = await archiveHUD(hudDir);
+    const payload = fs.createReadStream(archivePath);
+    const response = await node_fetch_1.default(presignedURLResponse.url, {
+        method: "PUT",
+        body: payload,
+        headers: {
+            "Content-Length": `${fs.statSync(archivePath).size}`
+        }
+    });
+    console.log(response.ok, await response.text());
+    if (!response.ok) {
+        fs.unlinkSync(archivePath);
+        return res.sendStatus(404);
+    }
     fs.unlinkSync(archivePath);
     return res.json({ hudUploadResponse });
 };

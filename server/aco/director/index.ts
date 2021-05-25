@@ -2,18 +2,23 @@ import { CSGO, CSGOGSI } from 'csgogsi';
 import { MIRVPGL } from '../../hlae';
 import { getActiveAreas, getBestArea, MapAreaConfigWithPlayers } from '../observer';
 
+const CONFIG_INTERVAL = 4000;
+const AREA_INTERVAL = 1500;
+
 class Director {
 	GSI: CSGOGSI;
 	pgl: MIRVPGL | null;
 
 	status: boolean;
 	private currentArea: string | null;
+	private currentConfig: string | null;
 	private lastSwitch: number;
 
 	constructor(GSI?: CSGOGSI) {
 		this.GSI = GSI || new CSGOGSI();
 		this.status = false;
 		this.currentArea = null;
+		this.currentConfig = null;
 		this.lastSwitch = 0;
 		this.GSI.on('data', this.handleObserver);
 		this.pgl = null;
@@ -49,12 +54,22 @@ class Director {
 
 	private switchToArea = (area: MapAreaConfigWithPlayers) => {
 		const isAreaTheSame = this.currentArea === area.name;
-		const isAreaShowingForMorethanInterval = new Date().getTime() - this.lastSwitch > 4000;
-		if (isAreaTheSame || !isAreaShowingForMorethanInterval) return;
+		const isAreaShowingForMorethanInterval = new Date().getTime() - this.lastSwitch > AREA_INTERVAL;
+		if (!isAreaShowingForMorethanInterval) return;
 
-		const randomIndex = Math.floor(Math.random() * area.configs.length);
+		if(isAreaTheSame && new Date().getTime() - this.lastSwitch <= CONFIG_INTERVAL){
+			return;
+		}
 
-		const config = area.configs[randomIndex];
+		let configIndex = 0;
+
+		if(area.configs.length > 1){
+			const notUsedConfigs = area.configs.filter(config => config !== this.currentConfig);
+
+			configIndex = Math.floor(Math.random() * notUsedConfigs.length);
+		}
+
+		const config = area.configs[configIndex];
 
 		if (!config) return;
 

@@ -12,6 +12,7 @@ import { api } from './user';
 import archiver from 'archiver';
 import { customer } from '.';
 import isSvg from '../../src/isSvg';
+import fetch from 'node-fetch';
 
 const DecompressZip = require('decompress-zip');
 
@@ -458,7 +459,7 @@ function removeArchives() {
 				return;
 			}
 			if (fs.existsSync(file)) fs.unlinkSync(file);
-		} catch {}
+		} catch { }
 	});
 }
 
@@ -515,7 +516,7 @@ async function loadHUD(base64: string, name: string, existingUUID?: string): Pro
 }
 
 type APIFileResponse = {
-	data: (OnlineHUDEntry & { data: { type: string; data: number[] } | null }) | null;
+	data: OnlineHUDEntry | null;
 };
 
 // const wait = (ms: number) => new Promise(r => setTimeout(r, ms));
@@ -524,15 +525,28 @@ export const downloadHUD: RequestHandler = async (req, res) => {
 	const uuid = req.params.uuid;
 	if (!customer.game || !uuid) return res.sendStatus(422);
 	const hudData = ((await api(`storage/file/${customer.game}/hud/${uuid}`)) || null) as APIFileResponse | null;
+
 	const name = hudData?.data?.extra?.name;
 
-	if (hudData?.data?.data?.type !== 'Buffer' || !name) return res.sendStatus(422);
+	if(!name){
+		return res.sendStatus(404);
+	}
 
-	const data = hudData.data.data;
+	const presignedURLResponse = await api(`storage/file/url/GET/${uuid}`) as { url: string };
 
-	if (typeof data === 'number') return res.sendStatus(422);
+	if(!presignedURLResponse || !presignedURLResponse.url) {
+		return res.sendStatus(404);
+	}
 
-	const hudBufferString = Buffer.from(data as any).toString('base64');
+	const response = await fetch(presignedURLResponse.url);
+
+	if(!response.ok){
+		return res.sendStatus(404);
+	}
+
+	const buffer = await response.buffer();
+
+	const hudBufferString = buffer.toString('base64');
 
 	const result = await loadHUD(hudBufferString, name, uuid);
 
@@ -570,14 +584,42 @@ export const uploadHUD: RequestHandler = async (req, res) => {
 
 	if (!hud || !hud.uuid) return res.sendStatus(422);
 
-	const archivePath = await archiveHUD(hudDir);
-	const archiveBase64 = fs.readFileSync(archivePath, 'base64');
+
+	const presignedURLResponse = await api(`storage/file/url/PUT/${hud.uuid}`) as { url: string };
+
+
+	if(!presignedURLResponse || !presignedURLResponse.url) {
+		return res.sendStatus(404);
+	}
 
 	const hudUploadResponse = await api(`storage/file/${customer.game}/hud/${hud.uuid}`, 'POST', {
-		file: archiveBase64,
 		extra: hud
 	});
+	console.log(hudUploadResponse)
+	if(!hudUploadResponse || !hudUploadResponse.result){
+		return res.sendStatus(404);
+	}
+
+	const archivePath = await archiveHUD(hudDir);
+
+	const payload = fs.createReadStream(archivePath);
+	const response = await fetch(presignedURLResponse.url, {
+		method: "PUT",
+		body: payload,
+		headers: {
+			"Content-Length": `${fs.statSync(archivePath).size}`
+		}
+	});
+	console.log(response.ok, await response.text());
+	if(!response.ok){
+		fs.unlinkSync(archivePath);
+
+		return res.sendStatus(404);
+	}
+
+
 	fs.unlinkSync(archivePath);
+
 
 	return res.json({ hudUploadResponse });
 };

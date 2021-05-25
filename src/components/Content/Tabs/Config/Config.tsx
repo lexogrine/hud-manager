@@ -126,7 +126,7 @@ export default class Config extends React.Component<IProps, IState> {
 	import = (data: any, callback: any) => async () => {
 		try {
 			await api.files.sync(data);
-		} catch {}
+		} catch { }
 		this.setState({ data: {}, conflict: { teams: 0, players: 0 }, importModalOpen: false }, callback);
 	};
 	importCheck = (callback: any) => (files: FileList) => {
@@ -157,7 +157,7 @@ export default class Config extends React.Component<IProps, IState> {
 					importModalOpen: true,
 					data: db
 				});
-			} catch {}
+			} catch { }
 		};
 	};
 	download = (target: 'gsi' | 'cfgs' | 'db') => {
@@ -364,6 +364,10 @@ export default class Config extends React.Component<IProps, IState> {
 		// this.setState({ value })
 	};
 	toggleHandler = (event: any) => {
+		const { cxt } = this.props;
+		const available =
+			cxt.customer?.license?.type === 'professional' || cxt.customer?.license?.type === 'enterprise';
+		if (!available) return;
 		const val = event.target.checked;
 		this.setState(state => {
 			state.config.sync = val;
@@ -386,6 +390,11 @@ export default class Config extends React.Component<IProps, IState> {
 	render() {
 		const { cxt } = this.props;
 		const { gsi, cfg, importModalOpen, conflict, data, ip, config, update } = this.state;
+
+		const available =
+			cxt.customer?.license?.type === 'professional' || cxt.customer?.license?.type === 'enterprise';
+		const active = Boolean(available && config.sync);
+
 		return (
 			<Form>
 				<div className="tab-title-container">Settings</div>
@@ -447,14 +456,14 @@ export default class Config extends React.Component<IProps, IState> {
 									{update.installing
 										? 'Installing...'
 										: update.available
-										? 'Install update'
-										: 'Latest'}
+											? 'Install update'
+											: 'Latest'}
 								</Button>
 							</Col>
 						</ElectronOnly>
 						<Col md="12" className="config-entry">
 							<div className="config-description">Cloud Synchronization</div>
-							<Switch isOn={this.state.config.sync} id="sync-toggle" handleToggle={this.toggleHandler} />
+							<Switch isOn={active} id="sync-toggle" handleToggle={this.toggleHandler} />
 						</Col>
 
 						<GameOnly game="csgo">
@@ -543,22 +552,24 @@ export default class Config extends React.Component<IProps, IState> {
 								See now
 							</Button>
 						</Col>
-						{isElectron ? (
-							<Col md="12" className="config-entry">
-								<div className="config-description">Downloads</div>
-								<div className="download-container">
-									<Button onClick={() => this.download('gsi')} className="purple-btn round-btn">
-										GSI config
+						<ElectronOnly>
+							<GameOnly game="csgo">
+								<Col md="12" className="config-entry">
+									<div className="config-description">Downloads</div>
+									<div className="download-container">
+										<Button onClick={() => this.download('gsi')} className="purple-btn round-btn">
+											GSI config
 									</Button>
-									<Button onClick={() => this.download('cfgs')} className="purple-btn round-btn">
-										HUD configs
+										<Button onClick={() => this.download('cfgs')} className="purple-btn round-btn">
+											HUD configs
 									</Button>
-									<Button onClick={() => this.download('db')} className="purple-btn round-btn">
-										Export DB
+										<Button onClick={() => this.download('db')} className="purple-btn round-btn">
+											Export DB
 									</Button>
-								</div>
-							</Col>
-						) : null}
+									</div>
+								</Col>
+							</GameOnly>
+						</ElectronOnly>
 						<Col md="12" className="config-entry">
 							<div className="config-description">Import</div>
 							<DragInput

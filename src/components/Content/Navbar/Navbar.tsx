@@ -101,7 +101,7 @@ const Navbar = ({ activeTab, toggle, files }: IProps) => (
 									toggle('aco');
 								}}
 							>
-								<img src={Tabs.Live} alt="ACO" />
+								<img src={Tabs.ACO} alt="ACO" />
 								<div>ACO</div>
 							</NavLink>
 						</NavItem>

@@ -56,7 +56,7 @@ button.btn-primary {
 }
 .top_buttons {
         position: absolute;
-        top: 118px;
+        top: 91px;
         right: 220px;
         z-index: 5;
         display: flex;

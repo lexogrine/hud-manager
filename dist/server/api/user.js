@@ -21,12 +21,13 @@ const cookiePath = path_1.default.join(electron_1.app.getPath('userData'), 'cook
 const cookieJar = new tough_cookie_1.CookieJar(new tough_cookie_file_store_1.FileCookieStore(cookiePath));
 exports.fetch = fetch_cookie_1.default(node_fetch_1.default, cookieJar);
 exports.socket = null;
+const USE_LOCAL_BACKEND = true;
 const connectSocket = () => {
     if (exports.socket)
         return;
-    exports.socket = new simple_websockets_1.SimpleWebSocket('ws://localhost:5000/', {
+    exports.socket = new simple_websockets_1.SimpleWebSocket(USE_LOCAL_BACKEND ? 'ws://localhost:5000' : 'wss://hmapi-dev.lexogrine.pl/', {
         headers: {
-            Cookie: cookieJar.getCookieStringSync('http://localhost:5000/')
+            Cookie: cookieJar.getCookieStringSync(USE_LOCAL_BACKEND ? 'http://localhost:5000/' : 'https://hmapi-dev.lexogrine.pl/')
         }
     });
     exports.socket.on('connection', () => {
@@ -72,7 +73,7 @@ exports.api = (url, method = 'GET', body, opts) => {
         options.body = JSON.stringify(body);
     }
     let data = null;
-    return exports.fetch(`http://localhost:5000/${url}`, options).then(res => {
+    return exports.fetch(USE_LOCAL_BACKEND ? `http://localhost:5000/${url}` : `https://hmapi-dev.lexogrine.pl/${url}`, options).then(res => {
         data = res;
         return res.json().catch(() => data && data.status < 300);
     });

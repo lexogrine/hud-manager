@@ -51,7 +51,7 @@ exports.updateACO = (config) => new Promise(res => {
             });
         }
         else {
-            if (!("_id" in config)) {
+            if (!('_id' in config)) {
                 return res(null);
             }
             aco.update({ _id: config._id }, config, {}, async (err, n) => {
@@ -60,7 +60,10 @@ exports.updateACO = (config) => new Promise(res => {
                 }
                 exports.loadNewConfigs();
                 if (cloudStatus) {
-                    await cloud_1.updateResource(__1.customer.game, 'mapconfigs', { ...config, _id: config._id });
+                    await cloud_1.updateResource(__1.customer.game, 'mapconfigs', {
+                        ...config,
+                        _id: config._id
+                    });
                 }
                 return res(config);
             });

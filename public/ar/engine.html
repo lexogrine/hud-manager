@@ -1,8 +1,9 @@
 <!DOCTYPE html>
 <html>
 <body>
-<script type="text/javascript" src="common.js"></script>
-<script>
+<script type="module">
+
+import * as Utils from './utils.js';	
 
 var AFX_GAMEVENT_ENRICHMENTS = {
 	UserIdWithSteamId: (1 << 0),
@@ -54,7 +55,7 @@ function AfxEngineInterop(interop, args) {
 			await this.connect();
 		},
 		"disconnect" : async function(senderId) {
-			await toPromise(this, "disconnect");
+			await Utils.toPromise(this, "disconnect");
 		},
 		"drawingConnected": async function(senderId) {
 
@@ -70,7 +71,7 @@ function AfxEngineInterop(interop, args) {
 		"drawingDisconnected": async function(senderId) {
 			console.log("drawingDisconnected: "+senderId);
 			this.drawingConnectRequested = false;
-			await toPromise(this, "disconnect");
+			await Utils.toPromise(this, "disconnect");
 		}
 	};
 	
@@ -84,9 +85,9 @@ function AfxEngineInterop(interop, args) {
 				await self.messageHandlers[jMessage.id].apply(self, jMessage.args);
 			}
 			catch(e) {
-				logError(e);
+				Utils.logError(e);
 				if(!(e && e.soft))
-					await toPromise(self, "disconnect");
+					await Utils.toPromise(self, "disconnect");
 			}
 		}
 		
@@ -219,11 +220,11 @@ function AfxEngineInterop(interop, args) {
 		// optional.
 		"onNewConnection": async function(){
 			console.log("New connection");
-			await toPromise(this.interop, "pump", this.pumpEvents);
+			await Utils.toPromise(this.interop, "pump", this.pumpEvents);
 		},
 		// recommended.
 		"onDone": async function(){
-			await toPromise(this.interop, "pump", this.pumpEvents);
+			await Utils.toPromise(this.interop, "pump", this.pumpEvents);
 		},
 		// optional.
 		"onCommands": async function(commands) {
@@ -265,15 +266,15 @@ function AfxEngineInterop(interop, args) {
 					}
 				}
 			}
-			await toPromise(this.interop, "pump", this.pumpEvents, doCommands);
+			await Utils.toPromise(this.interop, "pump", this.pumpEvents, doCommands);
 		},
 		// optional.
 		"onGameEvent": async function(e){
-			await toPromise(this.interop, "sendMessage", this.args.drawingInteropId, JSON.stringify({
+			await Utils.toPromise(this.interop, "sendMessage", this.args.drawingInteropId, JSON.stringify({
 				"id": "onGameEvent",
 				"args": [e]
 			}));
-			await toPromise(this.interop, "pump", this.pumpEvents);
+			await Utils.toPromise(this.interop, "pump", this.pumpEvents);
 		},
 		// optional.
 		"onRenderViewBegin": async function(renderInfo) {
@@ -281,67 +282,66 @@ function AfxEngineInterop(interop, args) {
 			this.renderInfo = renderInfo;
 			this.pass = 0;
 			
-			await toPromise(this.interop, "sendMessage", this.args.drawingInteropId, JSON.stringify({
+			await Utils.toPromise(this.interop, "sendMessage", this.args.drawingInteropId, JSON.stringify({
 				"id": "onRenderViewBegin",
 				"args": [renderInfo]
 			}));
-			await toPromise(this.interop, "pump", this.pumpEvents);
+			await Utils.toPromise(this.interop, "pump", this.pumpEvents);
 		},
 		/*
 		// optional.
 		"onRenderViewBeforeTranslucent" : async function(view) {
 			//TODO: schedule for drawing.
-			await toPromise(this.interop, "pump", this.pumpEvents);
+			await Utils.toPromise(this.interop, "pump", this.pumpEvents);
 		},*/
 		/*
 		// optional.
 		"onRenderViewAfterTranslucent" : async function(view) {
 			//TODO: schedule for drawing.
-			await toPromise(this.interop, "pump", this.pumpEvents);
+			await Utils.toPromise(this.interop, "pump", this.pumpEvents);
 		},*/
 		/*
 		// optional.
 		"onRenderViewBeforeTranslucentShadow" : async function(view) {
 			//TODO: schedule for drawing.
-			await toPromise(this.interop, "pump", this.pumpEvents);
+			await Utils.toPromise(this.interop, "pump", this.pumpEvents);
 		},*/
 		/*
 		// optional.
 		"onRenderViewAfterTranslucentShadow" : async function(view) {
 			//TODO: schedule for drawing.
-			await toPromise(this.interop, "pump", this.pumpEvents);
+			await Utils.toPromise(this.interop, "pump", this.pumpEvents);
 		},*/
+		/*
 		// optional.
-		"onRenderViewHudBegin": async function(){
-			await toPromise(this.interop, "sendMessage", this.args.drawingInteropId, JSON.stringify({
+		"onRenderViewHudBegin" : async function() {
+			//TODO: schedule for drawing.
+			await Utils.toPromise(this.interop, "pump", this.pumpEvents);
+		},*/		
+		// optional.
+		"onRenderViewHudEnd": async function(){
+			await Utils.toPromise(this.interop, "sendMessage", this.args.drawingInteropId, JSON.stringify({
 				"id": "onHudEnd",
 				"args": [this.renderInfo.frameCount, this.pass]
 			}));
 
 			this.pass++;
 
-			await toPromise(this.interop, "pump", this.pumpEvents);
+			await Utils.toPromise(this.interop, "pump", this.pumpEvents);
 		},
-		/*
-		// optional.
-		"onRenderViewHudEnd" : async function() {
-			//TODO: schedule for drawing.
-			await toPromise(this.interop, "pump", this.pumpEvents);
-		},*/		
 		// optional.
 		/*"onRenderViewEnd": aync function() {
 			//TODO: schedule for drawing.
-			await toPromise(this.interop, "pump", this.pumpEvents);
+			await Utils.toPromise(this.interop, "pump", this.pumpEvents);
 		},*/
 		
 		// optional.
-
 		"onViewOverride": async function(view) {
-            await toPromise(this.interop, "sendMessage", this.args.drawingInteropId, JSON.stringify({
+            await Utils.toPromise(this.interop, "sendMessage", this.args.drawingInteropId, JSON.stringify({
                 "id": "onViewOverride",
                 "args": [view]
             }));
-            await toPromise(this.interop, "pump", this.pumpEvents, {
+            await Utils.toPromise(this.interop, "pump", this.pumpEvents, {
                 // uncomment to overide:
                 //tX: 0,
                 //tY: 0,
@@ -356,7 +356,7 @@ function AfxEngineInterop(interop, args) {
 
 	this.pumpEvents = this.makePumpEvents();
 	
-	toPromise(this.interop, "sendMessage", this.args.indexInteropId, JSON.stringify({
+	Utils.toPromise(this.interop, "sendMessage", this.args.indexInteropId, JSON.stringify({
 		"id": "engineCreated",
 		"args": [self.interop.id]
 	}));
@@ -374,14 +374,14 @@ AfxEngineInterop.prototype.connect = async function() {
 		async function doConnect() {
 			self.drawingConnectRequested = true;
 
-			await toPromise(self.interop, "sendMessage", self.args.drawingInteropId, JSON.stringify({
+			await Utils.toPromise(self.interop, "sendMessage", self.args.drawingInteropId, JSON.stringify({
 				"id": "connect",
 				"args": [self.interop.id]
 			}));
 
-			await toPromise(self.interop, "connect");
+			await Utils.toPromise(self.interop, "connect");
 				
-			await toPromise(self.interop, "sendMessage", self.args.indexInteropId, JSON.stringify({
+			await Utils.toPromise(self.interop, "sendMessage", self.args.indexInteropId, JSON.stringify({
 					"id": "engineConnected",
 					"args": [self.interop.id]
 			}));
@@ -389,7 +389,7 @@ AfxEngineInterop.prototype.connect = async function() {
 
 		doConnect()
 		.then(()=>this)
-		.then(()=>toPromise(self.interop, "pump",  self.pumpEvents));
+		.then(()=>Utils.toPromise(self.interop, "pump",  self.pumpEvents));
 	});
 }
 
@@ -409,7 +409,7 @@ AfxEngineInterop.prototype.disconnect = async function() {
 
 	if(this.drawingConnectRequested)
 	{
-		await toPromise(this.interop, "sendMessage", this.args.drawingInteropId, JSON.stringify({
+		await Utils.toPromise(this.interop, "sendMessage", this.args.drawingInteropId, JSON.stringify({
 			"id": "disconnect",
 			"port": 1,
 			"args": [this.interop.id]
@@ -423,14 +423,14 @@ AfxEngineInterop.prototype.disconnect = async function() {
 		this.connected = false;
 
 		try {
-			await toPromise(this.interop, "close");
+			await Utils.toPromise(this.interop, "close");
 		}
 		catch(e)
 		{
-			logError(e);
+			Utils.logError(e);
 		}
 
-		await toPromise(this.interop, "sendMessage", this.args.indexInteropId, JSON.stringify({
+		await Utils.toPromise(this.interop, "sendMessage", this.args.indexInteropId, JSON.stringify({
 			"id": "engineDisconnected",
 			"args": [this.interop.id]
 		}));
@@ -450,10 +450,10 @@ AfxEngineInterop.prototype.disconnect = async function() {
 			self.pumpPromise = self.pumpPromise
 			.finally(()=>self.pumpEventsAsync[key].apply(self, args))
 			.catch((e) => {
-				logError(e);
+				Utils.logError(e);
 
 				if(!(e && e.soft))
-					return toPromise(self, "disconnect");
+					return Utils.toPromise(self, "disconnect");
 			});
 		}
 	});

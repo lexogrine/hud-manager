@@ -76,11 +76,9 @@ const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHU
 			});
 	};
 	const uploadHUD = (dir: string, uuid: string) => {
-		api.huds.upload(dir);
-
 		setHUDLoading(uuid, true);
 		api.huds
-			.upload(uuid)
+			.upload(dir)
 			.then(res => {
 				if (!res || !res.result) {
 					// TODO: Handler error

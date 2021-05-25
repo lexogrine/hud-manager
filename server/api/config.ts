@@ -96,7 +96,7 @@ export const updateConfig: express.RequestHandler = async (req, res) => {
 
 export const setConfig = async (config: Config) =>
 	new Promise<Config>(res => {
-		configs.update({}, { $set: config }, {}, async err => {
+		configs.update({}, { $set: config }, { multi: true }, async err => {
 			if (err) {
 				return res(defaultConfig);
 			}

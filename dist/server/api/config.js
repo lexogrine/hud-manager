@@ -88,7 +88,7 @@ exports.updateConfig = async (req, res) => {
     return res.json(config);
 };
 exports.setConfig = async (config) => new Promise(res => {
-    configs.update({}, { $set: config }, {}, async (err) => {
+    configs.update({}, { $set: config }, { multi: true }, async (err) => {
         if (err) {
             return res(defaultConfig);
         }
