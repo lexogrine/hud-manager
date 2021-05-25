@@ -29,9 +29,10 @@ interface IProps {
 	loadHUDs: () => Promise<void>;
 	setHUDLoading: (uuid: string, isLoading: boolean) => void;
 	isLoading: boolean;
+	isCloudAvailable: boolean;
 }
 
-const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHUDs, setHUDLoading }: IProps) => {
+const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHUDs, setHUDLoading, isCloudAvailable }: IProps) => {
 	const gameToTag = (game: string) => {
 		if (game === 'rocketleague') {
 			return '[RL]';
@@ -53,12 +54,12 @@ const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHU
 	};
 	const deleteHUD = async () => {
 		try {
-			if(hud.status === "REMOTE") {
+			if (hud.status === 'REMOTE') {
 				await api.huds.deleteFromCloud(hud.uuid);
 			} else {
 				await api.huds.delete(hud.dir);
 			}
-		} catch {}
+		} catch { }
 		toggleModal();
 	};
 	const downloadHUD = (uuid: string) => {
@@ -136,7 +137,7 @@ const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHU
 							<img
 								src={`${Config.isDev ? Config.apiAddress : '/'}${
 									hud.isDev ? 'dev/thumb.png' : `huds/${hud.dir}/thumbnail`
-								}`}
+									}`}
 								alt={`${hud.name}`}
 							/>
 						) : null}
@@ -192,8 +193,8 @@ const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHU
 								</Col>
 							</Row>
 						) : (
-							''
-						)}
+								''
+							)}
 					</Col>
 					{isLocal ? (
 						<Col style={{ flex: 1 }} className="hud-options">
@@ -228,9 +229,9 @@ const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHU
 										Go to HUD settings
 									</Tip>
 								) : (
-									''
-								)}
-								{Config.isElectron ? (
+										''
+									)}
+								<ElectronOnly>
 									<Tip
 										id={`hud_overlay_button_${hashCode(hud.dir)}`}
 										label={
@@ -244,9 +245,7 @@ const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHU
 									>
 										Start HUD overlay
 									</Tip>
-								) : null}
-								<ElectronOnly>
-									{isNotRemote ? (
+									{isNotRemote && isCloudAvailable ? (
 										!isLoading ? (
 											<Tip
 												id={`hud_upload_button_${hashCode(hud.dir)}`}
@@ -263,11 +262,9 @@ const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHU
 												Upload HUD
 											</Tip>
 										) : (
-											'Uploading...'
-										)
+												'Uploading...'
+											)
 									) : null}
-								</ElectronOnly>
-								{Config.isElectron && !hud.isDev ? (
 									<Tip
 										id={`hud_delete_button_${hashCode(hud.dir)}`}
 										label={
@@ -281,7 +278,7 @@ const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHU
 									>
 										Delete HUD locally
 									</Tip>
-								) : null}
+								</ElectronOnly>
 							</div>
 							<GameOnly game="csgo">
 								<ElectronOnly>
@@ -303,37 +300,37 @@ const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHU
 							</GameOnly>
 						</Col>
 					) : (
-						<Col style={{ flex: 1 }} className="hud-options">
-							<div className="centered">
-								<ElectronOnly>
-									<Tip
-										id={`hud_delete_cloud_button_${hashCode(hud.dir)}`}
-										label={
-											<img
-												src={trash}
-												onClick={toggleModal}
+							<Col style={{ flex: 1 }} className="hud-options">
+								<div className="centered">
+									<ElectronOnly>
+										{!isLoading ? (
+											isCloudAvailable ? <img
+												src={downloadIcon}
 												className="action"
-												alt="Delete HUD from cloud"
-											/>
-										}
-									>
-										Delete HUD from cloud
+												onClick={() => {
+													downloadHUD(hud.uuid);
+												}}
+											/> : null
+										) : (
+												'Downloading...'
+											)}
+										<Tip
+											id={`hud_delete_cloud_button_${hashCode(hud.dir)}`}
+											label={
+												<img
+													src={trash}
+													onClick={toggleModal}
+													className="action"
+													alt="Delete HUD from cloud"
+												/>
+											}
+										>
+											Delete HUD from cloud
 									</Tip>
-								</ElectronOnly>
-								{!isLoading ? (
-									<img
-										src={downloadIcon}
-										className="action"
-										onClick={() => {
-											downloadHUD(hud.uuid);
-										}}
-									/>
-								) : (
-									'Downloading...'
-								)}
-							</div>
-						</Col>
-					)}
+									</ElectronOnly>
+								</div>
+							</Col>
+						)}
 				</Row>
 				{isLocal ? (
 					<Row>

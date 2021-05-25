@@ -6,8 +6,6 @@ import { testData } from '../testing';
 import WebSocket from 'ws';
 import { createDirector } from '../../aco';
 
-const radar = require('./../../../boltobserv/index.js');
-
 const assertUser: express.RequestHandler = (req, res, next) => {
 	if (!customer.customer) {
 		return res.sendStatus(403);
@@ -87,7 +85,6 @@ export const initGameConnection = async () => {
 
 		io.to('game').emit('update', req.body);
 		GSI.digest(req.body);
-		radar.digestRadar(req.body);
 		res.sendStatus(200);
 	});
 

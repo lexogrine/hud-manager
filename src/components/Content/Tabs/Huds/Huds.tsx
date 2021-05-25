@@ -186,6 +186,7 @@ export default class Huds extends React.Component<IProps, IState> {
 	render() {
 		const { killfeed, radar, afx } = this.state.form;
 		const { active, config } = this.state;
+		const available = this.props.cxt.customer?.license?.type === 'professional' || this.props.cxt.customer?.license?.type === 'enterprise';
 		if (active) {
 			return (
 				<React.Fragment>
@@ -380,6 +381,7 @@ export default class Huds extends React.Component<IProps, IState> {
 									loadHUDs={this.loadHUDs}
 									setHUDLoading={this.setHUDLoading}
 									isLoading={!!hud.uuid && this.state.loadingHUDs.includes(hud.uuid)}
+									isCloudAvailable={available}
 								/>
 							))}
 						</Col>

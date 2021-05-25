@@ -1,5 +1,4 @@
 /dist
 /node_modules
 /app
-/boltobserv
 /server/api/testing.ts

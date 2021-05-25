@@ -11,8 +11,6 @@ import { app, server } from '.';
 import { HUDStateManager } from './api/huds/hudstatemanager';
 import './api/huds/devhud';
 
-const radar = require('./../boltobserv/index.js');
-
 interface RuntimeConfig {
 	last: CSGORaw | null;
 	devSocket: Socket[];
@@ -62,8 +60,6 @@ export const ioPromise = loadConfig().then(cfg => {
 export const mirvPgl = new MIRVPGL(ioPromise);
 
 ioPromise.then(io => {
-	radar.startRadar(app, io);
-	//hlaeServer();
 
 	const onRoundEnd = async (score: Score) => {
 		const lastGSIEntry = GSI.last;

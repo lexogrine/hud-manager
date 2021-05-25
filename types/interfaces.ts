@@ -238,10 +238,6 @@ export interface HUD {
 	requiredFields?: RequiredFields;
 	status: HUDSyncStatus;
 	uuid: string;
-	boltobserv?: {
-		css?: boolean;
-		maps?: boolean;
-	};
 	isDev: boolean;
 }
 export interface User {

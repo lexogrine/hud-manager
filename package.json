@@ -77,7 +77,6 @@
       "license": "license.txt"
     },
     "files": [
-      "boltobserv/**/*",
       "dist/**/*",
       "package.json",
       {
@@ -105,7 +104,7 @@
     "start": "react-scripts start",
     "build": "npm run transpile && react-scripts build && rm -rf dist/build &&  mv build dist",
     "test": "react-scripts test",
-    "transpile": "rm -rf dist/boltobserv && cp -r boltobserv dist && tsc -p tsconfig.electron.json",
+    "transpile": "tsc -p tsconfig.electron.json",
     "devElectron": "cross-env DEV=true electron ./",
     "electron": "npm run transpile && npm run devElectron",
     "dev": "concurrently \"cross-env BROWSER=none npm start\" \"npm run electron\"",

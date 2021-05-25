@@ -27,7 +27,6 @@
       ".npm-tmp",
       "dist",
       "dist*",
-      "boltobserv",
       "app",
       "src",
       "node_modules",

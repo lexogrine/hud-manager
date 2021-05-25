@@ -556,17 +556,17 @@ export const downloadHUD: RequestHandler = async (req, res) => {
 export const deleteHUDFromCloud: RequestHandler = async (req, res) => {
 	const uuid = req.params.uuid;
 	if (!customer.game || !uuid) return res.sendStatus(422);
-	
+
 	const io = await ioPromise;
 
-	const response = await api(`storage/file/${customer.game}/hud/${uuid}`, "DELETE") as { success: boolean};
+	const response = (await api(`storage/file/${customer.game}/hud/${uuid}`, 'DELETE')) as { success: boolean };
 
-	if(response.success){
+	if (response.success) {
 		io.emit('reloadHUDs');
 	}
-	
+
 	return res.json(response);
-}
+};
 
 const archiveHUD = (hudDir: string) =>
 	new Promise<string>((res, rej) => {

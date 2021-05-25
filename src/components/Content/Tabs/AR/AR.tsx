@@ -25,7 +25,7 @@ const AR = ({ cxt, toggle }: IProps) => {
 	useEffect(() => {
 		loadHUDs();
 		socket.on('reloadHUDs', loadHUDs);
-	}, [])
+	}, []);
 
 	if (active && active.ar) {
 		return (

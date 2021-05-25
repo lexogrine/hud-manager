@@ -528,7 +528,7 @@ exports.deleteHUDFromCloud = async (req, res) => {
     if (!_1.customer.game || !uuid)
         return res.sendStatus(422);
     const io = await socket_1.ioPromise;
-    const response = await user_1.api(`storage/file/${_1.customer.game}/hud/${uuid}`, "DELETE");
+    const response = (await user_1.api(`storage/file/${_1.customer.game}/hud/${uuid}`, 'DELETE'));
     if (response.success) {
         io.emit('reloadHUDs');
     }
