@@ -136,6 +136,8 @@
 				arModuleURL = '/dev/ar/ar.js';
 			}
 
+			arModuleURL += `?cacheBust=${(new Date()).getTime()}`
+
 			socketio.emit("register", isDev ? (Math.random() * 1000 + 1).toString(36).replace(/[^a-z]+/g, '').substr(0, 15) : dir, isDev);
 
 			const customCSS = document.createElement("link");

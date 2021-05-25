@@ -123,12 +123,18 @@ const isJSON = (data: any) => {
 	}
 };
 export const getHUDCustomAsset: express.RequestHandler = async (req, res) => {
-	const { hudDir, section, asset } = req.params;
+	const { section, asset } = req.params;
+	const isDev = req.query.isDev === "true";
+	let { hudDir } = req.params;
+
+	if(isDev && HUDState.devHUD?.dir){
+		hudDir = HUDState.devHUD.dir;
+	}
 
 	const hudData = HUDState.get(hudDir, true);
 	const data = hudData?.[section]?.[asset];
 
-	const panel = (await getHUDPanelSetting(hudDir)) as I.PanelTemplate[];
+	const panel = isDev ? (HUDState?.devHUD?.panel || []) : (await getHUDPanelSetting(hudDir)) as I.PanelTemplate[];
 	if (!data) {
 		return res.sendStatus(404);
 	}

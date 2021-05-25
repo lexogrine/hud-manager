@@ -254,7 +254,7 @@ const HudEntry = ({
 									>
 										Start HUD overlay
 									</Tip>
-									{isNotRemote && isCloudAvailable ? (
+									{isNotRemote && isCloudAvailable && !hud.isDev ? (
 										!isLoading ? (
 											<Tip
 												id={`hud_upload_button_${hashCode(hud.dir)}`}
