@@ -4,13 +4,13 @@
 ## Usage:
 
 Launch CS:GO from HLAE with -afxInteropLight.
-The game must run with at least 2 queues (which is the case for mat_queueu_mode 2, and on almost all CPUs also for mat_queue_mode -1 (recommended))!g
 
 Execute (will log warings / errors to debug.log in current directoy):
-afx-cefhud-interop.exe "--url=afx://file/C:/source/afx-cefhud-interop/afx-cefhud-interop/assets/examples/default/index.html" "--deadline-to-synchronize-surfaces=0" "--disable-frame-rate-limit" "--enable-experimental-web-platform-features" "--enable-logging" "--v=1"
+afx-cefhud-interop.exe "--url=file:///C:/source/afx-cefhud-interop/afx-cefhud-interop/examples/default/index.html" --enable-experimental-web-platform-features --enable-logging --v=1
+Use CTRL + C in termianl to quit.
 
 For live execute:
-afx-cefhud-interop.exe "--url=afx://file/C:/source/afx-cefhud-interop/afx-cefhud-interop/assets/examples/default/index.html" "--deadline-to-synchronize-surfaces=0" "--disable-frame-rate-limit" "--enable-experimental-web-platform-features" "--enable-logging" "--log-severity=error"
+afx-cefhud-interop.exe "--url=file:///C:/source/afx-cefhud-interop/afx-cefhud-interop/examples/default/index.html" --enable-experimental-web-platform-features --enable-logging --log-severity=error
 
 Optional arguments:
 --afx-no-window
@@ -30,9 +30,8 @@ afx_interop send cefhud [...]
 <p>Number of reconnects: <span id="reconnects">0</span></p>
 <p>Engine connected: <span id="engineStatus">n/a</span></p>
 <p>Drawing connected: <span id="drawingStatus">n/a</span></p>
-<script type="module">
-
-import * as Utils from './utils.js';	
+<script type="text/javascript" src="common.js"></script>
+<script>
 
 function AfxInterop(interop, args) {
 	
@@ -58,7 +57,7 @@ function AfxInterop(interop, args) {
 
 			this.drawingInteropId = drawingInteropId;
 			
-			await Utils.toPromise(self.interop, "createEngineInterop",
+			await toPromise(self.interop, "createEngineInterop",
 				new URL("engine.html", window.location).toString(),
 				JSON.stringify({
 					"indexInteropId": this.interop.id,
@@ -79,7 +78,7 @@ function AfxInterop(interop, args) {
 		"engineDisconnected": async function(engineInteropId) {
 			this.elEngineStatus.innerText = "DISCONNECTED";
 
-			await Utils.sleepPromise(1000);
+			await sleepPromise(1000);
 
 			await this.reconnect();
 		},
@@ -101,7 +100,7 @@ function AfxInterop(interop, args) {
 				await self.messageHandlers[jMessage.id].apply(self, jMessage.args);
 			}
 			catch(e) {
-				Utils.logError(e);
+				logError(e);
 				if(!(e && e.soft))
 					throw e;
 			}
@@ -124,7 +123,7 @@ function AfxInterop(interop, args) {
 		self.onError(senderId, message);
 	};
 	
-	Utils.toPromise(this.interop, "createDrawingInterop",
+	toPromise(this.interop, "createDrawingInterop",
 		new URL("drawing.html", window.location).toString(),
 		JSON.stringify({
 			"indexInteropId": this.interop.id,
@@ -150,7 +149,7 @@ AfxInterop.prototype.reconnect = async function(senderId, message) {
 	++this.reconnects;
 	this.elReconnects.innerText = this.reconnects;
 
-	await Utils.toPromise(this.interop, "sendMessage", this.engineInteropId, JSON.stringify({
+	await toPromise(this.interop, "sendMessage", this.engineInteropId, JSON.stringify({
 		"id": "connect",
 		"args": [this.interop.id]
 	}));
@@ -158,8 +157,10 @@ AfxInterop.prototype.reconnect = async function(senderId, message) {
 
 ////////////////////////////////////////////////////////////////////////////////
 
+//window.open("http://google.com");
+
 window.addEventListener('load', function(){
-	
+
 	console.log(window.afxInterop.args);
 	new AfxInterop(window.afxInterop, JSON.parse(window.afxInterop.args))
 	
