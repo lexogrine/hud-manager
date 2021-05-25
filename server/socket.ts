@@ -60,7 +60,6 @@ export const ioPromise = loadConfig().then(cfg => {
 export const mirvPgl = new MIRVPGL(ioPromise);
 
 ioPromise.then(io => {
-
 	const onRoundEnd = async (score: Score) => {
 		const lastGSIEntry = GSI.last;
 		if (lastGSIEntry) await updateRound(lastGSIEntry);

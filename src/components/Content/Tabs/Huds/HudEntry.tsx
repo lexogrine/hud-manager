@@ -32,7 +32,16 @@ interface IProps {
 	isCloudAvailable: boolean;
 }
 
-const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHUDs, setHUDLoading, isCloudAvailable }: IProps) => {
+const HudEntry = ({
+	isLoading,
+	hud,
+	isActive,
+	toggleConfig,
+	customFields,
+	loadHUDs,
+	setHUDLoading,
+	isCloudAvailable
+}: IProps) => {
 	const gameToTag = (game: string) => {
 		if (game === 'rocketleague') {
 			return '[RL]';
@@ -59,7 +68,7 @@ const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHU
 			} else {
 				await api.huds.delete(hud.dir);
 			}
-		} catch { }
+		} catch {}
 		toggleModal();
 	};
 	const downloadHUD = (uuid: string) => {
@@ -137,7 +146,7 @@ const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHU
 							<img
 								src={`${Config.isDev ? Config.apiAddress : '/'}${
 									hud.isDev ? 'dev/thumb.png' : `huds/${hud.dir}/thumbnail`
-									}`}
+								}`}
 								alt={`${hud.name}`}
 							/>
 						) : null}
@@ -193,8 +202,8 @@ const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHU
 								</Col>
 							</Row>
 						) : (
-								''
-							)}
+							''
+						)}
 					</Col>
 					{isLocal ? (
 						<Col style={{ flex: 1 }} className="hud-options">
@@ -229,8 +238,8 @@ const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHU
 										Go to HUD settings
 									</Tip>
 								) : (
-										''
-									)}
+									''
+								)}
 								<ElectronOnly>
 									<Tip
 										id={`hud_overlay_button_${hashCode(hud.dir)}`}
@@ -262,8 +271,8 @@ const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHU
 												Upload HUD
 											</Tip>
 										) : (
-												'Uploading...'
-											)
+											'Uploading...'
+										)
 									) : null}
 									<Tip
 										id={`hud_delete_button_${hashCode(hud.dir)}`}
@@ -300,37 +309,39 @@ const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHU
 							</GameOnly>
 						</Col>
 					) : (
-							<Col style={{ flex: 1 }} className="hud-options">
-								<div className="centered">
-									<ElectronOnly>
-										{!isLoading ? (
-											isCloudAvailable ? <img
+						<Col style={{ flex: 1 }} className="hud-options">
+							<div className="centered">
+								<ElectronOnly>
+									{!isLoading ? (
+										isCloudAvailable ? (
+											<img
 												src={downloadIcon}
 												className="action"
 												onClick={() => {
 													downloadHUD(hud.uuid);
 												}}
-											/> : null
-										) : (
-												'Downloading...'
-											)}
-										<Tip
-											id={`hud_delete_cloud_button_${hashCode(hud.dir)}`}
-											label={
-												<img
-													src={trash}
-													onClick={toggleModal}
-													className="action"
-													alt="Delete HUD from cloud"
-												/>
-											}
-										>
-											Delete HUD from cloud
+											/>
+										) : null
+									) : (
+										'Downloading...'
+									)}
+									<Tip
+										id={`hud_delete_cloud_button_${hashCode(hud.dir)}`}
+										label={
+											<img
+												src={trash}
+												onClick={toggleModal}
+												className="action"
+												alt="Delete HUD from cloud"
+											/>
+										}
+									>
+										Delete HUD from cloud
 									</Tip>
-									</ElectronOnly>
-								</div>
-							</Col>
-						)}
+								</ElectronOnly>
+							</div>
+						</Col>
+					)}
 				</Row>
 				{isLocal ? (
 					<Row>
