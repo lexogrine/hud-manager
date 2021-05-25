@@ -33,22 +33,22 @@ var AFX_RENDERPASS_STATE = {
 ////////////////////////////////////////////////////////////////////////////////
 
 function AfxEngineInterop(interop, args) {
-	
+
 	var self = this;
-	
+
 	interop.setPipeName(args.pipeName);
-	
+
 	this.interop = interop;
 	this.args = args;
 	this.newConnection = true;
 
 	this.connected = false;
 	this.messagePromises = {};
-	
+
 	this.pumpPromise = Promise.resolve();
 
 	this.drawingConnectRequested = false;
-	
+
 	this.messageHandlers = {
 		"connect": async function(senderId) {
 			await this.connect();
@@ -73,11 +73,11 @@ function AfxEngineInterop(interop, args) {
 			await toPromise(this, "disconnect");
 		}
 	};
-	
+
 	interop.onMessage = function(senderId, message){
-		
+
 		const jMessage = JSON.parse(message);
-		
+
 		async function processMessage(jMessage)
 		{
 			try {
@@ -89,17 +89,17 @@ function AfxEngineInterop(interop, args) {
 					await toPromise(self, "disconnect");
 			}
 		}
-		
+
 		function queueMessage(jMessage)
 		{
 			const port = jMessage.port || "0";
-			
+
 			var promise = self.messagePromises[port];
 			if(undefined === promise) promise = Promise.resolve();
-			
+
 			self.messagePromises[port] = promise.finally(()=>processMessage(jMessage));
 		}
-		
+
 		queueMessage(jMessage);
 	}
 
@@ -109,14 +109,14 @@ function AfxEngineInterop(interop, args) {
 
 	interop.gameEventSetTransmitClientTime(true);
 	interop.gameEventSetTransmitTick(true);
-	
+
 	var useridEnrichtments = AFX_GAMEVENT_ENRICHMENTS.UserIdWithSteamId
 		| AFX_GAMEVENT_ENRICHMENTS.UseridWithEyePosition
 		| AFX_GAMEVENT_ENRICHMENTS.UseridWithEyeAngels;
-		
+
 	var entNumEnrichments = AFX_GAMEVENT_ENRICHMENTS.EntnumWithOrigin
 		| AFX_GAMEVENT_ENRICHMENTS.EntnumWithAngles;
-	
+
 	interop.gameEventSetEnrichment('player_death', 'userid', useridEnrichtments);
 	interop.gameEventSetEnrichment('player_death', 'attacker', useridEnrichtments);
 	interop.gameEventSetEnrichment('player_death', 'assister', useridEnrichtments);
@@ -212,7 +212,7 @@ function AfxEngineInterop(interop, args) {
 	interop.gameEventSetEnrichment('ammo_refill', 'userid', useridEnrichtments);
 	// ... left out the dangerzone, feel free to add it ...
 	interop.gameEventSetEnrichment('weaponhud_selection', 'userid', useridEnrichtments);
-	
+
 	//
 
 	this.pumpEventsAsync = {
@@ -227,14 +227,14 @@ function AfxEngineInterop(interop, args) {
 		},
 		// optional.
 		"onCommands": async function(commands) {
-		
+
 			var doCommands = [];
-		
+
 			if(self.newConnection) {
 				self.newConnection = false;
 				doCommands.push("echo afx_interop send cefhud - To send commands to me.");
 			}
-			
+
 			for(var i=0; i < commands.length; ++i)
 			{
 				var command = commands[i];
@@ -258,7 +258,7 @@ function AfxEngineInterop(interop, args) {
 								handled = true;
 								break;
 							}
-							
+
 							if(handled) continue;
 						}
 						doCommands.push("echo \""+command[0]+" cefhud echo <sText>+ - echo text back to CS:GO.\"");
@@ -277,10 +277,10 @@ function AfxEngineInterop(interop, args) {
 		},
 		// optional.
 		"onRenderViewBegin": async function(renderInfo) {
-	
+
 			this.renderInfo = renderInfo;
 			this.pass = 0;
-			
+
 			await toPromise(this.interop, "sendMessage", this.args.drawingInteropId, JSON.stringify({
 				"id": "onRenderViewBegin",
 				"args": [renderInfo]
@@ -333,8 +333,9 @@ function AfxEngineInterop(interop, args) {
 			//TODO: schedule for drawing.
 			await toPromise(this.interop, "pump", this.pumpEvents);
 		},*/
-		
+
 		// optional.
+
 		"onViewOverride": async function(view) {
             await toPromise(this.interop, "sendMessage", this.args.drawingInteropId, JSON.stringify({
                 "id": "onViewOverride",
@@ -354,7 +355,7 @@ function AfxEngineInterop(interop, args) {
 	};
 
 	this.pumpEvents = this.makePumpEvents();
-	
+
 	toPromise(this.interop, "sendMessage", this.args.indexInteropId, JSON.stringify({
 		"id": "engineCreated",
 		"args": [self.interop.id]
@@ -379,7 +380,7 @@ AfxEngineInterop.prototype.connect = async function() {
 			}));
 
 			await toPromise(self.interop, "connect");
-				
+
 			await toPromise(self.interop, "sendMessage", self.args.indexInteropId, JSON.stringify({
 					"id": "engineConnected",
 					"args": [self.interop.id]
@@ -393,7 +394,7 @@ AfxEngineInterop.prototype.connect = async function() {
 }
 
 AfxEngineInterop.prototype.disconnect = async function() {
-	
+
 	this.interop.cancel();
 	this.messagePromises = {};
 	this.pumpPromise = Promise.resolve();
@@ -445,7 +446,7 @@ AfxEngineInterop.prototype.disconnect = async function() {
 	Object.keys(self.pumpEventsAsync).forEach((key) => {
 
 		pumpEvents[key] = function(...args){
-		
+
 			self.pumpPromise = self.pumpPromise
 			.finally(()=>self.pumpEventsAsync[key].apply(self, args))
 			.catch((e) => {
@@ -466,9 +467,9 @@ window.addEventListener('load', function(){
 
 	console.log(window.afxInterop.args);
 	new AfxEngineInterop(window.afxInterop, JSON.parse(window.afxInterop.args))
-	
+
 }, false);
 
 </script>
 </body>
-</html>
+</html> 

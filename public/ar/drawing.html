@@ -656,7 +656,6 @@
 			matrix World;
 			matrix View;
 			matrix Projection;
-
 			struct VS_INPUT
 			{
 				float3 pos : POSITION;
@@ -669,7 +668,6 @@
 				float4 c : COLOR;
 				float2 t0 : TEXCOORD0;
 			};
-
 			VS_OUTPUT main( const VS_INPUT i )
 			{
 				VS_OUTPUT o;
@@ -687,12 +685,10 @@
 		`), null, null, null, "main", "vs_2_0", 0, 0, 0, null),
 				"afx_drawtexture_ps20": this.compileShader(this.stringToAfxData(`
 			sampler g_sTextureSampler : register( s0 );
-
 			struct PS_INPUT
 			{
 				float2 t0 : TEXCOORD0;
 			};
-
 			float4 main( const PS_INPUT i ) : COLOR
 			{
 				return tex2D(g_sTextureSampler, i.t0);

@@ -16,7 +16,6 @@ const hlae_1 = require("./hlae");
 const _1 = require(".");
 const hudstatemanager_1 = require("./api/huds/hudstatemanager");
 require("./api/huds/devhud");
-const radar = require('./../boltobserv/index.js');
 let lastUpdate = new Date().getTime();
 exports.runtimeConfig = {
     last: null,
@@ -47,8 +46,6 @@ exports.ioPromise = config_1.loadConfig().then(cfg => {
 });
 exports.mirvPgl = new hlae_1.MIRVPGL(exports.ioPromise);
 exports.ioPromise.then(io => {
-    radar.startRadar(_1.app, io);
-    //hlaeServer();
     const onRoundEnd = async (score) => {
         const lastGSIEntry = exports.GSI.last;
         if (lastGSIEntry)

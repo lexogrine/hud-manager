@@ -1,25 +1,17 @@
 <!DOCTYPE html>
 <!--
-
 ## Usage:
-
 Launch CS:GO from HLAE with -afxInteropLight.
-
 Execute (will log warings / errors to debug.log in current directoy):
 afx-cefhud-interop.exe "--url=file:///C:/source/afx-cefhud-interop/afx-cefhud-interop/examples/default/index.html" --enable-experimental-web-platform-features --enable-logging --v=1
 Use CTRL + C in termianl to quit.
-
 For live execute:
 afx-cefhud-interop.exe "--url=file:///C:/source/afx-cefhud-interop/afx-cefhud-interop/examples/default/index.html" --enable-experimental-web-platform-features --enable-logging --log-severity=error
-
 Optional arguments:
 --afx-no-window
-
 Enter afx_interop connect 1 into CS:GO console.
-
 Console interface:
 afx_interop send cefhud [...]
-
 -->
 <html>
 <head>
@@ -34,9 +26,9 @@ afx_interop send cefhud [...]
 <script>
 
 function AfxInterop(interop, args) {
-	
+
 	var self = this;
-	
+
 	this.interop = interop;
 	this.args = args;
 
@@ -50,13 +42,13 @@ function AfxInterop(interop, args) {
 	this.elReconnects = document.getElementById('reconnects');
 	this.elEngineStatus = document.getElementById('engineStatus');
 	this.elDrawingStatus = document.getElementById('drawingStatus');
-	
+
 	this.messageHandlers = {
 		"drawingCreated": async function(drawingInteropId) {
 			console.log("Created drawing interop #"+drawingInteropId);
 
 			this.drawingInteropId = drawingInteropId;
-			
+
 			await toPromise(self.interop, "createEngineInterop",
 				new URL("engine.html", window.location).toString(),
 				JSON.stringify({
@@ -89,11 +81,11 @@ function AfxInterop(interop, args) {
 			this.elDrawingStatus.innerText = "DISCONNECTED";
 		}
 	};
-	
+
 	interop.onMessage = function(senderId, message){
-		
+
 		const jMessage = JSON.parse(message);
-		
+
 		async function processMessage(jMessage)
 		{
 			try {
@@ -105,24 +97,24 @@ function AfxInterop(interop, args) {
 					throw e;
 			}
 		}
-		
+
 		function queueMessage(jMessage)
 		{
 			const port = jMessage.port || "0";
-			
+
 			var promise = self.messagePromises[port];
 			if(undefined === promise) promise = Promise.resolve();
-			
+
 			self.messagePromises[port] = promise.finally(()=>processMessage(jMessage));
 		}
-		
+
 		queueMessage(jMessage);
 	}
 
 	interop.onError = function(senderId, message){
 		self.onError(senderId, message);
 	};
-	
+
 	toPromise(this.interop, "createDrawingInterop",
 		new URL("drawing.html", window.location).toString(),
 		JSON.stringify({
@@ -133,7 +125,7 @@ function AfxInterop(interop, args) {
 }
 
 AfxInterop.prototype.onError = function(senderId, message) {
-	
+
 	if(this.drawingInteropId === senderId)
 		throw ("Drawing interop #"+senderId+" error: "+message);
 	else if(this.engineInteropId === senderId)
@@ -163,9 +155,9 @@ window.addEventListener('load', function(){
 
 	console.log(window.afxInterop.args);
 	new AfxInterop(window.afxInterop, JSON.parse(window.afxInterop.args))
-	
+
 }, false);
 
 </script>
 </body>
-</html>
+</html> 

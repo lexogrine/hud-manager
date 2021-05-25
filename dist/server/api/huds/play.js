@@ -10,7 +10,6 @@ const socket_1 = require("../../socket");
 const testing_1 = require("../testing");
 const ws_1 = __importDefault(require("ws"));
 const aco_1 = require("../../aco");
-const radar = require('./../../../boltobserv/index.js');
 const assertUser = (req, res, next) => {
     if (!__1.customer.customer) {
         return res.sendStatus(403);
@@ -76,7 +75,6 @@ exports.initGameConnection = async () => {
         }
         io.to('game').emit('update', req.body);
         socket_1.GSI.digest(req.body);
-        radar.digestRadar(req.body);
         res.sendStatus(200);
     });
     __2.app.post('/api/test', assertUser, (_req, res) => {
