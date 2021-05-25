@@ -57,13 +57,13 @@ class Director {
 		const isAreaShowingForMorethanInterval = new Date().getTime() - this.lastSwitch > AREA_INTERVAL;
 		if (!isAreaShowingForMorethanInterval) return;
 
-		if(isAreaTheSame && new Date().getTime() - this.lastSwitch <= CONFIG_INTERVAL){
+		if (isAreaTheSame && new Date().getTime() - this.lastSwitch <= CONFIG_INTERVAL) {
 			return;
 		}
 
 		let configIndex = 0;
 
-		if(area.configs.length > 1){
+		if (area.configs.length > 1) {
 			const notUsedConfigs = area.configs.filter(config => config !== this.currentConfig);
 
 			configIndex = Math.floor(Math.random() * notUsedConfigs.length);

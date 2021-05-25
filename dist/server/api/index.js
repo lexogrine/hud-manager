@@ -101,6 +101,7 @@ async function default_1() {
     __1.app.route('/api/huds/download/:uuid').get(huds.downloadHUD);
     __1.app.route('/api/huds/:hudDir/:section/:asset').get(huds.getHUDCustomAsset);
     __1.app.route('/api/huds/upload/:hudDir').post(huds.uploadHUD);
+    __1.app.route('/api/huds/delete/:uuid').delete(huds.deleteHUDFromCloud);
     __1.app.route('/api/gsi').get(gsi.checkGSIFile).put(gsi.createGSIFile);
     __1.app.route('/api/import').post(sync.importDb);
     __1.app.route('/api/steam').get((req, res) => res.json({ gamePath: steam_game_path_1.getGamePath(730) }));

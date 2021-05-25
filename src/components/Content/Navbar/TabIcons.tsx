@@ -5,6 +5,6 @@ import Matches from './../../../styles/Tabs/normal/matches.png';
 import Live from './../../../styles/Tabs/normal/live.png';
 import Tournaments from './../../../styles/Tabs/normal/tournaments.png';
 import ACO from './../../../styles/Tabs/normal/aco.png';
-import VR from './../../../styles/Tabs/normal/vr.png';
+import AR from './../../../styles/Tabs/normal/vr.png';
 
-export { Players, Teams, HUDs, Matches, Live, Tournaments, ACO, VR };
+export { Players, Teams, HUDs, Matches, Live, Tournaments, ACO, AR };

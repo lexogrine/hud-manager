@@ -104,6 +104,8 @@ export default async function () {
 
 	app.route('/api/huds/upload/:hudDir').post(huds.uploadHUD);
 
+	app.route('/api/huds/delete/:uuid').delete(huds.deleteHUDFromCloud);
+
 	app.route('/api/gsi').get(gsi.checkGSIFile).put(gsi.createGSIFile);
 
 	app.route('/api/import').post(sync.importDb);

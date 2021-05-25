@@ -22,7 +22,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.uploadHUD = exports.downloadHUD = exports.deleteHUD = exports.sendHUD = exports.closeHUD = exports.showHUD = exports.legacyCSS = exports.legacyJS = exports.renderLegacy = exports.renderAssets = exports.getThumbPath = exports.renderThumbnail = exports.renderOverlay = exports.render = exports.verifyOverlay = exports.renderHUD = exports.openHUDsDirectory = exports.getHUDPanelSetting = exports.getHUDKeyBinds = exports.getHUDData = exports.getHUDARSettings = exports.getHUDCustomAsset = exports.getHUDs = exports.listHUDs = void 0;
+exports.uploadHUD = exports.deleteHUDFromCloud = exports.downloadHUD = exports.deleteHUD = exports.sendHUD = exports.closeHUD = exports.showHUD = exports.legacyCSS = exports.legacyJS = exports.renderLegacy = exports.renderAssets = exports.getThumbPath = exports.renderThumbnail = exports.renderOverlay = exports.render = exports.verifyOverlay = exports.renderHUD = exports.openHUDsDirectory = exports.getHUDPanelSetting = exports.getHUDKeyBinds = exports.getHUDData = exports.getHUDARSettings = exports.getHUDCustomAsset = exports.getHUDs = exports.listHUDs = void 0;
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
 const electron_1 = require("electron");
@@ -510,7 +510,7 @@ exports.downloadHUD = async (req, res) => {
     if (!name) {
         return res.sendStatus(404);
     }
-    const presignedURLResponse = await user_1.api(`storage/file/url/GET/${uuid}`);
+    const presignedURLResponse = (await user_1.api(`storage/file/url/${_1.customer.game}/GET/${uuid}`));
     if (!presignedURLResponse || !presignedURLResponse.url) {
         return res.sendStatus(404);
     }
@@ -522,6 +522,17 @@ exports.downloadHUD = async (req, res) => {
     const hudBufferString = buffer.toString('base64');
     const result = await loadHUD(hudBufferString, name, uuid);
     return res.json({ result });
+};
+exports.deleteHUDFromCloud = async (req, res) => {
+    const uuid = req.params.uuid;
+    if (!_1.customer.game || !uuid)
+        return res.sendStatus(422);
+    const io = await socket_1.ioPromise;
+    const response = await user_1.api(`storage/file/${_1.customer.game}/hud/${uuid}`, "DELETE");
+    if (response.success) {
+        io.emit('reloadHUDs');
+    }
+    return res.json(response);
 };
 const archiveHUD = (hudDir) => new Promise((res, rej) => {
     const dir = path.join(electron_1.app.getPath('home'), 'HUDs', hudDir);
@@ -543,7 +554,7 @@ exports.uploadHUD = async (req, res) => {
     const hud = await exports.getHUDData(hudDir);
     if (!hud || !hud.uuid)
         return res.sendStatus(422);
-    const presignedURLResponse = await user_1.api(`storage/file/url/PUT/${hud.uuid}`);
+    const presignedURLResponse = (await user_1.api(`storage/file/url/${_1.customer.game}/PUT/${hud.uuid}`));
     if (!presignedURLResponse || !presignedURLResponse.url) {
         return res.sendStatus(404);
     }
@@ -557,10 +568,10 @@ exports.uploadHUD = async (req, res) => {
     const archivePath = await archiveHUD(hudDir);
     const payload = fs.createReadStream(archivePath);
     const response = await node_fetch_1.default(presignedURLResponse.url, {
-        method: "PUT",
+        method: 'PUT',
         body: payload,
         headers: {
-            "Content-Length": `${fs.statSync(archivePath).size}`
+            'Content-Length': `${fs.statSync(archivePath).size}`
         }
     });
     console.log(response.ok, await response.text());

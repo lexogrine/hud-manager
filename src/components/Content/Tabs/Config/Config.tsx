@@ -126,7 +126,7 @@ export default class Config extends React.Component<IProps, IState> {
 	import = (data: any, callback: any) => async () => {
 		try {
 			await api.files.sync(data);
-		} catch { }
+		} catch {}
 		this.setState({ data: {}, conflict: { teams: 0, players: 0 }, importModalOpen: false }, callback);
 	};
 	importCheck = (callback: any) => (files: FileList) => {
@@ -157,7 +157,7 @@ export default class Config extends React.Component<IProps, IState> {
 					importModalOpen: true,
 					data: db
 				});
-			} catch { }
+			} catch {}
 		};
 	};
 	download = (target: 'gsi' | 'cfgs' | 'db') => {
@@ -456,8 +456,8 @@ export default class Config extends React.Component<IProps, IState> {
 									{update.installing
 										? 'Installing...'
 										: update.available
-											? 'Install update'
-											: 'Latest'}
+										? 'Install update'
+										: 'Latest'}
 								</Button>
 							</Col>
 						</ElectronOnly>
@@ -559,13 +559,13 @@ export default class Config extends React.Component<IProps, IState> {
 									<div className="download-container">
 										<Button onClick={() => this.download('gsi')} className="purple-btn round-btn">
 											GSI config
-									</Button>
+										</Button>
 										<Button onClick={() => this.download('cfgs')} className="purple-btn round-btn">
 											HUD configs
-									</Button>
+										</Button>
 										<Button onClick={() => this.download('db')} className="purple-btn round-btn">
 											Export DB
-									</Button>
+										</Button>
 									</div>
 								</Col>
 							</GameOnly>

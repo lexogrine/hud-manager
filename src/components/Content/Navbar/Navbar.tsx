@@ -110,6 +110,17 @@ const Navbar = ({ activeTab, toggle, files }: IProps) => (
 			</ContextData.Consumer>
 			<NavItem className="hover-pointer">
 				<NavLink
+					active={activeTab === 'ar'}
+					onClick={() => {
+						toggle('ar');
+					}}
+				>
+					<img src={Tabs.AR} alt="AR" />
+					<div>AR</div>
+				</NavLink>
+			</NavItem>
+			<NavItem className="hover-pointer">
+				<NavLink
 					active={activeTab === 'live'}
 					onClick={() => {
 						toggle('live');

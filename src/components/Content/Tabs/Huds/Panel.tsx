@@ -231,7 +231,7 @@ export default class ActionPanel extends React.Component<IProps, IState> {
 											.sort((a, b) => (a.username < b.username ? -1 : 1))
 											.map(player => (
 												<option value={player._id} key={player._id}>
-													{player.username}
+													{player.firstName} &quot;{player.username}&quot; {player.lastName}
 												</option>
 											))}
 									</Input>

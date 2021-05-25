@@ -290,7 +290,7 @@ export default class Huds extends React.Component<IProps, IState> {
 											</Button>
 											<Button
 												className="round-btn run-game"
-												onClick={() => this.props.toggle('ar', this.state.huds)}
+												onClick={() => this.props.toggle('ar')}
 											>
 												AR
 											</Button>

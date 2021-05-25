@@ -459,7 +459,7 @@ function removeArchives() {
 				return;
 			}
 			if (fs.existsSync(file)) fs.unlinkSync(file);
-		} catch { }
+		} catch {}
 	});
 }
 
@@ -528,19 +528,19 @@ export const downloadHUD: RequestHandler = async (req, res) => {
 
 	const name = hudData?.data?.extra?.name;
 
-	if(!name){
+	if (!name) {
 		return res.sendStatus(404);
 	}
 
-	const presignedURLResponse = await api(`storage/file/url/GET/${uuid}`) as { url: string };
+	const presignedURLResponse = (await api(`storage/file/url/${customer.game}/GET/${uuid}`)) as { url: string };
 
-	if(!presignedURLResponse || !presignedURLResponse.url) {
+	if (!presignedURLResponse || !presignedURLResponse.url) {
 		return res.sendStatus(404);
 	}
 
 	const response = await fetch(presignedURLResponse.url);
 
-	if(!response.ok){
+	if (!response.ok) {
 		return res.sendStatus(404);
 	}
 
@@ -552,6 +552,21 @@ export const downloadHUD: RequestHandler = async (req, res) => {
 
 	return res.json({ result });
 };
+
+export const deleteHUDFromCloud: RequestHandler = async (req, res) => {
+	const uuid = req.params.uuid;
+	if (!customer.game || !uuid) return res.sendStatus(422);
+	
+	const io = await ioPromise;
+
+	const response = await api(`storage/file/${customer.game}/hud/${uuid}`, "DELETE") as { success: boolean};
+
+	if(response.success){
+		io.emit('reloadHUDs');
+	}
+	
+	return res.json(response);
+}
 
 const archiveHUD = (hudDir: string) =>
 	new Promise<string>((res, rej) => {
@@ -584,19 +599,17 @@ export const uploadHUD: RequestHandler = async (req, res) => {
 
 	if (!hud || !hud.uuid) return res.sendStatus(422);
 
+	const presignedURLResponse = (await api(`storage/file/url/${customer.game}/PUT/${hud.uuid}`)) as { url: string };
 
-	const presignedURLResponse = await api(`storage/file/url/PUT/${hud.uuid}`) as { url: string };
-
-
-	if(!presignedURLResponse || !presignedURLResponse.url) {
+	if (!presignedURLResponse || !presignedURLResponse.url) {
 		return res.sendStatus(404);
 	}
 
 	const hudUploadResponse = await api(`storage/file/${customer.game}/hud/${hud.uuid}`, 'POST', {
 		extra: hud
 	});
-	console.log(hudUploadResponse)
-	if(!hudUploadResponse || !hudUploadResponse.result){
+	console.log(hudUploadResponse);
+	if (!hudUploadResponse || !hudUploadResponse.result) {
 		return res.sendStatus(404);
 	}
 
@@ -604,22 +617,20 @@ export const uploadHUD: RequestHandler = async (req, res) => {
 
 	const payload = fs.createReadStream(archivePath);
 	const response = await fetch(presignedURLResponse.url, {
-		method: "PUT",
+		method: 'PUT',
 		body: payload,
 		headers: {
-			"Content-Length": `${fs.statSync(archivePath).size}`
+			'Content-Length': `${fs.statSync(archivePath).size}`
 		}
 	});
 	console.log(response.ok, await response.text());
-	if(!response.ok){
+	if (!response.ok) {
 		fs.unlinkSync(archivePath);
 
 		return res.sendStatus(404);
 	}
 
-
 	fs.unlinkSync(archivePath);
-
 
 	return res.json({ hudUploadResponse });
 };

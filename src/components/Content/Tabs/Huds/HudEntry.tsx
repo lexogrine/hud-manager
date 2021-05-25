@@ -53,7 +53,11 @@ const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHU
 	};
 	const deleteHUD = async () => {
 		try {
-			await api.huds.delete(hud.dir);
+			if(hud.status === "REMOTE") {
+				await api.huds.deleteFromCloud(hud.uuid);
+			} else {
+				await api.huds.delete(hud.dir);
+			}
 		} catch {}
 		toggleModal();
 	};
@@ -301,6 +305,21 @@ const HudEntry = ({ isLoading, hud, isActive, toggleConfig, customFields, loadHU
 					) : (
 						<Col style={{ flex: 1 }} className="hud-options">
 							<div className="centered">
+								<ElectronOnly>
+									<Tip
+										id={`hud_delete_cloud_button_${hashCode(hud.dir)}`}
+										label={
+											<img
+												src={trash}
+												onClick={toggleModal}
+												className="action"
+												alt="Delete HUD from cloud"
+											/>
+										}
+									>
+										Delete HUD from cloud
+									</Tip>
+								</ElectronOnly>
 								{!isLoading ? (
 									<img
 										src={downloadIcon}

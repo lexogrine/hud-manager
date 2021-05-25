@@ -124,6 +124,7 @@ export default {
 		openDirectory: async () => await apiV2(`huds`, 'POST'),
 		save: async (hud: string, name: string) => await apiV2(`huds/add`, 'POST', { hud, name }),
 		delete: async (hudDir: string) => await apiV2(`huds?hudDir=${hudDir}`, 'DELETE'),
+		deleteFromCloud: async (uuid: string) => await apiV2(`huds/delete/${uuid}`, 'DELETE'),
 		download: (uuid: string): Promise<{ result: I.HUD | null }> => apiV2(`huds/download/${uuid}`),
 		upload: (hudDir: string): Promise<any> => apiV2(`huds/upload/${hudDir}`, 'POST')
 	},
