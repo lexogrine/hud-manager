@@ -32,12 +32,14 @@ const connectSocket = () => {
 			)
 		}
 	});
-	
+
 	socket.on('connection', () => {
 		console.log('CONNECTED');
 	});
 
-	socket._socket.onerror = (err:any) => {console.log(err)};
+	socket._socket.onerror = (err: any) => {
+		console.log(err);
+	};
 
 	socket.on('banned', () => {
 		ioPromise.then(io => {

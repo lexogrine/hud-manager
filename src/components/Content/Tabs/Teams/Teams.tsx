@@ -239,9 +239,15 @@ const TeamsTab = ({ cxt }: IProps) => {
 			<div className="tab-content-container no-padding">
 				<div className="item-list-entry heading">
 					<div className="picture">Logo</div>
-					<div className="name" onClick={toggleSortBy('name')}>Name</div>
-					<div className="shortname" onClick={toggleSortBy('shortName')}>Short name</div>
-					<div className="country" onClick={toggleSortBy('country')}>Country</div>
+					<div className="name" onClick={toggleSortBy('name')}>
+						Name
+					</div>
+					<div className="shortname" onClick={toggleSortBy('shortName')}>
+						Short name
+					</div>
+					<div className="country" onClick={toggleSortBy('country')}>
+						Country
+					</div>
 					{visibleFields.map(field => (
 						<div className="custom-field" key={field._id}>
 							{field.name}
