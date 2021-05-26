@@ -69,7 +69,7 @@ This section is for additional data display in HUDs and the Lexogrine HUD Manage
 
 ### Players
 
-This tab allows you to specify a player's displayed name, their country, real name and a picture as well. During matches players are identified by their SteamID64.
+This tab allows you to specify a player's displayed name, their country, real name and a picture as well. During matches players are identified by their SteamID64 (CS:GO) or in-game name (Rocket League).
 
 ### Matches
 

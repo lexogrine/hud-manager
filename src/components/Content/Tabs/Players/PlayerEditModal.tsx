@@ -45,6 +45,7 @@ const PlayerEditModal = ({
 			avatar = `data:image/${encoding};base64,${player.avatar}`;
 		}
 	}
+	const gameIdentifier = cxt.game === "csgo" ? 'SteamID64' : 'In-game name';
 	const renderInput = (
 		field: string,
 		type: Exclude<I.PanelInputType, 'select' | 'action' | 'checkbox'>,
@@ -193,7 +194,7 @@ const PlayerEditModal = ({
 							name="steamid"
 							value={player.steamid}
 							onChange={onChange}
-							placeholder="SteamID64"
+							placeholder={gameIdentifier}
 						/>
 					</FormGroup>
 				</Col>

@@ -33,7 +33,9 @@ const connectSocket = () => {
     exports.socket.on('connection', () => {
         console.log('CONNECTED');
     });
-    exports.socket._socket.onerror = (err) => { console.log(err); };
+    exports.socket._socket.onerror = (err) => {
+        console.log(err);
+    };
     exports.socket.on('banned', () => {
         socket_1.ioPromise.then(io => {
             io.emit('banned');
