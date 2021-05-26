@@ -133,14 +133,14 @@ const isJSON = (data) => {
 };
 exports.getHUDCustomAsset = async (req, res) => {
     const { section, asset } = req.params;
-    const isDev = req.query.isDev === "true";
+    const isDev = req.query.isDev === 'true';
     let { hudDir } = req.params;
     if (isDev && socket_1.HUDState.devHUD?.dir) {
         hudDir = socket_1.HUDState.devHUD.dir;
     }
     const hudData = socket_1.HUDState.get(hudDir, true);
     const data = hudData?.[section]?.[asset];
-    const panel = isDev ? (socket_1.HUDState?.devHUD?.panel || []) : (await exports.getHUDPanelSetting(hudDir));
+    const panel = isDev ? socket_1.HUDState?.devHUD?.panel || [] : (await exports.getHUDPanelSetting(hudDir));
     if (!data) {
         return res.sendStatus(404);
     }

@@ -1401,6 +1401,9 @@ input:checked ~ .customCheckbox {
     height: 42px;
     font-weight: 300;
 }
+.item-list-entry.heading > div:not(.custom-field):not(.picture) {
+    cursor: pointer;
+}
 .item-list-entry.matches {
     padding-left: 22px;
     padding-right: 66px;

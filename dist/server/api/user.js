@@ -25,15 +25,15 @@ const USE_LOCAL_BACKEND = false;
 const connectSocket = () => {
     if (exports.socket)
         return;
-    exports.socket = new simple_websockets_1.SimpleWebSocket(USE_LOCAL_BACKEND ? 'ws://localhost:5000' : 'wss://hmapi-dev.lexogrine.pl/', {
+    exports.socket = new simple_websockets_1.SimpleWebSocket(USE_LOCAL_BACKEND ? 'ws://localhost:5000' : 'wss://hmapi.lexogrine.com/', {
         headers: {
-            Cookie: cookieJar.getCookieStringSync(USE_LOCAL_BACKEND ? 'http://localhost:5000/' : 'https://hmapi-dev.lexogrine.pl/')
+            Cookie: cookieJar.getCookieStringSync(USE_LOCAL_BACKEND ? 'http://localhost:5000/' : 'https://hmapi.lexogrine.com/')
         }
     });
     exports.socket.on('connection', () => {
         console.log('CONNECTED');
     });
-    exports.socket._socket.onerror = () => { };
+    exports.socket._socket.onerror = (err) => { console.log(err); };
     exports.socket.on('banned', () => {
         socket_1.ioPromise.then(io => {
             io.emit('banned');
@@ -73,7 +73,7 @@ exports.api = (url, method = 'GET', body, opts) => {
         options.body = JSON.stringify(body);
     }
     let data = null;
-    return exports.fetch(USE_LOCAL_BACKEND ? `http://localhost:5000/${url}` : `https://hmapi-dev.lexogrine.pl/${url}`, options).then(res => {
+    return exports.fetch(USE_LOCAL_BACKEND ? `http://localhost:5000/${url}` : `https://hmapi.lexogrine.com/${url}`, options).then(res => {
         data = res;
         return res.json().catch(() => data && data.status < 300);
     });
