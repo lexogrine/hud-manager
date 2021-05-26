@@ -16,6 +16,7 @@ If you are in the business of broadcasting professional CS:GO matches, the Lexog
   * [Testing](#testing)
   * [Player cam feed](#player-cam-feed)
   * [Custom database fields](#custom-database-fields)
+  * [AR](#ar)
 * [Settings](#settings)
 * [AFX Mode](#embedded-hud)
 * [HUD API](#hud-api)
@@ -38,7 +39,6 @@ If you are in the business of broadcasting professional CS:GO matches, the Lexog
 - Match data collection
 - Support for player avatars (custom and Steam)
 - Killfeed API
-- Boltobserv minimap support
 - Tournament ladder
 - Custom database fields
 - Custom HUD support
@@ -69,7 +69,7 @@ This section is for additional data display in HUDs and the Lexogrine HUD Manage
 
 ### Players
 
-This tab allows you to specify a player's displayed name, their country, real name and a picture as well. During matches players are identified by their SteamID64.
+This tab allows you to specify a player's displayed name, their country, real name and a picture as well. During matches players are identified by their SteamID64 (CS:GO) or in-game name (Rocket League).
 
 ### Matches
 
@@ -139,6 +139,25 @@ Lexogrine HUD Manager exposes RTMP server on port 8000 (rmtp://localhost/live, s
 
 In case usual database structure is not enough, from 1.10 it is possible to expand structure. LHM provides option to add text, match, player, team, color and image field to players and teams database. Values of the specific fields are attached on `extra` object, so if we wanted to add `theme` property with `color` type on the team, in-HUD the value would accessible by `team.extra.color`. If you rely on those custom fields on a day-to-day basis, you can show them next to the other properties as an additional column.
 
+![Custom fields in Teams tab](assets/examples/customField.png?raw=true)
+
+## AR
+
+AR (Augmented Reality) is an option to add models / screens / objects in 3D space to the game. This is currently very experimental, and requires different setup.
+ - Download and unzip HLAE
+ - Replace AfxHookSource.dll with the one from here ( https://github.com/advancedfx/afx-cefhud-interop/releases/tag/v7.0.0-48e3c55 ) or newer version from release page
+ - Download afx-cefhud-interop from https://github.com/advancedfx/afx-cefhud-interop/releases/tag/v7.0.0-1530590 (version recommended as of 26th of May)
+ - Set HLAE's and AFX's path in LHM
+ - Toggle AR in HUDs tab and start game
+
+To see which HUDs have AR elements, click on AR button or go to AR tab to filter them out. Important - for HUDs to load correctly you need to toggle them once in game, not before.
+
+For HUD to be considered AR-compatible it needs to have `ar` property in `hud.json` set to `true` and have the same `public/ar` directory structure as in csgo-react-hud repository.
+
+`ar.js` module file must expose `startARModule(scene, camera, renderer, GSI)` and `cleanUpARModule(scene, GSI)` functions, where all arguments beside GSI are THREEJS objects. `startARModule` primary goal is to create listeners for data and handle updating scene and objects on it. `cleanUpARModule` should remove all objects added to scene.
+
+In the future we will allow for external AR modules, which will work independently from HUDs.
+
 
 ## Embedded HUD
 
@@ -147,7 +166,6 @@ At this point there is an option to embedd any HUD in CS:GO using HLAE and afx_i
 If you want to use this mode, you need to get HLAE, Release.7z and Release-Base.7z archive from here: https://drive.google.com/drive/folders/1CQFGMYhmz4x9DxunmwhWMp37ow6YOBON and set path to the afx-cefhud-interop.exe in the Lexogrine HUD Manager's settings. At this point the setup is completed - you just need to switch to the embedded mode in HUDs tab, toggle which HUD you intend to use and click RUN GAME (if you already have installed the config files of course).
 
 
-![Custom fields in Teams tab](assets/examples/customField.png?raw=true)
 ## HUD API
 ### Structure
 A HUD **must have** a valid `hud.json` to be considered legitimate. For optional functionalities, there are `panel.json` and `keybinds.json` files.
@@ -161,10 +179,6 @@ A HUD **must have** a valid `hud.json` to be considered legitimate. For optional
 	"legacy": false, //Specify whether it was created for the old system - it should work, but keep in mind that this functionality is deprecated
 	"radar": true, //Does the HUD include radar support
 	"killfeed": true, //Does the HUD include killfeed support
-	"boltobserv": {
-		"css":true, //Does the HUD have a custom.css radar file
-		"maps":true //Does the HUD have custom radar backgrounds
-	}
 }
   ```
   The Lexogrine HUD Manager will not accept any .zip files that do not have a correct `hud.json` file in their root.
@@ -283,7 +297,7 @@ This file is basically another way to communicate with the HUD. Let's look at th
 Again, ot is just an array of actions. Each bind only has `bind` and `action` properties. Bind is the keybind you want to use, and action is the identifier of an action. What differentiates it from the `panel.json` action input, is that here we don't have additional data packed with the action name.
 #### Radar
 
-Lexogrine HUD has its own radar, which is much more customizable than embedded Boltobserv, therefore using Boltobserv is discouraged, as we will be removing support for it in the future.
+Lexogrine HUD has its own radar, which is much more customizable than embedded Boltobserv, therefore using Boltobserv is discouraged, as it is no longer supported as of 2.0.
 
 #### thumb.png	
 You should include this file for a nice display in the HUDs tab in the Lexogrine HUD Manager, as it will be displayed next to its name. Recommended size: 64px x 64px.
@@ -333,13 +347,6 @@ If the build has been successful, an `app` directory should appear with the inst
 |`/api/game`|GET|Get latest data from CS:GO|
 
 
-## Boltobserv
-
-Boltobserv radar is hosted by the Lexogrine HUD Manager, so you don't have to include it yourself. You can access it at `/radar`. To load a HUD's custom radar.css you should add a `?hud=` query with the directory name of the HUD to the URL, unless you're working on the dev mode of the HUD - in this case you should add `?devCSS=true` if you have `custom.css`, and `devMaps=true` if you have custom radar backgrounds. If you are using the `csgo-react-hud` repo you don't have to think about those things, as it adds query params by itself.
-#### radar.css
-This file works as a `custom.css` file from `boltobserv` and loads itself into the radar for any given HUD. It requires for the `css` property in `hud.json` to be set to `true`.
-#### Radar files
-Radar background files have the same structure as in `boltobserv`. You should have a `maps` folder, and in it a directory for each map with the name of this map. Inside, place a `radar.png` with the background for the given map.
 
 # Special credits
 Big shout out to Loxar, for providing his set of a brand new weapon icons!

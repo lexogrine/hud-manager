@@ -71,6 +71,9 @@ portListener.onChange(async status => {
 				if (!hud || !hud.version || !hud.author) return;
 				hud.keybinds = await getJSONArray('http://localhost:3500/dev/keybinds.json');
 				hud.panel = await getJSONArray('http://localhost:3500/dev/panel.json');
+				hud.ar = (await fetch('http://localhost:3500/dev/ar.json')
+					.then(res => res.json())
+					.catch(() => undefined)) as I.PanelTemplate;
 				hud.isDev = true;
 				hud.dir = (Math.random() * 1000 + 1)
 					.toString(36)
@@ -82,7 +85,7 @@ portListener.onChange(async status => {
 				}
 				hud.url = `http://localhost:${cfg.port}/development/`;
 				HUDState.devHUD = hud;
-				if (runtimeConfig.devSocket) {
+				if (runtimeConfig.devSocket.length) {
 					const hudData = HUDState.get(hud.dir);
 					const extended = await HUDStateManager.extend(hudData);
 					io.to(hud.dir).emit('hud_config', extended);

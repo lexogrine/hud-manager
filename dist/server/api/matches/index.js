@@ -3,21 +3,30 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateRound = exports.reverseSide = exports.updateMatch = exports.getCurrent = exports.deleteMatch = exports.addMatch = exports.updateMatches = exports.setMatches = exports.getMatchById = exports.getMatches = void 0;
+exports.replaceLocalMatches = exports.updateRound = exports.reverseSide = exports.updateMatch = exports.getCurrent = exports.deleteMatch = exports.addMatch = exports.updateMatches = exports.setMatches = exports.getMatchById = exports.getActiveGameMatches = exports.getMatches = void 0;
 const socket_1 = require("./../../socket");
 const database_1 = __importDefault(require("./../../../init/database"));
 const teams_1 = require("./../teams");
 const v4_1 = __importDefault(require("uuid/v4"));
+const __1 = require("..");
 const matchesDb = database_1.default.matches;
-exports.getMatches = () => {
+exports.getMatches = (query) => {
     return new Promise(res => {
-        matchesDb.find({}, (err, matches) => {
+        matchesDb.find(query, (err, matches) => {
             if (err) {
                 return res([]);
             }
             return res(matches);
         });
     });
+};
+exports.getActiveGameMatches = () => {
+    const game = __1.customer.game;
+    const $or = [{ game }];
+    if (game === 'csgo') {
+        $or.push({ game: { $exists: false } });
+    }
+    return exports.getMatches({ $or });
 };
 async function getMatchById(id) {
     return new Promise(res => {
@@ -87,27 +96,29 @@ exports.addMatch = (match) => new Promise(res => {
         match.id = v4_1.default();
     }
     match.current = false;
-    matchesDb.insert(match, (err, doc) => {
+    matchesDb.insert(match, async (err, doc) => {
         if (err)
             return res(null);
+        /* if (validateCloudAbility()) {
+            await addResource(customer.game as AvailableGames, 'matches', doc);
+        } */
         return res(doc);
     });
 });
 exports.deleteMatch = (id) => new Promise(res => {
-    matchesDb.remove({ id }, err => {
+    matchesDb.remove({ id }, async (err) => {
         if (err)
             return res(false);
+        /* if (validateCloudAbility()) {
+            await deleteResource(customer.game as AvailableGames, 'matches', id);
+        } */
         return res(true);
     });
 });
-exports.getCurrent = () => new Promise(res => {
-    matchesDb.findOne({ current: true }, (err, match) => {
-        if (err || !match) {
-            return res(null);
-        }
-        return res(match);
-    });
-});
+exports.getCurrent = async () => {
+    const activeGameMatches = await exports.getActiveGameMatches();
+    return activeGameMatches.find(match => match.current);
+};
 /*
 export const setCurrent = (id: string) =>
     new Promise(res => {
@@ -128,7 +139,7 @@ exports.updateMatch = (match) => new Promise(res => {
             return res(true);
         matchesDb.update({
             $where: function () {
-                return this.current && this.id !== match.id;
+                return this.current && this.id !== match.id && this.game === match.game;
             }
         }, { $set: { current: false } }, { multi: true }, async (err) => {
             const left = await teams_1.getTeamById(match.left.id || '');
@@ -153,6 +164,9 @@ exports.updateMatch = (match) => new Promise(res => {
                     extra: right.extra
                 };
             }
+            /* if (validateCloudAbility()) {
+                await updateResource(customer.game as AvailableGames, 'matches', match);
+            } */
             if (err)
                 return res(false);
             return res(true);
@@ -161,8 +175,8 @@ exports.updateMatch = (match) => new Promise(res => {
 });
 exports.reverseSide = async () => {
     const io = await socket_1.ioPromise;
-    const matches = await exports.getMatches();
-    const current = matches.find(match => match.current);
+    const matches = await exports.getActiveGameMatches();
+    const current = matches.find(match => match.current && match.game === __1.customer.game);
     if (!current)
         return;
     if (current.vetos.filter(veto => veto.teamId).length > 0 && !socket_1.GSI.last) {
@@ -219,7 +233,7 @@ exports.updateRound = async (game) => {
             damage: player.state.round_totaldmg
         };
     }
-    const matches = await exports.getMatches();
+    const matches = await exports.getActiveGameMatches();
     const match = matches.find(match => match.current);
     if (!match)
         return;
@@ -242,3 +256,17 @@ exports.updateRound = async (game) => {
     });
     return exports.updateMatch(match);
 };
+exports.replaceLocalMatches = (newMatches, game) => new Promise(res => {
+    const or = [{ game }];
+    if (game === 'csgo') {
+        or.push({ game: { $exists: false } });
+    }
+    matchesDb.remove({ $or: or }, { multi: true }, err => {
+        if (err) {
+            return res(false);
+        }
+        matchesDb.insert(newMatches, (err, docs) => {
+            return res(!err);
+        });
+    });
+});

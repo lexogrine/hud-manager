@@ -5,8 +5,10 @@ import api from './../../../../api/api';
 import config from './../../../../api/config';
 import DragInput from './../../../DragFileInput';
 import ImportModal from './ImportModal';
-import { IContextData } from '../../../Context';
+import { IContextData, ContextData } from '../../../Context';
 import ElectronOnly from '../../../ElectronOnly';
+import Switch from '../../../Switch/Switch';
+import { socket } from '../Live/Live';
 
 const { isElectron } = config;
 
@@ -24,10 +26,23 @@ interface IProps {
 	gsiCheck: Function;
 }
 
+export const GameOnly = ({ game, children }: { game: I.AvailableGames; children: any }) => (
+	<ContextData.Consumer>
+		{cxt => {
+			if (!cxt.game) return null;
+			if (game !== cxt.game) return null;
+			return children;
+		}}
+	</ContextData.Consumer>
+);
+
 interface IState {
 	config: I.Config;
 	cfg: ConfigStatus;
 	gsi: ConfigStatus;
+	bakkesModStatus: I.BakkesModStatus;
+	bakkesModAutoconfBusy: boolean;
+	bakkesModAutoconfError: string | null;
 	restartRequired: boolean;
 	importModalOpen: boolean;
 	conflict: {
@@ -51,7 +66,8 @@ export default class Config extends React.Component<IProps, IState> {
 				port: 1349,
 				token: '',
 				hlaePath: '',
-				afxCEFHudInteropPath: ''
+				afxCEFHudInteropPath: '',
+				sync: true
 			},
 			cfg: {
 				success: false,
@@ -65,6 +81,17 @@ export default class Config extends React.Component<IProps, IState> {
 				message: 'Loading data about GameState files...',
 				accessible: true
 			},
+			bakkesModStatus: {
+				bakkesModExeDownloaded: false,
+				bakkesModDataDownloaded: false,
+				bakkesModDataInstalled: false,
+				sosPluginDownloaded: false,
+				sosPluginInstalled: false,
+				sosConfigSet: false,
+				bakkesModRunning: false
+			},
+			bakkesModAutoconfBusy: true,
+			bakkesModAutoconfError: null,
 			importModalOpen: false,
 			restartRequired: false,
 			conflict: {
@@ -209,11 +236,100 @@ export default class Config extends React.Component<IProps, IState> {
 		});
 	};
 
+	loadBakkesModStatus = async (keepBusyOnSuccess?: boolean) => {
+		const response = await api.bakkesmod.check();
+		if (!response.success)
+			this.setState({ bakkesModAutoconfBusy: false, bakkesModAutoconfError: 'Unable to determine state' });
+
+		this.setState({ bakkesModAutoconfBusy: keepBusyOnSuccess || false, bakkesModStatus: response.status });
+		return response.status;
+	};
+
+	getBakkesModStatusDescription = () => {
+		if (this.state.bakkesModAutoconfBusy) return 'Busy...';
+
+		const status = this.state.bakkesModStatus;
+		if (!status.bakkesModDataInstalled) return 'BakkesMod not installed';
+		if (!status.sosPluginInstalled) return 'SOS Plugin not installed';
+		if (!status.sosConfigSet) return 'Not configured';
+		return 'Installed';
+	};
+
+	installRLIntegration = async () => {
+		if (this.state.bakkesModAutoconfBusy) return;
+		const status = await this.loadBakkesModStatus(true);
+
+		try {
+			if (!status.bakkesModDataInstalled) {
+				if (!status.bakkesModDataDownloaded) {
+					const downloadStatus: I.BakkesModAPIResponse = await api.bakkesmod.downloadModData();
+					if (!downloadStatus.success) {
+						this.setState({
+							bakkesModAutoconfError: downloadStatus.message || 'Failed to download BakkesMod data',
+							bakkesModAutoconfBusy: false
+						});
+						return;
+					}
+				}
+				const installStatus = await api.bakkesmod.installModData();
+				if (!installStatus.success) {
+					this.setState({
+						bakkesModAutoconfError: installStatus.message || 'Failed to install BakkesMod data',
+						bakkesModAutoconfBusy: false
+					});
+					return;
+				}
+			}
+			if (!status.bakkesModExeDownloaded) {
+				const downloadStatus: I.BakkesModAPIResponse = await api.bakkesmod.downloadMod();
+				if (!downloadStatus.success) {
+					this.setState({
+						bakkesModAutoconfError: downloadStatus.message || 'Failed to download BakkesMod',
+						bakkesModAutoconfBusy: false
+					});
+					return;
+				}
+			}
+			if (!status.sosPluginInstalled || !status.sosConfigSet) {
+				if (!status.sosPluginDownloaded) {
+					const downloadStatus = await api.bakkesmod.downloadSos();
+					if (!downloadStatus.success) {
+						this.setState({
+							bakkesModAutoconfError: downloadStatus.message || 'Failed to download SOS Plugin',
+							bakkesModAutoconfBusy: false
+						});
+						return;
+					}
+				}
+				const installStatus = await api.bakkesmod.installSos();
+				if (!installStatus.success) {
+					this.setState({
+						bakkesModAutoconfError: installStatus.message || 'Failed to install and configure SOS Plugin',
+						bakkesModAutoconfBusy: false
+					});
+					return;
+				}
+
+				this.setState({
+					bakkesModAutoconfError: null
+				});
+			}
+		} catch (e) {
+			this.setState({ bakkesModAutoconfError: 'Unknown error' });
+		}
+
+		this.loadBakkesModStatus();
+	};
+
 	async componentDidMount() {
 		this.getConfig();
 		this.checkCFG();
 		this.checkGSI();
 		this.checkUpdate();
+		this.loadBakkesModStatus();
+		socket.on('config', () => {
+			this.getConfig();
+		});
 	}
 	checkUpdate = () => {
 		if (!isElectron) return;
@@ -247,6 +363,18 @@ export default class Config extends React.Component<IProps, IState> {
 		this.setState({ config });
 		// this.setState({ value })
 	};
+	toggleHandler = (event: any) => {
+		const { cxt } = this.props;
+		const available =
+			cxt.customer?.license?.type === 'professional' || cxt.customer?.license?.type === 'enterprise';
+		if (!available) return;
+		const val = event.target.checked;
+		this.setState(state => {
+			state.config.sync = val;
+
+			return state;
+		});
+	};
 	toggleModal = () => {
 		this.setState({ importModalOpen: !this.state.importModalOpen });
 	};
@@ -262,6 +390,11 @@ export default class Config extends React.Component<IProps, IState> {
 	render() {
 		const { cxt } = this.props;
 		const { gsi, cfg, importModalOpen, conflict, data, ip, config, update } = this.state;
+
+		const available =
+			cxt.customer?.license?.type === 'professional' || cxt.customer?.license?.type === 'enterprise';
+		const active = Boolean(available && config.sync);
+
 		return (
 			<Form>
 				<div className="tab-title-container">Settings</div>
@@ -329,78 +462,114 @@ export default class Config extends React.Component<IProps, IState> {
 							</Col>
 						</ElectronOnly>
 						<Col md="12" className="config-entry">
-							<div className="config-description">
-								HLAE Path: {this.state.config.hlaePath ? 'Loaded' : 'Not loaded'}
-							</div>
-							<DragInput
-								id="hlae_input"
-								label="SET HLAE PATH"
-								accept=".exe"
-								onChange={this.loadEXE('hlaePath')}
-								className="path_selector"
-								removable
-							/>
+							<div className="config-description">Cloud Synchronization</div>
+							<Switch isOn={active} id="sync-toggle" handleToggle={this.toggleHandler} />
 						</Col>
-						{
+
+						<GameOnly game="csgo">
 							<Col md="12" className="config-entry">
 								<div className="config-description">
-									AFX CEF HUD Interop:{' '}
-									{this.state.config.afxCEFHudInteropPath ? 'Loaded' : 'Not loaded'}
+									HLAE Path: {this.state.config.hlaePath ? 'Loaded' : 'Not loaded'}
 								</div>
 								<DragInput
-									id="afx_input"
-									label="SET AFX PATH"
+									id="hlae_input"
+									label="SET HLAE PATH"
 									accept=".exe"
-									onChange={this.loadEXE('afxCEFHudInteropPath')}
+									onChange={this.loadEXE('hlaePath')}
 									className="path_selector"
 									removable
 								/>
 							</Col>
-						}
-						<Col md="12" className="config-entry">
-							<div className="config-description">
-								GameState Integration: {gsi.message || 'Loaded succesfully'}
-							</div>
-							<Button
-								className="purple-btn round-btn"
-								disabled={gsi.loading || gsi.success || !gsi.accessible}
-								onClick={this.createGSI}
-							>
-								Add GSI file
-							</Button>
-						</Col>
-						<Col md="12" className="config-entry">
-							<div className="config-description">Configs: {cfg.message || 'Loaded succesfully'}</div>
-							<Button
-								className="purple-btn round-btn"
-								disabled={cfg.loading || cfg.success || !cfg.accessible}
-								onClick={this.createCFG}
-							>
-								Add config files
-							</Button>
-						</Col>
+							{
+								<Col md="12" className="config-entry">
+									<div className="config-description">
+										AFX CEF HUD Interop:{' '}
+										{this.state.config.afxCEFHudInteropPath ? 'Loaded' : 'Not loaded'}
+									</div>
+									<DragInput
+										id="afx_input"
+										label="SET AFX PATH"
+										accept=".exe"
+										onChange={this.loadEXE('afxCEFHudInteropPath')}
+										className="path_selector"
+										removable
+									/>
+								</Col>
+							}
+							<Col md="12" className="config-entry">
+								<div className="config-description">
+									GameState Integration: {gsi.message || 'Loaded succesfully'}
+								</div>
+								<Button
+									className="purple-btn round-btn"
+									disabled={gsi.loading || gsi.success || !gsi.accessible}
+									onClick={this.createGSI}
+								>
+									Add GSI file
+								</Button>
+							</Col>
+							<Col md="12" className="config-entry">
+								<div className="config-description">Configs: {cfg.message || 'Loaded succesfully'}</div>
+								<Button
+									className="purple-btn round-btn"
+									disabled={cfg.loading || cfg.success || !cfg.accessible}
+									onClick={this.createCFG}
+								>
+									Add config files
+								</Button>
+							</Col>
+						</GameOnly>
+
+						<GameOnly game="rocketleague">
+							<Col md="12" className="config-entry">
+								<div className="config-description">
+									<p>Rocket League integration: {this.getBakkesModStatusDescription()}</p>
+									{this.state.bakkesModAutoconfError && <p>[{this.state.bakkesModAutoconfError}]</p>}
+								</div>
+								<div className="download-container">
+									<Button
+										className="purple-btn round-btn"
+										disabled={this.state.bakkesModAutoconfBusy}
+										onClick={() => this.loadBakkesModStatus()}
+									>
+										Refresh
+									</Button>
+									<Button
+										className="purple-btn round-btn"
+										disabled={
+											this.state.bakkesModAutoconfBusy || this.state.bakkesModStatus.sosConfigSet
+										}
+										onClick={this.installRLIntegration}
+									>
+										Install
+									</Button>
+								</div>
+							</Col>
+						</GameOnly>
 						<Col md="12" className="config-entry">
 							<div className="config-description">Credits</div>
 							<Button className="lightblue-btn round-btn" onClick={() => this.props.toggle('credits')}>
 								See now
 							</Button>
 						</Col>
-						{isElectron ? (
-							<Col md="12" className="config-entry">
-								<div className="config-description">Downloads</div>
-								<div className="download-container">
-									<Button onClick={() => this.download('gsi')} className="purple-btn round-btn">
-										GSI config
-									</Button>
-									<Button onClick={() => this.download('cfgs')} className="purple-btn round-btn">
-										HUD configs
-									</Button>
-									<Button onClick={() => this.download('db')} className="purple-btn round-btn">
-										Export DB
-									</Button>
-								</div>
-							</Col>
-						) : null}
+						<ElectronOnly>
+							<GameOnly game="csgo">
+								<Col md="12" className="config-entry">
+									<div className="config-description">Downloads</div>
+									<div className="download-container">
+										<Button onClick={() => this.download('gsi')} className="purple-btn round-btn">
+											GSI config
+										</Button>
+										<Button onClick={() => this.download('cfgs')} className="purple-btn round-btn">
+											HUD configs
+										</Button>
+										<Button onClick={() => this.download('db')} className="purple-btn round-btn">
+											Export DB
+										</Button>
+									</div>
+								</Col>
+							</GameOnly>
+						</ElectronOnly>
 						<Col md="12" className="config-entry">
 							<div className="config-description">Import</div>
 							<DragInput
@@ -423,7 +592,6 @@ export default class Config extends React.Component<IProps, IState> {
 							</p>
 						</Col>
 					</Row>
-
 					{/*<Toast isOpen={this.state.restartRequired} className="fixed-toast">
                         <ToastHeader>Change of port detected</ToastHeader>
                         <ToastBody>It seems like you've changed GSI port - for all changes to be set in place you should now restart the Manager and update the GSI files</ToastBody>

@@ -6,6 +6,8 @@ import api from './../../../../api/api';
 import * as I from './../../../../api/interfaces';
 import HyperLink from './../../../../styles/Hyperlink.png';
 import trash from './../../../../styles/trash.svg';
+import downloadIcon from './../../../../styles/downloadHUDIcon.png';
+import uploadIcon from './../../../../styles/uploadHUDIcon.png';
 import Settings from './../../../../styles/Settings.png';
 import Display from './../../../../styles/Display.png';
 import Switch from './../../../../components/Switch/Switch';
@@ -15,29 +17,95 @@ import { socket } from '../Live/Live';
 import RemoveHUDModal from './RemoveModal';
 import { hashCode } from '../../../../hash';
 import { getMissingFields } from '../../../../utils';
+import { copyToClipboard } from '../../../../api/clipboard';
+import ElectronOnly from '../../../ElectronOnly';
+import { GameOnly } from '../Config/Config';
 
 interface IProps {
 	hud: I.HUD;
 	isActive: boolean;
 	toggleConfig: (hud: I.HUD) => any;
 	customFields: I.CustomFieldStore;
+	loadHUDs: () => Promise<void>;
+	setHUDLoading: (uuid: string, isLoading: boolean) => void;
+	isLoading: boolean;
+	isCloudAvailable: boolean;
 }
 
-const HudEntry = ({ hud, isActive, toggleConfig, customFields }: IProps) => {
+const HudEntry = ({
+	isLoading,
+	hud,
+	isActive,
+	toggleConfig,
+	customFields,
+	loadHUDs,
+	setHUDLoading,
+	isCloudAvailable
+}: IProps) => {
+	const gameToTag = (game: string) => {
+		if (game === 'rocketleague') {
+			return '[RL]';
+		}
+		return '[CSGO]';
+	};
 	const [isOpen, setOpen] = useState(false);
 	const toggleModal = () => setOpen(!isOpen);
 
 	const startHUD = (dir: string) => {
 		api.huds.start(dir);
 	};
-	const setHUD = (url: string) => {
-		socket.emit('set_active_hlae', url);
+	const setHUD = (url: string, dir: string, isDev: boolean) => {
+		if (isActive) {
+			socket.emit('set_active_hlae', null, '', false);
+		} else {
+			socket.emit('set_active_hlae', url, dir, isDev);
+		}
 	};
 	const deleteHUD = async () => {
 		try {
-			await api.huds.delete(hud.dir);
+			if (hud.status === 'REMOTE') {
+				await api.huds.deleteFromCloud(hud.uuid);
+			} else {
+				await api.huds.delete(hud.dir);
+			}
 		} catch {}
 		toggleModal();
+	};
+	const downloadHUD = (uuid: string) => {
+		setHUDLoading(uuid, true);
+		api.huds
+			.download(uuid)
+			.then(res => {
+				if (!res || !res.result) {
+					// TODO: Handler error
+				}
+				loadHUDs().then(() => {
+					setHUDLoading(uuid, false);
+				});
+			})
+			.catch(() => {
+				loadHUDs().then(() => {
+					setHUDLoading(uuid, false);
+				});
+			});
+	};
+	const uploadHUD = (dir: string, uuid: string) => {
+		setHUDLoading(uuid, true);
+		api.huds
+			.upload(dir)
+			.then(res => {
+				if (!res || !res.result) {
+					// TODO: Handler error
+				}
+				loadHUDs().then(() => {
+					setHUDLoading(uuid, false);
+				});
+			})
+			.catch(() => {
+				loadHUDs().then(() => {
+					setHUDLoading(uuid, false);
+				});
+			});
 	};
 	const missingFieldsText = [];
 	const missingFields = getMissingFields(customFields, hud.requiredFields);
@@ -64,24 +132,31 @@ const HudEntry = ({ hud, isActive, toggleConfig, customFields }: IProps) => {
 			);
 		}
 	}
+
+	const isLocal = hud.status !== 'REMOTE';
+	const isNotRemote = hud.status === 'LOCAL';
+
 	return (
 		<Row key={hud.dir} className="hudRow">
 			<RemoveHUDModal isOpen={isOpen} toggle={toggleModal} hud={hud} remove={deleteHUD} />
 			<Col s={12}>
 				<Row>
 					<Col className="centered thumb">
-						<img
-							src={`${Config.isDev ? Config.apiAddress : '/'}${
-								hud.isDev ? 'dev/thumb.png' : `huds/${hud.dir}/thumbnail`
-							}`}
-							alt={`${hud.name}`}
-						/>
+						{isLocal ? (
+							<img
+								src={`${Config.isDev ? Config.apiAddress : '/'}${
+									hud.isDev ? 'dev/thumb.png' : `huds/${hud.dir}/thumbnail`
+								}`}
+								alt={`${hud.name}`}
+							/>
+						) : null}
 					</Col>
 					<Col style={{ flex: 10, display: 'flex', justifyContent: 'center', flexDirection: 'column' }}>
 						<Row>
 							<Col>
 								<strong className="hudName">
 									{hud.isDev ? '[DEV] ' : ''}
+									{gameToTag(hud.game) + ' '}
 									{hud.name}
 								</strong>{' '}
 								<span className="hudVersion">({hud.version})</span>
@@ -95,7 +170,7 @@ const HudEntry = ({ hud, isActive, toggleConfig, customFields }: IProps) => {
 						{hud.killfeed || hud.radar ? (
 							<Row>
 								<Col className="hud-status">
-									{hud.radar ? (
+									{hud.radar && isLocal ? (
 										<Tip
 											id={`radar_support_${hud.dir}`}
 											className="radar_support"
@@ -104,7 +179,7 @@ const HudEntry = ({ hud, isActive, toggleConfig, customFields }: IProps) => {
 											Includes custom radar
 										</Tip>
 									) : null}
-									{hud.killfeed ? (
+									{hud.killfeed && isLocal ? (
 										<Tip
 											id={`killfeed_support_${hud.dir}`}
 											className="killfeed_support"
@@ -115,7 +190,7 @@ const HudEntry = ({ hud, isActive, toggleConfig, customFields }: IProps) => {
 											Includes custom killfeed
 										</Tip>
 									) : null}
-									{missingFieldsText.length ? (
+									{missingFieldsText.length && isLocal ? (
 										<Tip
 											id={`missing_fields_${hud.dir}`}
 											className="missing_fields"
@@ -130,57 +205,168 @@ const HudEntry = ({ hud, isActive, toggleConfig, customFields }: IProps) => {
 							''
 						)}
 					</Col>
-					<Col style={{ flex: 1 }} className="hud-options">
-						<div className="centered">
-							<img
-								src={HyperLink}
-								id={`hud_link_${hashCode(hud.dir)}`}
-								className="action"
-								alt="Local network HUD URL"
-							/>
-							{hud.panel?.length ? (
-								<img src={Settings} onClick={toggleConfig(hud)} className="action" alt="HUD panel" />
-							) : (
-								''
-							)}
-							{Config.isElectron ? (
-								<img
-									src={Display}
-									onClick={() => startHUD(hud.dir)}
-									className="action"
-									alt="Start HUD"
-								/>
-							) : null}
-							{Config.isElectron && !hud.isDev ? (
-								<img src={trash} onClick={toggleModal} className="action" alt="Delete HUD" />
-							) : null}
-						</div>
-						{Config.isElectron ? (
-							<div className="hud-toggle">
-								<Switch
-									id={`hud-switch-${hud.dir}`}
-									isOn={isActive}
-									handleToggle={() => setHUD(hud.url)}
-								/>
+					{isLocal ? (
+						<Col style={{ flex: 1 }} className="hud-options">
+							<div className="centered">
+								{isLocal ? (
+									<Tip
+										id={`hud_link_button_${hashCode(hud.dir)}`}
+										label={
+											<img
+												src={HyperLink}
+												id={`hud_link_${hashCode(hud.dir)}`}
+												className="action"
+												alt="Local network HUD URL"
+											/>
+										}
+									>
+										Toggle HUD URL
+									</Tip>
+								) : null}
+								{hud.panel?.length ? (
+									<Tip
+										id={`hud_settings_button_${hashCode(hud.dir)}`}
+										label={
+											<img
+												src={Settings}
+												onClick={toggleConfig(hud)}
+												className="action"
+												alt="HUD panel"
+											/>
+										}
+									>
+										Go to HUD settings
+									</Tip>
+								) : (
+									''
+								)}
+								<ElectronOnly>
+									<Tip
+										id={`hud_overlay_button_${hashCode(hud.dir)}`}
+										label={
+											<img
+												src={Display}
+												onClick={() => startHUD(hud.dir)}
+												className="action"
+												alt="Start HUD"
+											/>
+										}
+									>
+										Start HUD overlay
+									</Tip>
+									{isNotRemote && isCloudAvailable && !hud.isDev ? (
+										!isLoading ? (
+											<Tip
+												id={`hud_upload_button_${hashCode(hud.dir)}`}
+												label={
+													<img
+														src={uploadIcon}
+														className="action"
+														onClick={() => {
+															uploadHUD(hud.dir, hud.uuid);
+														}}
+													/>
+												}
+											>
+												Upload HUD
+											</Tip>
+										) : (
+											'Uploading...'
+										)
+									) : null}
+									<Tip
+										id={`hud_delete_button_${hashCode(hud.dir)}`}
+										label={
+											<img
+												src={trash}
+												onClick={toggleModal}
+												className="action"
+												alt="Delete HUD"
+											/>
+										}
+									>
+										Delete HUD locally
+									</Tip>
+								</ElectronOnly>
 							</div>
-						) : null}
-					</Col>
+							<GameOnly game="csgo">
+								<ElectronOnly>
+									<Tip
+										id={`hud_toggle_button_${hashCode(hud.dir)}`}
+										label={
+											<div className="hud-toggle">
+												<Switch
+													id={`hud-switch-${hud.dir}`}
+													isOn={isActive}
+													handleToggle={() => setHUD(hud.url, hud.dir, hud.isDev)}
+												/>
+											</div>
+										}
+									>
+										Toggle HUD (Embedded only)
+									</Tip>
+								</ElectronOnly>
+							</GameOnly>
+						</Col>
+					) : (
+						<Col style={{ flex: 1 }} className="hud-options">
+							<div className="centered">
+								<ElectronOnly>
+									{!isLoading ? (
+										isCloudAvailable ? (
+											<img
+												src={downloadIcon}
+												className="action"
+												onClick={() => {
+													downloadHUD(hud.uuid);
+												}}
+											/>
+										) : null
+									) : (
+										'Downloading...'
+									)}
+									<Tip
+										id={`hud_delete_cloud_button_${hashCode(hud.dir)}`}
+										label={
+											<img
+												src={trash}
+												onClick={toggleModal}
+												className="action"
+												alt="Delete HUD from cloud"
+											/>
+										}
+									>
+										Delete HUD from cloud
+									</Tip>
+								</ElectronOnly>
+							</div>
+						</Col>
+					)}
 				</Row>
-				<Row>
-					<Col s={12}>
-						<div className="match_data">
-							<UncontrolledCollapse toggler={`#hud_link_${hashCode(hud.dir)}`}>
-								<code
-									onClick={() => {
-										navigator.clipboard.writeText(hud.url).catch(console.error);
-									}}
-								>
-									{hud.url}
-								</code>
-							</UncontrolledCollapse>
-						</div>
-					</Col>
-				</Row>
+				{isLocal ? (
+					<Row>
+						<Col s={12}>
+							<div className="match_data">
+								<UncontrolledCollapse toggler={`#hud_link_${hashCode(hud.dir)}`}>
+									<Tip
+										id={`hud_copy_url_button_${hashCode(hud.dir)}`}
+										label={
+											<code
+												onClick={() => {
+													copyToClipboard(hud.url);
+												}}
+											>
+												{hud.url}
+											</code>
+										}
+									>
+										Click to copy
+									</Tip>
+								</UncontrolledCollapse>
+							</div>
+						</Col>
+					</Row>
+				) : null}
 			</Col>
 		</Row>
 	);

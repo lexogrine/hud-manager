@@ -20,7 +20,14 @@ public_ip_1.default
     exports.publicIP = ip;
 })
     .catch();
-const defaultConfig = { steamApiKey: '', token: '', port: 1349, hlaePath: '', afxCEFHudInteropPath: '' };
+const defaultConfig = {
+    steamApiKey: '',
+    token: '',
+    port: 1349,
+    hlaePath: '',
+    afxCEFHudInteropPath: '',
+    sync: true
+};
 exports.loadConfig = async () => {
     if (!exports.publicIP) {
         try {
@@ -70,7 +77,8 @@ exports.updateConfig = async (req, res) => {
         port: Number(req.body.port),
         token: req.body.token,
         hlaePath: req.body.hlaePath,
-        afxCEFHudInteropPath: req.body.afxCEFHudInteropPath
+        afxCEFHudInteropPath: req.body.afxCEFHudInteropPath,
+        sync: !!req.body.sync
     };
     const config = await exports.setConfig(updated);
     if (!config) {
@@ -80,7 +88,7 @@ exports.updateConfig = async (req, res) => {
     return res.json(config);
 };
 exports.setConfig = async (config) => new Promise(res => {
-    configs.update({}, { $set: config }, {}, async (err) => {
+    configs.update({}, { $set: config }, { multi: true }, async (err) => {
         if (err) {
             return res(defaultConfig);
         }
@@ -98,11 +106,18 @@ exports.verifyUrl = async (url) => {
     if (!cfg) {
         return false;
     }
-    const bases = [`http://${exports.internalIP}:${cfg.port}`, `http://${exports.publicIP}:${cfg.port}`, `http://localhost:${cfg.port}`];
+    const bases = [
+        `http://${exports.internalIP}:${cfg.port}`,
+        `http://${exports.publicIP}:${cfg.port}`,
+        `http://localhost:${cfg.port}`
+    ];
     if (electron_1.isDev) {
         bases.push(`http://localhost:3000/?port=${cfg.port}`);
     }
     if (bases.find(base => url.startsWith(`${base}/dev`))) {
+        return true;
+    }
+    if (bases.find(base => url.startsWith(`${base}/ar/drawing.html`))) {
         return true;
     }
     const base = bases.find(base => url.startsWith(base));

@@ -1,30 +1,36 @@
 import { Server, Socket } from 'socket.io';
 import { CSGOGSI, CSGORaw, Score } from 'csgogsi-socket';
 import fetch from 'node-fetch';
-import { getMatches, updateRound, updateMatch } from './api/matches';
+import { updateRound, updateMatch, getActiveGameMatches } from './api/matches';
 import { internalIP, loadConfig, publicIP } from './api/config';
 import { createNextMatch } from './api/tournaments';
 import { customer } from './api';
 import { isDev } from '../electron';
-import hlaeServer from './hlae';
+import { /*hlaeServer,*/ MIRVPGL } from './hlae';
 import { app, server } from '.';
 import { HUDStateManager } from './api/huds/hudstatemanager';
 import './api/huds/devhud';
 
-const radar = require('./../boltobserv/index.js');
-
 interface RuntimeConfig {
 	last: CSGORaw | null;
-	devSocket: Socket | null;
-	currentHUD: string | null;
+	devSocket: Socket[];
+	currentHUD: {
+		url: string | null;
+		isDev: boolean;
+		dir: string;
+	};
 }
 
 let lastUpdate = new Date().getTime();
 
 export const runtimeConfig: RuntimeConfig = {
 	last: null,
-	devSocket: null,
-	currentHUD: null
+	devSocket: [],
+	currentHUD: {
+		url: null,
+		isDev: false,
+		dir: ''
+	}
 };
 
 export const HUDState = new HUDStateManager();
@@ -51,10 +57,9 @@ export const ioPromise = loadConfig().then(cfg => {
 	});
 });
 
-ioPromise.then(io => {
-	radar.startRadar(app, io);
-	hlaeServer();
+export const mirvPgl = new MIRVPGL(ioPromise);
 
+ioPromise.then(io => {
 	const onRoundEnd = async (score: Score) => {
 		const lastGSIEntry = GSI.last;
 		if (lastGSIEntry) await updateRound(lastGSIEntry);
@@ -64,7 +69,7 @@ ioPromise.then(io => {
 		if (score.winner && score.winner.logo) {
 			score.winner.logo = '';
 		}
-		const matches = await getMatches();
+		const matches = await getActiveGameMatches();
 		const match = matches.filter(match => match.current)[0];
 		if (!match) return;
 		const { vetos } = match;

@@ -22,7 +22,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.customer = void 0;
+exports.validateCloudAbility = exports.customer = void 0;
 const express_1 = __importDefault(require("express"));
 const electron_1 = require("electron");
 const steam_game_path_1 = require("steam-game-path");
@@ -34,17 +34,32 @@ const game = __importStar(require("./game"));
 const sync = __importStar(require("./sync"));
 const machine = __importStar(require("./machine"));
 const user = __importStar(require("./user"));
+const bakkesmod = __importStar(require("./bakkesmod"));
 const play_1 = require("./huds/play");
 const routes_1 = __importDefault(require("./tournaments/routes"));
 const routes_2 = __importDefault(require("./matches/routes"));
 const routes_3 = __importDefault(require("./players/routes"));
+const routes_4 = __importDefault(require("./aco/routes"));
 const match = __importStar(require("./matches"));
-const routes_4 = __importDefault(require("./teams/routes"));
+const routes_5 = __importDefault(require("./teams/routes"));
 const http_proxy_middleware_1 = require("http-proxy-middleware");
 const socket_1 = require("../socket");
 const __1 = require("..");
+const cloud_1 = require("./cloud");
 exports.customer = {
-    customer: null
+    customer: null,
+    game: null
+};
+exports.validateCloudAbility = async () => {
+    const cfg = await config.loadConfig();
+    if (!cfg.sync)
+        return false;
+    if (!exports.customer.customer ||
+        !exports.customer.customer.license ||
+        (exports.customer.customer.license.type !== 'enterprise' && exports.customer.customer.license.type !== 'professional')) {
+        return false;
+    }
+    return !!exports.customer.game;
 };
 async function default_1() {
     const io = await socket_1.ioPromise;
@@ -55,11 +70,38 @@ async function default_1() {
     routes_1.default();
     routes_2.default();
     routes_3.default();
+    routes_5.default();
     routes_4.default();
+    __1.app.route('/api/games/start/:game').get(async (req, res) => {
+        const game = req.params.game;
+        exports.customer.game = game;
+        const result = await cloud_1.checkCloudStatus(game);
+        io.emit('reloadHUDs');
+        res.json({ result });
+    });
+    __1.app.route('/api/cloud/upload').post(async (req, res) => {
+        const game = exports.customer.game;
+        if (!game)
+            return res.sendStatus(403);
+        const result = await cloud_1.uploadLocalToCloud(game);
+        return res.json({ result });
+    });
+    __1.app.route('/api/cloud/download').post(async (req, res) => {
+        const game = exports.customer.game;
+        if (!game)
+            return res.sendStatus(403);
+        const result = await cloud_1.downloadCloudToLocal(game);
+        return res.json({ result });
+    });
+    __1.app.route('/api/games/current').get((req, res) => res.json({ game: exports.customer.game }));
     __1.app.route('/api/huds').get(huds.getHUDs).post(huds.openHUDsDirectory).delete(huds.deleteHUD);
-    __1.app.route('/api/huds/add').post(huds.uploadHUD);
+    __1.app.route('/api/huds/add').post(huds.sendHUD);
     __1.app.route('/api/huds/close').post(huds.closeHUD);
     __1.app.route('/api/huds/:hudDir/start').post(huds.showHUD);
+    __1.app.route('/api/huds/download/:uuid').get(huds.downloadHUD);
+    __1.app.route('/api/huds/:hudDir/:section/:asset').get(huds.getHUDCustomAsset);
+    __1.app.route('/api/huds/upload/:hudDir').post(huds.uploadHUD);
+    __1.app.route('/api/huds/delete/:uuid').delete(huds.deleteHUDFromCloud);
     __1.app.route('/api/gsi').get(gsi.checkGSIFile).put(gsi.createGSIFile);
     __1.app.route('/api/import').post(sync.importDb);
     __1.app.route('/api/steam').get((req, res) => res.json({ gamePath: steam_game_path_1.getGamePath(730) }));
@@ -79,6 +121,13 @@ async function default_1() {
     __1.app.route('/api/machine').get(machine.getMachineIdRoute);
     __1.app.use('/huds/:dir/', huds.renderAssets);
     __1.app.route('/huds/:dir/thumbnail').get(huds.renderThumbnail);
+    __1.app.route('/api/bakkesmod/check').get(bakkesmod.checkStatus);
+    __1.app.route('/api/bakkesmod/download/mod').get(bakkesmod.downloadBakkesMod);
+    __1.app.route('/api/bakkesmod/download/mod_data').get(bakkesmod.downloadBakkesModData);
+    __1.app.route('/api/bakkesmod/download/sos').get(bakkesmod.downloadSosPlugin);
+    __1.app.route('/api/bakkesmod/run').get(bakkesmod.runBakkesMod);
+    __1.app.route('/api/bakkesmod/install/mod_data').get(bakkesmod.installBakkesModData);
+    __1.app.route('/api/bakkesmod/install/sos').get(bakkesmod.installSosPlugin);
     electron_1.globalShortcut.register('Alt+Shift+F', () => io.emit('refreshHUD'));
     electron_1.globalShortcut.register('Alt+R', match.reverseSide);
     /**

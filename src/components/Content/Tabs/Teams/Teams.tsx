@@ -21,6 +21,7 @@ const TeamsTab = ({ cxt }: IProps) => {
 		shortName: '',
 		country: '',
 		logo: '',
+		game: cxt.game,
 		extra: {}
 	};
 	const [form, setForm] = useState(emptyTeam);
@@ -28,6 +29,9 @@ const TeamsTab = ({ cxt }: IProps) => {
 
 	const [editModalState, setEditState] = useState(false);
 	const [fieldsModalState, setFieldsState] = useState(false);
+
+	const [sortBy, setSortBy] = useState<keyof I.Team>('name');
+	const [sortByType, setSortByType] = useState<'DESC' | 'ASC'>('ASC');
 
 	const [customFieldForm, setCustomFieldForm] = useState<I.CustomFieldEntry[]>(quickClone(cxt.fields.teams));
 
@@ -54,6 +58,21 @@ const TeamsTab = ({ cxt }: IProps) => {
 		if (id) {
 			loadTeam(id);
 		}
+	};
+
+	const sortTeams = (players: I.Team[]) => {
+		const sortType = (result: -1 | 1) => {
+			if (sortByType === 'ASC') return result;
+			return result * -1;
+		};
+		return [...players].sort((a, b) => sortType((a[sortBy] as any) < (b[sortBy] as any) ? -1 : 1));
+	};
+
+	const toggleSortBy = (targetSortBy: keyof I.Team) => () => {
+		if (targetSortBy === sortBy) {
+			return setSortByType(sortByType === 'ASC' ? 'DESC' : 'ASC');
+		}
+		setSortBy(targetSortBy);
 	};
 
 	const fileHandler = (files: FileList) => {
@@ -220,9 +239,15 @@ const TeamsTab = ({ cxt }: IProps) => {
 			<div className="tab-content-container no-padding">
 				<div className="item-list-entry heading">
 					<div className="picture">Logo</div>
-					<div className="name">Name</div>
-					<div className="shortname">Short name</div>
-					<div className="country">Country</div>
+					<div className="name" onClick={toggleSortBy('name')}>
+						Name
+					</div>
+					<div className="shortname" onClick={toggleSortBy('shortName')}>
+						Short name
+					</div>
+					<div className="country" onClick={toggleSortBy('country')}>
+						Country
+					</div>
 					{visibleFields.map(field => (
 						<div className="custom-field" key={field._id}>
 							{field.name}
@@ -234,7 +259,7 @@ const TeamsTab = ({ cxt }: IProps) => {
 						</Button>
 					</div>
 				</div>
-				{cxt.teams.filter(filterTeams).map(team => (
+				{sortTeams(cxt.teams.filter(filterTeams)).map(team => (
 					<TeamListEntry
 						hash={cxt.hash}
 						key={team._id}

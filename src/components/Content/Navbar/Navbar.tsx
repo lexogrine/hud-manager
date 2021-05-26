@@ -1,6 +1,9 @@
 import React from 'react';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import * as Tabs from './TabIcons';
+import { GameOnly } from '../Tabs/Config/Config';
+import Tip from '../../Tooltip';
+import { ContextData } from '../../Context';
 
 interface IProps {
 	activeTab: string;
@@ -65,17 +68,69 @@ const Navbar = ({ activeTab, toggle, files }: IProps) => (
 				<div>HUDs</div>
 			</NavLink>
 		</NavItem>
-		<NavItem className="hover-pointer">
-			<NavLink
-				active={activeTab === 'live'}
-				onClick={() => {
-					toggle('live');
-				}}
-			>
-				<img src={Tabs.Live} alt="Live" />
-				<div>Live</div>
-			</NavLink>
-		</NavItem>
+		<GameOnly game="csgo">
+			<ContextData.Consumer>
+				{data =>
+					!data?.customer?.license?.type ||
+					data.customer?.license.type === 'free' ||
+					data.customer.license.type === 'personal' ? (
+						<Tip
+							id="aco_nav"
+							label={
+								<NavItem className="hover-pointer">
+									<NavLink
+										active={activeTab === 'aco'}
+										disabled
+										onClick={() => {
+											toggle('aco');
+										}}
+									>
+										<img src={Tabs.ACO} alt="ACO" />
+										<div>ACO</div>
+									</NavLink>
+								</NavItem>
+							}
+						>
+							Professional only
+						</Tip>
+					) : (
+						<NavItem className="hover-pointer">
+							<NavLink
+								active={activeTab === 'aco'}
+								onClick={() => {
+									toggle('aco');
+								}}
+							>
+								<img src={Tabs.ACO} alt="ACO" />
+								<div>ACO</div>
+							</NavLink>
+						</NavItem>
+					)
+				}
+			</ContextData.Consumer>
+			<NavItem className="hover-pointer">
+				<NavLink
+					active={activeTab === 'ar'}
+					onClick={() => {
+						toggle('ar');
+					}}
+				>
+					<img src={Tabs.AR} alt="AR" />
+					<div>AR</div>
+				</NavLink>
+			</NavItem>
+			<NavItem className="hover-pointer">
+				<NavLink
+					active={activeTab === 'live'}
+					onClick={() => {
+						toggle('live');
+					}}
+				>
+					<img src={Tabs.Live} alt="Live" />
+					<div>Live</div>
+				</NavLink>
+			</NavItem>
+		</GameOnly>
 		<NavItem className="hover-pointer" id="settings">
 			<NavLink
 				active={activeTab === 'config'}

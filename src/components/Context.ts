@@ -7,10 +7,11 @@ export interface IContextData {
 	players: I.Player[];
 	matches: I.Match[];
 	tournaments: I.Tournament[];
-	reload: Function;
+	reload: () => void;
 	customer?: I.Customer;
 	fields: I.CustomFieldStore;
 	hash: string;
+	game: I.AvailableGames;
 }
 
 const defaultContext: IContextData = {
@@ -20,7 +21,8 @@ const defaultContext: IContextData = {
 	reload: () => {},
 	matches: [],
 	fields: { players: [], teams: [] },
-	hash: ''
+	hash: '',
+	game: 'csgo'
 };
 
 export const ContextData = React.createContext(defaultContext);

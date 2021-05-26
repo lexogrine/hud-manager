@@ -6,9 +6,11 @@ import Matches from './Match/Matches';
 import Huds from './Huds/Huds';
 import Tournaments from './Tournaments/Tournaments';
 import Config from './Config/Config';
+import AR from './AR/AR';
 import Credits from './Credits/Credits';
 import Live from './Live/Live';
 import { ContextData } from './../../Context';
+import ACO from './ACO/ACO';
 
 interface IProps {
 	activeTab: string;
@@ -31,7 +33,7 @@ const Tabs = ({ activeTab, data, toggle, gsiCheck }: IProps) => (
 					<Matches cxt={cxt}></Matches>
 				</TabPane>
 				<TabPane tabId="huds">
-					<Huds cxt={cxt}></Huds>
+					<Huds cxt={cxt} toggle={toggle}></Huds>
 				</TabPane>
 				<TabPane tabId="tournaments">
 					<Tournaments cxt={cxt}></Tournaments>
@@ -41,6 +43,12 @@ const Tabs = ({ activeTab, data, toggle, gsiCheck }: IProps) => (
 				</TabPane>
 				<TabPane tabId="config">
 					<Config cxt={cxt} toggle={toggle} gsiCheck={gsiCheck}></Config>
+				</TabPane>
+				<TabPane tabId="ar">
+					<AR cxt={cxt} toggle={toggle}></AR>
+				</TabPane>
+				<TabPane tabId="aco">
+					<ACO></ACO>
 				</TabPane>
 				<TabPane tabId="credits">
 					<Credits></Credits>

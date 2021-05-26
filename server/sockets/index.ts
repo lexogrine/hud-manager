@@ -3,13 +3,14 @@ import { HUDStateManager } from '../api/huds/hudstatemanager';
 import { reverseSide } from '../api/matches';
 import { HUDState, ioPromise, runtimeConfig } from '../socket';
 import { playTesting } from './../api/huds/play';
+import { availableGames } from '../../types/interfaces';
 
 ioPromise.then(io => {
 	io.on('connection', socket => {
 		const ref = socket.request?.headers?.referer || '';
 		verifyUrl(ref).then(status => {
 			if (status) {
-				socket.join('csgo');
+				socket.join('game');
 			}
 		});
 		socket.on('started', () => {
@@ -24,12 +25,22 @@ ioPromise.then(io => {
 			socket.on('readerReverseSide', reverseSide);
 		});
 		socket.emit('readyToRegister');
-		socket.on('register', async (name: string, isDev: boolean) => {
+		socket.on('disconnect', () => {
+			runtimeConfig.devSocket = runtimeConfig.devSocket.filter(devSocket => devSocket !== socket);
+		});
+		socket.on('unregister', () => {
+			socket.rooms.forEach(roomName => {
+				if (roomName === socket.id || availableGames.includes(roomName as any) || roomName === 'game') return;
+				socket.leave(roomName);
+			});
+		});
+		socket.on('register', async (name: string, isDev: boolean, game = 'csgo') => {
 			if (!isDev || HUDState.devHUD) {
 				socket.on('hud_inner_action', (action: any) => {
 					io.to(isDev && HUDState.devHUD ? HUDState.devHUD.dir : name).emit(`hud_action`, action);
 				});
 			}
+			socket.join(game);
 			if (!isDev) {
 				socket.join(name);
 				const hudData = HUDState.get(name, true);
@@ -37,7 +48,7 @@ ioPromise.then(io => {
 				io.to(name).emit('hud_config', extended);
 				return;
 			}
-			runtimeConfig.devSocket = socket;
+			runtimeConfig.devSocket.push(socket);
 			if (HUDState.devHUD) {
 				socket.join(HUDState.devHUD.dir);
 				const hudData = HUDState.get(HUDState.devHUD.dir);
@@ -58,17 +69,22 @@ ioPromise.then(io => {
 			socket.emit('hud_config', HUDState.get(hud, true));
 		});
 
-		socket.on('set_active_hlae', (hudUrl: string | null) => {
-			if (runtimeConfig.currentHUD === hudUrl) {
-				runtimeConfig.currentHUD = null;
+		socket.on('set_active_hlae', (hudUrl: string | null, dir: string, isDev: boolean) => {
+			if (runtimeConfig.currentHUD.url === hudUrl) {
+				runtimeConfig.currentHUD.url = null;
+				runtimeConfig.currentHUD.isDev = false;
+				runtimeConfig.currentHUD.dir = '';
 			} else {
-				runtimeConfig.currentHUD = hudUrl;
+				runtimeConfig.currentHUD.url = hudUrl;
+				runtimeConfig.currentHUD.isDev = isDev;
+				runtimeConfig.currentHUD.dir = dir;
 			}
-			io.emit('active_hlae', runtimeConfig.currentHUD);
+			io.emit('active_hlae', hudUrl, dir, isDev);
 		});
 
-		socket.on('get_active_hlae', () => {
-			io.emit('active_hlae', runtimeConfig.currentHUD);
+		socket.on('get_active_hlae_hud', () => {
+			const { url, dir, isDev } = runtimeConfig.currentHUD;
+			io.emit('active_hlae', url, dir, isDev);
 		});
 
 		socket.on('get_test_settings', () => {

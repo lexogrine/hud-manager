@@ -14,15 +14,15 @@ body {
 .main-container > .col {
     padding: 0;
 }
-.navbar-container > li {
+.navbar-container li {
     width:100%;
     height: calc(calc(100vh - 64px)/6);
-    max-height: 135px;
+    max-height: 120px;
 }
-.navbar-container > li > a{
+.navbar-container li > a{
     width:100%;
     height: calc(calc(100vh - 64px)/6 - 1px);
-    max-height: 134px;
+    max-height: 120px;
     background-color: #2b2e34; 
     display: flex;
     align-items: center;
@@ -31,10 +31,10 @@ body {
     text-transform: uppercase;
     border-bottom: 1px solid #373a40 !important;
 }
-.navbar-container > li:nth-last-child(2) > a {
+.navbar-container li:nth-last-child(2) > a {
     border-bottom: none !important;
 }
-.navbar-container > li > a.active{
+.navbar-container li > a.active{
     width:100%;
     height: 100%;
     background-color: #6b1cff !important; 
@@ -42,11 +42,11 @@ body {
     border:none;
     border-bottom: 1px solid #2b2e34 !important;
 }
-.navbar-container > li > a:hover{
+.navbar-container li > a:hover{
     border-color: transparent !important;
     border-bottom: 1px solid #373a40 !important;
 }
-.navbar-container > li:nth-last-child(2) > a:hover{
+.navbar-container li:nth-last-child(2) > a:hover{
     border-color: transparent !important;
 }
 
@@ -86,7 +86,7 @@ body {
 .tab-content-container {
     padding: 53px;
     padding-bottom: 0;
-    margin-left: 143px;
+    margin-left: 120px;
     margin-top: 135px;
     position: relative;
     height: calc(100vh - 135px - 71px);
@@ -199,6 +199,7 @@ body {
 #settings a {
     border-bottom: none !important;
     height: 135px;
+    max-height: unset;
 }
 
 .exec-code {
@@ -211,15 +212,15 @@ body {
     margin-left:auto;
     margin-right: 21px;
 }
-.navbar-container > li#settings > a.active {
+.navbar-container li#settings > a.active {
     background-color: #7ad9f5 !important;
     color:#24272d !important;
 }
 .main-buttons-container {
     position: fixed;
-    width: calc(100% - 143px);
+    width: calc(100% - 120px);
     bottom: 0;
-    left: 143px;
+    left: 120px;
     padding: 0;
     height:71px;
     display:flex;
@@ -228,6 +229,10 @@ body {
 .no-padding .main-buttons-container {
     left: 158px;
 }*/
+
+.in-row .modal-save{
+    flex: 1;
+}
 input.form-control, select.form-control {
     color:#e1e1e2;
     background-color: transparent;
@@ -258,12 +263,17 @@ input.form-control:focus, select.form-control:focus {
     background: linear-gradient(to bottom right, #78c1f6, #6b1fff);
 }
 .navbar-container {
-    width:143px;
+    width:125px;
     display: block !important;
     border:none;
     position: fixed;
     z-index: 2;
     background-color: #2b2e34;
+    overflow: auto;
+    height: calc(100% - 64px);
+}
+.navbar-container::-webkit-scrollbar-thumb {
+    background-color: #1d1e21;
 }
 img.smallLogo {
     max-height:64px;
@@ -400,6 +410,9 @@ img.smallLogo {
 }
 .entry-main .preview.dust2 {
     background-image: url('./maps/dust2.jpg');
+}
+.entry-main .preview.ancient {
+    background-image: url('./maps/ancient.png');
 }
 .entry-main .preview.nuke {
     background-image: url('./maps/nuke.jpg');
@@ -1074,13 +1087,15 @@ form .card > .card-body > button.btn {
     height: unset;
     border-bottom: 1px solid grey;
     border-radius: 0;
+    position: relative;
+    top: 20px;
 }
 .nav-tabs .nav-link {
     user-select: none;
     border-radius: 0 !important;
     
     flex-direction: column;
-    font-size: 12px;
+    font-size: 11px;
     font-weight: 600;
 }
 .nav-tabs .nav-item {
@@ -1235,6 +1250,10 @@ input:checked ~ .customCheckbox {
     text-transform: uppercase;
     margin: 0;
 }
+.veto_modal .modal-save.secondary {
+    background-color: grey !important;
+}
+
 #window-bar-area {
     z-index: 9999;
     width:100%;
@@ -1382,6 +1401,9 @@ input:checked ~ .customCheckbox {
     height: 42px;
     font-weight: 300;
 }
+.item-list-entry.heading > div:not(.custom-field):not(.picture) {
+    cursor: pointer;
+}
 .item-list-entry.matches {
     padding-left: 22px;
     padding-right: 66px;
@@ -1463,4 +1485,7 @@ input:checked ~ .customCheckbox {
     font-size: 17px;
     margin: 0 6px;
     cursor: pointer;
+}
+.hud-options span {
+    display: flex;
 }

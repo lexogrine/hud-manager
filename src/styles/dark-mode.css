@@ -34,6 +34,34 @@ button.btn-primary {
     transition: opacity 0.5s, transform 0s 0.5s;
     background-color: rgba(107, 28, 255, 0.82);
 }
+.sync_button {
+    
+    width:163px;
+    height:29px;
+    font-size:10px;
+    font-weight:700;
+    z-index: 5;
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    border-radius:14px;
+    cursor:pointer;
+    background-color: #46494f;
+    color: white !important;
+    margin: 0 5px;
+    text-decoration: none !important;
+}
+.sync_button.active {
+    background-color: #53bf53;
+}
+.top_buttons {
+        position: absolute;
+        top: 91px;
+        right: 220px;
+        z-index: 5;
+        display: flex;
+    
+}
 .loading-container.hide {
     opacity:0;
     transform: scale(0);
@@ -225,4 +253,90 @@ button.btn-primary {
 }
 .match_data code {
     cursor: pointer;
+}
+.games-picker {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.game-preview {
+    display: flex;
+    flex-direction: column;
+    padding: 10px 25px;
+    cursor: pointer;
+}
+.game-preview:hover {
+    background-color: rgba(122, 217, 245, 0.5);
+}
+.game-preview.active {
+    background-color: #7ad9f5;
+}
+.game-title {
+    font-size: 12px;
+    font-Weight:700;
+    text-transform: uppercase;
+    text-align: center;
+}
+.game-img, .game-img img {
+    width: 110px;
+    height: 110px;
+}
+.game-img {
+    margin: 20px 0;
+}
+.aco_picker {
+    position: relative;
+    width:512px;
+}
+.aco_area {
+    width:100%;
+    height:100%;
+    cursor: pointer;
+    position: absolute;
+    opacity: 0.5;
+    clip-path: polygon(0 0, 0 0, 0 0, 0 0);
+}
+.aco_config_title {
+    height: 41px;
+    background-color: rgba(255,255,255,0.03);
+    padding-left:23px;
+    display: flex;
+    align-items: center;
+}
+.aco_area_config {
+    height: 82px;
+    padding-left:23px;
+    padding-right:23px;
+    display: flex;
+    align-items: center;
+}
+.aco_area_config div {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-right: 30px;
+}
+.aco_area_config:nth-child(2n) {
+    background-color: #202328;
+}
+.aco_area_config:nth-child(2n+1) {
+    background-color: #2f3238;
+}
+.aco_area_config img {
+    margin-left: auto;
+    cursor: pointer;
+}
+.btn-container {
+    display: flex;
+}
+.btn.add_aco_config {
+    margin: 0;
+    flex:1;
+    margin-top:20px;
+}
+.aco_dot {
+    position: absolute;
+    border-radius:50%;
+    width:5px;
+    height:5px;
 }

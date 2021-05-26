@@ -1,9 +1,10 @@
 import express from 'express';
 import { customer } from '..';
 import { app } from '../..';
-import { GSI, ioPromise, runtimeConfig } from '../../socket';
+import { GSI, ioPromise, runtimeConfig, mirvPgl } from '../../socket';
 import { testData } from '../testing';
-const radar = require('./../../../boltobserv/index.js');
+import WebSocket from 'ws';
+import { createDirector } from '../../aco';
 
 const assertUser: express.RequestHandler = (req, res, next) => {
 	if (!customer.customer) {
@@ -19,6 +20,28 @@ export const playTesting: { intervalId: NodeJS.Timeout | null; isOnLoop: boolean
 
 export const initGameConnection = async () => {
 	const io = await ioPromise;
+
+	const director = createDirector();
+
+	director.pgl = mirvPgl;
+
+	io.on('connection', socket => {
+		socket.on('getDirectorStatus', () => {
+			socket.emit('directorStatus', director.status);
+		});
+		socket.on('toggleDirector', () => {
+			if (
+				!customer.customer ||
+				!customer.customer.license ||
+				customer.customer.license?.type === 'free' ||
+				customer.customer.license?.type === 'personal'
+			) {
+				return;
+			}
+			director.status ? director.stop() : director.start();
+			socket.emit('directorStatus', director.status);
+		});
+	});
 
 	let testDataIndex = 0;
 
@@ -40,7 +63,7 @@ export const initGameConnection = async () => {
 					return;
 				}
 			}
-			io.to('csgo').emit('update', testData[testDataIndex]);
+			io.to('game').emit('update', testData[testDataIndex]);
 			testDataIndex++;
 		}, 16);
 	};
@@ -52,9 +75,6 @@ export const initGameConnection = async () => {
 		io.emit('enableTest', true, playTesting.isOnLoop);
 	};
 	app.post('/', assertUser, (req, res) => {
-		if (!customer.customer) {
-			return res.sendStatus(200);
-		}
 		runtimeConfig.last = req.body;
 
 		if (playTesting.intervalId) {
@@ -63,9 +83,8 @@ export const initGameConnection = async () => {
 			io.emit('enableTest', true, playTesting.isOnLoop);
 		}
 
-		io.to('csgo').emit('update', req.body);
+		io.to('game').emit('update', req.body);
 		GSI.digest(req.body);
-		radar.digestRadar(req.body);
 		res.sendStatus(200);
 	});
 
@@ -80,4 +99,23 @@ export const initGameConnection = async () => {
 		io.emit('enableTest', !playTesting.intervalId, playTesting.isOnLoop);
 		res.sendStatus(200);
 	});
+
+	const connectToRocketLeague = () => {
+		const ws = new WebSocket('ws://localhost:49122');
+
+		const onData = (data: WebSocket.Data) => {
+			io.to('rocketleague').emit('update', data);
+		};
+
+		ws.on('message', onData);
+
+		ws.on('close', () => {
+			ws.off('message', onData);
+			setTimeout(connectToRocketLeague, 1000);
+		});
+
+		ws.on('error', ws.close);
+	};
+
+	connectToRocketLeague();
 };

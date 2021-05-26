@@ -23,7 +23,7 @@ exports.deleteTournament = exports.updateTournament = exports.bindMatchToMatchup
 const T = __importStar(require("./"));
 const matches_1 = require("../matches");
 exports.getCurrentTournament = async (req, res) => {
-    const matches = await matches_1.getMatches();
+    const matches = await matches_1.getActiveGameMatches();
     const current = matches.find(match => match.current);
     if (!current) {
         return res.json({ tournament: null });

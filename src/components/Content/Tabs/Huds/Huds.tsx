@@ -11,6 +11,7 @@ import DragInput from './../../../DragFileInput';
 import HudEntry from './HudEntry';
 import goBack from './../../../../styles/goBack.png';
 import config from './../../../../api/config';
+import { GameOnly } from '../Config/Config';
 const isElectron = config.isElectron;
 
 function createCFG(customRadar: boolean, customKillfeed: boolean, afx: boolean, port: number, autoexec = true): I.CFG {
@@ -43,51 +44,69 @@ function createCFG(customRadar: boolean, customKillfeed: boolean, afx: boolean, 
 
 interface IProps {
 	cxt: IContextData;
+	toggle: (tab: string, data?: any) => void;
 }
 
 interface IForm {
 	killfeed: boolean;
 	radar: boolean;
 	afx: boolean;
+	ar: boolean;
 	autoexec: boolean;
 }
 
 interface IState {
 	config: I.Config;
 	huds: I.HUD[];
+	loadingHUDs: string[];
 	form: IForm;
 	active: I.HUD | null;
 	currentHUD: string | null;
 	enableTest: boolean;
 	isOnLoop: boolean;
+	blocked: string[];
 }
 
 export default class Huds extends React.Component<IProps, IState> {
-	constructor(props: { cxt: IContextData }) {
+	constructor(props: IProps) {
 		super(props);
 		this.state = {
+			loadingHUDs: [],
 			huds: [],
 			config: {
 				steamApiKey: '',
 				hlaePath: '',
 				port: 1349,
 				token: '',
-				afxCEFHudInteropPath: ''
+				afxCEFHudInteropPath: '',
+				sync: true
 			},
 			form: {
 				killfeed: false,
 				radar: false,
 				afx: false,
-				autoexec: true
+				autoexec: true,
+				ar: false
 			},
 			active: null,
 			currentHUD: null,
 			enableTest: true,
-			isOnLoop: false
+			isOnLoop: false,
+			blocked: []
 		};
 	}
 
-	runGame = () => api.game.run(this.state.form);
+	runGame = async () => {
+		switch (this.props.cxt.game) {
+			case 'csgo':
+				api.game.run(this.state.form);
+				break;
+			case 'rocketleague':
+				await api.bakkesmod.installSos();
+				await api.bakkesmod.run();
+				break;
+		}
+	};
 
 	handleZIPs = (files: FileList) => {
 		const file = files[0];
@@ -99,13 +118,17 @@ export default class Huds extends React.Component<IProps, IState> {
 				return;
 			}
 
-			api.huds.upload(reader.result, name);
+			api.huds.save(reader.result, name);
 		};
 	};
 	changeForm = (name: keyof IForm) => () => {
 		const { form } = this.state;
 		form[name] = !form[name];
-		this.setState({ form });
+		this.setState({ form }, () => {
+			if (name === 'ar') {
+				this.forceBlock(true, 'afx');
+			}
+		});
 	};
 	getConfig = async () => {
 		const config = await api.config.get();
@@ -114,6 +137,14 @@ export default class Huds extends React.Component<IProps, IState> {
 	loadHUDs = async () => {
 		const huds = await api.huds.get();
 		this.setState({ huds });
+	};
+	setHUDLoading = (uuid: string, isLoading: boolean) => {
+		const { loadingHUDs } = this.state;
+		if (isLoading && !loadingHUDs.includes(uuid)) {
+			this.setState({ loadingHUDs: [...loadingHUDs, uuid] });
+		} else if (!isLoading && loadingHUDs.includes(uuid)) {
+			this.setState({ loadingHUDs: loadingHUDs.filter(hudUUID => hudUUID !== uuid) });
+		}
 	};
 	async componentDidMount() {
 		socket.on('reloadHUDs', this.loadHUDs);
@@ -137,9 +168,28 @@ export default class Huds extends React.Component<IProps, IState> {
 	toggleConfig = (hud?: I.HUD) => () => {
 		this.setState({ active: hud || null });
 	};
+	forceBlock = (status: boolean, ...blockedToggles: (keyof IForm)[]) => {
+		this.setState((state: any) => {
+			for (const blocked of blockedToggles) {
+				if (blocked in state.form) {
+					state.form[blocked] = status;
+				}
+				if (state.blocked.includes(blocked)) {
+					state.blocked = state.blocked.filter((el: string) => el !== blocked);
+				} else {
+					state.blocked.push(blocked);
+				}
+			}
+			return state;
+		});
+	};
+
 	render() {
 		const { killfeed, radar, afx } = this.state.form;
 		const { active, config } = this.state;
+		const available =
+			this.props.cxt.customer?.license?.type === 'professional' ||
+			this.props.cxt.customer?.license?.type === 'enterprise';
 		if (active) {
 			return (
 				<React.Fragment>
@@ -157,98 +207,167 @@ export default class Huds extends React.Component<IProps, IState> {
 			<React.Fragment>
 				<div className="tab-title-container">HUDs</div>
 				<div className={`tab-content-container no-padding ${!isElectron ? 'full-scroll' : ''}`}>
-					<Row className="config-container">
-						<Col md="12" className="config-entry wrap">
-							<div className="config-area">
-								<div className="config-description">Custom radar</div>
-								<Switch
-									isOn={this.state.form.radar}
-									id="radar-toggle"
-									handleToggle={this.changeForm('radar')}
-								/>
-							</div>
-							<div className="config-area">
-								<div className="config-description">Custom killfeed</div>
-								<Switch
-									isOn={this.state.form.killfeed}
-									id="killfeed-toggle"
-									handleToggle={this.changeForm('killfeed')}
-								/>
-							</div>
-							<div className="config-area">
-								<div className="config-description">Embedded HUD</div>
-								<Switch
-									isOn={this.state.form.afx}
-									id="afx-toggle"
-									handleToggle={this.changeForm('afx')}
-								/>
-							</div>
-							<ElectronOnly>
+					<GameOnly game="csgo">
+						<Row className="config-container">
+							<Col md="12" className="config-entry wrap">
 								<div className="config-area">
-									<div className="config-description">Play test loop</div>
+									<div className="config-description">Radar</div>
 									<Switch
-										isOn={this.state.isOnLoop}
-										id="autoexec-toggle"
-										handleToggle={api.game.toggleLoop}
+										isOn={this.state.form.radar}
+										id="radar-toggle"
+										handleToggle={this.changeForm('radar')}
+										disabled={this.state.blocked.includes('radar')}
 									/>
 								</div>
-							</ElectronOnly>
-							<div className="config-area">
-								<div className="config-description">Auto-execute</div>
-								<Switch
-									isOn={this.state.form.autoexec}
-									id="autoexec-toggle"
-									handleToggle={this.changeForm('autoexec')}
-								/>
-							</div>
-						</Col>
-						<Col md="12" className="config-entry">
-							<div className="running-game-container">
-								<div>
-									<div className="config-description">Console:</div>
-									<code className="exec-code">
-										exec {createCFG(radar, killfeed, afx, config.port).file}
-									</code>
-									<ElectronOnly>
-										<div className="config-description">OR</div>
-										<Button
-											className="round-btn run-game"
-											disabled={
-												(killfeed && !config.hlaePath) ||
-												(afx && (!config.hlaePath || !config.afxCEFHudInteropPath))
-											}
-											onClick={this.runGame}
-										>
-											RUN GAME
-										</Button>
-										<Button
-											className="round-btn run-game"
-											// disabled={!this.state.enableTest}
-											onClick={api.game.runTest}
-										>
-											{!this.state.enableTest ? 'PAUSE TEST' : 'PLAY TEST'}
-										</Button>
-									</ElectronOnly>
+								<div className="config-area">
+									<div className="config-description">Killfeed or ACO</div>
+									<Switch
+										isOn={this.state.form.killfeed}
+										id="killfeed-toggle"
+										handleToggle={this.changeForm('killfeed')}
+										disabled={this.state.blocked.includes('killfeed')}
+									/>
 								</div>
-								<div className="warning">
-									<ElectronOnly>
-										{(killfeed || afx) && !config.hlaePath ? (
-											<div>Specify HLAE path in Settings in order to use custom killfeeds</div>
-										) : null}
-										{afx && !config.afxCEFHudInteropPath ? (
-											<div>Specify AFX Interop path in Settings in order to use AFX mode</div>
-										) : null}
-										{afx && config.afxCEFHudInteropPath && config.hlaePath ? (
-											<div>
-												When using AFX mode, after joining the match click on the SET button -
-												no need to start the overlay.
-											</div>
-										) : null}
-									</ElectronOnly>
+								<div className="config-area">
+									<div className="config-description">Embedded HUD</div>
+									<Switch
+										isOn={this.state.form.afx}
+										id="afx-toggle"
+										handleToggle={this.changeForm('afx')}
+										disabled={this.state.blocked.includes('afx')}
+									/>
 								</div>
-							</div>
-						</Col>
-					</Row>
+								<ElectronOnly>
+									<div className="config-area">
+										<div className="config-description">Play test loop</div>
+										<Switch
+											isOn={this.state.isOnLoop}
+											id="gamelopp-toggle"
+											handleToggle={api.game.toggleLoop}
+										/>
+									</div>
+								</ElectronOnly>
+								<div className="config-area">
+									<div className="config-description">AR (experimental)</div>
+									<Switch
+										isOn={this.state.form.ar}
+										id="ar-toggle"
+										handleToggle={this.changeForm('ar')}
+										disabled={this.state.blocked.includes('ar')}
+									/>
+								</div>
+								<div className="config-area">
+									<div className="config-description">Auto-execute</div>
+									<Switch
+										isOn={this.state.form.autoexec}
+										id="autoexec-toggle"
+										handleToggle={this.changeForm('autoexec')}
+										disabled={this.state.blocked.includes('autoexec')}
+									/>
+								</div>
+							</Col>
+							<Col md="12" className="config-entry">
+								<div className="running-game-container">
+									<div>
+										<div className="config-description">Console:</div>
+										<code className="exec-code">
+											exec {createCFG(radar, killfeed, afx, config.port).file}
+										</code>
+										<ElectronOnly>
+											<div className="config-description">OR</div>
+											<Button
+												className="round-btn run-game"
+												disabled={
+													(killfeed && !config.hlaePath) ||
+													(afx && (!config.hlaePath || !config.afxCEFHudInteropPath))
+												}
+												onClick={this.runGame}
+											>
+												RUN GAME
+											</Button>
+											<Button
+												className="round-btn run-game"
+												// disabled={!this.state.enableTest}
+												onClick={api.game.runTest}
+											>
+												{!this.state.enableTest ? 'PAUSE TEST' : 'PLAY TEST'}
+											</Button>
+											<Button
+												className="round-btn run-game"
+												onClick={() => this.props.toggle('ar')}
+											>
+												AR
+											</Button>
+										</ElectronOnly>
+									</div>
+									<div className="warning">
+										<ElectronOnly>
+											{(killfeed || afx) && !config.hlaePath ? (
+												<div>
+													Specify HLAE path in Settings in order to use custom killfeeds
+												</div>
+											) : null}
+											{killfeed ? (
+												<div>
+													If you only want ACO without killfeed, remove <code>_killfeed</code>{' '}
+													from execute line
+												</div>
+											) : null}
+											{afx && !config.afxCEFHudInteropPath ? (
+												<div>Specify AFX Interop path in Settings in order to use AFX mode</div>
+											) : null}
+											{afx && config.afxCEFHudInteropPath && config.hlaePath ? (
+												<div>
+													When using AFX mode, after joining the match click on the SET button
+													- no need to start the overlay.
+												</div>
+											) : null}
+										</ElectronOnly>
+									</div>
+								</div>
+							</Col>
+						</Row>
+					</GameOnly>
+					<GameOnly game="rocketleague">
+						<Row className="config-container">
+							<Col md="12" className="config-entry">
+								<div className="running-game-container">
+									<div>
+										<ElectronOnly>
+											<Button
+												className="round-btn run-game"
+												disabled={
+													(killfeed && !config.hlaePath) ||
+													(afx && (!config.hlaePath || !config.afxCEFHudInteropPath))
+												}
+												onClick={this.runGame}
+											>
+												RUN GAME
+											</Button>
+										</ElectronOnly>
+									</div>
+									<div className="warning">
+										<ElectronOnly>
+											{(killfeed || afx) && !config.hlaePath ? (
+												<div>
+													Specify HLAE path in Settings in order to use custom killfeeds
+												</div>
+											) : null}
+											{afx && !config.afxCEFHudInteropPath ? (
+												<div>Specify AFX Interop path in Settings in order to use AFX mode</div>
+											) : null}
+											{afx && config.afxCEFHudInteropPath && config.hlaePath ? (
+												<div>
+													When using AFX mode, after joining the match click on the SET button
+													- no need to start the overlay.
+												</div>
+											) : null}
+										</ElectronOnly>
+									</div>
+								</div>
+							</Col>
+						</Row>
+					</GameOnly>
 
 					<Row className="padded">
 						<Col>
@@ -262,6 +381,10 @@ export default class Huds extends React.Component<IProps, IState> {
 									toggleConfig={this.toggleConfig}
 									isActive={hud.url === this.state.currentHUD}
 									customFields={this.props.cxt.fields}
+									loadHUDs={this.loadHUDs}
+									setHUDLoading={this.setHUDLoading}
+									isLoading={!!hud.uuid && this.state.loadingHUDs.includes(hud.uuid)}
+									isCloudAvailable={available}
 								/>
 							))}
 						</Col>
