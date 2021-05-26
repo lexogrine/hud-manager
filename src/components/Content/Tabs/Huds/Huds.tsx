@@ -102,7 +102,8 @@ export default class Huds extends React.Component<IProps, IState> {
 				api.game.run(this.state.form);
 				break;
 			case 'rocketleague':
-				api.bakkesmod.run();
+				await api.bakkesmod.installSos();
+				await api.bakkesmod.run();
 				break;
 		}
 	};
