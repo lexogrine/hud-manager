@@ -5,6 +5,7 @@ import express from 'express';
 import request from 'request';
 import del from 'del';
 import { exec, execFile, spawn } from 'child_process';
+import { getGamePath } from 'steam-game-path';
 
 const DecompressZip = require('decompress-zip');
 
@@ -140,9 +141,31 @@ export const runBakkesMod: express.RequestHandler = async (req, res) => {
 	//execFile(bakkesModExePath);
 	spawn(bakkesModExePath, { detached: true, stdio: 'ignore' });
 
-	const startCommand = process.platform === 'win32' ? 'start' : 'xdg-open';
-	// exec(startCommand + ' ' + rocketLeagueUrl);
-	spawn(startCommand + ' ' + rocketLeagueUrl, { detached: true, stdio: 'ignore', shell: true });
+	// Try Steam first
+	let useSteam = true
+	let gamePath = null
+	try {
+		gamePath = getGamePath(252950)
+	}
+	catch {
+		useSteam = false
+	}
+
+	if (!gamePath || !gamePath.steam || !gamePath.steam.path || !gamePath.game || !gamePath.game.path) {
+		useSteam = false
+	}
+
+	if (useSteam) {
+		// const gameExePath = path.join(gamePath.game.path, 'Binaries/Win64/RocketLeague.exe');
+		const exePath = path.join(gamePath.steam.path, 'Steam.exe');
+		
+		const steam = spawn(`"${exePath}"`, ['-applaunch 252950'], { detached: true, shell: true, stdio: 'ignore' })
+		steam.unref();
+	}
+	else {
+		const startCommand = process.platform === 'win32' ? 'start' : 'xdg-open';
+		spawn(startCommand + ' ' + rocketLeagueUrl, { detached: true, stdio: 'ignore', shell: true });
+	}
 };
 
 export const installBakkesModData: express.RequestHandler = async (req, res) => {
@@ -171,6 +194,7 @@ export const installSosPlugin: express.RequestHandler = async (req, res) => {
 		return res.json({ success: false, message: 'SOS plugin needs to be downloaded first' });
 
 	if (fs.existsSync(sosPluginExtractPath)) {
+		//@ts-ignore
 		await del(sosPluginExtractPath, { force: true, expandDirectories: true });
 		await del(sosPluginExtractPath, { force: true });
 	}
@@ -185,6 +209,7 @@ export const installSosPlugin: express.RequestHandler = async (req, res) => {
 			if (!verifyPluginList()) {
 				fs.appendFileSync(bakkesModConfigPath, '\n' + sosPluginConfig + '\n');
 			}
+			//@ts-ignore
 			await del(sosPluginExtractPath, { force: true, expandDirectories: true });
 			await del(sosPluginExtractPath, { force: true });
 			return res.json({ success: true });
