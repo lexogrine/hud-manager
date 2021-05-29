@@ -142,28 +142,26 @@ export const runBakkesMod: express.RequestHandler = async (req, res) => {
 	spawn(bakkesModExePath, { detached: true, stdio: 'ignore' });
 
 	// Try Steam first
-	let useSteam = true
-	let gamePath = null
+	let useSteam = true;
+	let gamePath = null;
 	try {
-		gamePath = getGamePath(252950)
-	}
-	catch {
-		useSteam = false
+		gamePath = getGamePath(252950);
+	} catch {
+		useSteam = false;
 	}
 
 	if (!gamePath || !gamePath.steam || !gamePath.steam.path || !gamePath.game || !gamePath.game.path) {
-		useSteam = false
+		useSteam = false;
 	}
 
 	const exePath = gamePath?.steam?.path && path.join(gamePath.steam.path, 'Steam.exe');
 
 	if (useSteam && gamePath && exePath) {
 		// const gameExePath = path.join(gamePath.game.path, 'Binaries/Win64/RocketLeague.exe');
-		
-		const steam = spawn(`"${exePath}"`, ['-applaunch 252950'], { detached: true, shell: true, stdio: 'ignore' })
+
+		const steam = spawn(`"${exePath}"`, ['-applaunch 252950'], { detached: true, shell: true, stdio: 'ignore' });
 		steam.unref();
-	}
-	else {
+	} else {
 		const startCommand = process.platform === 'win32' ? 'start' : 'xdg-open';
 		spawn(startCommand + ' ' + rocketLeagueUrl, { detached: true, stdio: 'ignore', shell: true });
 	}

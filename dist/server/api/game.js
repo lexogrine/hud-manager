@@ -11,7 +11,7 @@ const config_1 = require("./config");
 const socket_1 = require("../socket");
 const child_process_1 = require("child_process");
 const electron_1 = require("../../electron");
-function createCFG(customRadar, customKillfeed, afx, port, autoexec = true) {
+function createCFG(customRadar, customKillfeed, afx, port, aco, autoexec = true) {
     let cfg = `cl_draw_only_deathnotices 1`;
     let file = 'hud';
     if (!customRadar) {
@@ -24,13 +24,17 @@ function createCFG(customRadar, customKillfeed, afx, port, autoexec = true) {
     if (customKillfeed) {
         file += '_killfeed';
         cfg += `\ncl_drawhud_force_deathnotices -1`;
+    }
+    if (customKillfeed || aco) {
+        if (aco)
+            file += '_aco';
         cfg += `\nmirv_pgl url "ws://localhost:${port}/socket.io/?EIO=3&transport=websocket"`;
         cfg += `\nmirv_pgl start`;
     }
     if (afx) {
         file += '_interop';
         cfg = 'afx_interop connect 1';
-        cfg += `\nexec ${createCFG(customRadar, customKillfeed, false, port).file}`;
+        cfg += `\nexec ${createCFG(customRadar, customKillfeed, false, port, aco).file}`;
     }
     file += '.cfg';
     if (!autoexec) {
@@ -77,7 +81,9 @@ exports.checkCFGs = async (req, res) => {
     switcher.forEach(interop => {
         switcher.forEach(radar => {
             switcher.forEach(killfeed => {
-                cfgs.push(createCFG(radar, killfeed, interop, config.port));
+                switcher.forEach(aco => {
+                    cfgs.push(createCFG(radar, killfeed, interop, config.port, aco));
+                });
             });
         });
     });
@@ -114,7 +120,9 @@ exports.createCFGs = async (_req, res) => {
         switcher.forEach(interop => {
             switcher.forEach(radar => {
                 switcher.forEach(killfeed => {
-                    cfgs.push(createCFG(radar, killfeed, interop, config.port));
+                    switcher.forEach(aco => {
+                        cfgs.push(createCFG(radar, killfeed, interop, config.port, aco));
+                    });
                 });
             });
         });

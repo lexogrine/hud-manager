@@ -67,7 +67,6 @@ class Director {
 	};
 
 	private switchHLAE = (config: string, areaName: string) => {
-
 		this.lastSwitch = new Date().getTime();
 		this.currentArea = areaName;
 

@@ -8,7 +8,7 @@ import { spawn } from 'child_process';
 import { CFG } from '../../types/interfaces';
 import { AFXInterop } from '../../electron';
 
-function createCFG(customRadar: boolean, customKillfeed: boolean, afx: boolean, port: number, autoexec = true): CFG {
+function createCFG(customRadar: boolean, customKillfeed: boolean, afx: boolean, port: number, aco: boolean, autoexec = true): CFG {
 	let cfg = `cl_draw_only_deathnotices 1`;
 	let file = 'hud';
 
@@ -21,13 +21,16 @@ function createCFG(customRadar: boolean, customKillfeed: boolean, afx: boolean, 
 	if (customKillfeed) {
 		file += '_killfeed';
 		cfg += `\ncl_drawhud_force_deathnotices -1`;
+	}
+	if(customKillfeed || aco){
+		if(aco) file += '_aco';
 		cfg += `\nmirv_pgl url "ws://localhost:${port}/socket.io/?EIO=3&transport=websocket"`;
 		cfg += `\nmirv_pgl start`;
 	}
 	if (afx) {
 		file += '_interop';
 		cfg = 'afx_interop connect 1';
-		cfg += `\nexec ${createCFG(customRadar, customKillfeed, false, port).file}`;
+		cfg += `\nexec ${createCFG(customRadar, customKillfeed, false, port, aco).file}`;
 	}
 	file += '.cfg';
 	if (!autoexec) {
@@ -78,7 +81,9 @@ export const checkCFGs: express.RequestHandler = async (req, res) => {
 	switcher.forEach(interop => {
 		switcher.forEach(radar => {
 			switcher.forEach(killfeed => {
-				cfgs.push(createCFG(radar, killfeed, interop, config.port));
+				switcher.forEach(aco => {
+					cfgs.push(createCFG(radar, killfeed, interop, config.port, aco));
+				});
 			});
 		});
 	});
@@ -119,7 +124,9 @@ export const createCFGs: express.RequestHandler = async (_req, res) => {
 		switcher.forEach(interop => {
 			switcher.forEach(radar => {
 				switcher.forEach(killfeed => {
-					cfgs.push(createCFG(radar, killfeed, interop, config.port));
+					switcher.forEach(aco => {
+						cfgs.push(createCFG(radar, killfeed, interop, config.port, aco));
+					});
 				});
 			});
 		});

@@ -15,18 +15,18 @@ export interface ExecutableACOConfig {
 }
 
 const sortAreas = (a: MapAreaConfigWithPlayers, b: MapAreaConfigWithPlayers) => {
-	if(a.players.length === b.players.length){
+	if (a.players.length === b.players.length) {
 		return b.priority - a.priority;
 	}
 	return b.players.length - a.players.length;
-}
+};
 
 const getRandomElement = (array: any[]) => {
-	if(!array || !array.length) return null
-	
+	if (!array || !array.length) return null;
+
 	const index = Math.floor(Math.random() * array.length);
 	return array[index];
-}
+};
 
 export const getActiveAreasSorted = (mapName: string, players: Player[]) => {
 	const config = areas.areas.find(cfg => cfg.map === mapName);
@@ -59,9 +59,13 @@ export const getBestArea = (mapName: string, players: Player[]) => {
 
 	const activeAreasConfigs: ExecutableACOConfig[] = [];
 
-	for(const activeArea of activeAreas){
-		for(const config of activeArea.configs){
-			activeAreasConfigs.push({ areaName: activeArea.name, config, strength: activeArea.priority + activeArea.players.length });
+	for (const activeArea of activeAreas) {
+		for (const config of activeArea.configs) {
+			activeAreasConfigs.push({
+				areaName: activeArea.name,
+				config,
+				strength: activeArea.priority + activeArea.players.length
+			});
 		}
 	}
 
@@ -69,7 +73,7 @@ export const getBestArea = (mapName: string, players: Player[]) => {
 
 	const unique = activeAreasConfigs.filter(config => isConfigAvailableForUsage(config.areaName, config.config));
 
-	if(!unique.length) {
+	if (!unique.length) {
 		const maxStrength = Math.max(...activeAreasConfigs.map(config => config.strength));
 		return getRandomElement(activeAreasConfigs.filter(config => config.strength === maxStrength));
 	}

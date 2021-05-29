@@ -14,7 +14,7 @@ import config from './../../../../api/config';
 import { GameOnly } from '../Config/Config';
 const isElectron = config.isElectron;
 
-function createCFG(customRadar: boolean, customKillfeed: boolean, afx: boolean, port: number, autoexec = true): I.CFG {
+function createCFG(customRadar: boolean, customKillfeed: boolean, afx: boolean, port: number, aco: boolean, autoexec = true): I.CFG {
 	let cfg = `cl_draw_only_deathnotices 1`;
 	let file = 'hud';
 
@@ -27,13 +27,16 @@ function createCFG(customRadar: boolean, customKillfeed: boolean, afx: boolean, 
 	if (customKillfeed) {
 		file += '_killfeed';
 		cfg += `\ncl_drawhud_force_deathnotices -1`;
+	}
+	if(customKillfeed || aco){
+		if(aco) file += '_aco';
 		cfg += `\nmirv_pgl url "ws://localhost:${port}/socket.io/?EIO=3&transport=websocket"`;
 		cfg += `\nmirv_pgl start`;
 	}
 	if (afx) {
 		file += '_interop';
 		cfg = 'afx_interop connect 1';
-		cfg += `\nexec ${createCFG(customRadar, customKillfeed, false, port).file}`;
+		cfg += `\nexec ${createCFG(customRadar, customKillfeed, false, port, aco).file}`;
 	}
 	file += '.cfg';
 	if (!autoexec) {
@@ -271,7 +274,7 @@ export default class Huds extends React.Component<IProps, IState> {
 									<div>
 										<div className="config-description">Console:</div>
 										<code className="exec-code">
-											exec {createCFG(radar, killfeed, afx, config.port).file}
+											exec {createCFG(radar, killfeed, afx, config.port, killfeed).file}
 										</code>
 										<ElectronOnly>
 											<div className="config-description">OR</div>

@@ -46,7 +46,11 @@ exports.getBestArea = (mapName, players) => {
     const activeAreasConfigs = [];
     for (const activeArea of activeAreas) {
         for (const config of activeArea.configs) {
-            activeAreasConfigs.push({ areaName: activeArea.name, config, strength: activeArea.priority + activeArea.players.length });
+            activeAreasConfigs.push({
+                areaName: activeArea.name,
+                config,
+                strength: activeArea.priority + activeArea.players.length
+            });
         }
     }
     if (!activeAreasConfigs.length)
