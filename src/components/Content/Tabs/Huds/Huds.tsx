@@ -14,7 +14,14 @@ import config from './../../../../api/config';
 import { GameOnly } from '../Config/Config';
 const isElectron = config.isElectron;
 
-function createCFG(customRadar: boolean, customKillfeed: boolean, afx: boolean, port: number, aco: boolean, autoexec = true): I.CFG {
+function createCFG(
+	customRadar: boolean,
+	customKillfeed: boolean,
+	afx: boolean,
+	port: number,
+	aco: boolean,
+	autoexec = true
+): I.CFG {
 	let cfg = `cl_draw_only_deathnotices 1`;
 	let file = 'hud';
 
@@ -28,8 +35,8 @@ function createCFG(customRadar: boolean, customKillfeed: boolean, afx: boolean, 
 		file += '_killfeed';
 		cfg += `\ncl_drawhud_force_deathnotices -1`;
 	}
-	if(customKillfeed || aco){
-		if(aco) file += '_aco';
+	if (customKillfeed || aco) {
+		if (aco) file += '_aco';
 		cfg += `\nmirv_pgl url "ws://localhost:${port}/socket.io/?EIO=3&transport=websocket"`;
 		cfg += `\nmirv_pgl start`;
 	}
