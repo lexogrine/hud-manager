@@ -151,7 +151,7 @@
 			const arModule = await import(arModuleURL);
 			currentARModule = arModule;
 			const { startARModule } = arModule;
-			startARModule(scene, camera, renderers, GSI)
+			startARModule(scene, camera, renderers, GSI, actions);
 		});
 		socketio.emit('get_active_hlae_hud');
 

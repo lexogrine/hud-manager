@@ -176,7 +176,7 @@ exports.updateMatch = (match) => new Promise(res => {
 exports.reverseSide = async () => {
     const io = await socket_1.ioPromise;
     const matches = await exports.getActiveGameMatches();
-    const current = matches.find(match => match.current && match.game === __1.customer.game);
+    const current = matches.find(match => match.current);
     if (!current)
         return;
     if (current.vetos.filter(veto => veto.teamId).length > 0 && !socket_1.GSI.last) {

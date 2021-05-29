@@ -189,7 +189,8 @@ export const updateMatch = (match: Match) =>
 export const reverseSide = async () => {
 	const io = await ioPromise;
 	const matches = await getActiveGameMatches();
-	const current = matches.find(match => match.current && match.game === customer.game);
+	const current = matches.find(match => match.current);
+
 	if (!current) return;
 	if (current.vetos.filter(veto => veto.teamId).length > 0 && !GSI.last) {
 		return;

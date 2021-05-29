@@ -3,10 +3,23 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getBestArea = exports.getActiveAreas = void 0;
+exports.getBestArea = exports.getActiveAreasSorted = void 0;
 const polygon_1 = require("../polygon");
 const areas_1 = __importDefault(require("../areas"));
-exports.getActiveAreas = (mapName, players) => {
+const queue_1 = require("../queue");
+const sortAreas = (a, b) => {
+    if (a.players.length === b.players.length) {
+        return b.priority - a.priority;
+    }
+    return b.players.length - a.players.length;
+};
+const getRandomElement = (array) => {
+    if (!array || !array.length)
+        return null;
+    const index = Math.floor(Math.random() * array.length);
+    return array[index];
+};
+exports.getActiveAreasSorted = (mapName, players) => {
     const config = areas_1.default.areas.find(cfg => cfg.map === mapName);
     if (!config) {
         return [];
@@ -18,23 +31,31 @@ exports.getActiveAreas = (mapName, players) => {
     const areasWithPlayers = config.areas
         .map(area => {
         const cornersWithFirstAtEnd = [...area.polygonCorners, area.polygonCorners[0]];
-        const playersInside = players.filter(player => polygon_1.isInPolygon(player.position, [cornersWithFirstAtEnd]));
+        const playersInside = alivePlayers.filter(player => polygon_1.isInPolygon(player.position, [cornersWithFirstAtEnd]));
         return {
             ...area,
             players: playersInside
         };
     })
-        .filter(area => area.players.length > 0);
+        .filter(area => area.players.length > 0)
+        .sort(sortAreas);
     return areasWithPlayers;
 };
 exports.getBestArea = (mapName, players) => {
-    const active = exports.getActiveAreas(mapName, players).sort((a, b) => b.players.length - a.players.length);
-    if (!active.length)
-        return null;
-    const maxPlayersIncluded = active[0].players.length;
-    const equalAreas = active.filter(area => area.players.length === maxPlayersIncluded);
-    if (equalAreas.length === 1) {
-        return equalAreas[0];
+    const activeAreas = exports.getActiveAreasSorted(mapName, players);
+    const activeAreasConfigs = [];
+    for (const activeArea of activeAreas) {
+        for (const config of activeArea.configs) {
+            activeAreasConfigs.push({ areaName: activeArea.name, config, strength: activeArea.priority + activeArea.players.length });
+        }
     }
-    return equalAreas.sort((a, b) => b.priority - a.priority)[0];
+    if (!activeAreasConfigs.length)
+        return null;
+    const unique = activeAreasConfigs.filter(config => queue_1.isConfigAvailableForUsage(config.areaName, config.config));
+    if (!unique.length) {
+        const maxStrength = Math.max(...activeAreasConfigs.map(config => config.strength));
+        return getRandomElement(activeAreasConfigs.filter(config => config.strength === maxStrength));
+    }
+    const maxStrength = Math.max(...unique.map(config => config.strength));
+    return getRandomElement(unique);
 };

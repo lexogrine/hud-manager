@@ -10,6 +10,7 @@ const electron_1 = require("electron");
 const request_1 = __importDefault(require("request"));
 const del_1 = __importDefault(require("del"));
 const child_process_1 = require("child_process");
+const steam_game_path_1 = require("steam-game-path");
 const DecompressZip = require('decompress-zip');
 const tempDirPath = electron_1.app.getPath('temp');
 const bakkesModDirPath = path_1.default.join(process.env.APPDATA || '', '/bakkesmod/bakkesmod');
@@ -132,9 +133,28 @@ exports.runBakkesMod = async (req, res) => {
         return res.json({ success: false, message: 'BakkesMod needs to be downloaded first' });
     //execFile(bakkesModExePath);
     child_process_1.spawn(bakkesModExePath, { detached: true, stdio: 'ignore' });
-    const startCommand = process.platform === 'win32' ? 'start' : 'xdg-open';
-    // exec(startCommand + ' ' + rocketLeagueUrl);
-    child_process_1.spawn(startCommand + ' ' + rocketLeagueUrl, { detached: true, stdio: 'ignore', shell: true });
+    // Try Steam first
+    let useSteam = true;
+    let gamePath = null;
+    try {
+        gamePath = steam_game_path_1.getGamePath(252950);
+    }
+    catch {
+        useSteam = false;
+    }
+    if (!gamePath || !gamePath.steam || !gamePath.steam.path || !gamePath.game || !gamePath.game.path) {
+        useSteam = false;
+    }
+    const exePath = gamePath?.steam?.path && path_1.default.join(gamePath.steam.path, 'Steam.exe');
+    if (useSteam && gamePath && exePath) {
+        // const gameExePath = path.join(gamePath.game.path, 'Binaries/Win64/RocketLeague.exe');
+        const steam = child_process_1.spawn(`"${exePath}"`, ['-applaunch 252950'], { detached: true, shell: true, stdio: 'ignore' });
+        steam.unref();
+    }
+    else {
+        const startCommand = process.platform === 'win32' ? 'start' : 'xdg-open';
+        child_process_1.spawn(startCommand + ' ' + rocketLeagueUrl, { detached: true, stdio: 'ignore', shell: true });
+    }
 };
 exports.installBakkesModData = async (req, res) => {
     if (!fs_1.default.existsSync(bakkesModDataDownloadFilePath))

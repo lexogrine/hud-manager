@@ -195,7 +195,6 @@ export const installSosPlugin: express.RequestHandler = async (req, res) => {
 		return res.json({ success: false, message: 'SOS plugin needs to be downloaded first' });
 
 	if (fs.existsSync(sosPluginExtractPath)) {
-		//@ts-ignore
 		await del(sosPluginExtractPath, { force: true, expandDirectories: true });
 		await del(sosPluginExtractPath, { force: true });
 	}
@@ -210,7 +209,6 @@ export const installSosPlugin: express.RequestHandler = async (req, res) => {
 			if (!verifyPluginList()) {
 				fs.appendFileSync(bakkesModConfigPath, '\n' + sosPluginConfig + '\n');
 			}
-			//@ts-ignore
 			await del(sosPluginExtractPath, { force: true, expandDirectories: true });
 			await del(sosPluginExtractPath, { force: true });
 			return res.json({ success: true });
