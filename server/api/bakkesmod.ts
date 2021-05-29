@@ -155,9 +155,10 @@ export const runBakkesMod: express.RequestHandler = async (req, res) => {
 		useSteam = false
 	}
 
-	if (useSteam) {
+	const exePath = gamePath?.steam?.path && path.join(gamePath.steam.path, 'Steam.exe');
+
+	if (useSteam && gamePath && exePath) {
 		// const gameExePath = path.join(gamePath.game.path, 'Binaries/Win64/RocketLeague.exe');
-		const exePath = path.join(gamePath.steam.path, 'Steam.exe');
 		
 		const steam = spawn(`"${exePath}"`, ['-applaunch 252950'], { detached: true, shell: true, stdio: 'ignore' })
 		steam.unref();
