@@ -75,40 +75,40 @@ const Navbar = ({ activeTab, toggle, files }: IProps) => {
 				<ContextData.Consumer>
 					{data =>
 						!data?.customer?.license?.type ||
-							data.customer?.license.type === 'free' ||
-							data.customer.license.type === 'personal' ? (
-								<Tip
-									id="aco_nav"
-									label={
-										<NavItem className="hover-pointer">
-											<NavLink
-												active={activeTab === 'aco'}
-												disabled
-												onClick={() => {
-													toggle('aco');
-												}}
-											>
-												<img src={Tabs.ACO} alt="ACO" />
-												<div>{t('navbar.aco')}</div>
-											</NavLink>
-										</NavItem>
-									}
+						data.customer?.license.type === 'free' ||
+						data.customer.license.type === 'personal' ? (
+							<Tip
+								id="aco_nav"
+								label={
+									<NavItem className="hover-pointer">
+										<NavLink
+											active={activeTab === 'aco'}
+											disabled
+											onClick={() => {
+												toggle('aco');
+											}}
+										>
+											<img src={Tabs.ACO} alt="ACO" />
+											<div>{t('navbar.aco')}</div>
+										</NavLink>
+									</NavItem>
+								}
+							>
+								{t('navbar.professionalOnly')}
+							</Tip>
+						) : (
+							<NavItem className="hover-pointer">
+								<NavLink
+									active={activeTab === 'aco'}
+									onClick={() => {
+										toggle('aco');
+									}}
 								>
-									{t('navbar.professionalOnly')}
-								</Tip>
-							) : (
-								<NavItem className="hover-pointer">
-									<NavLink
-										active={activeTab === 'aco'}
-										onClick={() => {
-											toggle('aco');
-										}}
-									>
-										<img src={Tabs.ACO} alt="ACO" />
-										<div>{t('navbar.aco')}</div>
-									</NavLink>
-								</NavItem>
-							)
+									<img src={Tabs.ACO} alt="ACO" />
+									<div>{t('navbar.aco')}</div>
+								</NavLink>
+							</NavItem>
+						)
 					}
 				</ContextData.Consumer>
 				<NavItem className="hover-pointer">
@@ -146,5 +146,5 @@ const Navbar = ({ activeTab, toggle, files }: IProps) => {
 			</NavItem>
 		</Nav>
 	);
-}
+};
 export default Navbar;
