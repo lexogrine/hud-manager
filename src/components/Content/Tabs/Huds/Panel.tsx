@@ -20,7 +20,7 @@ export default class ActionPanel extends React.Component<IProps, IState> {
 		super(props);
 		this.state = {
 			form: {},
-			active: (props.hud.panel && props.hud.panel[0].name) || ''
+			active: props.hud.panel?.[0]?.name || ''
 		};
 	}
 	changeForm = (section: string, name: string, type: I.PanelInputType) => (e: any) => {
@@ -154,7 +154,7 @@ export default class ActionPanel extends React.Component<IProps, IState> {
 		const { cxt } = this.props;
 		const { teams, matches, players } = cxt;
 		const { form, active } = this.state;
-		if (!active || active !== section.name) return null;
+		if (!active || active !== section.name || section.ar) return null;
 		return (
 			<div key={section.label} className="custom_form">
 				<div className="section_name">{section.label}</div>
@@ -231,7 +231,7 @@ export default class ActionPanel extends React.Component<IProps, IState> {
 											.sort((a, b) => (a.username < b.username ? -1 : 1))
 											.map(player => (
 												<option value={player._id} key={player._id}>
-													{player.username}
+													{player.firstName} &quot;{player.username}&quot; {player.lastName}
 												</option>
 											))}
 									</Input>

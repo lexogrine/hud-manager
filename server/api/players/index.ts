@@ -1,5 +1,5 @@
 import db from './../../../init/database';
-import { Player } from '../../../types/interfaces';
+import { Player, AvailableGames } from '../../../types/interfaces';
 
 const { players } = db;
 
@@ -9,7 +9,7 @@ export async function getPlayerById(id: string, avatar = false): Promise<Player 
 			if (err) {
 				return res(null);
 			}
-			if (!avatar && player && player.avatar) delete player.avatar;
+			if (!avatar && player && player.avatar) player.avatar = '';
 			return res(player);
 		});
 	});
@@ -20,7 +20,7 @@ export async function getPlayerBySteamId(steamid: string, avatar = false): Promi
 			if (err) {
 				return res(null);
 			}
-			if (!avatar && player && player.avatar) delete player.avatar;
+			if (!avatar && player && player.avatar) player.avatar = '';
 			return res(player);
 		});
 	});
@@ -32,6 +32,29 @@ export const getPlayersList = (query: any) =>
 			if (err) {
 				return res([]);
 			}
-			return res(players);
+			return res([...players].sort((a, b) => (a.username > b.username ? 1 : -1)));
+		});
+	});
+
+export const replaceLocalPlayers = (newPlayers: Player[], game: AvailableGames, existing: string[]) =>
+	new Promise<boolean>(res => {
+		const or: any[] = [
+			{ game, _id: { $nin: existing } },
+			{ game, _id: { $in: newPlayers.map(player => player._id) } }
+		];
+		if (game === 'csgo') {
+			or.push(
+				{ game: { $exists: false }, _id: { $nin: existing } },
+				{ game: { $exists: false }, _id: { $in: newPlayers.map(player => player._id) } }
+			);
+		}
+		players.remove({ $or: or }, { multi: true }, (err, n) => {
+			if (err) {
+				return res(false);
+			}
+			console.log('removed', n, 'players');
+			players.insert(newPlayers, (err, docs) => {
+				return res(!err);
+			});
 		});
 	});

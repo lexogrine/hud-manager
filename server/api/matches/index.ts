@@ -1,22 +1,31 @@
-import { Match, RoundData } from '../../../types/interfaces';
-import { GSI } from './../../sockets';
+import { Match, RoundData, AvailableGames } from '../../../types/interfaces';
+import { GSI, ioPromise } from './../../socket';
 import db from './../../../init/database';
-import socketio from 'socket.io';
 import { getTeamById } from './../teams';
 import uuidv4 from 'uuid/v4';
-import { CSGO, RoundOutcome } from 'csgogsi';
+import { CSGO, RoundOutcome } from 'csgogsi-socket';
+import { customer } from '..';
 
 const matchesDb = db.matches;
 
-export const getMatches = (): Promise<Match[]> => {
+export const getMatches = (query: any): Promise<Match[]> => {
 	return new Promise(res => {
-		matchesDb.find({}, (err: Error, matches: Match[]) => {
+		matchesDb.find(query, (err: Error, matches: Match[]) => {
 			if (err) {
 				return res([]);
 			}
 			return res(matches);
 		});
 	});
+};
+
+export const getActiveGameMatches = (): Promise<Match[]> => {
+	const game = customer.game;
+	const $or: any[] = [{ game }];
+	if (game === 'csgo') {
+		$or.push({ game: { $exists: false } });
+	}
+	return getMatches({ $or });
 };
 
 export async function getMatchById(id: string): Promise<Match | null> {
@@ -56,24 +65,24 @@ export const updateMatches = async (updateMatches: Match[]) => {
 		const right = await getTeamById(currents[0].right.id || '');
 
 		if (left && left._id) {
-			GSI.setTeamOne({
+			GSI.teams.left = {
 				id: left._id,
 				name: left.name,
 				country: left.country,
 				logo: left.logo,
 				map_score: currents[0].left.wins,
 				extra: left.extra
-			});
+			};
 		}
 		if (right && right._id) {
-			GSI.setTeamTwo({
+			GSI.teams.right = {
 				id: right._id,
 				name: right.name,
 				country: right.country,
 				logo: right.logo,
 				map_score: currents[0].right.wins,
 				extra: right.extra
-			});
+			};
 		}
 	}
 
@@ -92,29 +101,32 @@ export const addMatch = (match: Match) =>
 			match.id = uuidv4();
 		}
 		match.current = false;
-		matchesDb.insert(match, (err, doc) => {
+		matchesDb.insert(match, async (err, doc) => {
 			if (err) return res(null);
+			/* if (validateCloudAbility()) {
+				await addResource(customer.game as AvailableGames, 'matches', doc);
+			} */
 			return res(doc);
 		});
 	});
 
 export const deleteMatch = (id: string) =>
 	new Promise(res => {
-		matchesDb.remove({ id }, err => {
+		matchesDb.remove({ id }, async err => {
 			if (err) return res(false);
+			/* if (validateCloudAbility()) {
+				await deleteResource(customer.game as AvailableGames, 'matches', id);
+			} */
 			return res(true);
 		});
 	});
 
-export const getCurrent = () =>
-	new Promise<Match | null>(res => {
-		matchesDb.findOne({ current: true }, (err, match) => {
-			if (err || !match) {
-				return res(null);
-			}
-			return res(match);
-		});
-	});
+export const getCurrent = async () => {
+	const activeGameMatches = await getActiveGameMatches();
+
+	return activeGameMatches.find(match => match.current);
+};
+
 /*
 export const setCurrent = (id: string) =>
 	new Promise(res => {
@@ -135,7 +147,7 @@ export const updateMatch = (match: Match) =>
 			matchesDb.update(
 				{
 					$where: function () {
-						return this.current && this.id !== match.id;
+						return this.current && this.id !== match.id && this.game === match.game;
 					}
 				},
 				{ $set: { current: false } },
@@ -145,25 +157,28 @@ export const updateMatch = (match: Match) =>
 					const right = await getTeamById(match.right.id || '');
 
 					if (left && left._id) {
-						GSI.setTeamOne({
+						GSI.teams.left = {
 							id: left._id,
 							name: left.name,
 							country: left.country,
 							logo: left.logo,
 							map_score: match.left.wins,
 							extra: left.extra
-						});
+						};
 					}
 					if (right && right._id) {
-						GSI.setTeamTwo({
+						GSI.teams.right = {
 							id: right._id,
 							name: right.name,
 							country: right.country,
 							logo: right.logo,
 							map_score: match.right.wins,
 							extra: right.extra
-						});
+						};
 					}
+					/* if (validateCloudAbility()) {
+						await updateResource(customer.game as AvailableGames, 'matches', match);
+					} */
 					if (err) return res(false);
 					return res(true);
 				}
@@ -171,9 +186,11 @@ export const updateMatch = (match: Match) =>
 		});
 	});
 
-export const reverseSide = async (io: socketio.Server) => {
-	const matches = await getMatches();
+export const reverseSide = async () => {
+	const io = await ioPromise;
+	const matches = await getActiveGameMatches();
 	const current = matches.find(match => match.current);
+
 	if (!current) return;
 	if (current.vetos.filter(veto => veto.teamId).length > 0 && !GSI.last) {
 		return;
@@ -234,7 +251,7 @@ export const updateRound = async (game: CSGO) => {
 		};
 	}
 
-	const matches = await getMatches();
+	const matches = await getActiveGameMatches();
 	const match = matches.find(match => match.current);
 
 	if (!match) return;
@@ -260,3 +277,19 @@ export const updateRound = async (game: CSGO) => {
 
 	return updateMatch(match);
 };
+
+export const replaceLocalMatches = (newMatches: Match[], game: AvailableGames) =>
+	new Promise<boolean>(res => {
+		const or: any[] = [{ game }];
+		if (game === 'csgo') {
+			or.push({ game: { $exists: false } });
+		}
+		matchesDb.remove({ $or: or }, { multi: true }, err => {
+			if (err) {
+				return res(false);
+			}
+			matchesDb.insert(newMatches, (err, docs) => {
+				return res(!err);
+			});
+		});
+	});

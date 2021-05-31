@@ -39,8 +39,8 @@ export const createMainWindow = async (forceDev = false) => {
 			backgroundThrottling: false,
 			devTools: isDev || forceDev
 		},
-		minWidth: 950,
-		minHeight: 874,
+		minWidth: 740,
+		minHeight: 440,
 		width: 1200
 	});
 
@@ -70,7 +70,8 @@ export const createMainWindow = async (forceDev = false) => {
 	// win.setMenu(null);
 	const config = await loadConfig();
 	win.setMenuBarVisibility(false);
-	const startUrl = `http://${internalIP}:${config.port}/`;
+
+	const startUrl = `http://localhost:${config.port}/`;
 
 	win.webContents.on('new-window', (e, url) => {
 		e.preventDefault();

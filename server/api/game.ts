@@ -3,12 +3,19 @@ import path from 'path';
 import { getGamePath } from 'steam-game-path';
 import express from 'express';
 import { loadConfig } from './config';
-import { GSI } from '../sockets';
+import { GSI } from '../socket';
 import { spawn } from 'child_process';
 import { CFG } from '../../types/interfaces';
 import { AFXInterop } from '../../electron';
 
-function createCFG(customRadar: boolean, customKillfeed: boolean, afx: boolean, autoexec = true): CFG {
+function createCFG(
+	customRadar: boolean,
+	customKillfeed: boolean,
+	afx: boolean,
+	port: number,
+	aco: boolean,
+	autoexec = true
+): CFG {
 	let cfg = `cl_draw_only_deathnotices 1`;
 	let file = 'hud';
 
@@ -21,13 +28,16 @@ function createCFG(customRadar: boolean, customKillfeed: boolean, afx: boolean, 
 	if (customKillfeed) {
 		file += '_killfeed';
 		cfg += `\ncl_drawhud_force_deathnotices -1`;
-		cfg += `\nmirv_pgl url "ws://localhost:31337/mirv"`;
+	}
+	if (customKillfeed || aco) {
+		if (aco) file += '_aco';
+		cfg += `\nmirv_pgl url "ws://localhost:${port}/socket.io/?EIO=3&transport=websocket"`;
 		cfg += `\nmirv_pgl start`;
 	}
 	if (afx) {
 		file += '_interop';
 		cfg = 'afx_interop connect 1';
-		cfg += `\nexec ${createCFG(customRadar, customKillfeed, false).file}`;
+		cfg += `\nexec ${createCFG(customRadar, customKillfeed, false, port, aco).file}`;
 	}
 	file += '.cfg';
 	if (!autoexec) {
@@ -78,7 +88,9 @@ export const checkCFGs: express.RequestHandler = async (req, res) => {
 	switcher.forEach(interop => {
 		switcher.forEach(radar => {
 			switcher.forEach(killfeed => {
-				cfgs.push(createCFG(radar, killfeed, interop));
+				switcher.forEach(aco => {
+					cfgs.push(createCFG(radar, killfeed, interop, config.port, aco));
+				});
 			});
 		});
 	});
@@ -94,6 +106,7 @@ export const checkCFGs: express.RequestHandler = async (req, res) => {
 };
 
 export const createCFGs: express.RequestHandler = async (_req, res) => {
+	const config = await loadConfig();
 	let GamePath;
 	try {
 		GamePath = getGamePath(730);
@@ -118,7 +131,9 @@ export const createCFGs: express.RequestHandler = async (_req, res) => {
 		switcher.forEach(interop => {
 			switcher.forEach(radar => {
 				switcher.forEach(killfeed => {
-					cfgs.push(createCFG(radar, killfeed, interop));
+					switcher.forEach(aco => {
+						cfgs.push(createCFG(radar, killfeed, interop, config.port, aco));
+					});
 				});
 			});
 		});
@@ -157,8 +172,8 @@ export const run: express.RequestHandler = async (req, res) => {
 		return res.sendStatus(422);
 	}
 
-	const cfgData: { radar: boolean; killfeed: boolean; afx: boolean; autoexec: boolean } = req.body;
-	const cfg = createCFG(cfgData.radar, cfgData.killfeed, cfgData.afx, cfgData.autoexec);
+	const cfgData: { radar: boolean; killfeed: boolean; afx: boolean; autoexec: boolean; ar: boolean } = req.body;
+	const cfg = createCFG(cfgData.radar, cfgData.killfeed, cfgData.afx, config.port, cfgData.autoexec);
 
 	const exec = cfg.file ? `+exec ${cfg.file}` : '';
 
@@ -186,7 +201,7 @@ export const run: express.RequestHandler = async (req, res) => {
 	}
 
 	const args = [];
-	const afxURL = `http://localhost:${config.port}/hlae.html`;
+	const afxURL = !cfgData.ar ? `http://localhost:${config.port}/hlae.html` : `http://localhost:${config.port}/ar/`;
 	if (!isHLAE) {
 		args.push('-applaunch 730');
 		if (exec) {
@@ -209,7 +224,11 @@ export const run: express.RequestHandler = async (req, res) => {
 		const steam = spawn(`"${exePath}"`, args, { detached: true, shell: true, stdio: 'ignore' });
 		steam.unref();
 		if (cfgData.afx && !AFXInterop.process) {
-			const process = spawn(`${config.afxCEFHudInteropPath}`, [`--url=${afxURL}`], { stdio: 'ignore' });
+			const process = spawn(
+				`${config.afxCEFHudInteropPath}`,
+				[`--url=${afxURL}`, '--enable-experimental-web-platform-features', '--afx-no-window'],
+				{ stdio: 'ignore' }
+			);
 			AFXInterop.process = process;
 		}
 	} catch (e) {

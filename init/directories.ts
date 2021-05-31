@@ -17,7 +17,17 @@ export function checkDirectories() {
 	const mapFile = path.join(app.getPath('userData'), 'maps.json');
 
 	if (!fs.existsSync(mapFile)) {
-		const maps = ['de_mirage', 'de_dust2', 'de_inferno', 'de_nuke', 'de_train', 'de_overpass', 'de_vertigo'];
+		const maps = [
+			'de_mirage',
+			'de_dust2',
+			'de_inferno',
+			'de_nuke',
+			'de_train',
+			'de_overpass',
+			'de_vertigo',
+			'de_cache',
+			'de_ancient'
+		];
 		fs.writeFileSync(mapFile, JSON.stringify(maps));
 	}
 }

@@ -1,12 +1,24 @@
 import express, { RequestHandler } from 'express';
-import socketio from 'socket.io';
 import { app } from 'electron';
 import path from 'path';
 import fs from 'fs';
 import * as M from './index';
+import { ioPromise } from '../../socket';
+import { customer } from '..';
 
 export const getMatchesRoute: express.RequestHandler = async (req, res) => {
-	const matches = await M.getMatches();
+	const game = customer.game;
+	const $or: any[] = [{ game }];
+	if (game === 'csgo') {
+		$or.push({ game: { $exists: false } });
+	}
+	const matches = (await M.getMatches({ $or })).map(match => {
+		if ('full' in req.query) return match;
+		return {
+			...match,
+			vetos: match.vetos.map(veto => ({ ...veto, game: undefined }))
+		};
+	});
 	return res.json(matches);
 };
 
@@ -24,6 +36,7 @@ export const getMatchRoute: express.RequestHandler = async (req, res) => {
 };
 
 export const addMatchRoute: RequestHandler = async (req, res) => {
+	req.body.game = customer.game;
 	const match = await M.addMatch(req.body);
 	return res.sendStatus(match ? 200 : 500);
 };
@@ -43,18 +56,33 @@ export const deleteMatchRoute: RequestHandler = async (req, res) => {
 	return res.sendStatus(match ? 200 : 500);
 };
 
-export const updateMatchRoute = (io: socketio.Server): RequestHandler => async (req, res) => {
+export const updateMatchRoute: RequestHandler = async (req, res) => {
+	const io = await ioPromise;
 	const match = await M.updateMatch(req.body);
 	io.emit('match');
 	return res.sendStatus(match ? 200 : 500);
 };
 
 export const getMaps: express.RequestHandler = (req, res) => {
-	const defaultMaps = ['de_mirage', 'de_dust2', 'de_inferno', 'de_nuke', 'de_train', 'de_overpass', 'de_vertigo'];
+	const defaultMaps = [
+		'de_mirage',
+		'de_dust2',
+		'de_inferno',
+		'de_nuke',
+		'de_train',
+		'de_overpass',
+		'de_vertigo',
+		'de_ancient'
+	];
 	const mapFilePath = path.join(app.getPath('userData'), 'maps.json');
 	try {
 		const maps = JSON.parse(fs.readFileSync(mapFilePath, 'utf8'));
 		if (Array.isArray(maps)) {
+			for (const defaultMap of defaultMaps) {
+				if (!maps.includes(defaultMap)) {
+					maps.push(defaultMap);
+				}
+			}
 			return res.json(maps);
 		}
 		return res.json(defaultMaps);

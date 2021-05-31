@@ -8,6 +8,9 @@ import { socket } from './../components/Content/Tabs/Live/Live';
 import LoginRegisterModal from './LoginRegisterModal';
 import ElectronOnly from './../components/ElectronOnly';
 import { hash } from '../hash';
+import GamePicker from './GamePicker';
+import { AvailableGames, CloudSyncStatus } from '../../types/interfaces';
+import SyncModal from './SyncModal';
 
 declare let window: any;
 const isElectron = config.isElectron;
@@ -15,14 +18,18 @@ const fakeRequire = () => ({ ipcRenderer: null });
 if (!isElectron) {
 	window.require = fakeRequire;
 }
-const { ipcRenderer } = window.require('electron');
 
 interface IState {
 	data: IContextData;
 	loading: boolean;
 	loadingLogin: boolean;
+	loadingGame: boolean;
 	loginError: string;
 	version: string;
+	picked: null | AvailableGames;
+	synchronizationStatus: CloudSyncStatus | null;
+	isSyncModalOpen: boolean;
+	config: I.ExtendedConfig | null;
 }
 export default class Layout extends React.Component<{}, IState> {
 	constructor(props: {}) {
@@ -39,30 +46,80 @@ export default class Layout extends React.Component<{}, IState> {
 						this.loadTeams(),
 						this.loadMatch(),
 						this.loadTournaments(),
-						this.getCustomFields()
+						this.getCustomFields(),
+						this.loadConfig()
 					]).then(this.rehash);
 				},
 				fields: { players: [], teams: [] },
-				hash: ''
+				hash: '',
+				game: 'csgo'
 			},
 			loginError: '',
 			loadingLogin: false,
 			loading: true,
-			version: '-'
+			loadingGame: true,
+			version: '-',
+			picked: null,
+			synchronizationStatus: null,
+			isSyncModalOpen: false,
+			config: null
 		};
 	}
 	async componentDidMount() {
 		//const socket = io.connect(`${config.isDev ? config.apiAddress : '/'}`);
+		api.games.getCurrent().then(result => {
+			const { data } = this.state;
+			data.game = result.game;
+			this.setState({
+				loadingGame: false,
+				picked: result.game,
+				data
+			});
+		});
 		await this.getVersion();
 		this.loadUser();
 		socket.on('match', (fromVeto?: boolean) => {
 			if (fromVeto) this.loadMatch();
 		});
+		socket.on('banned', () => {
+			this.logout();
+		});
+		socket.on('db_update', this.state.data.reload);
+
+		socket.on('config', () => {
+			this.loadConfig();
+		});
 	}
+	loadConfig = async () => {
+		const cfg = await api.config.get();
+
+		this.setState({ config: cfg });
+	};
+	setSyncOpen = (sync: boolean) => {
+		this.setState({ isSyncModalOpen: sync });
+	};
 	rehash = () => {
 		this.setState(state => {
 			state.data.hash = hash();
 			return state;
+		});
+	};
+	setGame = (game: AvailableGames) => {
+		const { data } = this.state;
+		data.game = game;
+		this.setState({ picked: game, data }, this.sync);
+	};
+	clearGame = () => {
+		this.setState({ picked: null });
+	};
+	sync = () => {
+		if (!this.state.picked) return;
+		api.games.startServices(this.state.picked).then(response => {
+			this.setState({ synchronizationStatus: response.result });
+			this.setSyncOpen(response.result !== 'ALL_SYNCED');
+			if (response.result === 'ALL_SYNCED') {
+				this.state.data.reload();
+			}
 		});
 	};
 	getCustomFields = async () => {
@@ -99,6 +156,7 @@ export default class Layout extends React.Component<{}, IState> {
 	};
 	loadTeams = async () => {
 		const teams = await api.teams.get();
+		if (!teams) return;
 		const { data } = this.state;
 		data.teams = teams;
 		if (teams) {
@@ -114,6 +172,7 @@ export default class Layout extends React.Component<{}, IState> {
 	};
 	loadMatch = async () => {
 		const matches = await api.match.get();
+		if (!matches) return;
 		const { data } = this.state;
 		data.matches = matches;
 		if (matches) {
@@ -128,39 +187,40 @@ export default class Layout extends React.Component<{}, IState> {
 			this.setState({ data });
 		}
 	};
-	minimize = () => {
-		if (!ipcRenderer) return;
-		ipcRenderer.send('min');
-	};
-	maximize = () => {
-		if (!ipcRenderer) return;
-		ipcRenderer.send('max');
-	};
 	logout = async () => {
 		await api.user.logout();
 		this.loadUser();
 	};
-	close = () => {
-		if (!ipcRenderer) return;
-		ipcRenderer.send('close');
-	};
 	setLoading = (loading: boolean, loginError?: string) => {
 		this.setState({ loadingLogin: loading, loginError: loginError || '' });
 	};
+	toggleSync = async () => {
+		const cfg = await api.config.get();
+		cfg.sync = !cfg.sync;
+
+		await api.config.update(cfg);
+		await this.loadConfig();
+		this.sync();
+	};
 	render() {
 		const { Provider } = ContextData;
-		const { loading, data, loadingLogin, loginError, version } = this.state;
+		const {
+			loading,
+			data,
+			loadingLogin,
+			loginError,
+			version,
+			loadingGame,
+			isSyncModalOpen,
+			synchronizationStatus,
+			config
+		} = this.state;
+		const available =
+			data.customer?.license?.type === 'professional' || data.customer?.license?.type === 'enterprise';
+		const active = Boolean(available && config?.sync);
 		return (
 			<Provider value={this.state.data}>
 				<div className={`loaded ${isElectron ? 'electron' : ''}`}>
-					<div className="window-bar">
-						<div className="window-drag-bar">
-							<div className="title-bar">Lexogrine HUD Manager</div>
-						</div>
-						<div onClick={this.minimize} className="app-control minimize"></div>
-						<div onClick={this.maximize} className="app-control maximize"></div>
-						<div onClick={this.close} className="app-control close"></div>
-					</div>
 					{data.customer ? (
 						<div className={`license-status ${isElectron ? 'electron' : ''}`}>
 							{data.customer.license.type} {version}
@@ -171,16 +231,27 @@ export default class Layout extends React.Component<{}, IState> {
 							</ElectronOnly>
 						</div>
 					) : null}
-					{<div className={`loading-container ${loading ? '' : 'hide'}`}>Loading...</div>}
+					{<div className={`loading-container ${loading || loadingGame ? '' : 'hide'}`}>Loading...</div>}
 					<LoginRegisterModal
 						isOpen={!data.customer}
 						loading={loadingLogin}
 						setLoading={this.setLoading}
 						loadUser={this.loadUser}
 						error={loginError}
-						version={version}
 					/>
-					<Content />
+					<SyncModal
+						isOpen={isSyncModalOpen}
+						setOpen={this.setSyncOpen}
+						syncStatus={synchronizationStatus}
+						reload={this.state.data.reload}
+					/>
+					<GamePicker isOpen={Boolean(data.customer && !this.state.picked)} setGame={this.setGame} />
+					<Content
+						active={active}
+						available={available}
+						toggleSync={this.toggleSync}
+						clearGame={this.clearGame}
+					/>
 				</div>
 			</Provider>
 		);

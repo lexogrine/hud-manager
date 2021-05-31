@@ -9,6 +9,8 @@ const fs_1 = __importDefault(require("fs"));
 const ip_1 = __importDefault(require("ip"));
 const public_ip_1 = __importDefault(require("public-ip"));
 const internal_ip_1 = __importDefault(require("internal-ip"));
+const electron_1 = require("../../electron");
+const socket_1 = require("../socket");
 const configs = database_1.default.config;
 exports.publicIP = null;
 exports.internalIP = internal_ip_1.default.v4.sync() || ip_1.default.address();
@@ -18,8 +20,21 @@ public_ip_1.default
     exports.publicIP = ip;
 })
     .catch();
-const defaultConfig = { steamApiKey: '', token: '', port: 1349, hlaePath: '', afxCEFHudInteropPath: '' };
+const defaultConfig = {
+    steamApiKey: '',
+    token: '',
+    port: 1349,
+    hlaePath: '',
+    afxCEFHudInteropPath: '',
+    sync: true
+};
 exports.loadConfig = async () => {
+    if (!exports.publicIP) {
+        try {
+            exports.publicIP = await public_ip_1.default.v4();
+        }
+        catch { }
+    }
     return new Promise(res => {
         configs.find({}, async (err, config) => {
             if (err) {
@@ -55,13 +70,15 @@ exports.getConfig = async (_req, res) => {
     const response = { ...config, ip: exports.internalIP };
     return res.json(response);
 };
-exports.updateConfig = (io) => async (req, res) => {
+exports.updateConfig = async (req, res) => {
+    const io = await socket_1.ioPromise;
     const updated = {
         steamApiKey: req.body.steamApiKey,
         port: Number(req.body.port),
         token: req.body.token,
         hlaePath: req.body.hlaePath,
-        afxCEFHudInteropPath: req.body.afxCEFHudInteropPath
+        afxCEFHudInteropPath: req.body.afxCEFHudInteropPath,
+        sync: !!req.body.sync
     };
     const config = await exports.setConfig(updated);
     if (!config) {
@@ -71,7 +88,7 @@ exports.updateConfig = (io) => async (req, res) => {
     return res.json(config);
 };
 exports.setConfig = async (config) => new Promise(res => {
-    configs.update({}, { $set: config }, {}, async (err) => {
+    configs.update({}, { $set: config }, { multi: true }, async (err) => {
         if (err) {
             return res(defaultConfig);
         }
@@ -89,11 +106,18 @@ exports.verifyUrl = async (url) => {
     if (!cfg) {
         return false;
     }
-    const bases = [`http://${exports.internalIP}:${cfg.port}`, `http://${exports.publicIP}:${cfg.port}`];
-    if (process.env.DEV === 'true') {
+    const bases = [
+        `http://${exports.internalIP}:${cfg.port}`,
+        `http://${exports.publicIP}:${cfg.port}`,
+        `http://localhost:${cfg.port}`
+    ];
+    if (electron_1.isDev) {
         bases.push(`http://localhost:3000/?port=${cfg.port}`);
     }
     if (bases.find(base => url.startsWith(`${base}/dev`))) {
+        return true;
+    }
+    if (bases.find(base => url.startsWith(`${base}/ar/drawing.html`))) {
         return true;
     }
     const base = bases.find(base => url.startsWith(base));

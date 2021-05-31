@@ -20,7 +20,7 @@ export default class App extends React.Component<any, IState> {
 			if (url === this.state.hudURL) return;
 			this.setState({ hudURL: url });
 		});
-		socket.emit('get_active_hlae');
+		//socket.emit('get_active_hlae');
 		const url = new URL(window.location.href);
 		const isHLAEGUI = url.searchParams.get('hlaegui');
 		if (isHLAEGUI !== null) document.body.classList.add('hlaegui');

@@ -3,7 +3,7 @@ import { Modal, ModalHeader, ModalBody, Button } from 'reactstrap';
 import { hash } from '../../../../hash';
 import * as I from './../../../../api/interfaces';
 import WinnerCrown from './../../../../styles/winnerCrown.png';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
 	isOpen: boolean;
@@ -12,13 +12,12 @@ interface Props {
 	saveScore: any;
 	teams: I.Team[];
 	setWinner: any;
-	t: any;
 }
 
-class EditScoreModal extends React.Component<Props> {
-	renderTeamScore = (team: I.Team | undefined, score: number) => {
+const EditScoreModal = ({ isOpen, toggle, veto, saveScore, teams, setWinner }: Props) => {
+	const { t } = useTranslation();
+	const renderTeamScore = (team: I.Team | undefined, score: number) => {
 		if (!team) return null;
-		const { veto, saveScore, setWinner, t } = this.props;
 		const isWinner = veto && veto.winner && veto.winner === team._id;
 		return (
 			<div key={team._id} className="team-score-container">
@@ -48,22 +47,19 @@ class EditScoreModal extends React.Component<Props> {
 			</div>
 		);
 	};
-	render() {
-		const { veto, teams, toggle, isOpen } = this.props;
-		const score = veto.score;
-		return (
-			<Modal isOpen={isOpen} toggle={toggle} className={'veto_modal'}>
-				<ModalHeader className="bordered" toggle={toggle}>
-					{veto.mapName.toUpperCase()}
-				</ModalHeader>
-				<ModalBody>
-					<div className="score-editor">
-						{teams.map(team => this.renderTeamScore(team, (score && score[team._id]) || 0))}
-					</div>
-				</ModalBody>
-			</Modal>
-		);
-	}
-}
+	const score = veto.score;
+	return (
+		<Modal isOpen={isOpen} toggle={toggle} className={'veto_modal'}>
+			<ModalHeader className="bordered" toggle={toggle}>
+				{veto.mapName.toUpperCase()}
+			</ModalHeader>
+			<ModalBody>
+				<div className="score-editor">
+					{teams.map(team => renderTeamScore(team, (score && score[team._id]) || 0))}
+				</div>
+			</ModalBody>
+		</Modal>
+	);
+};
 
-export default withTranslation()(EditScoreModal);
+export default EditScoreModal;

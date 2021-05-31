@@ -79,7 +79,7 @@ async function startManager() {
     directories.checkDirectories();
     const server = await server_1.default();
     const argv = args_1.default(process.argv);
-    mainProcess(server, argv.dev, !argv.noGUI);
+    mainProcess(server, argv.dev || exports.isDev, !argv.noGUI);
 }
 const lock = electron_1.app.requestSingleInstanceLock();
 if (!lock && !process.argv.includes('--renderer')) {

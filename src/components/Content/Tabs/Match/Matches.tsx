@@ -34,7 +34,8 @@ class Matches extends Component<
 			right: { id: null, wins: 0 },
 			matchType: 'bo1',
 			vetos: [],
-			startTime: 0
+			startTime: 0,
+			game: this.props.cxt.game
 		};
 
 		for (let i = 0; i < 7; i++) {

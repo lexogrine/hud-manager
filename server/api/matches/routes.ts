@@ -1,14 +1,15 @@
-import express from 'express';
+import { app } from '../..';
 import * as M from './middlewares';
+import { verifyGame } from '../user';
 
-const initRoute = (router: express.Router, io: SocketIO.Server) => {
-	router.route('/api/match').get(M.getMatchesRoute).post(M.addMatchRoute);
+const initRoute = () => {
+	app.route('/api/match').get(verifyGame, M.getMatchesRoute).post(verifyGame, M.addMatchRoute);
 
-	router.route('/api/match/current').get(M.getCurrentMatchRoute);
+	app.route('/api/match/current').get(verifyGame, M.getCurrentMatchRoute);
 
-	router.route('/api/match/:id').get(M.getMatchRoute).patch(M.updateMatchRoute(io)).delete(M.deleteMatchRoute);
+	app.route('/api/match/:id').get(M.getMatchRoute).patch(M.updateMatchRoute).delete(M.deleteMatchRoute);
 
-	router.route('/api/maps').get(M.getMaps);
+	app.route('/api/maps').get(M.getMaps);
 };
 
 export default initRoute;

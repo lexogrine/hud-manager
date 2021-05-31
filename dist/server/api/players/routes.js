@@ -19,12 +19,14 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const __1 = require("../..");
 const P = __importStar(require("./middlewares"));
-const initRoute = (router) => {
-    router.route('/api/players').get(P.getPlayers).post(P.addPlayer);
-    router.route('/api/players/fields').get(P.getFields).patch(P.updateFields);
-    router.route('/api/players/:id').get(P.getPlayers).patch(P.updatePlayer).delete(P.deletePlayer);
-    router.route('/api/players/avatar/:id').get(P.getAvatarFile);
-    router.route('/api/players/avatar/steamid/:steamid').get(P.getAvatarURLBySteamID);
+const user_1 = require("../user");
+const initRoute = () => {
+    __1.app.route('/api/players').get(user_1.verifyGame, P.getPlayers).post(user_1.verifyGame, P.addPlayer);
+    __1.app.route('/api/players/fields').get(P.getFields).patch(P.updateFields);
+    __1.app.route('/api/players/:id').get(P.getPlayers).patch(P.updatePlayer).delete(P.deletePlayer);
+    __1.app.route('/api/players/avatar/:id').get(P.getAvatarFile);
+    __1.app.route('/api/players/avatar/steamid/:steamid').get(P.getAvatarURLBySteamID);
 };
 exports.default = initRoute;

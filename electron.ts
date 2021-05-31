@@ -68,7 +68,7 @@ async function startManager() {
 	directories.checkDirectories();
 	const server = await init();
 	const argv = args(process.argv);
-	mainProcess(server, argv.dev, !argv.noGUI);
+	mainProcess(server, argv.dev || isDev, !argv.noGUI);
 }
 
 const lock = app.requestSingleInstanceLock();

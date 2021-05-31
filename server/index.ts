@@ -1,16 +1,16 @@
 /* eslint-disable no-console */
 import express from 'express';
-import sockets from './sockets';
-import http from 'http';
-import cors from 'cors';
 import getPort, { makeRange } from 'get-port';
-import router from './api';
-import path from 'path';
 import { app as application } from 'electron';
 import fs from 'fs';
+import cors from 'cors';
+import path from 'path';
+import http from 'http';
+import { ioPromise } from './socket';
+import './sockets/index';
+import router from './api';
 import { loadConfig, setConfig } from './api/config';
 import { Config } from '../types/interfaces';
-import { initiateCustomFields } from './api/fields';
 
 const parsePayload = (config: Config): express.RequestHandler => (req, res, next) => {
 	try {
@@ -36,13 +36,15 @@ const parsePayload = (config: Config): express.RequestHandler => (req, res, next
 	}
 };
 
+export const app = express();
+export const server = http.createServer(app);
+
+app.use(express.urlencoded({ extended: true }));
+app.use(express.raw({ limit: '100Mb', type: 'application/json' }));
+app.use(cors({ origin: '*', credentials: true }));
+
 export default async function init() {
 	let config = await loadConfig();
-
-	await initiateCustomFields();
-
-	const app = express();
-	const server = http.createServer(app);
 
 	let port = await getPort({ port: config.port });
 	if (port !== config.port) {
@@ -51,17 +53,11 @@ export default async function init() {
 		config = await setConfig({ ...config, port: port });
 	}
 	console.log(`Server listening on ${port}`);
-
-	app.use(express.urlencoded({ extended: true }));
-	app.use(express.raw({ limit: '100Mb', type: 'application/json' }));
-
 	app.use(parsePayload(config));
 
-	app.use(cors({ origin: '*', credentials: true }));
+	await router();
 
-	const io = sockets(server, app);
-
-	router(app, io);
+	const io = await ioPromise;
 
 	fs.watch(path.join(application.getPath('home'), 'HUDs'), () => {
 		io.emit('reloadHUDs');

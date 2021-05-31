@@ -27,8 +27,22 @@ const electron_1 = require("electron");
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
 const M = __importStar(require("./index"));
+const socket_1 = require("../../socket");
+const __1 = require("..");
 exports.getMatchesRoute = async (req, res) => {
-    const matches = await M.getMatches();
+    const game = __1.customer.game;
+    const $or = [{ game }];
+    if (game === 'csgo') {
+        $or.push({ game: { $exists: false } });
+    }
+    const matches = (await M.getMatches({ $or })).map(match => {
+        if ('full' in req.query)
+            return match;
+        return {
+            ...match,
+            vetos: match.vetos.map(veto => ({ ...veto, game: undefined }))
+        };
+    });
     return res.json(matches);
 };
 exports.getMatchRoute = async (req, res) => {
@@ -42,6 +56,7 @@ exports.getMatchRoute = async (req, res) => {
     return res.json(match);
 };
 exports.addMatchRoute = async (req, res) => {
+    req.body.game = __1.customer.game;
     const match = await M.addMatch(req.body);
     return res.sendStatus(match ? 200 : 500);
 };
@@ -56,17 +71,32 @@ exports.deleteMatchRoute = async (req, res) => {
     const match = await M.deleteMatch(req.params.id);
     return res.sendStatus(match ? 200 : 500);
 };
-exports.updateMatchRoute = (io) => async (req, res) => {
+exports.updateMatchRoute = async (req, res) => {
+    const io = await socket_1.ioPromise;
     const match = await M.updateMatch(req.body);
     io.emit('match');
     return res.sendStatus(match ? 200 : 500);
 };
 exports.getMaps = (req, res) => {
-    const defaultMaps = ['de_mirage', 'de_dust2', 'de_inferno', 'de_nuke', 'de_train', 'de_overpass', 'de_vertigo'];
+    const defaultMaps = [
+        'de_mirage',
+        'de_dust2',
+        'de_inferno',
+        'de_nuke',
+        'de_train',
+        'de_overpass',
+        'de_vertigo',
+        'de_ancient'
+    ];
     const mapFilePath = path_1.default.join(electron_1.app.getPath('userData'), 'maps.json');
     try {
         const maps = JSON.parse(fs_1.default.readFileSync(mapFilePath, 'utf8'));
         if (Array.isArray(maps)) {
+            for (const defaultMap of defaultMaps) {
+                if (!maps.includes(defaultMap)) {
+                    maps.push(defaultMap);
+                }
+            }
             return res.json(maps);
         }
         return res.json(defaultMaps);

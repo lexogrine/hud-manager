@@ -149,14 +149,14 @@
 				"console": "Console",
 				"add": "ADD HUD",
 				"runGame": "RUN GAME",
-				"pauseTestData": "PAUSE TEST DATA",
-				"runTestData": "RUN TEST DATA",
+				"pauseTest": "PAUSE TEST DATA",
+				"runTest": "RUN TEST DATA",
 				"openDirectory": "Open HUDs directory"
 			},
 			"warning": {
-				"specifyHLAEPath": "TODO: Put SpecifyHLAEPath here",
-				"specifyAFXInteropPath": "TODO: Put SpecifyAFXInteropPath here",
-				"specifyAFXModeInfo": "TODO: Put SpecifyAFXModeInfo here"
+				"specifyHLAEPath": "Specify HLAE path in Settings in order to use custom killfeeds",
+				"specifyAFXInteropPath": "Specify AFX Interop path in Settings in order to use AFX mode",
+				"specifyAFXModeInfo": "When using AFX mode, after joining the match click on the SET button - no need to start the overlay."
 			}
 		}
 	}

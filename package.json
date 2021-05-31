@@ -1,20 +1,21 @@
 {
   "name": "hud-manager",
-  "version": "1.10.1",
+  "version": "2.0.2",
   "homepage": "./",
   "description": "Lexogrine HUD Manager",
   "author": "Lexogrine",
   "private": true,
   "dependencies": {
     "@node-steam/vdf": "^2.1.0",
+    "archiver": "^5.3.0",
     "big-integer": "^1.6.48",
     "bootstrap": "^4.4.1",
     "cors": "^2.8.5",
     "cross-env": "^6.0.3",
-    "csgogsi": "^1.3.3",
     "csgogsi-generator": "^1.0.1",
-    "csgogsi-socket": "^1.3.3",
+    "csgogsi-socket": "^2.1.0",
     "decompress-zip": "^0.2.2",
+    "del": "^6.0.0",
     "electron-updater": "^4.3.5",
     "express": "^4.17.1",
     "fetch-cookie": "^0.11.0",
@@ -33,7 +34,7 @@
     "node-media-server": "^2.2.4",
     "portscanner": "^2.2.0",
     "public-ip": "^4.0.3",
-    "pug": "^2.0.4",
+    "pug": "^3.0.2",
     "query-string": "^6.12.1",
     "react": "^16.13.1",
     "react-color": "^2.19.3",
@@ -42,10 +43,10 @@
     "react-scripts": "^4.0.0",
     "react-select-country-list": "^2.1.2",
     "reactstrap": "^8.4.1",
-    "registry-js": "^1.13.0",
-    "socket.io": "^2.3.0",
-    "socket.io-client": "^2.3.0",
-    "steam-game-path": "^1.1.1",
+    "registry-js": "^1.14.0",
+    "simple-websockets": "^1.0.4",
+    "socket.io": "^4.0.0",
+    "steam-game-path": "^2.0.0",
     "tough-cookie": "^4.0.0",
     "tough-cookie-file-store": "^2.0.2",
     "typescript": "^3.8.3",
@@ -58,7 +59,14 @@
     "productName": "Lexogrine HUD Manager",
     "win": {
       "icon": "./dist/build/favicon.ico",
-      "target": "NSIS"
+      "target": [
+        {
+          "target": "NSIS",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
     },
     "linux": {
       "icon": "icon.png",
@@ -72,7 +80,6 @@
       "license": "license.txt"
     },
     "files": [
-      "boltobserv/**/*",
       "dist/**/*",
       "package.json",
       {
@@ -100,7 +107,7 @@
     "start": "react-scripts start",
     "build": "npm run transpile && react-scripts build && rm -rf dist/build &&  mv build dist",
     "test": "react-scripts test",
-    "transpile": "rm -rf dist/boltobserv && cp -r boltobserv dist && tsc -p tsconfig.electron.json",
+    "transpile": "tsc -p tsconfig.electron.json",
     "devElectron": "cross-env DEV=true electron ./",
     "electron": "npm run transpile && npm run devElectron",
     "dev": "concurrently \"cross-env BROWSER=none npm start\" \"npm run electron\"",
@@ -128,6 +135,7 @@
     ]
   },
   "devDependencies": {
+    "@types/archiver": "^5.1.0",
     "@types/cors": "^2.8.6",
     "@types/express": "^4.17.6",
     "@types/http-proxy-middleware": "^0.19.3",
@@ -143,10 +151,9 @@
     "@types/react-dom": "^17.0.0",
     "@types/reactstrap": "^8.4.2",
     "@types/request": "^2.48.4",
-    "@types/socket.io": "^2.1.4",
-    "@types/socket.io-client": "^1.4.32",
     "@types/tough-cookie-file-store": "^2.0.1",
     "@types/uuid": "^3.4.9",
+    "@types/ws": "^7.4.0",
     "@typescript-eslint/eslint-plugin": "^3.8.0",
     "@typescript-eslint/parser": "^3.8.0",
     "concurrently": "^5.2.0",

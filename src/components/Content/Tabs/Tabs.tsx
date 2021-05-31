@@ -6,51 +6,56 @@ import Matches from './Match/Matches';
 import Huds from './Huds/Huds';
 import Tournaments from './Tournaments/Tournaments';
 import Config from './Config/Config';
+import AR from './AR/AR';
 import Credits from './Credits/Credits';
 import Live from './Live/Live';
 import { ContextData } from './../../Context';
+import ACO from './ACO/ACO';
 
 interface IProps {
 	activeTab: string;
 	data: any;
-	toggle: Function;
+	toggle: (tab: string, data?: any) => void;
 	gsiCheck: Function;
 }
 
-export default class Tabs extends React.Component<IProps> {
-	render() {
-		const { Consumer } = ContextData;
-		return (
-			<Consumer>
-				{data => (
-					<TabContent activeTab={this.props.activeTab}>
-						<TabPane tabId="teams">
-							<Teams cxt={data}></Teams>
-						</TabPane>
-						<TabPane tabId="players">
-							<Players cxt={data} data={this.props.data}></Players>
-						</TabPane>
-						<TabPane tabId="create_match">
-							<Matches cxt={data}></Matches>
-						</TabPane>
-						<TabPane tabId="huds">
-							<Huds cxt={data}></Huds>
-						</TabPane>
-						<TabPane tabId="tournaments">
-							<Tournaments cxt={data}></Tournaments>
-						</TabPane>
-						<TabPane tabId="live">
-							<Live toggle={this.props.toggle} cxt={data}></Live>
-						</TabPane>
-						<TabPane tabId="config">
-							<Config cxt={data} toggle={this.props.toggle} gsiCheck={this.props.gsiCheck}></Config>
-						</TabPane>
-						<TabPane tabId="credits">
-							<Credits></Credits>
-						</TabPane>
-					</TabContent>
-				)}
-			</Consumer>
-		);
-	}
-}
+const Tabs = ({ activeTab, data, toggle, gsiCheck }: IProps) => (
+	<ContextData.Consumer>
+		{cxt => (
+			<TabContent activeTab={activeTab}>
+				<TabPane tabId="teams">
+					<Teams cxt={cxt}></Teams>
+				</TabPane>
+				<TabPane tabId="players">
+					<Players cxt={cxt} data={data}></Players>
+				</TabPane>
+				<TabPane tabId="create_match">
+					<Matches cxt={cxt}></Matches>
+				</TabPane>
+				<TabPane tabId="huds">
+					<Huds cxt={cxt} toggle={toggle}></Huds>
+				</TabPane>
+				<TabPane tabId="tournaments">
+					<Tournaments cxt={cxt}></Tournaments>
+				</TabPane>
+				<TabPane tabId="live">
+					<Live toggle={toggle} cxt={cxt}></Live>
+				</TabPane>
+				<TabPane tabId="config">
+					<Config cxt={cxt} toggle={toggle} gsiCheck={gsiCheck}></Config>
+				</TabPane>
+				<TabPane tabId="ar">
+					<AR cxt={cxt} toggle={toggle}></AR>
+				</TabPane>
+				<TabPane tabId="aco">
+					<ACO></ACO>
+				</TabPane>
+				<TabPane tabId="credits">
+					<Credits></Credits>
+				</TabPane>
+			</TabContent>
+		)}
+	</ContextData.Consumer>
+);
+
+export default Tabs;

@@ -1,62 +1,66 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Col } from 'reactstrap';
 import api from '../../api/api';
 import Navbar from './Navbar/Navbar';
 import Tabs from './Tabs/Tabs';
 
-interface IState {
-	activeTab: string;
-	data: any;
-	gsi: boolean;
-	configs: boolean;
-}
+const Content = ({
+	active,
+	available,
+	toggleSync,
+	clearGame
+}: {
+	available: boolean;
+	active: boolean;
+	toggleSync: () => void;
+	clearGame: () => void;
+}) => {
+	const [activeTab, setTab] = useState('huds');
+	const [data, setData] = useState(null);
+	const [gsi, setGSI] = useState(true);
+	const [configs, setConfigs] = useState(true);
 
-export default class Content extends React.Component<{}, IState> {
-	constructor(props: {}) {
-		super(props);
-		this.state = {
-			activeTab: 'huds',
-			data: null,
-			gsi: true,
-			configs: true
-		};
-	}
-
-	checkFiles = async () => {
+	const checkFiles = async () => {
 		const responses = await Promise.all([api.gamestate.check(), api.cfgs.check()]);
-		return this.setState({ gsi: responses[0].success, configs: responses[1].success });
+		setGSI(responses[0].success);
+		setConfigs(responses[1].success);
 	};
 
-	toggle = (tab: string, data?: any) => {
-		if (this.state.activeTab !== tab) {
-			this.setState({
-				activeTab: tab,
-				data: data || null
-			});
+	const toggle = (tab: string, data?: any) => {
+		if (activeTab !== tab) {
+			setTab(tab);
+			setData(data);
 		}
 	};
+	useEffect(() => {
+		checkFiles();
+	}, []);
 
-	componentDidMount() {
-		this.checkFiles();
-	}
-
-	render() {
-		return (
-			<div className="main-container">
-				<Navbar
-					activeTab={this.state.activeTab}
-					toggle={this.toggle}
-					files={this.state.gsi && this.state.configs}
-				/>
-				<Col>
-					<Tabs
-						activeTab={this.state.activeTab}
-						data={this.state.data}
-						toggle={this.toggle}
-						gsiCheck={this.checkFiles}
-					/>
-				</Col>
+	return (
+		<div className="main-container">
+			<Navbar activeTab={activeTab} toggle={toggle} files={gsi && configs} />
+			<Col>
+				<Tabs activeTab={activeTab} data={data} toggle={toggle} gsiCheck={checkFiles} />
+			</Col>
+			<div className="top_buttons">
+				<div className={`sync_button`} onClick={clearGame}>
+					CHANGE GAME
+				</div>
+				<a
+					className={`sync_button ${active ? 'active' : ''}`}
+					onClick={() => {
+						if (!available) return;
+						toggleSync();
+					}}
+					href={!available ? 'https://lexogrine.com/manager/register' : undefined}
+					rel={'noopener noreferrer'}
+					target={!available ? '_blank' : undefined}
+				>
+					{active ? 'CLOUD IS ACTIVE' : 'CLOUD IS NOT ACTIVE'}
+				</a>
 			</div>
-		);
-	}
-}
+		</div>
+	);
+};
+
+export default Content;

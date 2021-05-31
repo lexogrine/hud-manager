@@ -1,9 +1,9 @@
 import express from 'express';
 import * as T from './';
-import { getMatches } from '../matches';
+import { getActiveGameMatches } from '../matches';
 
 export const getCurrentTournament: express.RequestHandler = async (req, res) => {
-	const matches = await getMatches();
+	const matches = await getActiveGameMatches();
 	const current = matches.find(match => match.current);
 	if (!current) {
 		return res.json({ tournament: null });
@@ -25,7 +25,7 @@ export const addTournament: express.RequestHandler = async (req, res) => {
 
 	tournament.name = name;
 	tournament.logo = logo;
-
+	// @ts-ignore
 	delete tournament._id;
 
 	const tournamentWithId = await T.addTournament(tournament);

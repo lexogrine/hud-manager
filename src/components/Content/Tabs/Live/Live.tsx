@@ -1,15 +1,22 @@
-import React, { Component } from 'react';
+import React, { useEffect, useState } from 'react';
 import config from './../../../../api/config';
 import { Col, Row } from 'reactstrap';
-import GSISocket, { CSGO, Player, Team, PlayerExtension } from 'csgogsi-socket';
+import { GSISocket, CSGO, Player, Team, PlayerExtension } from 'csgogsi-socket';
 import { IContextData } from '../../../Context';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 export const { GSI, socket } = GSISocket(`${config.isDev ? config.apiAddress : '/'}`, 'update');
 
-class Teamboard extends Component<{ players: Player[]; team: Team; toggle: Function; cxt: IContextData }> {
-	remapPlayer = (player: Player): PlayerExtension => {
-		const { players } = this.props.cxt;
+interface Props {
+	players: Player[];
+	team: Team;
+	toggle: (tab: string, data?: any) => void;
+	cxt: IContextData;
+}
+
+const Teamboard = ({ players, team, toggle, cxt }: Props) => {
+	const mapPlayer = (player: Player): PlayerExtension => {
+		const { players } = cxt;
 		const data = players.filter(origin => origin.steamid === player.steamid)[0];
 		if (!data) {
 			return {
@@ -33,104 +40,94 @@ class Teamboard extends Component<{ players: Player[]; team: Team; toggle: Funct
 		};
 	};
 
-	render() {
-		const { cxt, toggle, team } = this.props;
-		return (
-			<Col s={12} md={6}>
-				<Row className={`scoreboard_score ${this.props.team.orientation} no-margin-row ${team.side}`}>
-					<Col s={12} md={10} className="team_name">
-						{team.name}
-					</Col>
-					<Col s={12} md={2} className="score">
-						{team.score}
-					</Col>
-				</Row>
-				<div className={`scoreboard_container ${this.props.team.orientation}`}>
-					{this.props.players.map(this.remapPlayer).map(player => (
-						<div
-							className="scoreboard_player"
-							key={player.steamid}
-							onClick={() => toggle('players', { steamid: player.steamid })}
-						>
-							<div className="name">
-								{player.name}{' '}
-								<i className="material-icons">
-									{cxt.players.map(player => player.steamid).includes(player.steamid)
-										? 'check_circle_outline'
-										: 'edit'}
-								</i>
-							</div>
-							<div className="steamid">{player.steamid}</div>
+	return (
+		<Col s={12} md={6}>
+			<Row className={`scoreboard_score ${team.orientation} no-margin-row ${team.side}`}>
+				<Col s={12} md={10} className="team_name">
+					{team.name}
+				</Col>
+				<Col s={12} md={2} className="score">
+					{team.score}
+				</Col>
+			</Row>
+			<div className={`scoreboard_container ${team.orientation}`}>
+				{players.map(mapPlayer).map(player => (
+					<div
+						className="scoreboard_player"
+						key={player.steamid}
+						onClick={() => toggle('players', { steamid: player.steamid })}
+					>
+						<div className="name">
+							{player.name}{' '}
+							<i className="material-icons">
+								{cxt.players.map(player => player.steamid).includes(player.steamid)
+									? 'check_circle_outline'
+									: 'edit'}
+							</i>
 						</div>
-					))}
-				</div>
-			</Col>
+						<div className="steamid">{player.steamid}</div>
+					</div>
+				))}
+			</div>
+		</Col>
+	);
+};
+
+const Live = ({ toggle, cxt }: { toggle: (tab: string, data?: any) => void; cxt: IContextData }) => {
+	const [game, setGame] = useState<CSGO | null>(null);
+
+	const { t } = useTranslation();
+
+	useEffect(() => {
+		GSI.on('data', setGame);
+	}, []);
+
+	if (!game)
+		return (
+			<React.Fragment>
+				<div className="tab-title-container">Live</div>
+				<div className="tab-content-container full-scroll">No game is currently live.</div>
+			</React.Fragment>
 		);
-	}
-}
+	const teams = [game.map.team_ct, game.map.team_t];
+	const left = teams.find(team => team.orientation === 'left');
+	const right = teams.find(team => team.orientation === 'right');
 
-interface IProps {
-	toggle: Function;
-	cxt: IContextData;
-	t: any;
-}
-
-interface IState {
-	game: CSGO | null;
-}
-
-class Live extends Component<IProps, IState> {
-	constructor(props: IProps) {
-		super(props);
-		this.state = {
-			game: null
-		};
-	}
-	async componentDidMount() {
-		GSI.on('data', game => {
-			this.setState({ game });
-		});
-	}
-	render() {
-		const { game } = this.state;
-		const t = this.props.t;
-		if (!game)
-			return (
-				<React.Fragment>
-					<div className="tab-title-container">{t('live.header')}</div>
-					<div className="tab-content-container full-scroll">{t('live.noGame')}</div>
-				</React.Fragment>
-			);
-		const teams = [game.map.team_ct, game.map.team_t];
-		const left = teams.filter(team => team.orientation === 'left')[0];
-		const right = teams.filter(team => team.orientation === 'right')[0];
+	if (!left || !right) {
 		return (
 			<React.Fragment>
 				<div className="tab-title-container">{t('live.header')}</div>
-				<div className="tab-content-container full-scroll">
-					<Row>
-						<Col md="12" className="config-container no-margin" style={{ flexDirection: 'column' }}>
-							<div>{t('live.tip')}</div>
-						</Col>
-					</Row>
-					<Row>
-						<Teamboard
-							players={game.players.filter(player => player.team.orientation === 'left')}
-							cxt={this.props.cxt}
-							team={left}
-							toggle={this.props.toggle}
-						/>
-						<Teamboard
-							players={game.players.filter(player => player.team.orientation === 'right')}
-							cxt={this.props.cxt}
-							team={right}
-							toggle={this.props.toggle}
-						/>
-					</Row>
-				</div>
+				<div className="tab-content-container full-scroll">{t('live.noGame')}</div>
 			</React.Fragment>
 		);
 	}
-}
 
-export default withTranslation()(Live);
+	return (
+		<React.Fragment>
+			<div className="tab-title-container">{t('live.header')}</div>
+			<div className="tab-content-container full-scroll">
+				<Row>
+					<Col md="12" className="config-container no-margin" style={{ flexDirection: 'column' }}>
+						<div>{t('live.tip')}</div>
+					</Col>
+				</Row>
+				<Row>
+					<Teamboard
+						players={game.players.filter(player => player.team.orientation === 'left')}
+						cxt={cxt}
+						team={left}
+						toggle={toggle}
+					/>
+					<Teamboard
+						players={game.players.filter(player => player.team.orientation === 'right')}
+						cxt={cxt}
+						team={right}
+						toggle={toggle}
+					/>
+				</Row>
+			</div>
+		</React.Fragment>
+	);
+};
+
+export default Live;
