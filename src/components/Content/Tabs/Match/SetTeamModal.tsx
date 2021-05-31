@@ -38,7 +38,6 @@ const SetTeamModal = ({ isOpen, toggle, side, teams, team, onSave }: Props) => {
 
 	const { t } = useTranslation();
 
-
 	return (
 		<Modal isOpen={isOpen} toggle={toggle} className={'veto_modal'}>
 			<ModalHeader toggle={toggle}>{t('match.teamNumber', { num: side === 'left' ? 1 : 2 })}</ModalHeader>

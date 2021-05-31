@@ -49,7 +49,7 @@ export default class DragFileInput extends React.Component<Props, State> {
 	};
 
 	clear = () => {
-		this.props.onChange(([] as unknown) as FileList);
+		this.props.onChange([] as unknown as FileList);
 	};
 
 	render() {

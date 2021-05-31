@@ -19,7 +19,10 @@ const Credits = () => {
 				<Row>
 					<Col>
 						<CreditsEntry title={t('credits.applicationAndAPI')} people={['osztenkurden']} />
-						<CreditsEntry title={t('credits.testingAndDebugging')} people={['osztenkurden', 'Komodo', 'Loxar']} />
+						<CreditsEntry
+							title={t('credits.testingAndDebugging')}
+							people={['osztenkurden', 'Komodo', 'Loxar']}
+						/>
 						<CreditsEntry title={t('credits.initialLayoutIdea')} people={['Drożdżu']} />
 						<CreditsEntry
 							title={t('credits.feedbackAndIdeas')}
@@ -30,6 +33,6 @@ const Credits = () => {
 			</div>
 		</>
 	);
-}
+};
 
 export default Credits;

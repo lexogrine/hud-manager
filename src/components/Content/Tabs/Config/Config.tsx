@@ -128,7 +128,7 @@ class Config extends React.Component<IProps, IState> {
 	import = (data: any, callback: any) => async () => {
 		try {
 			await api.files.sync(data);
-		} catch { }
+		} catch {}
 		this.setState({ data: {}, conflict: { teams: 0, players: 0 }, importModalOpen: false }, callback);
 	};
 	importCheck = (callback: any) => (files: FileList) => {
@@ -159,7 +159,7 @@ class Config extends React.Component<IProps, IState> {
 					importModalOpen: true,
 					data: db
 				});
-			} catch { }
+			} catch {}
 		};
 	};
 	download = (target: 'gsi' | 'cfgs' | 'db') => {
@@ -458,8 +458,8 @@ class Config extends React.Component<IProps, IState> {
 									{update.installing
 										? t('settings.updater.installing')
 										: update.available
-											? t('settings.updater.install')
-											: t('settings.updater.latest')}
+										? t('settings.updater.install')
+										: t('settings.updater.latest')}
 								</Button>
 							</Col>
 						</ElectronOnly>

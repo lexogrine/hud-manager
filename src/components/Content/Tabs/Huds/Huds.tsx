@@ -303,7 +303,9 @@ class Huds extends React.Component<IProps, IState> {
 												// disabled={!this.state.enableTest}
 												onClick={api.game.runTest}
 											>
-												{!this.state.enableTest ? t('huds.config.pauseTest') : t('huds.config.runTest')}
+												{!this.state.enableTest
+													? t('huds.config.pauseTest')
+													: t('huds.config.runTest')}
 											</Button>
 											<Button
 												className="round-btn run-game"
