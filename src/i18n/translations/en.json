@@ -61,6 +61,13 @@
 			"noGame": "No game is currently live.",
 			"tip": "Players currently in match, click to add a player to the player list."
 		},
+		"navbar":{
+			"huds":"HUDs",
+			"aco":"ACO",
+			"ar":"AR",
+			"live":"Live",
+			"professionalOnly":"Professional only"
+		},
 		"tournaments":{
 			"edit":"Edit a tournament",
 			"create":"Create new tournament",
