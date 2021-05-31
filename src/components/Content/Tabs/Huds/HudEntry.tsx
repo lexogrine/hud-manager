@@ -190,7 +190,7 @@ const HudEntry = ({
 												<img src={Killfeed} className="action" alt="Supports custom killfeed" />
 											}
 										>
-										{t('huds.includes.customKillfeed')}
+											{t('huds.includes.customKillfeed')}
 										</Tip>
 									) : null}
 									{missingFieldsText.length && isLocal ? (

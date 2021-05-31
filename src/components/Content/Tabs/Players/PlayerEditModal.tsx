@@ -229,9 +229,7 @@ const PlayerEditModal = ({
 							imgSrc={avatar}
 							removable
 						/>
-						<FormText color="muted">
-							{t('players.avatarInfo')}
-						</FormText>
+						<FormText color="muted">{t('players.avatarInfo')}</FormText>
 					</FormGroup>
 				</Col>
 			</Row>

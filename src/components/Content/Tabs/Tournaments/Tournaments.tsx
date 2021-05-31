@@ -27,8 +27,8 @@ interface State {
 	};
 }
 
-class Tournaments extends React.Component<{ cxt: IContextData, t: any }, State> {
-	constructor(props: { cxt: IContextData, t: any }) {
+class Tournaments extends React.Component<{ cxt: IContextData; t: any }, State> {
+	constructor(props: { cxt: IContextData; t: any }) {
 		super(props);
 		this.state = {
 			form: {

@@ -96,9 +96,7 @@ class AddTournamentModal extends React.Component<Props, State> {
 									label={t('tournaments.uploadLogo')}
 									imgSrc={logo}
 								/>
-								<FormText color="muted">
-									{t('tournaments.logoInfo')}
-								</FormText>
+								<FormText color="muted">{t('tournaments.logoInfo')}</FormText>
 								{/*<Label for="avatar">Avatar</Label>
                                 <Input type="file" name="avatar" id="avatar" onChange={this.changeHandler} />
                                 <FormText color="muted">

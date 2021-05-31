@@ -13,7 +13,7 @@ interface IProps {
 	section: I.PanelTemplate;
 	hud: string;
 	cxt: IContextData;
-	t: any
+	t: any;
 }
 interface IState {
 	form: any;

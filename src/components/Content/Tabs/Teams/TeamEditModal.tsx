@@ -130,7 +130,9 @@ const TeamEditModal = ({
 		<Modal isOpen={open} toggle={toggle} className="veto_modal">
 			<ModalHeader toggle={toggle}>{t('teams.edit')}</ModalHeader>
 			<ModalBody>
-				<FormText color="muted">{t('common.team')}: {team._id || '--- NONE ---'}</FormText>
+				<FormText color="muted">
+					{t('common.team')}: {team._id || '--- NONE ---'}
+				</FormText>
 				<Row>
 					<Col md="12">
 						<FormGroup>
@@ -184,9 +186,7 @@ const TeamEditModal = ({
 								label={t('teams.uploadLogo')}
 								imgSrc={logo || undefined}
 							/>
-							<FormText color="muted">
-								{t('teams.logoInfo')}
-							</FormText>
+							<FormText color="muted">{t('teams.logoInfo')}</FormText>
 						</FormGroup>
 					</Col>
 				</Row>

@@ -59,7 +59,7 @@ const Content = ({
 					rel={'noopener noreferrer'}
 					target={!available ? '_blank' : undefined}
 				>
-					{active ? t('app.cloud.isActive') : t('app.cloud.isNotAcitve') }
+					{active ? t('app.cloud.isActive') : t('app.cloud.isNotAcitve')}
 				</a>
 			</div>
 		</div>

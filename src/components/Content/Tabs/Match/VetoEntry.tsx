@@ -50,7 +50,11 @@ function generateDescription(veto: I.Veto, t: any, team?: I.Team, secTeam?: I.Te
 	if (!team || !team.name || !secTeam) {
 		return <strong>{t('match.wrongTeamSelected')}</strong>;
 	}
-	let text: string | null = t('match.vetoDescription', { teamName: team.name, vetoType: veto.type, mapName: veto.mapName.replace('de_','')});
+	let text: string | null = t('match.vetoDescription', {
+		teamName: team.name,
+		vetoType: veto.type,
+		mapName: veto.mapName.replace('de_', '')
+	});
 	let sidePick = '';
 	if (secTeam && secTeam.name && veto.side !== 'NO') {
 		sidePick = t('match.vetoSidepick.normal', {
