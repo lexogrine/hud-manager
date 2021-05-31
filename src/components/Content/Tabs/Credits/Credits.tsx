@@ -1,5 +1,6 @@
 import React from 'react';
 import { Row, Col } from 'reactstrap';
+import { useTranslation } from 'react-i18next';
 
 const CreditsEntry = ({ title, people }: { title: string; people: string[] }) => (
 	<div className="credits_segment">
@@ -8,24 +9,30 @@ const CreditsEntry = ({ title, people }: { title: string; people: string[] }) =>
 	</div>
 );
 
-const Credits = () => (
-	<>
-		<div className="tab-title-container">Credits</div>
-		<div className="tab-content-container full-scroll">
-			<Row>
-				<Col>
-					<CreditsEntry title="Application and HUD API" people={['osztenkurden']} />
-					<CreditsEntry title="Testing and Debugging" people={['osztenkurden', 'Komodo', 'Loxar']} />
-					<CreditsEntry title="Custom radar by" people={['boltgolt']} />
-					<CreditsEntry title="Initial Layout Idea" people={['Drożdżu']} />
-					<CreditsEntry
-						title="Feedback & Ideas"
-						people={['boltgolt', 'Komodo', 'TeDY', 'Wiethoofd', 'Laeye', 'Loxar']}
-					/>
-				</Col>
-			</Row>
-		</div>
-	</>
-);
+const Credits = () => {
+	const { t } = useTranslation();
+
+	return (
+		<>
+			<div className="tab-title-container">Credits</div>
+			<div className="tab-content-container full-scroll">
+				<Row>
+					<Col>
+						<CreditsEntry title={t('credits.applicationAndAPI')} people={['osztenkurden']} />
+						<CreditsEntry
+							title={t('credits.testingAndDebugging')}
+							people={['osztenkurden', 'Komodo', 'Loxar']}
+						/>
+						<CreditsEntry title={t('credits.initialLayoutIdea')} people={['Drożdżu']} />
+						<CreditsEntry
+							title={t('credits.feedbackAndIdeas')}
+							people={['boltgolt', 'Komodo', 'TeDY', 'Wiethoofd', 'Laeye', 'Loxar']}
+						/>
+					</Col>
+				</Row>
+			</div>
+		</>
+	);
+};
 
 export default Credits;

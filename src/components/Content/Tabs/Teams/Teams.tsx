@@ -7,6 +7,7 @@ import { IContextData } from './../../../../components/Context';
 import TeamEditModal from './TeamEditModal';
 import TeamListEntry from './Team';
 import CustomFieldsModal from '../../../CustomFields/CustomFieldsModal';
+import { useTranslation } from 'react-i18next';
 
 interface IProps {
 	cxt: IContextData;
@@ -34,6 +35,8 @@ const TeamsTab = ({ cxt }: IProps) => {
 	const [sortByType, setSortByType] = useState<'DESC' | 'ASC'>('ASC');
 
 	const [customFieldForm, setCustomFieldForm] = useState<I.CustomFieldEntry[]>(quickClone(cxt.fields.teams));
+
+	const { t } = useTranslation();
 
 	const clearAvatar = () => {
 		const avatarInput: any = document.getElementById('avatar');
@@ -203,14 +206,14 @@ const TeamsTab = ({ cxt }: IProps) => {
 	return (
 		<Form>
 			<div className="tab-title-container">
-				<div>Teams</div>
+				<div>{t('common.teams')}</div>
 				<Input
 					type="text"
 					name="name"
 					id="team_search"
 					value={search}
 					onChange={searchHandler}
-					placeholder="Search..."
+					placeholder={t('common.search')}
 				/>
 			</div>
 			<TeamEditModal
@@ -240,13 +243,13 @@ const TeamsTab = ({ cxt }: IProps) => {
 				<div className="item-list-entry heading">
 					<div className="picture">Logo</div>
 					<div className="name" onClick={toggleSortBy('name')}>
-						Name
+						{t('common.teamName')}
 					</div>
 					<div className="shortname" onClick={toggleSortBy('shortName')}>
-						Short name
+						{t('common.shortName')}
 					</div>
 					<div className="country" onClick={toggleSortBy('country')}>
-						Country
+						{t('common.country')}
 					</div>
 					{visibleFields.map(field => (
 						<div className="custom-field" key={field._id}>
@@ -255,7 +258,7 @@ const TeamsTab = ({ cxt }: IProps) => {
 					))}
 					<div className="options">
 						<Button className="purple-btn round-btn" onClick={openCustomFields}>
-							Manage
+							{t('common.manage')}
 						</Button>
 					</div>
 				</div>
@@ -272,7 +275,7 @@ const TeamsTab = ({ cxt }: IProps) => {
 				<Row>
 					<Col className="main-buttons-container">
 						<Button color="primary" onClick={add}>
-							+Add Teams
+							{t('teams.addTeam')}
 						</Button>
 					</Col>
 				</Row>

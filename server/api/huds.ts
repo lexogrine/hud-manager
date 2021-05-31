@@ -334,16 +334,18 @@ export const render: express.RequestHandler = (req, res) => {
 	return res.sendFile(path.join(dir, 'index.html'));
 };
 
-export const renderOverlay = (devHUD = false): express.RequestHandler => async (req, res) => {
-	const cfg = await loadConfig();
-	if (!cfg) {
-		return res.sendStatus(500);
-	}
-	if (!devHUD) {
-		return res.send(overlay(`/huds/${req.params.dir}/?port=${cfg.port}&isProd=true`));
-	}
-	return res.send(overlay(`/dev/?port=${cfg.port}`));
-};
+export const renderOverlay =
+	(devHUD = false): express.RequestHandler =>
+	async (req, res) => {
+		const cfg = await loadConfig();
+		if (!cfg) {
+			return res.sendStatus(500);
+		}
+		if (!devHUD) {
+			return res.send(overlay(`/huds/${req.params.dir}/?port=${cfg.port}&isProd=true`));
+		}
+		return res.send(overlay(`/dev/?port=${cfg.port}`));
+	};
 
 export const renderThumbnail: express.RequestHandler = (req, res) => {
 	return res.sendFile(getThumbPath(req.params.dir));

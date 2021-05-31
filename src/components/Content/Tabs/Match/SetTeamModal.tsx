@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, FormGroup, Input } from 'reactstrap';
 import * as I from './../../../../api/interfaces';
+import { useTranslation } from 'react-i18next';
 
 interface TeamData {
 	id: string;
@@ -34,13 +35,16 @@ const SetTeamModal = ({ isOpen, toggle, side, teams, team, onSave }: Props) => {
 		}
 		setForm({ ...form });
 	};
+
+	const { t } = useTranslation();
+
 	return (
 		<Modal isOpen={isOpen} toggle={toggle} className={'veto_modal'}>
-			<ModalHeader toggle={toggle}>TEAM #{side === 'left' ? 1 : 2}</ModalHeader>
+			<ModalHeader toggle={toggle}>{t('common.teamNumber', { num: side === 'left' ? 1 : 2 })}</ModalHeader>
 			<ModalBody>
 				<FormGroup>
 					<Input type="select" name="teams" id="teams" value={form.id} onChange={changeHandler('id')}>
-						<option value={'empty'}>Empty team</option>
+						<option value={'empty'}>{t('match.emptyTeam')}</option>
 						{teams.map(teams => (
 							<option key={teams._id} value={teams._id}>
 								{teams.name}
@@ -59,7 +63,7 @@ const SetTeamModal = ({ isOpen, toggle, side, teams, team, onSave }: Props) => {
 			</ModalBody>
 			<ModalFooter className="no-padding">
 				<Button color="primary" onClick={save} className="modal-save">
-					Save
+					{t('common.save')}
 				</Button>
 			</ModalFooter>
 		</Modal>

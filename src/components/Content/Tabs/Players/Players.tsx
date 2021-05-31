@@ -7,6 +7,7 @@ import { IContextData } from './../../../../components/Context';
 import PlayerEntry from './Player';
 import PlayerEditModal from './PlayerEditModal';
 import CustomFieldsModal from '../../../CustomFields/CustomFieldsModal';
+import { useTranslation } from 'react-i18next';
 
 interface IProps {
 	cxt: IContextData;
@@ -243,18 +244,18 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 	}, [data]);
 
 	const visibleFields = cxt.fields.players.filter(field => field.visible);
-
+	const { t } = useTranslation();
 	return (
 		<Form>
 			<div className="tab-title-container">
-				<div>Players</div>
+				<div>{t('common.players')}</div>
 				<Input
 					type="text"
 					name="name"
 					id="player_search"
 					value={search}
 					onChange={searchHandler}
-					placeholder="Search..."
+					placeholder={t('common.search')}
 				/>
 			</div>
 			<PlayerEditModal
@@ -285,16 +286,16 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 				<div className="item-list-entry heading">
 					<div className="picture">Avatar</div>
 					<div className="realName" onClick={toggleSortBy('firstName')}>
-						Real Name
+						{t('common.realName')}
 					</div>
 					<div className="username" onClick={toggleSortBy('username')}>
-						Username
+						{t('common.nickname')}
 					</div>
 					<div className="team" onClick={toggleSortBy('team')}>
-						Team
+						{t('common.team')}
 					</div>
 					<div className="country" onClick={toggleSortBy('country')}>
-						Country
+						{t('common.country')}
 					</div>
 					{visibleFields.map(field => (
 						<div className="custom-field" key={field._id}>
@@ -303,7 +304,7 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 					))}
 					<div className="options">
 						<Button className="purple-btn round-btn" onClick={openCustomFields}>
-							Manage
+							{t('common.manage')}
 						</Button>
 					</div>
 				</div>
@@ -321,7 +322,7 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 				<Row>
 					<Col className="main-buttons-container">
 						<Button color="primary" onClick={add}>
-							+Add Player
+							{t('players.addPlayer')}
 						</Button>
 					</Col>
 				</Row>

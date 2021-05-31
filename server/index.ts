@@ -12,29 +12,31 @@ import router from './api';
 import { loadConfig, setConfig } from './api/config';
 import { Config } from '../types/interfaces';
 
-const parsePayload = (config: Config): express.RequestHandler => (req, res, next) => {
-	try {
-		if (req.body) {
-			const payload = req.body.toString();
-			const obj = JSON.parse(payload);
-			if (obj.provider && obj.provider.appid === 730) {
-				if (config.token && (!obj.auth || !obj.auth.token)) {
-					return res.sendStatus(200);
+const parsePayload =
+	(config: Config): express.RequestHandler =>
+	(req, res, next) => {
+		try {
+			if (req.body) {
+				const payload = req.body.toString();
+				const obj = JSON.parse(payload);
+				if (obj.provider && obj.provider.appid === 730) {
+					if (config.token && (!obj.auth || !obj.auth.token)) {
+						return res.sendStatus(200);
+					}
+					if (config.token && config.token !== obj.auth.token) {
+						return res.sendStatus(200);
+					}
 				}
-				if (config.token && config.token !== obj.auth.token) {
-					return res.sendStatus(200);
-				}
+				const text = payload
+					.replace(/"(player|owner)":([ ]*)([0-9]+)/gm, '"$1": "$3"')
+					.replace(/(player|owner):([ ]*)([0-9]+)/gm, '"$1": "$3"');
+				req.body = JSON.parse(text);
 			}
-			const text = payload
-				.replace(/"(player|owner)":([ ]*)([0-9]+)/gm, '"$1": "$3"')
-				.replace(/(player|owner):([ ]*)([0-9]+)/gm, '"$1": "$3"');
-			req.body = JSON.parse(text);
+			next();
+		} catch (e) {
+			next();
 		}
-		next();
-	} catch (e) {
-		next();
-	}
-};
+	};
 
 export const app = express();
 export const server = http.createServer(app);

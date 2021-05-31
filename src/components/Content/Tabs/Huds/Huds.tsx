@@ -11,6 +11,7 @@ import DragInput from './../../../DragFileInput';
 import HudEntry from './HudEntry';
 import goBack from './../../../../styles/goBack.png';
 import config from './../../../../api/config';
+import { withTranslation } from 'react-i18next';
 import { GameOnly } from '../Config/Config';
 const isElectron = config.isElectron;
 
@@ -54,6 +55,7 @@ function createCFG(
 
 interface IProps {
 	cxt: IContextData;
+	t: any; // TODO: Add typings. Or don't because the functional version should use useTranslation instead of withTranslation anyway
 	toggle: (tab: string, data?: any) => void;
 }
 
@@ -77,7 +79,7 @@ interface IState {
 	blocked: string[];
 }
 
-export default class Huds extends React.Component<IProps, IState> {
+class Huds extends React.Component<IProps, IState> {
 	constructor(props: IProps) {
 		super(props);
 		this.state = {
@@ -197,6 +199,7 @@ export default class Huds extends React.Component<IProps, IState> {
 	render() {
 		const { killfeed, radar, afx } = this.state.form;
 		const { active, config } = this.state;
+		const t = this.props.t;
 		const available =
 			this.props.cxt.customer?.license?.type === 'professional' ||
 			this.props.cxt.customer?.license?.type === 'enterprise';
@@ -215,13 +218,13 @@ export default class Huds extends React.Component<IProps, IState> {
 		}
 		return (
 			<React.Fragment>
-				<div className="tab-title-container">HUDs</div>
+				<div className="tab-title-container">{t('huds.header')}</div>
 				<div className={`tab-content-container no-padding ${!isElectron ? 'full-scroll' : ''}`}>
 					<GameOnly game="csgo">
 						<Row className="config-container">
 							<Col md="12" className="config-entry wrap">
 								<div className="config-area">
-									<div className="config-description">Radar</div>
+									<div className="config-description">{t('huds.config.customRadar')}</div>
 									<Switch
 										isOn={this.state.form.radar}
 										id="radar-toggle"
@@ -230,7 +233,7 @@ export default class Huds extends React.Component<IProps, IState> {
 									/>
 								</div>
 								<div className="config-area">
-									<div className="config-description">Killfeed or ACO</div>
+									<div className="config-description">{t('huds.config.customKillfeedOrACO')}</div>
 									<Switch
 										isOn={this.state.form.killfeed}
 										id="killfeed-toggle"
@@ -239,7 +242,7 @@ export default class Huds extends React.Component<IProps, IState> {
 									/>
 								</div>
 								<div className="config-area">
-									<div className="config-description">Embedded HUD</div>
+									<div className="config-description">{t('huds.config.embeddedHUD')}</div>
 									<Switch
 										isOn={this.state.form.afx}
 										id="afx-toggle"
@@ -249,7 +252,7 @@ export default class Huds extends React.Component<IProps, IState> {
 								</div>
 								<ElectronOnly>
 									<div className="config-area">
-										<div className="config-description">Play test loop</div>
+										<div className="config-description">{t('huds.config.playTestLoop')}</div>
 										<Switch
 											isOn={this.state.isOnLoop}
 											id="gamelopp-toggle"
@@ -258,7 +261,7 @@ export default class Huds extends React.Component<IProps, IState> {
 									</div>
 								</ElectronOnly>
 								<div className="config-area">
-									<div className="config-description">AR (experimental)</div>
+									<div className="config-description">{t('huds.config.ar')}</div>
 									<Switch
 										isOn={this.state.form.ar}
 										id="ar-toggle"
@@ -267,7 +270,7 @@ export default class Huds extends React.Component<IProps, IState> {
 									/>
 								</div>
 								<div className="config-area">
-									<div className="config-description">Auto-execute</div>
+									<div className="config-description">{t('huds.config.autoexecute')}</div>
 									<Switch
 										isOn={this.state.form.autoexec}
 										id="autoexec-toggle"
@@ -279,12 +282,12 @@ export default class Huds extends React.Component<IProps, IState> {
 							<Col md="12" className="config-entry">
 								<div className="running-game-container">
 									<div>
-										<div className="config-description">Console:</div>
+										<div className="config-description">{t('huds.config.console')}</div>
 										<code className="exec-code">
 											exec {createCFG(radar, killfeed, afx, config.port, killfeed).file}
 										</code>
 										<ElectronOnly>
-											<div className="config-description">OR</div>
+											<div className="config-description">{t('common.or').toUpperCase()}</div>
 											<Button
 												className="round-btn run-game"
 												disabled={
@@ -293,14 +296,16 @@ export default class Huds extends React.Component<IProps, IState> {
 												}
 												onClick={this.runGame}
 											>
-												RUN GAME
+												{t('huds.config.runGame')}
 											</Button>
 											<Button
 												className="round-btn run-game"
 												// disabled={!this.state.enableTest}
 												onClick={api.game.runTest}
 											>
-												{!this.state.enableTest ? 'PAUSE TEST' : 'PLAY TEST'}
+												{!this.state.enableTest
+													? t('huds.config.pauseTest')
+													: t('huds.config.runTest')}
 											</Button>
 											<Button
 												className="round-btn run-game"
@@ -313,9 +318,7 @@ export default class Huds extends React.Component<IProps, IState> {
 									<div className="warning">
 										<ElectronOnly>
 											{(killfeed || afx) && !config.hlaePath ? (
-												<div>
-													Specify HLAE path in Settings in order to use custom killfeeds
-												</div>
+												<div>{t('huds.warning.specifyHLAEPath')}</div>
 											) : null}
 											{killfeed ? (
 												<div>
@@ -324,13 +327,10 @@ export default class Huds extends React.Component<IProps, IState> {
 												</div>
 											) : null}
 											{afx && !config.afxCEFHudInteropPath ? (
-												<div>Specify AFX Interop path in Settings in order to use AFX mode</div>
+												<div>{t('huds.warning.specifyAFXInteropPath')}</div>
 											) : null}
 											{afx && config.afxCEFHudInteropPath && config.hlaePath ? (
-												<div>
-													When using AFX mode, after joining the match click on the SET button
-													- no need to start the overlay.
-												</div>
+												<div>{t('huds.warning.AFXModeInfo')}</div>
 											) : null}
 										</ElectronOnly>
 									</div>
@@ -382,7 +382,12 @@ export default class Huds extends React.Component<IProps, IState> {
 					<Row className="padded">
 						<Col>
 							<Col s={12}>
-								<DragInput id={`hud_zip`} onChange={this.handleZIPs} label="ADD HUD" accept=".zip" />
+								<DragInput
+									id={`hud_zip`}
+									onChange={this.handleZIPs}
+									label={t('huds.config.add')}
+									accept=".zip"
+								/>
 							</Col>
 							{this.state.huds.map(hud => (
 								<HudEntry
@@ -404,7 +409,7 @@ export default class Huds extends React.Component<IProps, IState> {
 						<Row>
 							<Col className="main-buttons-container">
 								<Button onClick={api.huds.openDirectory} color="primary">
-									Open HUD directory
+									{t('huds.config.openDirectory')}
 								</Button>
 							</Col>
 						</Row>
@@ -416,3 +421,5 @@ export default class Huds extends React.Component<IProps, IState> {
 		);
 	}
 }
+
+export default withTranslation()(Huds);

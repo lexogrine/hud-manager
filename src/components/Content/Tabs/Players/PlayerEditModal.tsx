@@ -8,6 +8,7 @@ import countries from './../../countries';
 import { IContextData } from './../../../../components/Context';
 import ColorPicker from '../../../ColorPicker/ColorPicker';
 import { getMatchName } from '../../../../utils';
+import { useTranslation } from 'react-i18next';
 
 interface IProps {
 	open: boolean;
@@ -36,6 +37,7 @@ const PlayerEditModal = ({
 	onExtraChange,
 	cxt
 }: IProps) => {
+	const { t } = useTranslation();
 	let avatar = '';
 	if (player.avatar) {
 		if (player.avatar.includes('api/players/avatar')) {
@@ -138,7 +140,7 @@ const PlayerEditModal = ({
 							id="first_name"
 							onChange={onChange}
 							value={player.firstName}
-							placeholder="First Name"
+							placeholder={t('common.firstName')}
 						/>
 					</FormGroup>
 				</Col>
@@ -152,7 +154,7 @@ const PlayerEditModal = ({
 							id="last_name"
 							onChange={onChange}
 							value={player.lastName}
-							placeholder="Last Name"
+							placeholder={t('common.lastName')}
 						/>
 					</FormGroup>
 				</Col>
@@ -166,7 +168,7 @@ const PlayerEditModal = ({
 							id="nick"
 							onChange={onChange}
 							value={player.username}
-							placeholder="Nickname"
+							placeholder={t('common.nickname')}
 						/>
 					</FormGroup>
 				</Col>
@@ -175,7 +177,7 @@ const PlayerEditModal = ({
 				<Col md="12">
 					<FormGroup>
 						<Input type="select" id="country" name="country" value={player.country} onChange={onChange}>
-							<option value="">Country</option>
+							<option value="">{t('common.country')}</option>
 							{countries.map(option => (
 								<option key={option.value} value={option.value}>
 									{option.label}
@@ -203,7 +205,7 @@ const PlayerEditModal = ({
 				<Col md="12">
 					<FormGroup>
 						<Input type="select" id="player_teams" name="team" value={player.team} onChange={onChange}>
-							<option value="">Team</option>
+							<option value="">{t('common.team')}</option>
 							{teams
 								.concat()
 								.sort((a, b) => (a.name < b.name ? -1 : 1))
@@ -223,13 +225,11 @@ const PlayerEditModal = ({
 							image
 							onChange={onFileChange}
 							id="avatar"
-							label="UPLOAD PROFILE PICTURE"
+							label={t('players.uploadProfile').toUpperCase()}
 							imgSrc={avatar}
 							removable
 						/>
-						<FormText color="muted">
-							Avatar to be used for player images instead of the default from Steam
-						</FormText>
+						<FormText color="muted">{t('players.avatarInfo')}</FormText>
 					</FormGroup>
 				</Col>
 			</Row>
@@ -237,7 +237,7 @@ const PlayerEditModal = ({
 			<Row className="centered">
 				{player._id !== 'empty' ? (
 					<Button className="purple-btn round-btn" onClick={deletePlayer}>
-						Delete
+						{t('common.delete')}
 					</Button>
 				) : null}
 			</Row>
@@ -245,11 +245,11 @@ const PlayerEditModal = ({
 	);
 	return (
 		<Modal isOpen={open} toggle={toggle} className="veto_modal">
-			<ModalHeader toggle={toggle}>Edit a player</ModalHeader>
+			<ModalHeader toggle={toggle}>{t('players.edit')}</ModalHeader>
 			<ModalBody>{playerForm()}</ModalBody>
 			<ModalFooter className="no-padding">
 				<Button color="primary" className="modal-save" onClick={save}>
-					Save
+					{t('common.save')}
 				</Button>
 			</ModalFooter>
 		</Modal>

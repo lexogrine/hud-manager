@@ -3,6 +3,7 @@ import { Modal, ModalHeader, ModalBody, Button } from 'reactstrap';
 import { hash } from '../../../../hash';
 import * as I from './../../../../api/interfaces';
 import WinnerCrown from './../../../../styles/winnerCrown.png';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
 	isOpen: boolean;
@@ -14,6 +15,7 @@ interface Props {
 }
 
 const EditScoreModal = ({ isOpen, toggle, veto, saveScore, teams, setWinner }: Props) => {
+	const { t } = useTranslation();
 	const renderTeamScore = (team: I.Team | undefined, score: number) => {
 		if (!team) return null;
 		const isWinner = veto && veto.winner && veto.winner === team._id;
@@ -23,7 +25,7 @@ const EditScoreModal = ({ isOpen, toggle, veto, saveScore, teams, setWinner }: P
 					<img src={WinnerCrown} />
 				</div>
 				<div className={`team-logo-container`}>
-					<img src={`${team.logo}?hash=${hash()}`} alt="Team Logo"></img>
+					<img src={`${team.logo}?hash=${hash()}`} alt={t('match.scoreModal.teamLogo')}></img>
 				</div>
 				<div className="team-score-edit-container">
 					<div className="add">
@@ -39,7 +41,7 @@ const EditScoreModal = ({ isOpen, toggle, veto, saveScore, teams, setWinner }: P
 						className={`lightblue-btn round-btn ${isWinner ? 'unset' : ''}`}
 						onClick={setWinner(isWinner ? undefined : team._id)}
 					>
-						{isWinner ? 'Unset win' : 'Set win'}
+						{isWinner ? t('match.scoreModal.unsetWin') : t('match.scoreModal.setWin')}
 					</Button>
 				</div>
 			</div>

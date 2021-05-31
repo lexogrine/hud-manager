@@ -5,6 +5,7 @@ import { Button } from 'reactstrap';
 import { IContextData } from '../../../Context';
 import { hash } from '../../../../hash';
 import moment from 'moment';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
 	match: I.Match;
@@ -16,6 +17,7 @@ interface Props {
 
 const MatchEntry = ({ match, teams, cxt, edit, setCurrent }: Props) => {
 	const [isExpanded, setExpanded] = useState(false);
+	const { t } = useTranslation();
 
 	const deleteMatch = async () => {
 		await api.match.delete(match.id);
@@ -35,13 +37,14 @@ const MatchEntry = ({ match, teams, cxt, edit, setCurrent }: Props) => {
 		<div className={`entry-container ${match.current ? 'live' : ''} match-entry`}>
 			<div className={`entry-main ${isExpanded ? 'expanded' : 'collapsed'}`}>
 				<div className="match-name">
-					{(left && left.shortName) || 'Team 1'} VS {(right && right.shortName) || 'Team 2'}
-					<div className="live-indicator">Live</div>
+					{(left && left.shortName) || t('common.teamOne')} {t('common.vs')}{' '}
+					{(right && right.shortName) || t('common.teamTwo')}
+					<div className="live-indicator">{t('common.live')}</div>
 				</div>
 
 				<div className="map-score">
 					<div className={`win-icon ${match.left.wins === boToWinsMap[match.matchType] ? 'active' : ''}`}>
-						WINS
+						{t('match.wins')}
 					</div>
 					{left?.logo ? (
 						<img src={`${left.logo}?hash=${hash()}`} alt={`${left.name} logo`} className="team-logo" />
@@ -49,7 +52,7 @@ const MatchEntry = ({ match, teams, cxt, edit, setCurrent }: Props) => {
 						''
 					)}
 					<div className="score">{match.left.wins}</div>
-					<div className="versus">VS</div>
+					<div className="versus">{t('common.vs')}</div>
 					<div className="score">{match.right.wins}</div>
 					{right?.logo ? (
 						<img src={`${right.logo}?hash=${hash()}`} alt={`${right.name} logo`} className="team-logo" />
@@ -57,7 +60,7 @@ const MatchEntry = ({ match, teams, cxt, edit, setCurrent }: Props) => {
 						''
 					)}
 					<div className={`win-icon ${match.right.wins === boToWinsMap[match.matchType] ? 'active' : ''}`}>
-						WINS
+						{t('match.wins')}
 					</div>
 				</div>
 				<div className="match-date force-no-break">
@@ -75,17 +78,17 @@ const MatchEntry = ({ match, teams, cxt, edit, setCurrent }: Props) => {
 							}}
 						></div>
 						<Button className="round-btn edit-veto " onClick={deleteMatch}>
-							Delete
+							{t('common.delete')}
 						</Button>
 						<Button
 							className="round-btn lightblue-btn edit-veto"
 							id={`match_id_${match.id}`}
 							onClick={() => edit(match)}
 						>
-							Edit
+							{t('common.edit')}
 						</Button>
 						<Button className="purple-btn round-btn edit-veto" onClick={() => setCurrent()}>
-							Set live
+							{t('match.setLive')}
 						</Button>
 					</div>
 				</div>

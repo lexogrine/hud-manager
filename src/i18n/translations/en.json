@@ -1,0 +1,248 @@
+{
+	"translation": {
+		"common": {
+			"or": "or",
+			"save": "Save",
+			"saveAndSend": "Save and send",
+			"loadingSuccess": "Loaded successfully",
+			"loaded": "Loaded",
+			"notLoaded": "Not loaded",
+			"vs": "VS",
+			"noTeam": "No team",
+			"noPlayer": "No player",
+			"noMatch": "No match",
+			"noTournament": "No tournament",
+			"noValue": "No value",
+			"teamOne": "Team One",
+			"teamTwo": "Team Two",
+			"map": "Map",
+			"team":"Team",
+			"players":"Players",
+			"realName":"Real name",
+			"player":"Player",
+			"teams":"Teams",
+			"team1": "Team 1",
+			"team2": "Team 2",
+			"teamNumber": "TEAM #{{num}}",
+			"vetoNumber": "VETO {{num}}",
+			"delete": "Delete",
+			"edit": "Edit",
+			"live": "Live",
+			"match":"Match",
+			"goBack": "Go back",
+			"ct": "CT",
+			"t": "T",
+			"no": "No",
+			"tournaments":"Tournaments",
+			"firstName":"First Name",
+			"lastName":"Last Name",
+			"createNew": "Create New",
+			"nickname":"Nickname",
+			"country":"Country",
+			"manage":"Manage",
+			"teamName":"Team Name",
+			"shortName":"Short Name",
+			"search":"Search..."
+		},
+		"players":{
+			"edit":"Edit a player",
+			"uploadProfile":"Upload profile picture",
+			"avatarInfo":"Avatar to be used for player images instead of the default from Steam",
+			"addPlayer":"Add Player"
+		},
+		"teams":{
+			"edit":"Edit a team",
+			"uploadLogo":"Upload logo",
+			"logoInfo":"Logo to be used for the team, if possible in the given HUD",
+			"addTeam":"Add Team"
+		},
+		"live": {
+			"header": "Live",
+			"noGame": "No game is currently live.",
+			"tip": "Players currently in match, click to add a player to the player list."
+		},
+		"navbar":{
+			"huds":"HUDs",
+			"aco":"ACO",
+			"ar":"AR",
+			"live":"Live",
+			"professionalOnly":"Professional only"
+		},
+		"tournaments":{
+			"edit":"Edit a tournament",
+			"create":"Create new tournament",
+			"name":"Tournament name",
+			"uploadLogo":"Upload tournament logo",
+			"logoInfo":"Logo of the tournament will be available during the match",
+			"singleElimBracket":"Single Elimination Bracket",
+			"doubleElimBracket":"Double Elimination Bracket",
+			"swiss":"Swiss",
+			"soon":"Soon",
+			"amountOfTeams":"Amount of teams",
+			"bindMatch":"Bind match to bracket"
+		},
+		"match": {
+			"matches": "Matches",
+			"live": "Live",
+			"edit": "Edit match",
+			"editTeam": "Edit team",
+			"emptyTeam": "Empty team",
+			"scoreModal": {
+				"unsetWin": "Unset win",
+				"setWin": "Set win",
+				"teamLogo": "Team Logo"
+			},
+			"setLive": "Set live",
+			"tabs": {
+				"ended": "ended",
+				"current": "current",
+				"future": "future"
+			},
+			"columns": {
+				"match": "Match",
+				"score": "Score",
+				"date": "Date",
+				"time": "Time"
+			},
+			"wins": "WINS",
+			"wrongTeamSelected": "Wrong team selected",
+			"vetoType": {
+				"pick": "pick",
+				"ban": "ban",
+				"decider": "decider"
+			},
+			"vetoSide": {
+				"left": "left",
+				"right": "right"
+			},
+			"vetoDescription": "{{teamName}} {{vetoType}}s {{mapName}}",
+			"vetoSidepick": {
+				"normal": ", {{secondTeamName}} chooses {{side}} side",
+				"decider": "{{mapName}} decider"
+			},
+			"pickBothTeams": "Pick both teams to set vetos",
+			"setScore": "Set score",
+			"resetScore": "Reset score",
+			"questionOpponentPick": "Does the opponent pick a side?",
+			"reversedSides": "Reversed sides"
+		},
+		"credits": {
+			"header": "Credits",
+			"applicationAndAPI": "Application and HUD API",
+			"testingAndDebugging": "Testing and Debugging",
+			"customRadarBy": "Custom radar by",
+			"initialLayoutIdea": "Initial Layout Idea",
+			"feedbackAndIdeas": "Feedback & Ideas"
+		},
+		"settings": {
+			"header": "Settings",
+			"gsi": {
+				"loadingAbout": "Loading data about GameState files...",
+				"loadingData": "Loading GameState data...",
+				"loadingFileData": "Loading GameState file data..."
+			},
+			"config": {
+				"loadingAbout": "Loading data about cfg files...",
+				"loadingFileData": "Loading config file data..."
+			},
+			"input": {
+				"steamAPIKey": "Steam API Key",
+				"GSIPort": "GSI Port",
+				"GSIToken": "GSI Token"
+			},
+			"updater": {
+				"version": "Version",
+				"installing": "Installing...",
+				"install": "Install update",
+				"latest": "Latest"
+			},
+			"entry": {
+				"HLAE": {
+					"path": "HLAE Path:",
+					"setPath": "SET HLAE PATH"
+				},
+				"AFX": {
+					"path": "AFX CEF HUD Interop:",
+					"setPath": "SET AFX PATH"
+				},
+				"GSI": {
+					"status": "GameState Integration:",
+					"add": "Add GSI file"
+				},
+				"config": {
+					"status": "Configs:",
+					"add": "Add config files"
+				},
+				"credits": {
+					"credits": "Credits",
+					"seeNow": "See now"
+				},
+				"downloads": {
+					"downloads": "Downloads",
+					"GSIConfig": "GSI config",
+					"HUDConfigs": "HUD configs",
+					"exportDB": "Export DB"
+				},
+				"import": {
+					"import": "Import"
+				},
+				"readerCode": {
+					"readerCode": "Reader Code"
+				}
+			}
+		},
+		"huds": {
+			"header": "HUDs",
+			"config": {
+				"customRadar": "Radar",
+				"customKillfeedOrACO": "Killfeed or ACO",
+				"embeddedHUD": "Embedded HUD",
+				"autoexecute": "Auto-execute",
+				"console": "Console",
+				"add": "ADD HUD",
+				"runGame": "RUN GAME",
+				"pauseTest": "PAUSE TEST DATA",
+				"runTest": "RUN TEST DATA",
+				"openDirectory": "Open HUDs directory",
+				"playTestLoop": "Play test loop",
+				"ar": "AR (experimental)"
+			},
+			"fields":{
+				"missing":"Missing fields",
+				"fieldOfType": "Field \"{{field}}\" of type \"{{type}}\""
+			},
+			"includes": {
+				"customRadar":"Includes custom radar",
+				"customKillfeed":"Include custom killfeed"
+			},
+			"removal":{
+				"title":"Removing {{hud}}",
+				"areYouSure":"Are you sure you want to remove {{hud}}?"
+			},
+			"actions":{
+				"toggleUrl":"Toggle HUD URL",
+				"settings":"Go to HUD settings",
+				"overlay": "Start HUD overlay",
+				"upload":"Upload HUD",
+				"uploading":"Uploading...",
+				"deleteLocally":"Delete HUD locally",
+				"deleteFromCloud":"Delete HUD from cloud",
+				"downloading":"Downloading...",
+				"toggleHUD":"Toggle HUD (Embedded only)",
+				"clickToCopy":"Click to copy"
+			},
+			"warning": {
+				"specifyHLAEPath": "Specify HLAE path in Settings in order to use custom killfeeds",
+				"specifyAFXInteropPath": "Specify AFX Interop path in Settings in order to use AFX mode",
+				"specifyAFXModeInfo": "When using AFX mode, after joining the match click on the SET button - no need to start the overlay."
+			}
+		},
+		"app": {
+			"changeGame":"Change Game",
+			"cloud":{
+				"isActive": "Cloud is active",
+				"isNotAcitve":"Cloud is not active"
+			}
+		}
+	}
+}

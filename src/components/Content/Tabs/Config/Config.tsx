@@ -7,6 +7,7 @@ import DragInput from './../../../DragFileInput';
 import ImportModal from './ImportModal';
 import { IContextData, ContextData } from '../../../Context';
 import ElectronOnly from '../../../ElectronOnly';
+import { withTranslation } from 'react-i18next';
 import Switch from '../../../Switch/Switch';
 import { socket } from '../Live/Live';
 
@@ -24,6 +25,7 @@ interface IProps {
 	cxt: IContextData;
 	toggle: Function;
 	gsiCheck: Function;
+	t: any;
 }
 
 export const GameOnly = ({ game, children }: { game: I.AvailableGames; children: any }) => (
@@ -57,7 +59,7 @@ interface IState {
 	data: any;
 }
 
-export default class Config extends React.Component<IProps, IState> {
+class Config extends React.Component<IProps, IState> {
 	constructor(props: IProps) {
 		super(props);
 		this.state = {
@@ -388,7 +390,7 @@ export default class Config extends React.Component<IProps, IState> {
 		this.checkGSI();
 	};
 	render() {
-		const { cxt } = this.props;
+		const { cxt, t } = this.props;
 		const { gsi, cfg, importModalOpen, conflict, data, ip, config, update } = this.state;
 
 		const available =
@@ -397,7 +399,7 @@ export default class Config extends React.Component<IProps, IState> {
 
 		return (
 			<Form>
-				<div className="tab-title-container">Settings</div>
+				<div className="tab-title-container">{t('settings.header')}</div>
 				<div className="tab-content-container no-padding">
 					<ImportModal
 						isOpen={importModalOpen}
@@ -415,7 +417,7 @@ export default class Config extends React.Component<IProps, IState> {
 									id="steamApiKey"
 									onChange={this.changeHandler}
 									value={this.state.config.steamApiKey}
-									placeholder="Steam API Key"
+									placeholder={t('settings.input.steamAPIKey')}
 								/>
 							</FormGroup>
 						</Col>
@@ -427,7 +429,7 @@ export default class Config extends React.Component<IProps, IState> {
 									id="port"
 									onChange={this.changeHandler}
 									value={this.state.config.port}
-									placeholder="GSI Port"
+									placeholder={t('settings.input.GSIPort')}
 								/>
 							</FormGroup>
 						</Col>
@@ -439,7 +441,7 @@ export default class Config extends React.Component<IProps, IState> {
 									id="token"
 									onChange={this.changeHandler}
 									value={this.state.config.token}
-									placeholder="GSI Token"
+									placeholder={t('settings.input.GSIToken')}
 								/>
 							</FormGroup>
 						</Col>
@@ -447,17 +449,17 @@ export default class Config extends React.Component<IProps, IState> {
 					<Row className="config-container bottom-margin">
 						<ElectronOnly>
 							<Col md="12" className="config-entry">
-								<div className="config-description">Version</div>
+								<div className="config-description">{t('settings.updater.version')}</div>
 								<Button
 									className="purple-btn round-btn"
 									disabled={update.installing || !update.available}
 									onClick={this.installUpdate}
 								>
 									{update.installing
-										? 'Installing...'
+										? t('settings.updater.installing')
 										: update.available
-										? 'Install update'
-										: 'Latest'}
+										? t('settings.updater.install')
+										: t('settings.updater.latest')}
 								</Button>
 							</Col>
 						</ElectronOnly>
@@ -600,7 +602,7 @@ export default class Config extends React.Component<IProps, IState> {
 				<Row>
 					<Col className="main-buttons-container">
 						<Button onClick={this.save} color="primary">
-							Save
+							{t('common.save')}
 						</Button>
 					</Col>
 				</Row>
@@ -608,3 +610,5 @@ export default class Config extends React.Component<IProps, IState> {
 		);
 	}
 }
+
+export default withTranslation()(Config);

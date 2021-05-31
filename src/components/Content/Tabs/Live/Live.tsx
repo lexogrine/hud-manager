@@ -3,6 +3,7 @@ import config from './../../../../api/config';
 import { Col, Row } from 'reactstrap';
 import { GSISocket, CSGO, Player, Team, PlayerExtension } from 'csgogsi-socket';
 import { IContextData } from '../../../Context';
+import { useTranslation } from 'react-i18next';
 
 export const { GSI, socket } = GSISocket(`${config.isDev ? config.apiAddress : '/'}`, 'update');
 
@@ -75,6 +76,8 @@ const Teamboard = ({ players, team, toggle, cxt }: Props) => {
 const Live = ({ toggle, cxt }: { toggle: (tab: string, data?: any) => void; cxt: IContextData }) => {
 	const [game, setGame] = useState<CSGO | null>(null);
 
+	const { t } = useTranslation();
+
 	useEffect(() => {
 		GSI.on('data', setGame);
 	}, []);
@@ -82,8 +85,8 @@ const Live = ({ toggle, cxt }: { toggle: (tab: string, data?: any) => void; cxt:
 	if (!game)
 		return (
 			<React.Fragment>
-				<div className="tab-title-container">Live</div>
-				<div className="tab-content-container full-scroll">No game is currently live.</div>
+				<div className="tab-title-container">{t('live.header')}</div>
+				<div className="tab-content-container full-scroll">{t('live.noGame')}</div>
 			</React.Fragment>
 		);
 	const teams = [game.map.team_ct, game.map.team_t];
@@ -93,19 +96,19 @@ const Live = ({ toggle, cxt }: { toggle: (tab: string, data?: any) => void; cxt:
 	if (!left || !right) {
 		return (
 			<React.Fragment>
-				<div className="tab-title-container">Live</div>
-				<div className="tab-content-container full-scroll">No game is currently live.</div>
+				<div className="tab-title-container">{t('live.header')}</div>
+				<div className="tab-content-container full-scroll">{t('live.noGame')}</div>
 			</React.Fragment>
 		);
 	}
 
 	return (
 		<React.Fragment>
-			<div className="tab-title-container">Live</div>
+			<div className="tab-title-container">{t('live.header')}</div>
 			<div className="tab-content-container full-scroll">
 				<Row>
 					<Col md="12" className="config-container no-margin" style={{ flexDirection: 'column' }}>
-						<div>Players currently in match, click to add a player to the player list.</div>
+						<div>{t('live.tip')}</div>
 					</Col>
 				</Row>
 				<Row>

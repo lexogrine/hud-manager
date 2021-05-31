@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { Modal, ModalHeader, ModalBody, FormGroup, Label, Input } from 'reactstrap';
 import * as I from './../../../../api/interfaces';
 
@@ -16,6 +17,9 @@ const VetoModal = ({ onChange, map, isOpen, toggle, veto, teams, maps }: Props) 
 	const changeTypeHandler = (type: I.VetoType) => () => {
 		onChange('type', map, type);
 	};
+
+	const { t } = useTranslation();
+
 	return (
 		<Modal isOpen={isOpen} toggle={toggle} className="veto_modal">
 			<ModalHeader toggle={toggle}>Edit Veto {map + 1}</ModalHeader>
@@ -24,16 +28,16 @@ const VetoModal = ({ onChange, map, isOpen, toggle, veto, teams, maps }: Props) 
 					className={`type pick ${veto.type === 'pick' ? 'active' : ''}`}
 					onClick={changeTypeHandler('pick')}
 				>
-					PICK
+					{t('match.vetoType.pick').toUpperCase()}
 				</div>
 				<div className={`type ban ${veto.type === 'ban' ? 'active' : ''}`} onClick={changeTypeHandler('ban')}>
-					BAN
+					{t('match.vetoType.ban').toUpperCase()}
 				</div>
 				<div
 					className={`type decider ${veto.type === 'decider' ? 'active' : ''}`}
 					onClick={changeTypeHandler('decider')}
 				>
-					DECIDER
+					{t('match.vetoType.decider').toUpperCase()}
 				</div>
 			</div>
 			<ModalBody>
@@ -47,7 +51,7 @@ const VetoModal = ({ onChange, map, isOpen, toggle, veto, teams, maps }: Props) 
 								value={veto.teamId}
 								onChange={e => onChange('teamId', map, e.target.value)}
 							>
-								<option value="">No team</option>
+								<option value="">{t('common.noTeam')}</option>
 								{teams.map(teams => (
 									<option key={teams._id} value={teams._id}>
 										{teams.name}
@@ -64,11 +68,11 @@ const VetoModal = ({ onChange, map, isOpen, toggle, veto, teams, maps }: Props) 
 								onChange={e => onChange('side', map, e.target.value)}
 							>
 								<option value={'NO'} disabled defaultChecked>
-									Does the opponent pick a side?
+									{t('match.questionOpponentPick')}
 								</option>
-								<option value={'NO'}>No</option>
-								<option value={'CT'}>CT</option>
-								<option value={'T'}>T</option>
+								<option value={'NO'}>{t('common.no')}</option>
+								<option value={'CT'}>{t('common.ct')}</option>
+								<option value={'T'}>{t('common.t')}</option>
 							</Input>
 						</FormGroup>
 					</>
@@ -82,7 +86,7 @@ const VetoModal = ({ onChange, map, isOpen, toggle, veto, teams, maps }: Props) 
 						onChange={e => onChange('mapName', map, e.target.value)}
 					>
 						<option value="" disabled defaultChecked>
-							Map
+							{t('common.map')}
 						</option>
 						{maps.map(map => (
 							<option value={map} key={map}>
@@ -100,7 +104,7 @@ const VetoModal = ({ onChange, map, isOpen, toggle, veto, teams, maps }: Props) 
 							checked={veto.reverseSide || false}
 						/>{' '}
 						<div className="customCheckbox"></div>
-						Reversed sides
+						{t('match.reversedSides')}
 					</Label>
 				</FormGroup>
 			</ModalBody>

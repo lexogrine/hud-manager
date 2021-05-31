@@ -5,6 +5,7 @@ import { countries } from './../../../../api/countries';
 import config from './../../../../api/config';
 import CustomFieldValue from '../../../CustomFields/CustomFieldValue';
 import { IContextData } from '../../../Context';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
 	team: I.Team;
@@ -16,7 +17,7 @@ interface Props {
 
 const TeamListEntry = ({ team, edit, hash, fields, cxt }: Props) => {
 	const country = !team.country ? null : countries[team.country] || null;
-
+	const { t } = useTranslation();
 	return (
 		<div className="item-list-entry">
 			<div className="picture">{team.logo ? <img src={`${team.logo}?hash=${hash}`} /> : null}</div>
@@ -39,7 +40,7 @@ const TeamListEntry = ({ team, edit, hash, fields, cxt }: Props) => {
 			))}
 			<div className="options">
 				<Button className="purple-btn round-btn" onClick={edit}>
-					Edit
+					{t('common.edit')}
 				</Button>
 			</div>
 		</div>
