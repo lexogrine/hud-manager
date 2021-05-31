@@ -9,7 +9,7 @@ import { IContextData } from '../../../Context';
 import { Form, Row, Col, FormGroup, Input } from 'reactstrap';
 import moment from 'moment';
 import VetoEntry from './VetoEntry';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 const EditTeam = (t: any) => {
 	return (
@@ -49,11 +49,12 @@ interface IProps {
 	teams: I.Team[];
 	edit: Function;
 	maps: string[];
-	t: any;
 }
 
-const EditMatch = ({ cxt, match, teams, edit, maps, t }: IProps) => {
+const EditMatch = ({ cxt, match, teams, edit, maps }: IProps) => {
 	const [matchState, setMatchState] = useState(match);
+
+	const { t } = useTranslation();
 
 	const save = async () => {
 		const form = { ...matchState };
@@ -186,4 +187,4 @@ const EditMatch = ({ cxt, match, teams, edit, maps, t }: IProps) => {
 		</>
 	);
 };
-export default withTranslation()(EditMatch);
+export default EditMatch;

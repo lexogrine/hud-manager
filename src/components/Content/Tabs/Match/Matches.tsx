@@ -184,7 +184,7 @@ class Matches extends Component<
 							<Row>
 								<Col className="main-buttons-container">
 									<Button onClick={this.add} color="primary">
-										+{t('match.createNew')}
+										+{t('common.createNew')}
 									</Button>
 								</Col>
 							</Row>

@@ -3,6 +3,7 @@ import { Col } from 'reactstrap';
 import api from '../../api/api';
 import Navbar from './Navbar/Navbar';
 import Tabs from './Tabs/Tabs';
+import { useTranslation } from 'react-i18next';
 
 const Content = ({
 	active,
@@ -36,6 +37,8 @@ const Content = ({
 		checkFiles();
 	}, []);
 
+	const { t } = useTranslation();
+
 	return (
 		<div className="main-container">
 			<Navbar activeTab={activeTab} toggle={toggle} files={gsi && configs} />
@@ -44,7 +47,7 @@ const Content = ({
 			</Col>
 			<div className="top_buttons">
 				<div className={`sync_button`} onClick={clearGame}>
-					CHANGE GAME
+					{t('app.changeGame')}
 				</div>
 				<a
 					className={`sync_button ${active ? 'active' : ''}`}
@@ -56,7 +59,7 @@ const Content = ({
 					rel={'noopener noreferrer'}
 					target={!available ? '_blank' : undefined}
 				>
-					{active ? 'CLOUD IS ACTIVE' : 'CLOUD IS NOT ACTIVE'}
+					{active ? t('app.cloud.isActive') : t('app.cloud.isNotAcitve') }
 				</a>
 			</div>
 		</div>

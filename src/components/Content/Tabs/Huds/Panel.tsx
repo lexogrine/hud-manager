@@ -7,15 +7,17 @@ import { Row, Col, FormGroup, Input, Form, Button, Label } from 'reactstrap';
 import FileInput from './../../../DragFileInput';
 import isSvg from './../../../../isSvg';
 import ColorPicker from '../../../ColorPicker/ColorPicker';
+import { withTranslation } from 'react-i18next';
 interface IProps {
 	cxt: IContextData;
 	hud: I.HUD;
+	t: any;
 }
 interface IState {
 	form: any;
 	active: string;
 }
-export default class ActionPanel extends React.Component<IProps, IState> {
+class ActionPanel extends React.Component<IProps, IState> {
 	constructor(props: IProps) {
 		super(props);
 		this.state = {
@@ -151,7 +153,7 @@ export default class ActionPanel extends React.Component<IProps, IState> {
 	setTab = (name: string) => () => this.setState({ active: name });
 
 	renderSection = (section: I.PanelTemplate) => {
-		const { cxt } = this.props;
+		const { cxt, t } = this.props;
 		const { teams, matches, players } = cxt;
 		const { form, active } = this.state;
 		if (!active || active !== section.name || section.ar) return null;
@@ -194,7 +196,7 @@ export default class ActionPanel extends React.Component<IProps, IState> {
 										}
 										onChange={this.changeForm(section.name, input.name, input.type)}
 									>
-										<option value="">No team</option>
+										<option value="">{t('common.noTeam')}</option>
 										{teams
 											.concat()
 											.sort((a, b) => (a.name < b.name ? -1 : 1))
@@ -225,7 +227,7 @@ export default class ActionPanel extends React.Component<IProps, IState> {
 										}
 										onChange={this.changeForm(section.name, input.name, input.type)}
 									>
-										<option value="">No player</option>
+										<option value="">{t('common.noPlayer')}</option>
 										{players
 											.concat()
 											.sort((a, b) => (a.username < b.username ? -1 : 1))
@@ -256,7 +258,7 @@ export default class ActionPanel extends React.Component<IProps, IState> {
 										}
 										onChange={this.changeForm(section.name, input.name, input.type)}
 									>
-										<option value="">No match</option>
+										<option value="">{t('common.noMatch')}</option>
 										{matches.map(match => (
 											<option value={match.id} key={match.id}>
 												{(teams.find(team => team._id === match.left.id) || {}).name || '-'} vs{' '}
@@ -281,7 +283,7 @@ export default class ActionPanel extends React.Component<IProps, IState> {
 											value={(form[section.name] && form[section.name][input.name]) || ''}
 											onChange={this.changeForm(section.name, input.name, input.type)}
 										>
-											<option value="">No value</option>
+											<option value="">{t('common.noValue')}</option>
 											{input.values
 												.concat()
 												.sort((a, b) => (a.label < b.label ? -1 : 1))
@@ -374,7 +376,7 @@ export default class ActionPanel extends React.Component<IProps, IState> {
 					<Row className="section-save">
 						<Col s={12}>
 							<Button onClick={() => this.sendSection(section.name)} className="round-btn purple-btn">
-								Save and send
+								{t('common.saveAndSend')}
 							</Button>
 						</Col>
 					</Row>
@@ -405,3 +407,5 @@ export default class ActionPanel extends React.Component<IProps, IState> {
 		);
 	}
 }
+
+export default withTranslation()(ActionPanel);

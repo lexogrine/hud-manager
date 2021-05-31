@@ -252,7 +252,7 @@ class Huds extends React.Component<IProps, IState> {
 								</div>
 								<ElectronOnly>
 									<div className="config-area">
-										<div className="config-description">Play test loop</div>
+										<div className="config-description">{t('huds.config.playTestLoop')}</div>
 										<Switch
 											isOn={this.state.isOnLoop}
 											id="gamelopp-toggle"
@@ -261,7 +261,7 @@ class Huds extends React.Component<IProps, IState> {
 									</div>
 								</ElectronOnly>
 								<div className="config-area">
-									<div className="config-description">AR (experimental)</div>
+									<div className="config-description">{t('huds.config.ar')}</div>
 									<Switch
 										isOn={this.state.form.ar}
 										id="ar-toggle"

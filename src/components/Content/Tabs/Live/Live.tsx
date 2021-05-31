@@ -85,8 +85,8 @@ const Live = ({ toggle, cxt }: { toggle: (tab: string, data?: any) => void; cxt:
 	if (!game)
 		return (
 			<React.Fragment>
-				<div className="tab-title-container">Live</div>
-				<div className="tab-content-container full-scroll">No game is currently live.</div>
+				<div className="tab-title-container">{t('live.header')}</div>
+				<div className="tab-content-container full-scroll">{t('live.noGame')}</div>
 			</React.Fragment>
 		);
 	const teams = [game.map.team_ct, game.map.team_t];

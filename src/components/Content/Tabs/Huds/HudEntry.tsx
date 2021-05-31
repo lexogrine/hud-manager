@@ -20,6 +20,7 @@ import { getMissingFields } from '../../../../utils';
 import { copyToClipboard } from '../../../../api/clipboard';
 import ElectronOnly from '../../../ElectronOnly';
 import { GameOnly } from '../Config/Config';
+import { useTranslation } from 'react-i18next';
 
 interface IProps {
 	hud: I.HUD;
@@ -50,6 +51,8 @@ const HudEntry = ({
 	};
 	const [isOpen, setOpen] = useState(false);
 	const toggleModal = () => setOpen(!isOpen);
+
+	const { t } = useTranslation();
 
 	const startHUD = (dir: string) => {
 		api.huds.start(dir);
@@ -110,13 +113,13 @@ const HudEntry = ({
 	const missingFieldsText = [];
 	const missingFields = getMissingFields(customFields, hud.requiredFields);
 	if (missingFields) {
-		missingFieldsText.push(<div>Missing fields</div>);
+		missingFieldsText.push(<div>{t('huds.fields.missing')}</div>);
 		if (missingFields.players) {
 			missingFieldsText.push(
 				<div>
 					Players:{' '}
 					{Object.entries(missingFields.players)
-						.map(([field, type]) => `Field "${field}" of type "${type}"`)
+						.map(([field, type]) => t('huds.fields.fieldOfType', { field, type }))
 						.join(', ')}
 				</div>
 			);
@@ -126,7 +129,7 @@ const HudEntry = ({
 				<div>
 					Teams:{' '}
 					{Object.entries(missingFields.teams)
-						.map(([field, type]) => `Field "${field}" of type "${type}"`)
+						.map(([field, type]) => t('huds.fields.fieldOfType', { field, type }))
 						.join(', ')}
 				</div>
 			);
@@ -176,7 +179,7 @@ const HudEntry = ({
 											className="radar_support"
 											label={<img src={Map} className="action" alt="Supports custom radar" />}
 										>
-											Includes custom radar
+											{t('huds.includes.customRadar')}
 										</Tip>
 									) : null}
 									{hud.killfeed && isLocal ? (
@@ -187,7 +190,7 @@ const HudEntry = ({
 												<img src={Killfeed} className="action" alt="Supports custom killfeed" />
 											}
 										>
-											Includes custom killfeed
+										{t('huds.includes.customKillfeed')}
 										</Tip>
 									) : null}
 									{missingFieldsText.length && isLocal ? (
@@ -220,7 +223,7 @@ const HudEntry = ({
 											/>
 										}
 									>
-										Toggle HUD URL
+										{t('huds.actions.toggleUrl')}
 									</Tip>
 								) : null}
 								{hud.panel?.length ? (
@@ -235,7 +238,7 @@ const HudEntry = ({
 											/>
 										}
 									>
-										Go to HUD settings
+										{t('huds.actions.settings')}
 									</Tip>
 								) : (
 									''
@@ -252,7 +255,7 @@ const HudEntry = ({
 											/>
 										}
 									>
-										Start HUD overlay
+										{t('huds.actions.overlay')}
 									</Tip>
 									{isNotRemote && isCloudAvailable && !hud.isDev ? (
 										!isLoading ? (
@@ -268,10 +271,10 @@ const HudEntry = ({
 													/>
 												}
 											>
-												Upload HUD
+												{t('huds.actions.upload')}
 											</Tip>
 										) : (
-											'Uploading...'
+											t('huds.actions.uploading')
 										)
 									) : null}
 									<Tip
@@ -285,7 +288,7 @@ const HudEntry = ({
 											/>
 										}
 									>
-										Delete HUD locally
+										{t('huds.actions.deleteLocally')}
 									</Tip>
 								</ElectronOnly>
 							</div>
@@ -303,7 +306,7 @@ const HudEntry = ({
 											</div>
 										}
 									>
-										Toggle HUD (Embedded only)
+										{t('huds.actions.toggleHUD')}
 									</Tip>
 								</ElectronOnly>
 							</GameOnly>
@@ -323,7 +326,7 @@ const HudEntry = ({
 											/>
 										) : null
 									) : (
-										'Downloading...'
+										t('huds.actions.downloading')
 									)}
 									<Tip
 										id={`hud_delete_cloud_button_${hashCode(hud.dir)}`}
@@ -336,7 +339,7 @@ const HudEntry = ({
 											/>
 										}
 									>
-										Delete HUD from cloud
+										{t('huds.actions.deleteFromCloud')}
 									</Tip>
 								</ElectronOnly>
 							</div>
@@ -360,7 +363,7 @@ const HudEntry = ({
 											</code>
 										}
 									>
-										Click to copy
+										{t('huds.actions.clickToCopy')}
 									</Tip>
 								</UncontrolledCollapse>
 							</div>

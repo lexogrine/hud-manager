@@ -6,6 +6,7 @@ import { IContextData } from './../../../../components/Context';
 import { TournamentMatchup, DepthTournamentMatchup } from '../../../../../types/interfaces';
 import BindModal from './BindModal';
 import AddTournamentModal from './AddTournament';
+import { withTranslation } from 'react-i18next';
 
 interface MatchData {
 	left: { name: string; score: string | number; logo: string };
@@ -26,8 +27,8 @@ interface State {
 	};
 }
 
-export default class Tournaments extends React.Component<{ cxt: IContextData }, State> {
-	constructor(props: { cxt: IContextData }) {
+class Tournaments extends React.Component<{ cxt: IContextData, t: any }, State> {
+	constructor(props: { cxt: IContextData, t: any }) {
 		super(props);
 		this.state = {
 			form: {
@@ -280,10 +281,10 @@ export default class Tournaments extends React.Component<{ cxt: IContextData }, 
 
 	render() {
 		const { match, isOpen, tournament, isAdding } = this.state;
-		const { cxt } = this.props;
+		const { cxt, t } = this.props;
 		return (
 			<Form>
-				<div className="tab-title-container">Tournaments</div>
+				<div className="tab-title-container">{t('common.tournaments')}</div>
 				<div className="tab-content-container">
 					{tournament ? (
 						<BindModal
@@ -313,7 +314,7 @@ export default class Tournaments extends React.Component<{ cxt: IContextData }, 
 							onChange={this.setTournament}
 							value={this.state.tournament?._id}
 						>
-							<option value="empty">No tournament</option>
+							<option value="empty">{t('common.noTournament')}</option>
 							{this.props.cxt.tournaments
 								.concat()
 								.sort((a, b) => (a.name < b.name ? -1 : 1))
@@ -330,10 +331,10 @@ export default class Tournaments extends React.Component<{ cxt: IContextData }, 
 					<Row>
 						<Col className="main-buttons-container">
 							<Button color="secondary" onClick={this.delete} disabled={this.state.tournament === null}>
-								Delete
+								{t('common.delete')}
 							</Button>
 							<Button color="primary" onClick={this.openModalAdding}>
-								{this.state.tournament ? 'Edit' : 'Create New'}
+								{this.state.tournament ? t('common.edit') : t('common.createNew')}
 							</Button>
 						</Col>
 					</Row>
@@ -342,3 +343,4 @@ export default class Tournaments extends React.Component<{ cxt: IContextData }, 
 		);
 	}
 }
+export default withTranslation()(Tournaments);

@@ -8,6 +8,7 @@ import countries from './../../countries';
 import { IContextData } from './../../../../components/Context';
 import ColorPicker from '../../../ColorPicker/ColorPicker';
 import { getMatchName } from '../../../../utils';
+import { useTranslation } from 'react-i18next';
 
 interface IProps {
 	open: boolean;
@@ -43,6 +44,7 @@ const TeamEditModal = ({
 			logo = `data:image/${encoding};base64,${team.logo}`;
 		}
 	}
+	const { t } = useTranslation();
 	const renderInput = (
 		field: string,
 		type: Exclude<I.PanelInputType, 'select' | 'action' | 'checkbox'>,
@@ -126,9 +128,9 @@ const TeamEditModal = ({
 		));
 	return (
 		<Modal isOpen={open} toggle={toggle} className="veto_modal">
-			<ModalHeader toggle={toggle}>Edit a team</ModalHeader>
+			<ModalHeader toggle={toggle}>{t('teams.edit')}</ModalHeader>
 			<ModalBody>
-				<FormText color="muted">Team: {team._id || '--- NONE ---'}</FormText>
+				<FormText color="muted">{t('common.team')}: {team._id || '--- NONE ---'}</FormText>
 				<Row>
 					<Col md="12">
 						<FormGroup>
@@ -138,7 +140,7 @@ const TeamEditModal = ({
 								id="team_name"
 								value={team.name}
 								onChange={onChange}
-								placeholder="Team Name"
+								placeholder={t('common.teamName')}
 							/>
 						</FormGroup>
 					</Col>
@@ -152,7 +154,7 @@ const TeamEditModal = ({
 								id="short_name"
 								value={team.shortName || ''}
 								onChange={onChange}
-								placeholder="Short Name"
+								placeholder={t('common.shortName')}
 							/>
 						</FormGroup>
 					</Col>
@@ -161,7 +163,7 @@ const TeamEditModal = ({
 					<Col md="12">
 						<FormGroup>
 							<Input type="select" id="country" name="country" value={team.country} onChange={onChange}>
-								<option value="">Country</option>
+								<option value="">{t('common.country')}</option>
 								{countries.map(option => (
 									<option key={option.value} value={option.value}>
 										{option.label}
@@ -179,11 +181,11 @@ const TeamEditModal = ({
 								onChange={onFileChange}
 								id="team_logo"
 								removable
-								label="UPLOAD LOGO"
+								label={t('teams.uploadLogo')}
 								imgSrc={logo || undefined}
 							/>
 							<FormText color="muted">
-								Logo to be used for the team, if possible in the given HUD
+								{t('teams.logoInfo')}
 							</FormText>
 						</FormGroup>
 					</Col>
@@ -192,14 +194,14 @@ const TeamEditModal = ({
 				{team._id !== 'empty' ? (
 					<Row className="centered">
 						<Button className="purple-btn round-btn" onClick={deleteTeam}>
-							Delete
+							{t('common.delete')}
 						</Button>
 					</Row>
 				) : null}
 			</ModalBody>
 			<ModalFooter className="no-padding">
 				<Button color="primary" className="modal-save" onClick={save}>
-					Save
+					{t('common.save')}
 				</Button>
 			</ModalFooter>
 		</Modal>

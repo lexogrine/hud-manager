@@ -3,14 +3,24 @@
 		"common": {
 			"or": "or",
 			"save": "Save",
+			"saveAndSend": "Save and send",
 			"loadingSuccess": "Loaded successfully",
 			"loaded": "Loaded",
 			"notLoaded": "Not loaded",
 			"vs": "VS",
 			"noTeam": "No team",
+			"noPlayer": "No player",
+			"noMatch": "No match",
+			"noTournament": "No tournament",
+			"noValue": "No value",
 			"teamOne": "Team One",
 			"teamTwo": "Team Two",
 			"map": "Map",
+			"team":"Team",
+			"players":"Players",
+			"realName":"Real name",
+			"player":"Player",
+			"teams":"Teams",
 			"team1": "Team 1",
 			"team2": "Team 2",
 			"teamNumber": "TEAM #{{num}}",
@@ -18,15 +28,51 @@
 			"delete": "Delete",
 			"edit": "Edit",
 			"live": "Live",
+			"match":"Match",
 			"goBack": "Go back",
 			"ct": "CT",
 			"t": "T",
-			"no": "No"
+			"no": "No",
+			"tournaments":"Tournaments",
+			"firstName":"First Name",
+			"lastName":"Last Name",
+			"createNew": "Create New",
+			"nickname":"Nickname",
+			"country":"Country",
+			"manage":"Manage",
+			"teamName":"Team Name",
+			"shortName":"Short Name",
+			"search":"Search..."
+		},
+		"players":{
+			"edit":"Edit a player",
+			"uploadProfile":"Upload profile picture",
+			"avatarInfo":"Avatar to be used for player images instead of the default from Steam",
+			"addPlayer":"Add Player"
+		},
+		"teams":{
+			"edit":"Edit a team",
+			"uploadLogo":"Upload logo",
+			"logoInfo":"Logo to be used for the team, if possible in the given HUD",
+			"addTeam":"Add Team"
 		},
 		"live": {
 			"header": "Live",
 			"noGame": "No game is currently live.",
 			"tip": "Players currently in match, click to add a player to the player list."
+		},
+		"tournaments":{
+			"edit":"Edit a tournament",
+			"create":"Create new tournament",
+			"name":"Tournament name",
+			"uploadLogo":"Upload tournament logo",
+			"logoInfo":"Logo of the tournament will be available during the match",
+			"singleElimBracket":"Single Elimination Bracket",
+			"doubleElimBracket":"Double Elimination Bracket",
+			"swiss":"Swiss",
+			"soon":"Soon",
+			"amountOfTeams":"Amount of teams",
+			"bindMatch":"Bind match to bracket"
 		},
 		"match": {
 			"matches": "Matches",
@@ -51,7 +97,6 @@
 				"date": "Date",
 				"time": "Time"
 			},
-			"createNew": "Create New",
 			"wins": "WINS",
 			"wrongTeamSelected": "Wrong team selected",
 			"vetoType": {
@@ -142,8 +187,8 @@
 		"huds": {
 			"header": "HUDs",
 			"config": {
-				"customRadar": "Custom radar",
-				"customKillfeed": "Custom killfeed",
+				"customRadar": "Radar",
+				"customKillfeedOrACO": "Killfeed or ACO",
 				"embeddedHUD": "Embedded HUD",
 				"autoexecute": "Auto-execute",
 				"console": "Console",
@@ -151,12 +196,45 @@
 				"runGame": "RUN GAME",
 				"pauseTest": "PAUSE TEST DATA",
 				"runTest": "RUN TEST DATA",
-				"openDirectory": "Open HUDs directory"
+				"openDirectory": "Open HUDs directory",
+				"playTestLoop": "Play test loop",
+				"ar": "AR (experimental)"
+			},
+			"fields":{
+				"missing":"Missing fields",
+				"fieldOfType": "Field \"{{field}}\" of type \"{{type}}\""
+			},
+			"includes": {
+				"customRadar":"Includes custom radar",
+				"customKillfeed":"Include custom killfeed"
+			},
+			"removal":{
+				"title":"Removing {{hud}}",
+				"areYouSure":"Are you sure you want to remove {{hud}}?"
+			},
+			"actions":{
+				"toggleUrl":"Toggle HUD URL",
+				"settings":"Go to HUD settings",
+				"overlay": "Start HUD overlay",
+				"upload":"Upload HUD",
+				"uploading":"Uploading...",
+				"deleteLocally":"Delete HUD locally",
+				"deleteFromCloud":"Delete HUD from cloud",
+				"downloading":"Downloading...",
+				"toggleHUD":"Toggle HUD (Embedded only)",
+				"clickToCopy":"Click to copy"
 			},
 			"warning": {
 				"specifyHLAEPath": "Specify HLAE path in Settings in order to use custom killfeeds",
 				"specifyAFXInteropPath": "Specify AFX Interop path in Settings in order to use AFX mode",
 				"specifyAFXModeInfo": "When using AFX mode, after joining the match click on the SET button - no need to start the overlay."
+			}
+		},
+		"app": {
+			"changeGame":"Change Game",
+			"cloud":{
+				"isActive": "Cloud is active",
+				"isNotAcitve":"Cloud is not active"
 			}
 		}
 	}

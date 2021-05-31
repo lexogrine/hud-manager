@@ -40,7 +40,7 @@ const SetTeamModal = ({ isOpen, toggle, side, teams, team, onSave }: Props) => {
 
 	return (
 		<Modal isOpen={isOpen} toggle={toggle} className={'veto_modal'}>
-			<ModalHeader toggle={toggle}>{t('match.teamNumber', { num: side === 'left' ? 1 : 2 })}</ModalHeader>
+			<ModalHeader toggle={toggle}>{t('common.teamNumber', { num: side === 'left' ? 1 : 2 })}</ModalHeader>
 			<ModalBody>
 				<FormGroup>
 					<Input type="select" name="teams" id="teams" value={form.id} onChange={changeHandler('id')}>

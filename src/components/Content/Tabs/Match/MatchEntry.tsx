@@ -5,7 +5,7 @@ import { Button } from 'reactstrap';
 import { IContextData } from '../../../Context';
 import { hash } from '../../../../hash';
 import moment from 'moment';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
 	match: I.Match;
@@ -13,11 +13,11 @@ interface Props {
 	cxt: IContextData;
 	edit: Function;
 	setCurrent: Function;
-	t: any;
 }
 
-const MatchEntry = ({ match, teams, cxt, edit, setCurrent, t }: Props) => {
+const MatchEntry = ({ match, teams, cxt, edit, setCurrent }: Props) => {
 	const [isExpanded, setExpanded] = useState(false);
+	const { t } = useTranslation();
 
 	const deleteMatch = async () => {
 		await api.match.delete(match.id);
@@ -97,4 +97,4 @@ const MatchEntry = ({ match, teams, cxt, edit, setCurrent, t }: Props) => {
 	);
 };
 
-export default withTranslation()(MatchEntry);
+export default MatchEntry;

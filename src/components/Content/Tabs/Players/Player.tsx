@@ -5,7 +5,7 @@ import { countries } from './../../../../api/countries';
 import config from './../../../../api/config';
 import CustomFieldValue from '../../../CustomFields/CustomFieldValue';
 import { IContextData } from '../../../Context';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 
 interface Props {
 	player: I.Player;
@@ -14,11 +14,11 @@ interface Props {
 	hash: string;
 	fields: I.CustomFieldEntry[];
 	cxt: IContextData;
-	t: any;
 }
 
-const PlayerListEntry = ({ player, team, edit, hash, cxt, fields, t }: Props) => {
+const PlayerListEntry = ({ player, team, edit, hash, cxt, fields }: Props) => {
 	const country = !player.country ? null : countries[player.country] || null;
+	const { t } = useTranslation();
 	return (
 		<div className="item-list-entry">
 			<div className="picture">{player.avatar ? <img src={`${player.avatar}?hash=${hash}`} /> : null}</div>
@@ -54,4 +54,4 @@ const PlayerListEntry = ({ player, team, edit, hash, cxt, fields, t }: Props) =>
 	);
 };
 
-export default withTranslation()(PlayerListEntry);
+export default PlayerListEntry;

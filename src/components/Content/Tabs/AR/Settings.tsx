@@ -7,16 +7,18 @@ import { Row, Col, FormGroup, Input, Form, Button, Label } from 'reactstrap';
 import FileInput from './../../../DragFileInput';
 import isSvg from './../../../../isSvg';
 import ColorPicker from '../../../ColorPicker/ColorPicker';
+import { withTranslation } from 'react-i18next';
 
 interface IProps {
 	section: I.PanelTemplate;
 	hud: string;
 	cxt: IContextData;
+	t: any
 }
 interface IState {
 	form: any;
 }
-export default class ARSettings extends React.Component<IProps, IState> {
+class ARSettings extends React.Component<IProps, IState> {
 	constructor(props: IProps) {
 		super(props);
 		this.state = {
@@ -149,7 +151,7 @@ export default class ARSettings extends React.Component<IProps, IState> {
 	getCheckboxes = (panel: I.PanelTemplate) => this.filterInputs(panel, 'checkbox');
 
 	renderSection = () => {
-		const { cxt, section } = this.props;
+		const { cxt, section, t } = this.props;
 		const { teams, matches, players } = cxt;
 		const { form } = this.state;
 		if (!section.ar) return null;
@@ -223,7 +225,7 @@ export default class ARSettings extends React.Component<IProps, IState> {
 										}
 										onChange={this.changeForm(section.name, input.name, input.type)}
 									>
-										<option value="">No player</option>
+										<option value="">{t('common.noPlayer')}</option>
 										{players
 											.concat()
 											.sort((a, b) => (a.username < b.username ? -1 : 1))
@@ -254,7 +256,7 @@ export default class ARSettings extends React.Component<IProps, IState> {
 										}
 										onChange={this.changeForm(section.name, input.name, input.type)}
 									>
-										<option value="">No match</option>
+										<option value="">{t('common.noMatch')}</option>
 										{matches.map(match => (
 											<option value={match.id} key={match.id}>
 												{(teams.find(team => team._id === match.left.id) || {}).name || '-'} vs{' '}
@@ -279,7 +281,7 @@ export default class ARSettings extends React.Component<IProps, IState> {
 											value={(form[section.name] && form[section.name][input.name]) || ''}
 											onChange={this.changeForm(section.name, input.name, input.type)}
 										>
-											<option value="">No value</option>
+											<option value="">{t('common.noValue')}</option>
 											{input.values
 												.concat()
 												.sort((a, b) => (a.label < b.label ? -1 : 1))
@@ -372,7 +374,7 @@ export default class ARSettings extends React.Component<IProps, IState> {
 					<Row className="section-save">
 						<Col s={12}>
 							<Button onClick={() => this.sendSection(section.name)} className="round-btn purple-btn">
-								Save and send
+								{t('common.saveAndSend')}
 							</Button>
 						</Col>
 					</Row>
@@ -387,3 +389,4 @@ export default class ARSettings extends React.Component<IProps, IState> {
 		return <div className="section_panel_container">{this.renderSection()}</div>;
 	}
 }
+export default withTranslation()(ARSettings);

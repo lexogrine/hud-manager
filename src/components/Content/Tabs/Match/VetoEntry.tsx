@@ -4,7 +4,7 @@ import * as I from '../../../../api/interfaces';
 import VetoModal from './VetoModal';
 import EditScoreModal from './EditScoreModal';
 import { hash } from '../../../../hash';
-import { withTranslation, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { GameOnly } from '../Config/Config';
 
 interface Props {
@@ -50,12 +50,12 @@ function generateDescription(veto: I.Veto, t: any, team?: I.Team, secTeam?: I.Te
 	if (!team || !team.name || !secTeam) {
 		return <strong>{t('match.wrongTeamSelected')}</strong>;
 	}
-	let text: string | null = `${team.name} ${veto.type}s ${veto.mapName}`;
+	let text: string | null = t('match.vetoDescription', { teamName: team.name, vetoType: veto.type, mapName: veto.mapName.replace('de_','')});
 	let sidePick = '';
 	if (secTeam && secTeam.name && veto.side !== 'NO') {
 		sidePick = t('match.vetoSidepick.normal', {
 			secondTeamName: secTeam.name,
-			side: t('match.vetoSide.' + veto.side)
+			side: t(`common.${veto.side.toLowerCase()}`)
 		});
 	}
 	if (veto.type === 'decider') {
@@ -181,4 +181,4 @@ const VetoEntry = ({ map, veto, vetoTeams, onSave, maps }: Props) => {
 	);
 };
 
-export default withTranslation()(VetoEntry);
+export default VetoEntry;

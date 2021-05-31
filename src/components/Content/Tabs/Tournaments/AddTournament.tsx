@@ -4,6 +4,7 @@ import DragFileInput from '../../../DragFileInput';
 import api from '../../../../api/api';
 import isSvg from '../../../../isSvg';
 import { hash } from '../../../../hash';
+import { withTranslation } from 'react-i18next';
 
 interface Props {
 	isOpen: boolean;
@@ -18,6 +19,7 @@ interface Props {
 		logo: string;
 		_id: string;
 	};
+	t: any;
 }
 
 interface State {
@@ -51,7 +53,7 @@ class AddTournamentModal extends React.Component<Props, State> {
 		}
 	};
 	render() {
-		const { toggle, isOpen } = this.props;
+		const { toggle, isOpen, t } = this.props;
 		const { name, type, teams, _id } = this.props.form;
 		let logo = '';
 		if (this.props.form.logo) {
@@ -66,7 +68,7 @@ class AddTournamentModal extends React.Component<Props, State> {
 		return (
 			<Modal isOpen={isOpen} toggle={toggle} className="veto_modal">
 				<ModalHeader toggle={toggle}>
-					{this.props.form._id ? 'Edit a tournament' : 'Create new tournament'}
+					{this.props.form._id ? t('tournaments.edit') : t('tournaments.create')}
 				</ModalHeader>
 				<ModalBody>
 					<Row>
@@ -78,7 +80,7 @@ class AddTournamentModal extends React.Component<Props, State> {
 									id="tournament_name"
 									value={name}
 									onChange={this.props.changeHandler('name')}
-									placeholder="Tournament name"
+									placeholder={t('tournaments.name')}
 								/>
 							</FormGroup>
 						</Col>
@@ -91,11 +93,11 @@ class AddTournamentModal extends React.Component<Props, State> {
 									removable
 									onChange={this.props.fileHandler}
 									id="tournament_logo"
-									label="UPLOAD TOURNAMENT LOGO"
+									label={t('tournaments.uploadLogo')}
 									imgSrc={logo}
 								/>
 								<FormText color="muted">
-									Logo of the tournament will be available during the match
+									{t('tournaments.logoInfo')}
 								</FormText>
 								{/*<Label for="avatar">Avatar</Label>
                                 <Input type="file" name="avatar" id="avatar" onChange={this.changeHandler} />
@@ -116,10 +118,10 @@ class AddTournamentModal extends React.Component<Props, State> {
 										onChange={this.props.changeHandler('type')}
 										value={type}
 									>
-										<option value={'se'}>Single Elimination Bracket</option>
-										<option value={'de'}>Double Elimination Bracket</option>
+										<option value={'se'}>{t('tournaments.singleElimBracket')}</option>
+										<option value={'de'}>{t('tournaments.doubleElimBracket')}</option>
 										<option value={''} disabled>
-											Swiss (soon!)
+											{t('tournaments.swiss')} ({t('tournaments.soon')}!)
 										</option>
 									</Input>
 								</FormGroup>
@@ -138,7 +140,7 @@ class AddTournamentModal extends React.Component<Props, State> {
 										value={teams}
 									>
 										<option value="" disabled defaultChecked>
-											Amount of teams
+											{t('tournaments.amountOfTeams')}
 										</option>
 										<option value={2}>2</option>
 										<option value={4}>4</option>
@@ -152,7 +154,7 @@ class AddTournamentModal extends React.Component<Props, State> {
 				</ModalBody>
 				<ModalFooter className="no-padding">
 					<Button color="primary" className="modal-save" onClick={this.add}>
-						Save
+						{t('common.save')}
 					</Button>
 				</ModalFooter>
 			</Modal>
@@ -160,4 +162,4 @@ class AddTournamentModal extends React.Component<Props, State> {
 	}
 }
 
-export default AddTournamentModal;
+export default withTranslation()(AddTournamentModal);

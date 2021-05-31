@@ -50,6 +50,7 @@ button.btn-primary {
     color: white !important;
     margin: 0 5px;
     text-decoration: none !important;
+    text-transform: uppercase;
 }
 .sync_button.active {
     background-color: #53bf53;
