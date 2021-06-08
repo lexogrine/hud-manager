@@ -44,6 +44,7 @@
     "react-select-country-list": "^2.1.2",
     "reactstrap": "^8.4.1",
     "registry-js": "^1.14.0",
+    "request": "^2.88.2",
     "simple-websockets": "^1.0.4",
     "socket.io": "^4.0.0",
     "steam-game-path": "^2.0.1",

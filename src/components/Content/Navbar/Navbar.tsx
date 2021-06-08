@@ -74,6 +74,7 @@ const Navbar = ({ activeTab, toggle, files }: IProps) => {
 			<GameOnly game="csgo">
 				<ContextData.Consumer>
 					{data =>
+						'a' == "a" ||
 						!data?.customer?.license?.type ||
 						data.customer?.license.type === 'free' ||
 						data.customer.license.type === 'personal' ? (

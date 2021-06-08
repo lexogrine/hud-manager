@@ -139,7 +139,11 @@ exports.updateMatch = (match) => new Promise(res => {
             return res(true);
         matchesDb.update({
             $where: function () {
-                return this.current && this.id !== match.id && (this.game === match.game || (!this.game && match.game === "csgo") || (this.game === "csgo" && !match.game));
+                return (this.current &&
+                    this.id !== match.id &&
+                    (this.game === match.game ||
+                        (!this.game && match.game === 'csgo') ||
+                        (this.game === 'csgo' && !match.game)));
             }
         }, { $set: { current: false } }, { multi: true }, async (err) => {
             const left = await teams_1.getTeamById(match.left.id || '');

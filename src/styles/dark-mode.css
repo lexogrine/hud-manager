@@ -34,6 +34,11 @@ button.btn-primary {
     transition: opacity 0.5s, transform 0s 0.5s;
     background-color: rgba(107, 28, 255, 0.82);
 }
+.tooltip-inner {
+    
+    position: relative;
+    left: 20px;
+}
 .sync_button {
     
     width:163px;
