@@ -46,7 +46,7 @@
     "registry-js": "^1.14.0",
     "simple-websockets": "^1.0.4",
     "socket.io": "^4.0.0",
-    "steam-game-path": "^2.0.0",
+    "steam-game-path": "^2.0.1",
     "tough-cookie": "^4.0.0",
     "tough-cookie-file-store": "^2.0.2",
     "typescript": "^3.8.3",

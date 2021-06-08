@@ -58,6 +58,7 @@ export const deleteMatchRoute: RequestHandler = async (req, res) => {
 
 export const updateMatchRoute: RequestHandler = async (req, res) => {
 	const io = await ioPromise;
+	req.body.game = customer.game;
 	const match = await M.updateMatch(req.body);
 	io.emit('match');
 	return res.sendStatus(match ? 200 : 500);

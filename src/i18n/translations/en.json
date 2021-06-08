@@ -201,8 +201,8 @@
 				"console": "Console",
 				"add": "ADD HUD",
 				"runGame": "RUN GAME",
-				"pauseTest": "PAUSE TEST DATA",
-				"runTest": "RUN TEST DATA",
+				"pauseTest": "PAUSE TEST",
+				"runTest": "RUN TEST",
 				"openDirectory": "Open HUDs directory",
 				"playTestLoop": "Play test loop",
 				"ar": "AR (experimental)"

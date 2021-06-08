@@ -1007,6 +1007,9 @@ form .card > .card-body > button.btn {
 .match-entry:not(.live) .live-indicator{
     display:none;
 }
+.match_row:not(.live) .live-indicator{
+    opacity: 0;
+}
 .match-name, .item-list-entry.heading.matches .match-name {
     flex:2;
     display: flex;

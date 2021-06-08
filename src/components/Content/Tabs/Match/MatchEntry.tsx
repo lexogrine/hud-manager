@@ -39,7 +39,7 @@ const MatchEntry = ({ match, teams, cxt, edit, setCurrent }: Props) => {
 				<div className="match-name">
 					{(left && left.shortName) || t('common.teamOne')} {t('common.vs')}{' '}
 					{(right && right.shortName) || t('common.teamTwo')}
-					<div className="live-indicator">{t('common.live')}</div>
+					<div className="live-indicator">{t('match.live')}</div>
 				</div>
 
 				<div className="map-score">

@@ -73,6 +73,7 @@ exports.deleteMatchRoute = async (req, res) => {
 };
 exports.updateMatchRoute = async (req, res) => {
     const io = await socket_1.ioPromise;
+    req.body.game = __1.customer.game;
     const match = await M.updateMatch(req.body);
     io.emit('match');
     return res.sendStatus(match ? 200 : 500);
