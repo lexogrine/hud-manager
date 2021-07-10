@@ -127,7 +127,6 @@ export const verifyUrl = async (url: string) => {
 	}
 	if (bases.find(base => url.startsWith(`${base}/ar/drawing.html`))) {
 		return true;
-	
 	}
 	if (bases.find(base => url.startsWith(`${base}/ar2/engine/drawing.html`))) {
 		return true;

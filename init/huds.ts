@@ -1,4 +1,4 @@
-import { BrowserWindow, Tray, Menu, /*globalShortcut*/ } from 'electron';
+import { BrowserWindow, Tray, Menu /*globalShortcut*/ } from 'electron';
 import { getHUDData } from './../server/api/huds';
 import * as path from 'path';
 //import ip from 'ip';
@@ -61,7 +61,7 @@ class HUD {
 
 		this.current = hudWindow;
 		this.hud = hud;
-		
+
 		io.emit('hud_opened', true);
 
 		this.showWindow(hud, io);
@@ -74,7 +74,7 @@ class HUD {
 					unregisterKeybind(keybind.bind, hud.dir);
 				}
 			}
-			unregisterKeybind("Alt+F");
+			unregisterKeybind('Alt+F');
 			// globalShortcut.unregister('Alt+F');
 
 			this.hud = null;
@@ -98,16 +98,20 @@ class HUD {
 			this.current.loadURL(hud.url);
 		});*/
 
-		registerKeybind("Alt+F", () => {
+		registerKeybind('Alt+F', () => {
 			if (!this.current || !hud || !hud.url) return;
 			this.current.loadURL(hud.url);
 		});
 
 		if (hud.keybinds) {
 			for (const bind of hud.keybinds) {
-				registerKeybind(bind.bind, () => {
-					io.to(hud.dir).emit('keybindAction', bind.action);
-				}, hud.dir);
+				registerKeybind(
+					bind.bind,
+					() => {
+						io.to(hud.dir).emit('keybindAction', bind.action);
+					},
+					hud.dir
+				);
 				/*globalShortcut.register(bind.bind, () => {
 					io.to(hud.dir).emit('keybindAction', bind.action);
 				});*/
