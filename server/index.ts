@@ -64,6 +64,9 @@ export default async function init() {
 	fs.watch(path.join(application.getPath('home'), 'HUDs'), () => {
 		io.emit('reloadHUDs');
 	});
+	fs.watch(path.join(application.getPath('userData'), 'ARs'), () => {
+		io.emit('reloadHUDs');
+	});
 
 	app.use('/', express.static(path.join(__dirname, '../build')));
 	app.get('*', (_req, res) => {

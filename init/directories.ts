@@ -12,8 +12,9 @@ export function checkDirectories() {
 	const hudsData = path.join(app.getPath('home'), 'HUDs');
 	const userData = app.getPath('userData');
 	const database = path.join(userData, 'databases');
+	const arData = path.join(userData, 'ARs');
 
-	[hudsData, userData, database].forEach(createIfMissing);
+	[hudsData, userData, database, arData].forEach(createIfMissing);
 	const mapFile = path.join(app.getPath('userData'), 'maps.json');
 
 	if (!fs.existsSync(mapFile)) {

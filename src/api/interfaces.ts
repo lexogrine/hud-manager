@@ -25,7 +25,8 @@ export type {
 	AvailableResources,
 	onExtraChangeFunction,
 	MapAreaConfig,
-	MapConfig
+	MapConfig,
+	ARModule
 } from './../../types/interfaces';
 
 export interface CFGGSIResponse {

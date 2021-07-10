@@ -11,6 +11,7 @@ import Credits from './Credits/Credits';
 import Live from './Live/Live';
 import { ContextData } from './../../Context';
 import ACO from './ACO/ACO';
+import CG from './CG/CG';
 
 interface IProps {
 	activeTab: string;
@@ -23,6 +24,9 @@ const Tabs = ({ activeTab, data, toggle, gsiCheck }: IProps) => (
 	<ContextData.Consumer>
 		{cxt => (
 			<TabContent activeTab={activeTab}>
+				<TabPane tabId="cgpanel">
+					<CG cxt={cxt}></CG>
+				</TabPane>
 				<TabPane tabId="teams">
 					<Teams cxt={cxt}></Teams>
 				</TabPane>

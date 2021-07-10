@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 const parsePlayer = (basePlayer, steamid, team, extensions) => {
     const extension = extensions.find(player => player.steamid === steamid);
     const player = {
@@ -31,3 +32,62 @@ export const parseTeam = (team, orientation, side, extension) => ({
     orientation,
     extra: (extension && extension.extra) || {}
 });
+
+const currentModules = []
+
+const getARModule = (dir) => currentModules.find(arModule => arModule.id === dir) || null;
+
+export const addARModule = async (dir, { scene, camera, renderers, GSI, actions }) => {
+    const duplicate = getARModule(dir);
+
+    if(duplicate){
+        return;
+    }
+    const arModule = await import(`/ars/${dir}/index.js?cacheBust=${(new Date()).getTime()}`);
+
+    if(!arModule || !arModule.startARModule || !arModule.cleanUpARModule){
+        return;
+    }
+    const customCSS = document.createElement("link");
+    customCSS.setAttribute("rel", "stylesheet");
+    customCSS.setAttribute("type", "text/css");
+    customCSS.setAttribute("id", `ar-stylesheet-${dir}`);
+    customCSS.setAttribute("href", `/ars/${dir}/index.css?cacheBust=${(new Date()).getTime()}`);
+
+    document.getElementsByTagName("head")[0].appendChild(customCSS);
+
+    const moduleEntry = { id: dir, module: arModule }
+
+    currentModules.push(moduleEntry);
+
+    arModule.startARModule(scene, camera, renderers, GSI, actions);
+
+    return;
+}
+
+export const removeARModule = (dir, { scene, GSI }) => {
+    const customStyleSheet = document.getElementById(`ar-stylesheet-${dir}`);
+    if (customStyleSheet) {
+        customStyleSheet.remove();
+    }
+
+    const arModule = getARModule(dir);
+    if(!arModule) return;
+
+    arModule.cleanUpARModule(scene, GSI);
+    return;
+}
+
+export const setActiveModules = async (dirs, arSettings) => {
+    for(const dir of dirs) {
+        const currentModule = getARModule(dir);
+        if(!currentModule){
+            await addARModule(dir, arSettings);
+        }
+    }
+    for(const mod of currentModules){
+        if(!dirs.includes(mod.dir)){
+            removeARModule(mod.dir, arSettings);
+        }
+    }
+}

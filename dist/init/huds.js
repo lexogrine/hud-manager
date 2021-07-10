@@ -23,6 +23,7 @@ const electron_1 = require("electron");
 const huds_1 = require("./../server/api/huds");
 const path = __importStar(require("path"));
 const socket_1 = require("../server/socket");
+const keybinder_1 = require("../server/api/keybinder");
 class HUD {
     constructor() {
         this.current = null;
@@ -70,17 +71,21 @@ class HUD {
         this.tray = tray;
         this.current = hudWindow;
         this.hud = hud;
+        io.emit('hud_opened', true);
         this.showWindow(hud, io);
         hudWindow.loadURL(hud.url);
         hudWindow.on('close', () => {
             if (this.hud && this.hud.keybinds) {
                 for (const keybind of this.hud.keybinds) {
-                    electron_1.globalShortcut.unregister(keybind.bind);
+                    //globalShortcut.unregister(keybind.bind);
+                    keybinder_1.unregisterKeybind(keybind.bind, hud.dir);
                 }
             }
-            electron_1.globalShortcut.unregister('Alt+F');
+            keybinder_1.unregisterKeybind("Alt+F");
+            // globalShortcut.unregister('Alt+F');
             this.hud = null;
             this.current = null;
+            io.emit('hud_opened', false);
             if (this.tray !== null) {
                 this.tray.destroy();
             }
@@ -92,16 +97,23 @@ class HUD {
             return;
         this.current.setOpacity(1);
         this.current.show();
-        electron_1.globalShortcut.register('Alt+F', () => {
+        /*globalShortcut.register('Alt+F', () => {
+            if (!this.current || !hud || !hud.url) return;
+            this.current.loadURL(hud.url);
+        });*/
+        keybinder_1.registerKeybind("Alt+F", () => {
             if (!this.current || !hud || !hud.url)
                 return;
             this.current.loadURL(hud.url);
         });
         if (hud.keybinds) {
             for (const bind of hud.keybinds) {
-                electron_1.globalShortcut.register(bind.bind, () => {
+                keybinder_1.registerKeybind(bind.bind, () => {
                     io.to(hud.dir).emit('keybindAction', bind.action);
-                });
+                }, hud.dir);
+                /*globalShortcut.register(bind.bind, () => {
+                    io.to(hud.dir).emit('keybindAction', bind.action);
+                });*/
             }
         }
     }
@@ -111,7 +123,8 @@ class HUD {
             this.current.setOpacity(this.show ? 1 : 0);
         }
     }
-    close() {
+    async close() {
+        const io = await socket_1.ioPromise;
         if (this.tray !== null) {
             this.tray.destroy();
         }
@@ -119,6 +132,7 @@ class HUD {
             return null;
         this.current.close();
         this.current = null;
+        io.emit('hud_opened', false);
         return true;
     }
 }

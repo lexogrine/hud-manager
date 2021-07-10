@@ -10,7 +10,7 @@ import ColorPicker from '../../../ColorPicker/ColorPicker';
 import { withTranslation } from 'react-i18next';
 
 interface IProps {
-	section: I.PanelTemplate;
+	section?: I.PanelTemplate;
 	hud: string;
 	cxt: IContextData;
 	t: any;
@@ -151,10 +151,11 @@ class ARSettings extends React.Component<IProps, IState> {
 	getCheckboxes = (panel: I.PanelTemplate) => this.filterInputs(panel, 'checkbox');
 
 	renderSection = () => {
-		const { cxt, section, t } = this.props;
+		const { cxt, section, t, hud } = this.props;
 		const { teams, matches, players } = cxt;
 		const { form } = this.state;
-		if (!section.ar) return null;
+		console.log(section, hud)
+		if (!section) return null;
 		return (
 			<div key={section.label} className="custom_form">
 				<div className="section_name">{section.label}</div>

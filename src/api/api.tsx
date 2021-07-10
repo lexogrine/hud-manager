@@ -39,6 +39,8 @@ const apiHandler: <T>(url: string, method?: string, body?: any, credentials?: bo
 	});
 };
 
+export function clone<T>(obj: T): T { return JSON.parse(JSON.stringify(obj)); }
+
 export async function apiV2<T>(url: string, method = 'GET', body?: any) {
 	return apiHandler<T>(`${config.isDev ? apiUrl : '/'}api/${url}`, method, body);
 	/*const options: RequestInit = {
@@ -153,6 +155,9 @@ export default {
 		login: (username: string, password: string): Promise<any> => apiV2('auth', 'POST', { username, password }),
 		logout: () => apiV2('auth', 'DELETE'),
 		getCurrent: (): Promise<I.Customer | { message: string; success: boolean }> => apiV2('auth')
+	},
+	ar: {
+		get: async (): Promise<I.ARModule[]> => await apiV2('ar')
 	},
 	files: {
 		imgToBase64: async (url: string) => {

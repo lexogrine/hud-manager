@@ -31,6 +31,7 @@ interface IProps {
 	setHUDLoading: (uuid: string, isLoading: boolean) => void;
 	isLoading: boolean;
 	isCloudAvailable: boolean;
+	isHUDOpened: boolean;
 }
 
 const HudEntry = ({
@@ -41,7 +42,8 @@ const HudEntry = ({
 	customFields,
 	loadHUDs,
 	setHUDLoading,
-	isCloudAvailable
+	isCloudAvailable,
+	isHUDOpened
 }: IProps) => {
 	const gameToTag = (game: string) => {
 		if (game === 'rocketleague') {
@@ -301,6 +303,7 @@ const HudEntry = ({
 												<Switch
 													id={`hud-switch-${hud.dir}`}
 													isOn={isActive}
+													disabled={isHUDOpened}
 													handleToggle={() => setHUD(hud.url, hud.dir, hud.isDev)}
 												/>
 											</div>

@@ -16,18 +16,31 @@ interface IProps {
 }
 
 const AR = ({ cxt, toggle }: IProps) => {
-	const [active, setActive] = useState<I.HUD | null>(null);
+	const [active, setActive] = useState<I.HUD | I.ARModule | null>(null);
 	const [huds, setHUDs] = useState<I.HUD[]>([]);
+	const [ars, setARs] = useState<I.ARModule[]>([]);
+	const [activeModules, setActiveModules] = useState<string[]>([]);
+
 	const loadHUDs = async () => {
-		const huds = await api.huds.get();
-		setHUDs(huds);
+		api.huds.get().then(setHUDs);
+		api.ar.get().then(ars => setARs(ars || []));
 	};
 	useEffect(() => {
 		loadHUDs();
 		socket.on('reloadHUDs', loadHUDs);
+
+		
+		socket.on('active_modules', (activeModules: string[]) => {
+			setActiveModules(activeModules);
+		});
+		socket.emit('get_active_modules');
 	}, []);
 
-	if (active && active.ar) {
+	const isAssetHUD = (hud: I.HUD | I.ARModule): hud is I.HUD => {
+		return "uuid" in hud;
+	}
+
+	if (active) {
 		return (
 			<React.Fragment>
 				<div className="tab-title-container">
@@ -35,7 +48,7 @@ const AR = ({ cxt, toggle }: IProps) => {
 					AR
 				</div>
 				<div className="tab-content-container full-scroll no-padding">
-					<ARSettings cxt={cxt} hud={active.dir} section={active.ar} />
+					<ARSettings cxt={cxt} hud={active.dir} section={isAssetHUD(active) ? active.ar : active.panel} />
 				</div>
 			</React.Fragment>
 		);
@@ -49,6 +62,10 @@ const AR = ({ cxt, toggle }: IProps) => {
 			<div className={`tab-content-container no-padding ${!isElectron ? 'full-scroll' : ''}`}>
 				<Row className="padded">
 					<Col>
+						{ars
+							.map(ar => (
+								<HudEntry key={ar.dir} hud={ar} setActive={setActive} active={activeModules.some(mod => mod === ar.dir)} />
+							))}
 						{huds
 							.filter(hud => hud.ar)
 							.map(hud => (

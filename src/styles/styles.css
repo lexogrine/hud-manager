@@ -1492,3 +1492,77 @@ input:checked ~ .customCheckbox {
 .hud-options span {
     display: flex;
 }
+
+.cg-panel {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.cg-section {
+    display: flex;
+    flex-direction: column;
+    margin: 0 10px;
+}
+.cg-bar {
+    display: flex;
+    padding: 10px;
+    background-color: rgba(0,0,0,0.25);
+    border-radius: 5px;
+}
+.cg-section.hide .cg-content {
+    height: 0;
+    padding: 0 10px;
+}
+.cg-bar .title {
+    flex: 1;
+}
+.cg-content {
+    display: flex;
+    padding: 10px;
+    background-color: rgba(0,0,0,0.05);
+    border-radius: 5px;
+    overflow: hidden;
+    flex-direction: column;
+}
+.cg-content .picker-button {
+    padding: 2px 5px;
+    font-size: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 100px;
+    width: 100%;
+    cursor:pointer;
+    font-weight: 700;
+    background-color: #46494f;
+}
+.cg-content .picker-button.active {
+    background-color: #53bf53;
+}
+
+.cg-content .picker-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+    margin: 0.25rem 0;
+    padding-left:0;
+    padding-right:0;
+    flex:1;
+
+}
+.cg-content .team-picker-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.cg-content .veto-list .form-group {
+    margin: 0.5rem 0;
+    padding: 0.5rem 0;
+}
+
+.cg-content .team-picker-container .picker-button {
+    height: 22px;
+    font-size: 11px;
+    margin: 4px 0;
+}

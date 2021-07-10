@@ -403,8 +403,8 @@ exports.showHUD = async (req, res) => {
     }
     return res.sendStatus(404);
 };
-exports.closeHUD = (req, res) => {
-    const response = huds_1.default.close();
+exports.closeHUD = async (req, res) => {
+    const response = await huds_1.default.close();
     if (response) {
         return res.sendStatus(200);
     }

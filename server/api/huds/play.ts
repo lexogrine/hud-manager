@@ -88,6 +88,11 @@ export const initGameConnection = async () => {
 		res.sendStatus(200);
 	});
 
+	app.post('/dota2', assertUser, (req, res) => {
+		io.to('dota2').emit('update', req.body);
+		res.sendStatus(200);
+	});
+
 	app.post('/api/test', assertUser, (_req, res) => {
 		if (playTesting.intervalId) stopSendingTestData();
 		else startSendingTestData();

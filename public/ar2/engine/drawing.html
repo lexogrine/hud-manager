@@ -1,0 +1,958 @@
+<!DOCTYPE html>
+<html>
+<style>
+	html {
+		overflow: hidden;
+	}
+
+	html,
+	body,
+	div {
+		margin: 0;
+		color: white;
+		text-shadow: 0 0 2px black;
+		padding: 0;
+	}
+
+	#clientTime {
+		opacity: 0.1;
+		text-shadow: none;
+		color: rgba(255, 255, 255, 0.1);
+	}
+
+	canvas,
+	#css3drenderer {
+		position: absolute;
+		left: 0;
+		top: 0;
+	}
+
+	iframe {
+		height: 100vh;
+		background-color: rgba(0, 0, 0, 0);
+		width: 100vw;
+		overflow: hidden;
+	}
+</style>
+
+<body id="body">
+	<span id="clientTime"></span>
+	<iframe src="/?hlaegui" style="border: none; overflow:hidden;"></iframe>
+	<script type="text/javascript" src="./../lhm/three.min.js"></script>
+	<script type="text/javascript" src="./../lhm/css3drenderer.js"></script>
+	<script type="text/javascript" src="/socket.io/socket.io.min.js"></script>
+	<script type="module">
+		import { CSGOGSI } from './../lhm/csgogsi.js';
+		import { ActionManager } from './../lhm/actions.js';
+		import { addARModule, removeARModule, setActiveModules } from './../lhm/utils.js';
+
+		import * as Utils from './modules/utils.js';
+		import * as Windows from './modules/windows.js';
+		import * as D3d9 from './modules/d3d9.js';
+
+		var actions = new ActionManager();
+
+		if (globalThis && !globalThis.actions) {
+			globalThis.actions = actions;
+		}
+
+		let currentARModule = null;
+
+		const GSI = new CSGOGSI();
+		//console.log("STARTING")
+		const socketio = io('/');
+		socketio.on('update', GSI.digest);
+
+		socketio.on(`hud_action`, (data) => {
+			actions.execute(data.action, data.data);
+		});
+		socketio.on('keybindAction', (action) => {
+			actions.execute(action);
+		});
+
+		const horToVert = hFov => {
+			const hRadians = hFov * Math.PI / 180;
+
+			const vRadians = Math.atan(Math.tan(hRadians * 0.5) * 9 / 16) * 2;
+
+			return vRadians * 180 / Math.PI;
+		}
+
+		const gameFovToRealFov = (fov, width, height) => {
+			return Math.atan(Math.tan(fov * Math.PI / 360) * (3 * width) / (height * 4)) * 360 / Math.PI
+		}
+
+		const gameFovToVert = (fov, width = 1920, height = 1080) => {
+			return horToVert(gameFovToRealFov(fov, width, height));
+		}
+		var degreeToRadian = (degree) => degree * Math.PI / 180;
+
+		const scene = new THREE.Scene();
+
+		const camera = new THREE.PerspectiveCamera(74, 16 / 9, 0.1, 10000);
+
+
+		const WEBGL = new THREE.WebGLRenderer({ alpha: true, powerPreference: 'high-performance', antialias: true });
+		const CSS3D = new THREE.CSS3DRenderer();
+
+		CSS3D.domElement.id = 'css3drenderer';
+
+		WEBGL.setSize(1920, 1080);
+		CSS3D.setSize(1920, 1080);
+
+		document.body.appendChild(WEBGL.domElement);
+		document.body.appendChild(CSS3D.domElement);
+
+		const renderers = {
+			CSS3D,
+			WEBGL
+		}
+
+		const arSettings = {
+			scene,
+			camera,
+			renderers,
+			GSI,
+			actions
+		};
+
+		socketio.on('active_modules', activeModules => {
+			setActiveModules(activeModules, arSettings);
+		});
+
+		socketio.on('active_hlae', async (url, dir, isDev) => {
+			socketio.emit('unregister')
+			//console.log('unreg')
+			GSI.removeAllListeners("data");
+
+			const customStyleSheet = document.getElementById("customStylesheet");
+			if (customStyleSheet) {
+				customStyleSheet.remove();
+			}
+
+			if (currentARModule && currentARModule.cleanUpARModule) {
+				currentARModule.cleanUpARModule(scene, GSI);
+			}
+			if (!url) return;
+
+
+			let arModuleURL = `/huds/${dir}/ar/ar.js`;
+			if (isDev) {
+				arModuleURL = '/dev/ar/ar.js';
+			}
+
+			arModuleURL += `?cacheBust=${(new Date()).getTime()}`
+
+			socketio.emit("register", isDev ? (Math.random() * 1000 + 1).toString(36).replace(/[^a-z]+/g, '').substr(0, 15) : dir, isDev);
+			try {
+				const moduleData = await fetch(arModuleURL);
+				
+				const type = moduleData.headers.get("Content-Type");
+				if(!type.startsWith('application/javascript')){
+					return;
+				}
+
+			} catch {
+				return;
+			}
+
+			const customCSS = document.createElement("link");
+			customCSS.setAttribute("rel", "stylesheet");
+			customCSS.setAttribute("type", "text/css");
+			customCSS.setAttribute("id", "customStylesheet");
+			customCSS.setAttribute("href", !isDev ? `/huds/${dir}/ar/index.css` : '/dev/ar/index.css');
+
+			document.getElementsByTagName("head")[0].appendChild(customCSS);
+
+			const arModule = await import(arModuleURL);
+			currentARModule = arModule;
+			const { startARModule } = arModule;
+			startARModule(scene, camera, renderers, GSI, actions);
+		});
+		socketio.emit('get_active_hlae_hud');
+		socketio.emit('get_active_modules');
+
+
+
+
+
+
+
+
+
+
+
+
+
+		////////////////////////////////////////////////////////////////////////////////
+
+		function AfxDrawingInterop(interop, args) {
+
+			var self = this;
+
+			interop.setPipeName(args.pipeName);
+
+			this.interop = interop;
+			this.args = args;
+
+			this.cefTextureHandle = null;
+			this.cefTextures = {};
+			this.elClientTime = document.getElementById('clientTime');
+
+			this.engineInteropId = null;
+
+			this.connected = false;
+			this.messagePromises = {};
+
+			self.resized = false;
+
+			this.shaderData = {
+				"afx_drawtexture_vs20": this.compileShader(this.stringToAfxData(`
+			matrix World;
+			matrix View;
+			matrix Projection;
+
+			struct VS_INPUT
+			{
+				float3 pos : POSITION;
+				float2 t0 : TEXCOORD0;
+			};
+			
+			struct VS_OUTPUT
+			{
+				float4 pos : POSITION;
+				float4 c : COLOR;
+				float2 t0 : TEXCOORD0;
+			};
+
+			VS_OUTPUT main( const VS_INPUT i )
+			{
+				VS_OUTPUT o;
+				
+				o.pos = float4(i.pos, 1);
+				o.pos = mul( o.pos, World );
+    			o.pos = mul( o.pos, View );
+    			o.pos = mul( o.pos, Projection );	
+				o.pos /= o.pos.w;			
+				o.c = float4(o.pos.x,0,o.pos.y,1);
+				o.t0 = i.t0;
+				
+				return o;
+			}
+		`), null, null, null, "main", "vs_2_0", 0, 0, 0, null),
+				"afx_drawtexture_ps20": this.compileShader(this.stringToAfxData(`
+			sampler g_sTextureSampler : register( s0 );
+
+			struct PS_INPUT
+			{
+				float2 t0 : TEXCOORD0;
+			};
+
+			float4 main( const PS_INPUT i ) : COLOR
+			{
+				return tex2D(g_sTextureSampler, i.t0);
+			}
+		`), null, null, null, "main", "ps_2_0", 0, 0, 0, null),
+			};
+
+			this.shaders = {
+				"afx_drawtexture_vs20": null,
+				"afx_drawtexture_ps20": null,
+			};
+
+			this.messageHandlers = {
+				"connect": async function (senderId) {
+					this.engineInteropId = senderId;
+					await this.connect(senderId);
+
+					var self = this;
+				},
+				"disconnect": async function (senderId) {
+					await Utils.toPromise(this, "disconnect");
+				},
+				"onRenderViewBegin": async function (renderInfo) {
+
+
+					var width = renderInfo.view.width - renderInfo.view.x;
+					var height = renderInfo.view.height - renderInfo.view.y;
+
+					self.resized = width != this.width || height != this.height;
+
+					this.width = width;
+					this.height = height;
+					this.renderInfo = renderInfo;
+					this.elClientTime.innerText = renderInfo.curTime;
+				},
+				"onGameEvent": async function (e) {
+					/*while(this.elGameEvents.childNodes.length > 10) this.elGameEvents.lastElementChild.remove();
+		
+					var docP = document.createElement('p');
+					docP.appendChild(document.createTextNode(JSON.stringify(e)));
+					this.elGameEvents.insertBefore(docP, this.elGameEvents.firstElementChild);*/
+				},
+				"onViewOverride": async function (positionInfo) {
+					const { tX, tY, tZ, rX, rY, rZ, fov } = positionInfo;
+
+					const realX = -rX;
+					let realY = rY + 180;
+
+					const gameFov = gameFovToVert(fov, this.width, this.height);
+					if (camera.fov !== gameFov) {
+						camera.fov = gameFov;
+						camera.updateProjectionMatrix();
+					}
+					camera.rotation.x = 0;
+					camera.rotation.y = 0;
+					camera.rotation.z = 0;
+					camera.rotateY(degreeToRadian(realY));
+					camera.rotateX(degreeToRadian(realX));
+					camera.position.x = tY;
+					camera.position.z = tX;
+					camera.position.y = tZ;
+
+					renderers.CSS3D.render(scene, camera);
+					renderers.WEBGL.render(scene, camera);
+				},
+				"onHudEnd": async function (frameCount, pass) {
+
+					await Utils.toPromise(self.interop, "pumpBegin", frameCount, pass);
+
+					try {
+						if (null === self.shaders["afx_drawtexture_vs20"]) {
+							var refVertexShader = [undefined];
+							var hr = await Utils.toPromise(self.interop, "d3d9CreateVertexShader", self.shaderData["afx_drawtexture_vs20"], refVertexShader);
+							if (Utils.FAILED(hr)) throw Utils.toSoftError(Utils.failedHResultToError(hr));
+							self.shaders["afx_drawtexture_vs20"] = refVertexShader[0];
+						}
+
+						if (null === self.shaders["afx_drawtexture_ps20"]) {
+							var refPixelShader = [undefined];
+							var hr = await Utils.toPromise(self.interop, "d3d9CreatePixelShader", self.shaderData["afx_drawtexture_ps20"], refPixelShader);
+							if (Utils.FAILED(hr)) throw Utils.toSoftError(Utils.failedHResultToError(hr));
+							self.shaders["afx_drawtexture_ps20"] = refPixelShader[0];
+						}
+
+						if (null === self.vertexDeclarations["pos3_uv2"]) {
+							var refVertexDeclaration = [undefined];
+							var hr = await Utils.toPromise(self.interop, "d3d9CreateVertexDeclaration", self.vertexElements["pos3_uv2"], refVertexDeclaration);
+							if (Utils.FAILED(hr)) throw Utils.toSoftError(Utils.failedHResultToError(hr));
+							self.vertexDeclarations["pos3_uv2"] = refVertexDeclaration[0];
+						}
+
+						var requestAnimationFramePromise = new Promise((resolve, reject) => {
+							window.requestAnimationFrame((timestamp) => {
+								//console.log("requestAnimationFrame: "+timestamp);
+								//
+								// >>>>
+
+								// TODO: Do your own painting preparations here.
+
+								// <<<<
+								//
+
+								resolve();
+							});
+						});
+
+						async function doPaintGameToCef(rootTextureHandle) {
+
+							//console.log("doPaintGameToCef BEGIN");
+
+							if (rootTextureHandle.invalid) throw Utils.toSoftError(new Error("rootTextureHandle.invalid"));
+
+							var cefTexture = self.getCefTexture(rootTextureHandle);
+
+							if (!cefTexture) {
+								console.log("New texture for rootTextureHandle: (" + rootTextureHandle.hi + ", " + rootTextureHandle.lo + ")");
+								var refTexture = [undefined];
+								const D3DFMT_A8R8G8B8 = 21;
+								var hr = await Utils.toPromise(self.interop, "d3d9CreateTexture", self.width, self.height, 1, D3d9.D3DUSAGE.D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3d9.D3DPOOL.D3DPOOL_DEFAULT, refTexture, [rootTextureHandle]);
+								//console.log("doPaintGameToCef BEGIN 1");
+								if (Utils.FAILED(hr)) throw Utils.toSoftError(Utils.failedHResultToError(hr, "CreateTexture failed for rootTextureHandle: (" + rootTextureHandle.hi + ", " + rootTextureHandle.lo + ")"));
+								cefTexture = refTexture[0];
+								self.setCefTexture(rootTextureHandle, cefTexture);
+							}
+
+							var cefTextureSuraceLevel0Ref = [undefined];
+							var gameSurfaceRef = [undefined];
+
+							//console.log("doPaintGameToCef BEGIN 2");
+
+							try {
+								var hr = await Utils.toPromise(cefTexture, "getSurfaceLevel", 0, cefTextureSuraceLevel0Ref);
+								if (Utils.FAILED(hr)) throw Utils.toSoftError(Utils.failedHResultToError(hr));
+
+								//console.log("doPaintGameToCef BEGIN 3");
+
+								var hr = await Utils.toPromise(self.interop, "getRenderTarget", 0, gameSurfaceRef);
+								if (Utils.FAILED(hr)) throw Utils.toSoftError(Utils.failedHResultToError(hr));
+
+								//console.log("doPaintGameToCef BEGIN 4");
+
+								await Utils.toPromise(self.interop, "beginCleanState");
+
+								//console.log("doPaintGameToCef BEGIN 5");
+
+								var hr = await Utils.toPromise(self.interop, "d3d9StretchRect", gameSurfaceRef[0], null, cefTextureSuraceLevel0Ref[0], null, D3d9.D3DTEXTUREFILTERTYPE.D3DTEXF_NONE);
+								if (Utils.FAILED(hr)) throw Utils.toSoftError(Utils.failedHResultToError(hr));
+
+								//console.log("doPaintGameToCef BEGIN 6");
+
+								await Utils.toPromise(self.interop, "endCleanState");
+
+								//console.log("doPaintGameToCef BEGIN 7");
+
+								await Utils.toPromise(self.interop, "waitForClientGpu");
+
+								//console.log("doPaintGameToCef BEGIN 8");
+							}
+							catch (e) {
+								if (e && e.soft) {
+									if (gameSurfaceRef[0]) await Utils.toPromise(gameSurfaceRef[0], "release");
+									if (cefTextureSuraceLevel0Ref[0]) await Utils.toPromise(cefTextureSuraceLevel0Ref[0], "release");
+								}
+
+								throw e;
+							}
+
+							//console.log("doPaintGameToCef BEGIN 9");
+
+							if (gameSurfaceRef[0]) await Utils.toPromise(gameSurfaceRef[0], "release");
+
+							//console.log("doPaintGameToCef BEGIN 10");
+
+							if (cefTextureSuraceLevel0Ref[0]) await Utils.toPromise(cefTextureSuraceLevel0Ref[0], "release");
+
+							//console.log("doPaintGameToCef END");
+
+							return true;
+						}
+
+						async function doPaintCefToGame(cefTextureHandle) {
+
+							//console.log("doPaintCefToGame BEGIN");
+
+							if (cefTextureHandle.invalid) throw Utils.toSoftError(new Error("cefTextureHandle.invalid"));
+
+							var cefTexture = self.getCefTexture(cefTextureHandle);
+
+							if (!cefTexture) {
+								console.log("Creating new texture for cefTextureHandle: (" + cefTextureHandle.hi + ", " + cefTextureHandle.lo + ")");
+
+								var refTexture = [undefined];
+								const D3DFMT_A8R8G8B8 = 21;
+								var hr = await Utils.toPromise(self.interop, "d3d9CreateTexture", self.width, self.height, 1, D3d9.D3DUSAGE.D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3d9.D3DPOOL.D3DPOOL_DEFAULT, refTexture, [cefTextureHandle]);
+								if (Utils.FAILED(hr)) throw Utils.toSoftError(Utils.failedHResultToError(hr, "CreateTexture failed for cefTextureHandle: (" + cefTextureHandle.hi + ", " + cefTextureHandle.lo + ")"));
+
+								cefTexture = refTexture[0];
+
+								self.setCefTexture(cefTextureHandle, cefTexture);
+							}
+
+							if (!cefTexture) throw Utils.toSoftError(new Error("!cefTexture"));
+
+							//console.log("doPaintCefToGame BEGIN B");
+
+							await self.drawRect2d(cefTexture, self.renderInfo.view.x, self.renderInfo.view.y, self.renderInfo.view.width, self.renderInfo.view.height, 0, 0, 1, 1);
+
+							//console.log("doPaintCefToGame BEGIN D");
+
+							await Utils.toPromise(self.interop, "waitForClientGpu");
+
+							//console.log("doPaintCefToGame END");
+
+							return true;
+						}
+
+						await Utils.toPromise(self.interop, "cefBeginFrame", self.width, self.height, {
+							"onAfterClear": function (resolve, reject, shareHandle) {
+								doPaintGameToCef(shareHandle).then(() => { resolve(true) }).catch((e) => {
+									Utils.logError(e);
+									reject(e);
+								});
+							}
+							, "onAfterRender": function (resolve, reject, shareHandle) {
+								doPaintCefToGame(shareHandle).then(() => { resolve(true) }).catch((e) => {
+									Utils.logError(e);
+									reject(e);
+								});
+							}
+						});
+
+						//await requestAnimationFramePromise;
+
+						await Utils.toPromise(self.interop, "pumpEnd");
+					}
+					catch (e) {
+						Utils.logError(e);
+						if (e && e.soft) {
+							await Utils.toPromise(self.interop, "pumpEnd");
+							return;
+						}
+						throw e;
+					}
+
+					return true;
+				}
+			};
+
+			interop.onMessage = function (senderId, message) {
+
+				const jMessage = JSON.parse(message);
+
+				async function processMessage(jMessage) {
+					//console.log(JSON.stringify(jMessage));
+
+					try {
+						await self.messageHandlers[jMessage.id].apply(self, jMessage.args);
+					}
+					catch (e) {
+						Utils.logError(e);
+						if (!(e && e.soft))
+							await Utils.toPromise(self, "disconnect");
+					}
+				}
+
+				function queueMessage(jMessage) {
+					const port = jMessage.port || "0";
+
+					var promise = self.messagePromises[port];
+					if (undefined === promise) self.messagePromises[port] = Promise.resolve();
+
+					self.messagePromises[port] = self.messagePromises[port].then(() => { return processMessage(jMessage); });
+				}
+
+				queueMessage(jMessage);
+			}
+
+			interop.onDeviceReset = function () {
+				self.onDeviceReset().catch((e) => {
+					Utils.logError(e);
+					if (!(e && e.soft))
+						return Utils.toPromise(self, "disconnect");
+				});
+			};
+
+			interop.onReleaseShareHandle = function (cefTextureHandle) {
+
+				async function release(cefTextureHandle) {
+					var cefTexture = self.getCefTexture(cefTextureHandle);
+					if (cefTexture) {
+						if (this.connected) {
+							try {
+								await Utils.toPromise(cefTexture, "release");
+							}
+							catch (e) {
+								Utils.logError(e);
+							}
+						}
+
+						self.removeCefTexture(cefTextureHandle);
+					}
+				}
+
+				release(cefTextureHandle).catch((e) => {
+					Utils.logError(e);
+					if (!(e && e.soft))
+						return Utils.toPromise(self, "disconnect");
+				});
+			}
+
+			this.vertexElements = {
+				"pos3_uv2": this.buildD3d9VertexElements([
+					{
+						"stream": 0,
+						"offset": 0,
+						"type": D3d9.D3DDECLTYPE.D3DDECLTYPE_FLOAT3,
+						"method": D3d9.D3DDECLMETHOD.D3DDECLMETHOD_DEFAULT,
+						"usage": D3d9.D3DDECLUSAGE.D3DDECLUSAGE_POSITION, "usageIndex": 0
+					},
+					{
+						"stream": 0,
+						"offset": 3 * 4,
+						"type": D3d9.D3DDECLTYPE.D3DDECLTYPE_FLOAT2,
+						"method": D3d9.D3DDECLMETHOD.D3DDECLMETHOD_DEFAULT,
+						"usage": D3d9.D3DDECLUSAGE.D3DDECLUSAGE_TEXCOORD, "usageIndex": 0
+					},
+				])
+			};
+
+			this.vertexDeclarations = {
+				"pos3_uv2": null
+			};
+
+			this.vertexBuffers = {
+				"rect": null
+			};
+
+			Utils.toPromise(self.interop, "sendMessage", self.args.indexInteropId, JSON.stringify({
+				"id": "drawingCreated",
+				"args": [interop.id]
+			}));
+		}
+
+		AfxDrawingInterop.prototype.onDeviceReset = async function () {
+
+			// We currently re-create all resources, even non-pooled ones.
+			// TODO: change the above.
+
+			while (0 < this.cefTextures.length) {
+				var hiKey = Object.keys(this.cefTextures)[0];
+				var loKey = Object.keys(this.cefTextures[hiKey])[0];
+
+				var cefTextureHandle = this.interop.createHandleFromLoHi(loKey, hiKey);
+
+				var cefTexture = this.getCefTexture(cefTextureHandle);
+
+				await Utils.toPromise(cefTexture, "release");
+
+				this.removeCefTexture(cefTextureHandle);
+			}
+
+			if (this.shaders["afx_drawtexture_vs20"]) {
+				await Utils.toPromise(this.shaders["afx_drawtexture_vs20"], "release");
+				this.shaders["afx_drawtexture_vs20"] = null;
+			}
+			if (this.shaders["afx_drawtexture_ps20"]) {
+				await Utils.toPromise(this.shaders["afx_drawtexture_ps20"], "release");
+				this.shaders["afx_drawtexture_ps20"] = null;
+			}
+			if (this.vertexDeclarations["pos3_uv2"]) {
+				await Utils.toPromise(this.vertexDeclarations["pos3_uv2"], "release");
+				this.vertexDeclarations["pos3_uv2"] = null;
+			}
+		}
+
+		/**
+		 * @remarks NOT NULL TERMINATED!
+		 */
+		AfxDrawingInterop.prototype.stringToAfxData = function (value) {
+			var dd = this.interop.createDrawingData(value.length);
+			var dv = new DataView(dd);
+
+			for (var i = 0; i < value.length; ++i) {
+				dv.setUint8(i, value.charCodeAt(i));
+			}
+
+			return dd;
+		}
+
+		/**
+		 * @param includes MUST BE null.
+		 * @remarks https://docs.microsoft.com/en-us/windows/win32/api/d3dcompiler/nf-d3dcompiler-d3dcompile2
+		 */
+		AfxDrawingInterop.prototype.compileShader = function (srcData, sourceName, defines, includes, entryPoint, target, flags1, flags2, secondaryDataFlags, secondaryData) {
+
+			var result = this.interop.d3dCompile2(
+				srcData,
+				sourceName,
+				defines,
+				includes,
+				entryPoint,
+				target,
+				flags1,
+				flags2,
+				secondaryDataFlags,
+				secondaryData
+			);
+
+			if (0 !== result.hResult) {
+				var errorStr = "[UNKNOWN]";
+				if (null !== result.errorMsgs) {
+					var decoder = new TextDecoder('utf-8', { fatal: true });
+					var cefIsBuggy = new ArrayBuffer(result.errorMsgs.byteLength);
+					var dvIn = new DataView(result.errorMsgs);
+					var dvOut = new DataView(cefIsBuggy);
+					for (var i = 0; i < cefIsBuggy.byteLength; ++i) dvOut.setUint8(i, dvIn.getUint8(i));
+					errorStr = decoder.decode(cefIsBuggy);
+				}
+				throw errorStr;
+			}
+
+			return result.code;
+		}
+
+		AfxDrawingInterop.prototype.drawRect2d = async function (texture, x, y, width, height, x0, y0, x1, y1) {
+
+			var self = this;
+
+			// Orthographic projection matrix:
+			const L = 0.5 + x;
+			const R = 0.5 + x + width;
+			const T = 0.5 + y;
+			const B = 0.5 + y + height;
+			const mat_identity = [
+				1.0, 0.0, 0.0, 0.0,
+				0.0, 1.0, 0.0, 0.0,
+				0.0, 0.0, 1.0, 0.0,
+				0.0, 0.0, 0.0, 1.0
+			];
+			const mat_projection = [
+				2.0 / (R - L), 0.0, 0.0, 0.0,
+				0.0, 2.0 / (T - B), 0.0, 0.0,
+				0.0, 0.0, 0.5, 0.0,
+				(L + R) / (L - R), (T + B) / (B - T), 0.5, 1.0
+			];
+
+			//
+			var vertexStreamZeroData = this.interop.createDrawingData(4 * ((3 + 2) * 4));
+			{
+				var dv = new DataView(vertexStreamZeroData);
+
+				dv.setFloat32(0 * 4, 0, true);
+				dv.setFloat32(1 * 4, height, true);
+				dv.setFloat32(2 * 4, 0, true);
+				dv.setFloat32(3 * 4, x0, true);
+				dv.setFloat32(4 * 4, y0, true);
+
+				dv.setFloat32(5 * 4, 0, true);
+				dv.setFloat32(6 * 4, 0, true);
+				dv.setFloat32(7 * 4, 0, true);
+				dv.setFloat32(8 * 4, x0, true);
+				dv.setFloat32(9 * 4, y1, true);
+
+				dv.setFloat32(10 * 4, width, true);
+				dv.setFloat32(11 * 4, height, true);
+				dv.setFloat32(12 * 4, 0, true);
+				dv.setFloat32(13 * 4, x1, true);
+				dv.setFloat32(14 * 4, y0, true);
+
+				dv.setFloat32(15 * 4, width, true);
+				dv.setFloat32(16 * 4, 0, true);
+				dv.setFloat32(17 * 4, 0, true);
+				dv.setFloat32(18 * 4, x1, true);
+				dv.setFloat32(19 * 4, y1, true);
+			}
+
+			//
+
+			async function toSoftError(error) {
+				error.soft = true;
+
+				await Utils.toPromise(self.interop, "endCleanState");
+
+				return error;
+			}
+
+			//
+
+			await Utils.toPromise(self.interop, "beginCleanState");
+
+			var hr = await Utils.toPromise(self.interop, "d3d9SetVertexDeclaration", this.vertexDeclarations["pos3_uv2"]);
+			if (Utils.FAILED(hr)) throw Utils.toSoftError(Utils.failedHResultToError(hr));
+
+			var hr = await Utils.toPromise(self.interop, "d3d9SetViewport", {
+				"x": x,
+				"y": y,
+				"width": width,
+				"height": height,
+				"minZ": 0.0,
+				"maxZ": 1.0
+			});
+			if (Utils.FAILED(hr)) throw Utils.toSoftError(Utils.failedHResultToError(hr));
+
+			var hr = await Utils.toPromise(self.interop, "d3d9SetRenderState", D3d9.D3DRENDERSTATETYPE.D3DRS_SRGBWRITEENABLE, Windows.BOOL.FALSE);
+			if (Utils.FAILED(hr)) throw Utils.toSoftError(Utils.failedHResultToError(hr));
+
+			var hr = await Utils.toPromise(self.interop, "d3d9SetRenderState", D3d9.D3DRENDERSTATETYPE.D3DRS_COLORWRITEENABLE, D3d9.D3DRS_COLORWRITEENABLE.D3DCOLORWRITEENABLE_ALPHA | D3d9.D3DRS_COLORWRITEENABLE.D3DCOLORWRITEENABLE_BLUE | D3d9.D3DRS_COLORWRITEENABLE.D3DCOLORWRITEENABLE_GREEN | D3d9.D3DRS_COLORWRITEENABLE.D3DCOLORWRITEENABLE_RED);
+			if (Utils.FAILED(hr)) throw Utils.toSoftError(Utils.failedHResultToError(hr));
+
+			var hr = await Utils.toPromise(self.interop, "d3d9SetRenderState", D3d9.D3DRENDERSTATETYPE.D3DRS_SEPARATEALPHABLENDENABLE, Windows.BOOL.FALSE);
+			if (Utils.FAILED(hr)) throw Utils.toSoftError(Utils.failedHResultToError(hr));
+
+			var hr = await Utils.toPromise(self.interop, "d3d9SetVertexShader", null);
+			if (Utils.FAILED(hr)) throw Utils.toSoftError(Utils.failedHResultToError(hr));
+
+			var hr = await Utils.toPromise(self.interop, "d3d9SetPixelShader", this.shaders["afx_drawtexture_ps20"]);
+			if (Utils.FAILED(hr)) throw Utils.toSoftError(Utils.failedHResultToError(hr));
+
+			var hr = await Utils.toPromise(self.interop, "d3d9SetRenderState", D3d9.D3DRENDERSTATETYPE.D3DRS_CULLMODE, D3d9.D3DCULL.D3DCULL_NONE);
+			if (Utils.FAILED(hr)) throw Utils.toSoftError(Utils.failedHResultToError(hr));
+
+			var hr = await Utils.toPromise(self.interop, "d3d9SetRenderState", D3d9.D3DRENDERSTATETYPE.D3DRS_ZWRITEENABLE, Windows.BOOL.FALSE);
+			if (Utils.FAILED(hr)) throw Utils.toSoftError(Utils.failedHResultToError(hr));
+
+			var hr = await Utils.toPromise(self.interop, "d3d9SetRenderState", D3d9.D3DRENDERSTATETYPE.D3DRS_ZFUNC, D3d9.D3DCMPFUNC.D3DCMP_ALWAYS);
+			if (Utils.FAILED(hr)) throw Utils.toSoftError(Utils.failedHResultToError(hr));
+
+			var hr = await Utils.toPromise(self.interop, "d3d9SetRenderState", D3d9.D3DRENDERSTATETYPE.D3DRS_ZENABLE, D3d9.D3DZBUFFERTYPE.D3DZB_FALSE);
+			if (Utils.FAILED(hr)) throw Utils.toSoftError(Utils.failedHResultToError(hr));
+
+			var hr = await Utils.toPromise(self.interop, "d3d9SetRenderState", D3d9.D3DRENDERSTATETYPE.D3DRS_ALPHABLENDENABLE, Windows.BOOL.TRUE);
+			if (Utils.FAILED(hr)) throw Utils.toSoftError(Utils.failedHResultToError(hr));
+
+			var hr = await Utils.toPromise(self.interop, "d3d9SetRenderState", D3d9.D3DRENDERSTATETYPE.D3DRS_ALPHATESTENABLE, Windows.BOOL.FALSE);
+			if (Utils.FAILED(hr)) throw Utils.toSoftError(Utils.failedHResultToError(hr));
+
+			var hr = await Utils.toPromise(self.interop, "d3d9SetRenderState", D3d9.D3DRENDERSTATETYPE.D3DRS_MULTISAMPLEANTIALIAS, Windows.BOOL.FALSE);
+			if (Utils.FAILED(hr)) throw Utils.toSoftError(Utils.failedHResultToError(hr));
+
+			var hr = await Utils.toPromise(self.interop, "d3d9SetRenderState", D3d9.D3DRENDERSTATETYPE.D3DRS_LIGHTING, Windows.BOOL.FALSE);
+			if (Utils.FAILED(hr)) throw Utils.toSoftError(Utils.failedHResultToError(hr));
+
+			var hr = await Utils.toPromise(self.interop, "d3d9SetRenderState", D3d9.D3DRENDERSTATETYPE.D3DRS_SRCBLEND, D3d9.D3DBLEND.D3DBLEND_SRCALPHA);
+			if (Utils.FAILED(hr)) throw Utils.toSoftError(Utils.failedHResultToError(hr));
+
+			var hr = await Utils.toPromise(self.interop, "d3d9SetRenderState", D3d9.D3DRENDERSTATETYPE.D3DRS_DESTBLEND, D3d9.D3DBLEND.D3DBLEND_INVSRCALPHA);
+			if (Utils.FAILED(hr)) throw Utils.toSoftError(Utils.failedHResultToError(hr));
+
+			var hr = await Utils.toPromise(self.interop, "d3d9SetRenderState", D3d9.D3DRENDERSTATETYPE.D3DRS_FILLMODE, D3d9.D3DFILLMODE.D3DFILL_SOLID);
+			if (Utils.FAILED(hr)) throw Utils.toSoftError(Utils.failedHResultToError(hr));
+
+			var hr = await Utils.toPromise(self.interop, "d3d9SetTextureStageState", 0, D3d9.D3DTEXTURESTAGESTATETYPE.D3DTSS_COLOROP, D3d9.D3DTEXTUREOP.D3DTOP_SELECTARG1);
+			if (Utils.FAILED(hr)) throw Utils.toSoftError(Utils.failedHResultToError(hr));
+
+			var hr = await Utils.toPromise(self.interop, "d3d9SetTextureStageState", 0, D3d9.D3DTEXTURESTAGESTATETYPE.D3DTSS_COLORARG1, D3d9.D3DTEXTUREARG.D3DTA_TEXTURE);
+			if (Utils.FAILED(hr)) throw Utils.toSoftError(Utils.failedHResultToError(hr));
+
+			var hr = await Utils.toPromise(self.interop, "d3d9SetTextureStageState", 0, D3d9.D3DTEXTURESTAGESTATETYPE.D3DTSS_ALPHAOP, D3d9.D3DTEXTUREOP.D3DTOP_SELECTARG1);
+			if (Utils.FAILED(hr)) throw Utils.toSoftError(Utils.failedHResultToError(hr));
+
+			var hr = await Utils.toPromise(self.interop, "d3d9SetTextureStageState", 0, D3d9.D3DTEXTURESTAGESTATETYPE.D3DTSS_ALPHAARG1, D3d9.D3DTEXTUREARG.D3DTA_TEXTURE);
+			if (Utils.FAILED(hr)) throw Utils.toSoftError(Utils.failedHResultToError(hr));
+
+			var hr = await Utils.toPromise(self.interop, "d3d9SetSamplerState", 0, D3d9.D3DSAMPLERSTATETYPE.D3DSAMP_MINFILTER, D3d9.D3DTEXTUREFILTERTYPE.D3DTEXF_LINEAR);
+			if (Utils.FAILED(hr)) throw Utils.toSoftError(Utils.failedHResultToError(hr));
+
+			var hr = await Utils.toPromise(self.interop, "d3d9SetSamplerState", 0, D3d9.D3DSAMPLERSTATETYPE.D3DSAMP_MAGFILTER, D3d9.D3DTEXTUREFILTERTYPE.D3DTEXF_LINEAR);
+			if (Utils.FAILED(hr)) throw Utils.toSoftError(Utils.failedHResultToError(hr));
+
+			var hr = await Utils.toPromise(self.interop, "d3d9SetSamplerState", 0, D3d9.D3DSAMPLERSTATETYPE.D3DSAMP_SRGBTEXTURE, Windows.BOOL.FALSE);
+			if (Utils.FAILED(hr)) throw Utils.toSoftError(Utils.failedHResultToError(hr));
+
+			var hr = await Utils.toPromise(self.interop, "d3d9SetTexture", 0, texture);
+			if (Utils.FAILED(hr)) throw Utils.toSoftError(Utils.failedHResultToError(hr));
+
+			var hr = await Utils.toPromise(self.interop, "d3d9SetTransform", D3d9.D3DTRANSFORMSTATETYPE.D3DTS_WORLD, mat_identity);
+			if (Utils.FAILED(hr)) throw Utils.toSoftError(Utils.failedHResultToError(hr));
+
+			var hr = await Utils.toPromise(self.interop, "d3d9SetTransform", D3d9.D3DTRANSFORMSTATETYPE.D3DTS_VIEW, mat_identity);
+			if (Utils.FAILED(hr)) throw Utils.toSoftError(Utils.failedHResultToError(hr));
+
+			var hr = await Utils.toPromise(self.interop, "d3d9SetTransform", D3d9.D3DTRANSFORMSTATETYPE.D3DTS_PROJECTION, mat_projection);
+			if (Utils.FAILED(hr)) throw Utils.toSoftError(Utils.failedHResultToError(hr));
+
+			var hr = await Utils.toPromise(self.interop, "d3d9DrawPrimitiveUP", D3d9.D3DPRIMITIVETYPE.D3DPT_TRIANGLESTRIP, 2, vertexStreamZeroData, 5 * 4);
+			if (Utils.FAILED(hr)) throw Utils.toSoftError(Utils.failedHResultToError(hr));
+
+			await Utils.toPromise(self.interop, "endCleanState");
+		}
+
+
+		AfxDrawingInterop.prototype.buildD3d9VertexElements = function (definitions) {
+
+			var dd = this.interop.createDrawingData(8 * (definitions.length + 1));
+			var dv = new DataView(dd);
+			var i = 0;
+			for (; i < definitions.length; ++i) {
+				var definition = definitions[i];
+				dv.setUint16(i * 8 + 0, definition["stream"], true);
+				dv.setUint16(i * 8 + 2, definition["offset"], true);
+				dv.setUint8(i * 8 + 4, definition["type"]);
+				dv.setUint8(i * 8 + 5, definition["method"]);
+				dv.setUint8(i * 8 + 6, definition["usage"]);
+				dv.setUint8(i * 8 + 7, definition["usageIndex"]);
+			}
+
+			// append D3DDECL_END:
+			dv.setUint16(i * 8 + 0, 0xff, true);
+			dv.setUint16(i * 8 + 2, 0, true);
+			dv.setUint8(i * 8 + 4, 17);
+			dv.setUint8(i * 8 + 5, 0);
+			dv.setUint8(i * 8 + 6, 0);
+			dv.setUint8(i * 8 + 7, 0);
+
+			return dd;
+		}
+
+		AfxDrawingInterop.prototype.connect = async function () {
+
+			this.connected = true;
+
+			await Utils.toPromise(this.interop, "connect");
+
+			await Utils.toPromise(this.interop, "sendMessage", this.args.indexInteropId, JSON.stringify({
+				"id": "drawingConnected",
+				"args": [this.interop.id]
+			}));
+
+			await Utils.toPromise(this.interop, "sendMessage", this.engineInteropId, JSON.stringify({
+				"id": "drawingConnected",
+				"args": [this.interop.id]
+			}));
+		}
+
+		AfxDrawingInterop.prototype.disconnect = async function () {
+
+			this.interop.cancel();
+			this.messagePromises = {}
+
+			if (this.connected) {
+				this.connected = false;
+
+				try {
+					await Utils.toPromise(this.interop, "close")
+				}
+				catch (e) {
+					Utils.logError(e);
+				}
+
+				this.cefTextures = {};
+				this.shaders["afx_drawtexture_vs20"] = null;
+				this.shaders["afx_drawtexture_ps20"] = null;
+				this.vertexDeclarations["pos3_uv2"] = null;
+
+
+				await Utils.toPromise(this.interop, "sendMessage", this.engineInteropId, JSON.stringify({
+					"id": "drawingDisconnected",
+					"port": "1",
+					"args": [this.interop.id]
+				}));
+
+				await Utils.toPromise(this.interop, "sendMessage", this.args.indexInteropId, JSON.stringify({
+					"id": "drawingDisconnected",
+					"args": [this.interop.id]
+				}));
+			}
+		}
+
+		AfxDrawingInterop.prototype.setCefTexture = function (cefTextureHandle, cefTexture) {
+			if (!this.cefTextures[cefTextureHandle.hi]) {
+				this.cefTextures[cefTextureHandle.hi] = {};
+			}
+			this.cefTextures[cefTextureHandle.hi][cefTextureHandle.lo] = cefTexture;
+		}
+
+		AfxDrawingInterop.prototype.getCefTexture = function (cefTextureHandle) {
+			var loSet = this.cefTextures[cefTextureHandle.hi];
+			if (loSet) {
+				return loSet[cefTextureHandle.lo];
+			}
+		}
+
+		AfxDrawingInterop.prototype.removeCefTexture = function (cefTextureHandle) {
+			var loSet = this.cefTextures[cefTextureHandle.hi];
+			if (loSet) {
+				delete loSet[cefTextureHandle.lo];
+			}
+			if (0 == loSet.length) {
+				delete this.cefTextures[cefTextureHandle.hi];
+			}
+		}
+
+		////////////////////////////////////////////////////////////////////////////////
+
+		window.addEventListener('load', function () {
+
+			console.log(window.afxInterop.args);
+			new AfxDrawingInterop(window.afxInterop, JSON.parse(window.afxInterop.args));
+
+			//setInterval(function(){
+			//	console.log("HI");
+			//}, 500);
+		}, false);
+
+	</script>
+</body>
+
+</html>

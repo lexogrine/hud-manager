@@ -240,6 +240,18 @@ export interface HUD {
 	uuid: string;
 	isDev: boolean;
 }
+
+export interface ARModule {
+	name: string;
+	version: string;
+	author: string;
+	dir: string;
+	entry: string;
+	game: AvailableGames;
+	keybinds: KeyBind[];
+	panel?: PanelTemplate;
+}
+
 export interface User {
 	id: number;
 	email: string;

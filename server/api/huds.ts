@@ -421,8 +421,8 @@ export const showHUD: express.RequestHandler = async (req, res) => {
 	return res.sendStatus(404);
 };
 
-export const closeHUD: express.RequestHandler = (req, res) => {
-	const response = HUDWindow.close();
+export const closeHUD: express.RequestHandler = async (req, res) => {
+	const response = await HUDWindow.close();
 	if (response) {
 		return res.sendStatus(200);
 	}
