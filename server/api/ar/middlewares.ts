@@ -6,9 +6,8 @@ import * as AR from './index';
 export const getARModules: express.RequestHandler = (req, res) => {
 	const ars = AR.listARModules();
 
-    return res.json(ars);
+	return res.json(ars);
 };
-
 
 export const getARModulesAssets: express.RequestHandler = async (req, res, next) => {
 	if (!req.params.dir) {

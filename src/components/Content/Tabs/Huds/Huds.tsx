@@ -172,7 +172,7 @@ class Huds extends React.Component<IProps, IState> {
 			this.getConfig();
 		});
 		socket.on('hud_opened', (status: boolean) => {
-			this.setState({isHUDOpened: status});
+			this.setState({ isHUDOpened: status });
 		});
 		socket.emit('get_active_hlae');
 		socket.emit('get_test_settings');
@@ -397,7 +397,6 @@ class Huds extends React.Component<IProps, IState> {
 							</Col>
 							{this.state.huds.map(hud => (
 								<HudEntry
-
 									key={hud.dir}
 									hud={hud}
 									toggleConfig={this.toggleConfig}

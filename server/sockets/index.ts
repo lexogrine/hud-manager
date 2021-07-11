@@ -82,14 +82,18 @@ ioPromise.then(io => {
 				runtimeConfig.currentHUD.dir = '';
 				unregisterAllKeybinds(dir);
 			} else {
-				if(hudUrl){
+				if (hudUrl) {
 					const keybinds = getHUDKeyBinds(dir) || [];
 					for (const bind of keybinds) {
-						registerKeybind(bind.bind, () => {
-							io.to(dir).emit('keybindAction', bind.action);
-						}, dir);
+						registerKeybind(
+							bind.bind,
+							() => {
+								io.to(dir).emit('keybindAction', bind.action);
+							},
+							dir
+						);
 					}
-				} else if(runtimeConfig.currentHUD.dir) {
+				} else if (runtimeConfig.currentHUD.dir) {
 					unregisterAllKeybinds(runtimeConfig.currentHUD.dir);
 				}
 				runtimeConfig.currentHUD.url = hudUrl;
@@ -109,29 +113,33 @@ ioPromise.then(io => {
 		});
 
 		socket.on('is_hud_opened', () => {
-			socket.emit('hud_opened', !!HUDWindow.current)
+			socket.emit('hud_opened', !!HUDWindow.current);
 		});
 
 		socket.on('toggle_module', async (moduleDir: string) => {
-			if(activeModuleDirs.includes(moduleDir)){
+			if (activeModuleDirs.includes(moduleDir)) {
 				activeModuleDirs = activeModuleDirs.filter(dir => dir !== moduleDir);
 				unregisterAllKeybinds(moduleDir);
 			} else {
 				const ar = await getARModuleData(moduleDir);
-				if(!ar){
+				if (!ar) {
 					return;
 				}
-				
+
 				for (const bind of ar.keybinds) {
-					console.log(`registering`,bind.bind);
-					registerKeybind(bind.bind, () => {
-						io.emit('keybindAction', bind.action);
-					}, moduleDir);
+					console.log(`registering`, bind.bind);
+					registerKeybind(
+						bind.bind,
+						() => {
+							io.emit('keybindAction', bind.action);
+						},
+						moduleDir
+					);
 				}
 				activeModuleDirs.push(moduleDir);
 			}
 			io.emit('active_modules', activeModuleDirs);
-		})
+		});
 
 		socket.on('get_active_modules', () => {
 			socket.emit('active_modules', activeModuleDirs);

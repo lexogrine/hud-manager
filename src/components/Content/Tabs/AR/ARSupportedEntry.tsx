@@ -23,23 +23,21 @@ const HudEntry = ({ hud, setActive, active }: IProps) => {
 		<Row key={hud.dir} className="hudRow">
 			<Col s={12}>
 				<Row>
-					{
-						"isDev" in hud ? (
-							<Col className="centered thumb">
-								<img
-									src={`${Config.isDev ? Config.apiAddress : '/'}${
-										hud.isDev ? 'dev/thumb.png' : `huds/${hud.dir}/thumbnail`
-										}`}
-									alt={`${hud.name}`}
-								/>
-							</Col>
-						) : null
-					}
+					{'isDev' in hud ? (
+						<Col className="centered thumb">
+							<img
+								src={`${Config.isDev ? Config.apiAddress : '/'}${
+									hud.isDev ? 'dev/thumb.png' : `huds/${hud.dir}/thumbnail`
+								}`}
+								alt={`${hud.name}`}
+							/>
+						</Col>
+					) : null}
 					<Col style={{ flex: 10, display: 'flex', justifyContent: 'center', flexDirection: 'column' }}>
 						<Row>
 							<Col>
 								<strong className="hudName">
-									{"isDev" in hud && hud.isDev ? '[DEV] ' : ''}
+									{'isDev' in hud && hud.isDev ? '[DEV] ' : ''}
 									{hud.name}
 								</strong>{' '}
 								<span className="hudVersion">({hud.version})</span>
@@ -53,26 +51,21 @@ const HudEntry = ({ hud, setActive, active }: IProps) => {
 					</Col>
 					<Col style={{ flex: 1 }} className="hud-options">
 						<div className="centered">
-							{
-								"isDev" in hud ? (
-									<img
-										src={HyperLink}
-										id={`hud_link_${hashCode(hud.dir)}`}
-										className="action"
-										alt="Local network HUD URL"
-									/>
-								) : null
-							}
-							{
-								"isDev" in hud || hud.panel ? (
-									<img src={Settings} className="action" alt="HUD panel" onClick={() => setActive(hud)} />
-								) : null
-							}
-
+							{'isDev' in hud ? (
+								<img
+									src={HyperLink}
+									id={`hud_link_${hashCode(hud.dir)}`}
+									className="action"
+									alt="Local network HUD URL"
+								/>
+							) : null}
+							{'isDev' in hud || hud.panel ? (
+								<img src={Settings} className="action" alt="HUD panel" onClick={() => setActive(hud)} />
+							) : null}
 						</div>
 
-						{
-							!("isDev" in hud) ? (<>
+						{!('isDev' in hud) ? (
+							<>
 								<Tip
 									id={`ar_toggle_button_${hashCode(hud.dir)}`}
 									label={
@@ -88,25 +81,27 @@ const HudEntry = ({ hud, setActive, active }: IProps) => {
 								>
 									{t('huds.actions.toggleHUD')}
 								</Tip>
-							</>) : null
-						}
+							</>
+						) : null}
 					</Col>
 				</Row>
-				{"url" in hud ? <Row>
-					<Col s={12}>
-						<div className="match_data">
-							<UncontrolledCollapse toggler={`#hud_link_${hashCode(hud.dir)}`}>
-								<code
-									onClick={() => {
-										copyToClipboard(hud.url);
-									}}
-								>
-									{hud.url}
-								</code>
-							</UncontrolledCollapse>
-						</div>
-					</Col>
-				</Row> : null}
+				{'url' in hud ? (
+					<Row>
+						<Col s={12}>
+							<div className="match_data">
+								<UncontrolledCollapse toggler={`#hud_link_${hashCode(hud.dir)}`}>
+									<code
+										onClick={() => {
+											copyToClipboard(hud.url);
+										}}
+									>
+										{hud.url}
+									</code>
+								</UncontrolledCollapse>
+							</div>
+						</Col>
+					</Row>
+				) : null}
 			</Col>
 		</Row>
 	);

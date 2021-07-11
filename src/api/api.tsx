@@ -39,7 +39,9 @@ const apiHandler: <T>(url: string, method?: string, body?: any, credentials?: bo
 	});
 };
 
-export function clone<T>(obj: T): T { return JSON.parse(JSON.stringify(obj)); }
+export function clone<T>(obj: T): T {
+	return JSON.parse(JSON.stringify(obj));
+}
 
 export async function apiV2<T>(url: string, method = 'GET', body?: any) {
 	return apiHandler<T>(`${config.isDev ? apiUrl : '/'}api/${url}`, method, body);

@@ -29,7 +29,6 @@ const AR = ({ cxt, toggle }: IProps) => {
 		loadHUDs();
 		socket.on('reloadHUDs', loadHUDs);
 
-		
 		socket.on('active_modules', (activeModules: string[]) => {
 			setActiveModules(activeModules);
 		});
@@ -37,8 +36,8 @@ const AR = ({ cxt, toggle }: IProps) => {
 	}, []);
 
 	const isAssetHUD = (hud: I.HUD | I.ARModule): hud is I.HUD => {
-		return "uuid" in hud;
-	}
+		return 'uuid' in hud;
+	};
 
 	if (active) {
 		return (
@@ -62,10 +61,14 @@ const AR = ({ cxt, toggle }: IProps) => {
 			<div className={`tab-content-container no-padding ${!isElectron ? 'full-scroll' : ''}`}>
 				<Row className="padded">
 					<Col>
-						{ars
-							.map(ar => (
-								<HudEntry key={ar.dir} hud={ar} setActive={setActive} active={activeModules.some(mod => mod === ar.dir)} />
-							))}
+						{ars.map(ar => (
+							<HudEntry
+								key={ar.dir}
+								hud={ar}
+								setActive={setActive}
+								active={activeModules.some(mod => mod === ar.dir)}
+							/>
+						))}
 						{huds
 							.filter(hud => hud.ar)
 							.map(hud => (

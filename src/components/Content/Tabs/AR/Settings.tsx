@@ -154,7 +154,7 @@ class ARSettings extends React.Component<IProps, IState> {
 		const { cxt, section, t, hud } = this.props;
 		const { teams, matches, players } = cxt;
 		const { form } = this.state;
-		console.log(section, hud)
+		console.log(section, hud);
 		if (!section) return null;
 		return (
 			<div key={section.label} className="custom_form">

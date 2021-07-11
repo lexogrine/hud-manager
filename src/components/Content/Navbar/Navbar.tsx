@@ -7,7 +7,6 @@ import { ContextData } from '../../Context';
 import { useTranslation } from 'react-i18next';
 import { isCGMode } from '../Content';
 
-
 interface IProps {
 	activeTab: string;
 	toggle: (tab: string, data?: any) => void;
@@ -17,27 +16,25 @@ interface IProps {
 const NonCGOnly = ({ children }: { children: any }) => {
 	if (isCGMode) return null;
 	return children;
-}
+};
 
 const Navbar = ({ activeTab, toggle, files }: IProps) => {
 	const { t } = useTranslation();
 	return (
 		<Nav tabs className="navbar-container">
-			{
-				isCGMode ? (
-					<NavItem className="hover-pointer">
-						<NavLink
-							active={activeTab === 'cgpanel'}
-							onClick={() => {
-								toggle('cgpanel');
-							}}
-						>
-							<img src={Tabs.Teams} alt="Panel" />
-							<div>{t('common.panel')}</div>
-						</NavLink>
-					</NavItem>
-				) : null
-			}
+			{isCGMode ? (
+				<NavItem className="hover-pointer">
+					<NavLink
+						active={activeTab === 'cgpanel'}
+						onClick={() => {
+							toggle('cgpanel');
+						}}
+					>
+						<img src={Tabs.Teams} alt="Panel" />
+						<div>{t('common.panel')}</div>
+					</NavLink>
+				</NavItem>
+			) : null}
 			<NonCGOnly>
 				<NavItem className="hover-pointer">
 					<NavLink
@@ -99,40 +96,40 @@ const Navbar = ({ activeTab, toggle, files }: IProps) => {
 				<ContextData.Consumer>
 					{data =>
 						!data?.customer?.license?.type ||
-							data.customer?.license.type === 'free' ||
-							data.customer.license.type === 'personal' ? (
-								<Tip
-									id="aco_nav"
-									label={
-										<NavItem className="hover-pointer">
-											<NavLink
-												active={activeTab === 'aco'}
-												disabled
-												onClick={() => {
-													toggle('aco');
-												}}
-											>
-												<img src={Tabs.ACO} alt="ACO" />
-												<div>{t('navbar.aco')}</div>
-											</NavLink>
-										</NavItem>
-									}
+						data.customer?.license.type === 'free' ||
+						data.customer.license.type === 'personal' ? (
+							<Tip
+								id="aco_nav"
+								label={
+									<NavItem className="hover-pointer">
+										<NavLink
+											active={activeTab === 'aco'}
+											disabled
+											onClick={() => {
+												toggle('aco');
+											}}
+										>
+											<img src={Tabs.ACO} alt="ACO" />
+											<div>{t('navbar.aco')}</div>
+										</NavLink>
+									</NavItem>
+								}
+							>
+								{t('navbar.professionalOnly')}
+							</Tip>
+						) : (
+							<NavItem className="hover-pointer">
+								<NavLink
+									active={activeTab === 'aco'}
+									onClick={() => {
+										toggle('aco');
+									}}
 								>
-									{t('navbar.professionalOnly')}
-								</Tip>
-							) : (
-								<NavItem className="hover-pointer">
-									<NavLink
-										active={activeTab === 'aco'}
-										onClick={() => {
-											toggle('aco');
-										}}
-									>
-										<img src={Tabs.ACO} alt="ACO" />
-										<div>{t('navbar.aco')}</div>
-									</NavLink>
-								</NavItem>
-							)
+									<img src={Tabs.ACO} alt="ACO" />
+									<div>{t('navbar.aco')}</div>
+								</NavLink>
+							</NavItem>
+						)
 					}
 				</ContextData.Consumer>
 				<NavItem className="hover-pointer">
