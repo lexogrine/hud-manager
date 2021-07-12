@@ -140,9 +140,8 @@ const HudEntry = ({
 
 	const isLocal = hud.status !== 'REMOTE';
 	const isNotRemote = hud.status === 'LOCAL';
-
 	return (
-		<Row key={hud.dir} className="hudRow">
+		<Row key={hud.dir} className={`hudRow ${hud.publicKey ? 'signed':''}`}>
 			<RemoveHUDModal isOpen={isOpen} toggle={toggleModal} hud={hud} remove={deleteHUD} />
 			<Col s={12}>
 				<Row>

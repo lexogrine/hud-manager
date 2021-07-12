@@ -79,7 +79,7 @@ const HudEntry = ({ hud, setActive, active }: IProps) => {
 										</div>
 									}
 								>
-									{t('huds.actions.toggleHUD')}
+									{t('ar.toggle')}
 								</Tip>
 							</>
 						) : null}

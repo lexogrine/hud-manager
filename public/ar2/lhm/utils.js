@@ -89,7 +89,6 @@ export const setActiveModules = async (dirs, arSettings) => {
         if(!dirs.includes(mod.id)){
             removeARModule(mod.id, arSettings);
             currentModules = currentModules.filter(duplicate => duplicate !== getARModule(mod.id));
-
         }
     }
 }

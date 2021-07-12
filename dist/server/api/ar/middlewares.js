@@ -22,7 +22,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getARModulesAssets = exports.getARModules = void 0;
+exports.sendAR = exports.openARsDirectory = exports.getARModulesAssets = exports.getARModules = void 0;
 const express_1 = __importDefault(require("express"));
 const path_1 = __importDefault(require("path"));
 const electron_1 = require("electron");
@@ -40,4 +40,23 @@ exports.getARModulesAssets = async (req, res, next) => {
         return res.sendStatus(404);
     }
     return express_1.default.static(path_1.default.join(electron_1.app.getPath('userData'), 'ARs', req.params.dir))(req, res, next);
+};
+exports.openARsDirectory = async (_req, res) => {
+    const dir = path_1.default.join(electron_1.app.getPath('userData'), 'ARs');
+    electron_1.shell.openPath(dir);
+    return res.sendStatus(200);
+};
+exports.sendAR = async (req, res) => {
+    if (!req.body.ar || !req.body.name)
+        return res.sendStatus(422);
+    const response = await AR.loadAR(req.body.ar, req.body.name);
+    if (response) {
+        const notification = new electron_1.Notification({
+            title: 'AR Upload',
+            body: `${response.name} uploaded successfully`,
+            icon: path_1.default.join(__dirname, '../../../assets/icon.png')
+        });
+        notification.show();
+    }
+    return res.sendStatus(response ? 200 : 500);
 };

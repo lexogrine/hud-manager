@@ -127,7 +127,6 @@ ioPromise.then(io => {
 				}
 
 				for (const bind of ar.keybinds) {
-					console.log(`registering`, bind.bind);
 					registerKeybind(
 						bind.bind,
 						() => {

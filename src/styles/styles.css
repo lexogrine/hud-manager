@@ -293,6 +293,9 @@ img.smallLogo {
     font-family: Montserrat;
     margin-bottom: 20px;
 }
+.hudRow.signed {
+    border: 1px solid #0aec0a4d;
+}
 .hudRow .hud-toggle {
     display: flex;
     justify-content: flex-end;

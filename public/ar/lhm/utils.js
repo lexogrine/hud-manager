@@ -33,7 +33,7 @@ export const parseTeam = (team, orientation, side, extension) => ({
     extra: (extension && extension.extra) || {}
 });
 
-const currentModules = []
+let currentModules = []
 
 const getARModule = (dir) => currentModules.find(arModule => arModule.id === dir) || null;
 
@@ -74,7 +74,7 @@ export const removeARModule = (dir, { scene, GSI }) => {
     const arModule = getARModule(dir);
     if(!arModule) return;
 
-    arModule.cleanUpARModule(scene, GSI);
+    arModule.module.cleanUpARModule(scene, GSI);
     return;
 }
 
@@ -86,8 +86,9 @@ export const setActiveModules = async (dirs, arSettings) => {
         }
     }
     for(const mod of currentModules){
-        if(!dirs.includes(mod.dir)){
-            removeARModule(mod.dir, arSettings);
+        if(!dirs.includes(mod.id)){
+            removeARModule(mod.id, arSettings);
+            currentModules = currentModules.filter(duplicate => duplicate !== getARModule(mod.id));
         }
     }
 }

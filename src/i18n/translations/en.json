@@ -92,7 +92,7 @@
 				"setWin": "Set win",
 				"teamLogo": "Team Logo"
 			},
-			"setLive": "Set live",
+			"toggleLive": "LIVE",
 			"tabs": {
 				"ended": "ended",
 				"current": "current",
@@ -190,6 +190,10 @@
 					"readerCode": "Reader Code"
 				}
 			}
+		},
+		"ar":{
+			"add":"Add AR module",
+			"toggle":"Toggle AR Module"
 		},
 		"huds": {
 			"header": "HUDs",

@@ -22,7 +22,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.uploadHUD = exports.deleteHUDFromCloud = exports.downloadHUD = exports.deleteHUD = exports.sendHUD = exports.closeHUD = exports.showHUD = exports.legacyCSS = exports.legacyJS = exports.renderLegacy = exports.renderAssets = exports.getThumbPath = exports.renderThumbnail = exports.renderOverlay = exports.render = exports.verifyOverlay = exports.renderHUD = exports.openHUDsDirectory = exports.getHUDPanelSetting = exports.getHUDKeyBinds = exports.getHUDData = exports.getHUDARSettings = exports.getHUDCustomAsset = exports.getHUDs = exports.listHUDs = void 0;
+exports.singHUDByDir = exports.signHUD = exports.uploadHUD = exports.deleteHUDFromCloud = exports.downloadHUD = exports.removeArchives = exports.deleteHUD = exports.sendHUD = exports.closeHUD = exports.showHUD = exports.legacyCSS = exports.legacyJS = exports.renderLegacy = exports.renderAssets = exports.getThumbPath = exports.renderThumbnail = exports.renderOverlay = exports.render = exports.verifyOverlay = exports.renderHUD = exports.openHUDsDirectory = exports.getHUDPanelSetting = exports.getHUDKeyBinds = exports.getHUDData = exports.getHUDARSettings = exports.getHUDCustomAsset = exports.getHUDs = exports.listHUDs = exports.remove = exports.getRandomString = void 0;
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
 const electron_1 = require("electron");
@@ -37,12 +37,14 @@ const archiver_1 = __importDefault(require("archiver"));
 const _1 = require(".");
 const isSvg_1 = __importDefault(require("../../src/isSvg"));
 const node_fetch_1 = __importDefault(require("node-fetch"));
+const crypto_1 = __importDefault(require("crypto"));
+const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const DecompressZip = require('decompress-zip');
-const getRandomString = () => (Math.random() * 1000 + 1)
+exports.getRandomString = () => (Math.random() * 1000 + 1)
     .toString(36)
     .replace(/[^a-z]+/g, '')
     .substr(0, 15);
-const remove = (pathToRemove) => {
+exports.remove = (pathToRemove) => {
     if (!fs.existsSync(pathToRemove)) {
         return;
     }
@@ -51,7 +53,7 @@ const remove = (pathToRemove) => {
         const current = path.join(pathToRemove, file);
         if (fs.lstatSync(current).isDirectory()) {
             // recurse
-            remove(current);
+            exports.remove(current);
             if (fs.existsSync(current))
                 fs.rmdirSync(current);
         }
@@ -180,6 +182,20 @@ exports.getHUDARSettings = (dirName) => {
         return null;
     }
 };
+const getHUDPublicKey = (dirName) => {
+    const dir = path.join(electron_1.app.getPath('home'), 'HUDs', dirName);
+    const keyFile = path.join(dir, 'key');
+    if (!fs.existsSync(keyFile)) {
+        return null;
+    }
+    try {
+        const key = fs.readFileSync(keyFile, 'utf8');
+        return key;
+    }
+    catch (e) {
+        return null;
+    }
+};
 exports.getHUDData = async (dirName) => {
     const dir = path.join(electron_1.app.getPath('home'), 'HUDs', dirName);
     const configFileDir = path.join(dir, 'hud.json');
@@ -195,10 +211,18 @@ exports.getHUDData = async (dirName) => {
         return null;
     }
     try {
-        const configFile = fs.readFileSync(configFileDir, { encoding: 'utf8' });
-        const config = JSON.parse(configFile);
+        let configFile = fs.readFileSync(configFileDir, { encoding: 'utf8' });
+        const publicKey = getHUDPublicKey(dirName);
+        if (publicKey) {
+            const content = jsonwebtoken_1.default.verify(configFile, publicKey, { algorithms: ['RS256'] });
+            if (typeof content !== "string" && !content.name && !content.version)
+                return null;
+            configFile = content;
+        }
+        const config = typeof configFile === 'string' ? JSON.parse(configFile) : configFile;
         config.dir = dirName;
         config.game = config.game || 'csgo';
+        config.publicKey = getHUDPublicKey(dirName);
         const panel = exports.getHUDPanelSetting(dirName);
         const keybinds = exports.getHUDKeyBinds(dirName);
         const ar = exports.getHUDARSettings(dirName);
@@ -222,6 +246,7 @@ exports.getHUDData = async (dirName) => {
         return config;
     }
     catch (e) {
+        console.log(e);
         return null;
     }
 };
@@ -351,7 +376,21 @@ exports.renderAssets = async (req, res, next) => {
     if (!data) {
         return res.sendStatus(404);
     }
-    return express_1.default.static(path.join(electron_1.app.getPath('home'), 'HUDs', req.params.dir))(req, res, next);
+    const filePath = path.join(electron_1.app.getPath('home'), 'HUDs', data.dir, req.url);
+    if ((!req.url.endsWith('.js') && !req.url.endsWith('.css')) || !data.publicKey || !fs.existsSync(filePath)) {
+        return express_1.default.static(path.join(electron_1.app.getPath('home'), 'HUDs', req.params.dir))(req, res, next);
+    }
+    try {
+        const signedFileContent = fs.readFileSync(filePath, 'utf8');
+        const content = jsonwebtoken_1.default.verify(signedFileContent, data.publicKey, { algorithms: ['RS256'] });
+        if (typeof content !== "string")
+            return res.sendStatus(404);
+        res.setHeader('Content-Type', req.url.endsWith('.js') ? 'application/javascript' : 'text/css');
+        return res.send(content);
+    }
+    catch {
+        return res.sendStatus(404);
+    }
 };
 exports.renderLegacy = async (req, res) => {
     const cfg = await config_1.loadConfig();
@@ -433,7 +472,7 @@ exports.deleteHUD = async (req, res) => {
         return res.sendStatus(200);
     }
     try {
-        remove(hudPath);
+        exports.remove(hudPath);
         io.emit('reloadHUDs');
         return res.sendStatus(200);
     }
@@ -441,8 +480,8 @@ exports.deleteHUD = async (req, res) => {
         return res.sendStatus(500);
     }
 };
-function removeArchives() {
-    const files = fs.readdirSync('./').filter(file => file.startsWith('hud_temp_') && file.endsWith('.zip'));
+exports.removeArchives = () => {
+    const files = fs.readdirSync('./').filter(file => (file.startsWith('hud_temp_') || file.startsWith('ar_temp_')) && file.endsWith('.zip'));
     files.forEach(file => {
         try {
             if (fs.lstatSync(file).isDirectory()) {
@@ -453,30 +492,28 @@ function removeArchives() {
         }
         catch { }
     });
-}
+};
 async function loadHUD(base64, name, existingUUID) {
-    removeArchives();
+    exports.removeArchives();
     return new Promise(res => {
         let hudDirName = name.replace(/[^a-zA-Z0-9-_]/g, '');
         let hudPath = path.join(electron_1.app.getPath('home'), 'HUDs', hudDirName);
         if (fs.existsSync(hudPath)) {
-            hudDirName = `${hudDirName}-${getRandomString()}`;
+            hudDirName = `${hudDirName}-${exports.getRandomString()}`;
             hudPath = path.join(electron_1.app.getPath('home'), 'HUDs', hudDirName);
         }
         try {
             const fileString = base64.split(';base64,').pop();
-            const tempArchiveName = `./hud_temp_archive_${getRandomString()}.zip`;
+            const tempArchiveName = `./hud_temp_archive_${exports.getRandomString()}.zip`;
             fs.writeFileSync(tempArchiveName, fileString, { encoding: 'base64', mode: 777 });
             const tempUnzipper = new DecompressZip(tempArchiveName);
             tempUnzipper.on('extract', async () => {
                 if (fs.existsSync(path.join(hudPath, 'hud.json'))) {
-                    const hudFile = fs.readFileSync(path.join(hudPath, 'hud.json'), { encoding: 'utf8' });
-                    const hud = JSON.parse(hudFile);
-                    if (!hud.name) {
+                    const hudData = await exports.getHUDData(path.basename(hudPath));
+                    if (!hudData || !hudData.name) {
                         throw new Error();
                     }
-                    const hudData = await exports.getHUDData(path.basename(hudPath));
-                    removeArchives();
+                    exports.removeArchives();
                     fs.writeFileSync(path.join(hudPath, 'uuid.lhm'), existingUUID || v4_1.default(), 'utf8');
                     res(hudData);
                 }
@@ -486,9 +523,9 @@ async function loadHUD(base64, name, existingUUID) {
             });
             tempUnzipper.on('error', () => {
                 if (fs.existsSync(hudPath)) {
-                    remove(hudPath);
+                    exports.remove(hudPath);
                 }
-                removeArchives();
+                exports.removeArchives();
                 res(null);
             });
             tempUnzipper.extract({
@@ -498,9 +535,9 @@ async function loadHUD(base64, name, existingUUID) {
         }
         catch {
             if (fs.existsSync(hudPath)) {
-                remove(hudPath);
+                exports.remove(hudPath);
             }
-            removeArchives();
+            exports.removeArchives();
             res(null);
         }
     });
@@ -566,7 +603,6 @@ exports.uploadHUD = async (req, res) => {
     const hudUploadResponse = await user_1.api(`storage/file/${_1.customer.game}/hud/${hud.uuid}`, 'POST', {
         extra: hud
     });
-    console.log(hudUploadResponse);
     if (!hudUploadResponse || !hudUploadResponse.result) {
         return res.sendStatus(404);
     }
@@ -579,12 +615,75 @@ exports.uploadHUD = async (req, res) => {
             'Content-Length': `${fs.statSync(archivePath).size}`
         }
     });
-    console.log(response.ok, await response.text());
     if (!response.ok) {
         fs.unlinkSync(archivePath);
         return res.sendStatus(404);
     }
     fs.unlinkSync(archivePath);
     return res.json({ hudUploadResponse });
+};
+const getAllFilesToSign = (hudDir) => {
+    const files = [];
+    const getFiles = (dir) => {
+        fs.readdirSync(dir).forEach(file => {
+            const fileDirectory = path.join(dir, file);
+            if (fs.statSync(fileDirectory).isDirectory())
+                return getFiles(fileDirectory);
+            else if (fileDirectory.endsWith('.js'))
+                return files.push(fileDirectory);
+        });
+    };
+    getFiles(hudDir);
+    return files;
+};
+exports.signHUD = async (hudDir) => {
+    const dir = path.join(electron_1.app.getPath('home'), 'HUDs', hudDir);
+    const keyFile = path.join(dir, 'key');
+    if (fs.existsSync(keyFile)) {
+        return true;
+    }
+    const filesToSign = getAllFilesToSign(dir);
+    filesToSign.push(path.join(dir, 'hud.json'));
+    const keys = crypto_1.default.generateKeyPairSync('rsa', {
+        modulusLength: 4096,
+        publicKeyEncoding: {
+            type: 'spki',
+            format: 'pem'
+        },
+        privateKeyEncoding: {
+            type: 'pkcs8',
+            format: 'pem',
+            cipher: 'aes-256-cbc',
+            passphrase: 'top secret'
+        }
+    });
+    let success = true;
+    const fileToContent = {};
+    filesToSign.forEach(file => {
+        if (!success) {
+            return;
+        }
+        const content = fs.readFileSync(file, 'utf8');
+        try {
+            const signed = jsonwebtoken_1.default.sign(content, { key: keys.privateKey.toString(), passphrase: 'top secret' }, { algorithm: 'RS256' });
+            fileToContent[file] = signed;
+        }
+        catch {
+            success = false;
+        }
+    });
+    if (!success)
+        return false;
+    filesToSign.forEach(file => {
+        fs.writeFileSync(file, fileToContent[file]);
+    });
+    fs.writeFileSync(keyFile, keys.publicKey.toString());
+    return success;
+};
+exports.singHUDByDir = async (_req, res) => {
+    /*const hudDir = req.params.hudDir;
+    const result = await signHUD(hudDir);
+    return res.json({ result });*/
+    return res.sendStatus(200);
 };
 exports.listHUDs().then(huds => huds.filter(hud => !!hud.dir).map(hud => verifyUniqueID(hud.dir)));

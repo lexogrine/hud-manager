@@ -28,7 +28,9 @@ const MatchEntry = ({ match, teams, cxt, edit, setCurrent }: Props) => {
 		bo1: 1,
 		bo2: 2,
 		bo3: 2,
-		bo5: 3
+		bo5: 3,
+		bo7: 4,
+		bo9: 5
 	};
 
 	const left = teams.filter(team => team._id === match.left.id)[0];
@@ -88,7 +90,7 @@ const MatchEntry = ({ match, teams, cxt, edit, setCurrent }: Props) => {
 							{t('common.edit')}
 						</Button>
 						<Button className="purple-btn round-btn edit-veto" onClick={() => setCurrent()}>
-							{t('match.setLive')}
+							{t('match.toggleLive')}
 						</Button>
 					</div>
 				</div>

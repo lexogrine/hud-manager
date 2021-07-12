@@ -159,7 +159,9 @@ export default {
 		getCurrent: (): Promise<I.Customer | { message: string; success: boolean }> => apiV2('auth')
 	},
 	ar: {
-		get: async (): Promise<I.ARModule[]> => await apiV2('ar')
+		get: async (): Promise<I.ARModule[]> => await apiV2('ar'),
+		save: async (ar: string, name: string) => await apiV2(`ar/add`, 'POST', { ar, name }),
+		openDirectory: async () => await apiV2(`huds`, 'POST'),
 	},
 	files: {
 		imgToBase64: async (url: string) => {

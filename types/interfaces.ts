@@ -99,7 +99,7 @@ export interface Veto {
 	mapEnd: boolean;
 }
 
-export type BOTypes = 'bo1' | 'bo2' | 'bo3' | 'bo5';
+export type BOTypes = 'bo1' | 'bo2' | 'bo3' | 'bo5' | 'bo7' | 'bo9';
 
 export interface MatchTeam {
 	id: string | null;
@@ -239,6 +239,7 @@ export interface HUD {
 	status: HUDSyncStatus;
 	uuid: string;
 	isDev: boolean;
+	publicKey?: string | null;
 }
 
 export interface ARModule {

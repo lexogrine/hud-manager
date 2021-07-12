@@ -124,7 +124,6 @@ socket_1.ioPromise.then(io => {
                     return;
                 }
                 for (const bind of ar.keybinds) {
-                    console.log(`registering`, bind.bind);
                     keybinder_1.registerKeybind(bind.bind, () => {
                         io.emit('keybindAction', bind.action);
                     }, moduleDir);

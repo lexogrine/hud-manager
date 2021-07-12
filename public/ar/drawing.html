@@ -74,7 +74,7 @@
 			actions.execute(data.action, data.data);
 		});
 		socketio.on('keybindAction', (action) => {
-			//actions.execute(action);
+			actions.execute(action);
 		});
 
 		const horToVert = hFov => {
@@ -124,7 +124,6 @@
 		};
 
 		socketio.on('active_modules', activeModules => {
-			console.log(activeModules)
 			setActiveModules(activeModules, arSettings);
 		});
 

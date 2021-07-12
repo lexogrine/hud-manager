@@ -23,7 +23,8 @@ const __1 = require("../..");
 const AR = __importStar(require("./middlewares"));
 const user_1 = require("../user");
 const initRoute = () => {
-    __1.app.route('/api/ar').get(user_1.verifyGame, AR.getARModules);
+    __1.app.route('/api/ar').get(user_1.verifyGame, AR.getARModules).post(AR.openARsDirectory);
+    __1.app.route('/api/ar/add').post(AR.sendAR);
     __1.app.use('/ars/:dir/', AR.getARModulesAssets);
 };
 exports.default = initRoute;
