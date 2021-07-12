@@ -215,7 +215,7 @@ exports.getHUDData = async (dirName) => {
         const publicKey = getHUDPublicKey(dirName);
         if (publicKey) {
             const content = jsonwebtoken_1.default.verify(configFile, publicKey, { algorithms: ['RS256'] });
-            if (typeof content !== "string" && !content.name && !content.version)
+            if (typeof content !== 'string' && !content.name && !content.version)
                 return null;
             configFile = content;
         }
@@ -383,7 +383,7 @@ exports.renderAssets = async (req, res, next) => {
     try {
         const signedFileContent = fs.readFileSync(filePath, 'utf8');
         const content = jsonwebtoken_1.default.verify(signedFileContent, data.publicKey, { algorithms: ['RS256'] });
-        if (typeof content !== "string")
+        if (typeof content !== 'string')
             return res.sendStatus(404);
         res.setHeader('Content-Type', req.url.endsWith('.js') ? 'application/javascript' : 'text/css');
         return res.send(content);
@@ -481,7 +481,9 @@ exports.deleteHUD = async (req, res) => {
     }
 };
 exports.removeArchives = () => {
-    const files = fs.readdirSync('./').filter(file => (file.startsWith('hud_temp_') || file.startsWith('ar_temp_')) && file.endsWith('.zip'));
+    const files = fs
+        .readdirSync('./')
+        .filter(file => (file.startsWith('hud_temp_') || file.startsWith('ar_temp_')) && file.endsWith('.zip'));
     files.forEach(file => {
         try {
             if (fs.lstatSync(file).isDirectory()) {

@@ -146,6 +146,7 @@ export interface Config {
 	hlaePath: string;
 	afxCEFHudInteropPath: string;
 	sync: boolean;
+	cg: boolean;
 }
 
 export interface ExtendedConfig extends Config {

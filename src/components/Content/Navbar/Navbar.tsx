@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import * as Tabs from './TabIcons';
 import { GameOnly } from '../Tabs/Config/Config';
 import Tip from '../../Tooltip';
 import { ContextData } from '../../Context';
 import { useTranslation } from 'react-i18next';
-import { isCGMode } from '../Content';
+//import { isCGMode } from '../Content';
+import { socket } from '../Tabs/Live/Live';
+import { Config } from '../../../api/interfaces';
+import api from '../../../api/api';
 
 interface IProps {
 	activeTab: string;
@@ -13,16 +16,24 @@ interface IProps {
 	files: boolean;
 }
 
-const NonCGOnly = ({ children }: { children: any }) => {
-	if (isCGMode) return null;
-	return children;
-};
-
 const Navbar = ({ activeTab, toggle, files }: IProps) => {
+	const [config, setConfig] = useState<Config | null>(null);
 	const { t } = useTranslation();
+
+	const getConfig = async () => {
+		const config = await api.config.get();
+
+		const { ip, ...cfg } = config;
+
+		setConfig(cfg);
+	};
+	useEffect(() => {
+		socket.on('config', getConfig);
+		getConfig();
+	}, []);
 	return (
 		<Nav tabs className="navbar-container">
-			{isCGMode ? (
+			{config && config.cg ? (
 				<NavItem className="hover-pointer">
 					<NavLink
 						active={activeTab === 'cgpanel'}
@@ -35,52 +46,54 @@ const Navbar = ({ activeTab, toggle, files }: IProps) => {
 					</NavLink>
 				</NavItem>
 			) : null}
-			<NonCGOnly>
-				<NavItem className="hover-pointer">
-					<NavLink
-						active={activeTab === 'teams'}
-						onClick={() => {
-							toggle('teams');
-						}}
-					>
-						<img src={Tabs.Teams} alt="Teams" />
-						<div>{t('common.teams')}</div>
-					</NavLink>
-				</NavItem>
-				<NavItem className="hover-pointer">
-					<NavLink
-						active={activeTab === 'players'}
-						onClick={() => {
-							toggle('players');
-						}}
-					>
-						<img src={Tabs.Players} alt="Players" />
-						<div>{t('common.players')}</div>
-					</NavLink>
-				</NavItem>
-				<NavItem className="hover-pointer">
-					<NavLink
-						active={activeTab === 'create_match'}
-						onClick={() => {
-							toggle('create_match');
-						}}
-					>
-						<img src={Tabs.Matches} alt="Matches" />
-						<div>{t('match.matches')}</div>
-					</NavLink>
-				</NavItem>
-				<NavItem className="hover-pointer">
-					<NavLink
-						active={activeTab === 'tournaments'}
-						onClick={() => {
-							toggle('tournaments');
-						}}
-					>
-						<img src={Tabs.Tournaments} alt="Tournaments" />
-						<div>{t('common.tournaments')}</div>
-					</NavLink>
-				</NavItem>
-			</NonCGOnly>
+			{!config || !config.cg ? (
+				<>
+					<NavItem className="hover-pointer">
+						<NavLink
+							active={activeTab === 'teams'}
+							onClick={() => {
+								toggle('teams');
+							}}
+						>
+							<img src={Tabs.Teams} alt="Teams" />
+							<div>{t('common.teams')}</div>
+						</NavLink>
+					</NavItem>
+					<NavItem className="hover-pointer">
+						<NavLink
+							active={activeTab === 'players'}
+							onClick={() => {
+								toggle('players');
+							}}
+						>
+							<img src={Tabs.Players} alt="Players" />
+							<div>{t('common.players')}</div>
+						</NavLink>
+					</NavItem>
+					<NavItem className="hover-pointer">
+						<NavLink
+							active={activeTab === 'create_match'}
+							onClick={() => {
+								toggle('create_match');
+							}}
+						>
+							<img src={Tabs.Matches} alt="Matches" />
+							<div>{t('match.matches')}</div>
+						</NavLink>
+					</NavItem>
+					<NavItem className="hover-pointer">
+						<NavLink
+							active={activeTab === 'tournaments'}
+							onClick={() => {
+								toggle('tournaments');
+							}}
+						>
+							<img src={Tabs.Tournaments} alt="Tournaments" />
+							<div>{t('common.tournaments')}</div>
+						</NavLink>
+					</NavItem>
+				</>
+			) : null}
 			<NavItem className="hover-pointer">
 				<NavLink
 					active={activeTab === 'huds'}

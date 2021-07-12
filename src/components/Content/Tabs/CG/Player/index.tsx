@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Section from '../Section';
-import { Row, Col, FormGroup, Input, FormText } from 'reactstrap';
+import { Row, Col, FormGroup, Input, FormText, Button } from 'reactstrap';
 import countries from '../../../countries';
 import DragFileInput from '../../../../DragFileInput';
 import { IContextData } from '../../../../Context';
@@ -8,22 +8,34 @@ import { useTranslation } from 'react-i18next';
 import * as I from './../../../../../api/interfaces';
 import { hash } from '../../../../../hash';
 import isSvg from '../../../../../isSvg';
-import { clone } from '../../../../../api/api';
+import api, { clone } from '../../../../../api/api';
 
 interface Props {
 	cxt: IContextData;
 }
 
 const PlayerForm = ({ cxt }: Props) => {
+	const emptyPlayer: I.Player = {
+		_id: 'empty',
+		firstName: '',
+		lastName: '',
+		username: '',
+		avatar: '',
+		country: '',
+		game: cxt.game,
+		steamid: '',
+		team: '',
+		extra: {}
+	};
+
 	const { t } = useTranslation();
 
-	const [playerForm, setPlayerForm] = useState<I.Player | null>(null);
+	const [playerForm, setPlayerForm] = useState<I.Player>(clone(emptyPlayer));
 
-	const setPlayerToEdit = (e: any) => {
-		const id = e.target.value;
+	const setPlayerToEdit = (id: string) => {
 		const player = cxt.players.find(player => player._id === id);
 
-		setPlayerForm(player ? clone(player) : null);
+		setPlayerForm(clone(player || emptyPlayer));
 	};
 
 	let avatar = '';
@@ -36,10 +48,60 @@ const PlayerForm = ({ cxt }: Props) => {
 		}
 	}
 
-	const gameIdentifier = cxt.game === 'csgo' ? 'SteamID64' : 'In-game name';
+	const setPlayerField = (field: keyof I.Player) => (e: any) => {
+		if (!playerForm) return;
+		const { value } = e.target;
+		setPlayerForm({ ...playerForm, [field]: value });
+	};
+
+	const gameIdentifier = cxt.game === 'csgo' || cxt.game === 'dota2' ? 'SteamID64' : 'In-game name';
+
+	const fileHandler = (files: FileList) => {
+		if (!files) return;
+		const file = files[0];
+		if (!file) {
+			setPlayerForm(prevForm => ({ ...prevForm, avatar: '' }));
+			return;
+		}
+		if (!file.type.startsWith('image')) {
+			return;
+		}
+		const reader: any = new FileReader();
+		reader.readAsDataURL(file);
+		reader.onload = () => {
+			setPlayerForm(prevForm => ({
+				...prevForm,
+				avatar: reader.result.replace(/^data:([a-z]+)\/(.+);base64,/, '')
+			}));
+		};
+	};
+
+	const updatePlayer = async () => {
+		if (!playerForm) return;
+		const form = { ...playerForm };
+		if (form._id === 'empty') {
+			const response = (await api.players.add(form)) as any;
+			if (response && response._id) {
+				await cxt.reload();
+				setPlayerToEdit(response._id);
+			}
+		} else {
+			let avatar = form.avatar;
+			if (avatar && avatar.includes('api/players/avatar')) {
+				avatar = undefined as any;
+			}
+
+			await api.players.update(form._id, { ...form, avatar });
+			cxt.reload();
+		}
+	};
+
+	/*useEffect(() => {
+		updatePlayer();
+	}, [])*/
 
 	return (
-		<Section title="Players" cxt={cxt}>
+		<Section title="Players" cxt={cxt} width={400}>
 			<Row>
 				<Col md="12">
 					<FormGroup>
@@ -47,7 +109,7 @@ const PlayerForm = ({ cxt }: Props) => {
 							type="select"
 							name="player"
 							value={(playerForm && playerForm._id) || undefined}
-							onChange={setPlayerToEdit}
+							onChange={e => setPlayerToEdit(e.target.value)}
 						>
 							<option value="">{t('common.player')}</option>
 							{cxt.players
@@ -69,7 +131,7 @@ const PlayerForm = ({ cxt }: Props) => {
 							type="text"
 							name="firstName"
 							id="cg-player-first_name"
-							//onChange={onChange}
+							onChange={setPlayerField('firstName')}
 							value={playerForm?.firstName}
 							placeholder={t('common.firstName')}
 						/>
@@ -83,7 +145,7 @@ const PlayerForm = ({ cxt }: Props) => {
 							type="text"
 							name="lastName"
 							id="cg-player-last_name"
-							//onChange={onChange}
+							onChange={setPlayerField('lastName')}
 							value={playerForm?.lastName}
 							placeholder={t('common.lastName')}
 						/>
@@ -97,7 +159,7 @@ const PlayerForm = ({ cxt }: Props) => {
 							type="text"
 							name="username"
 							id="cg-player-nick"
-							//onChange={onChange}
+							onChange={setPlayerField('username')}
 							value={playerForm?.username}
 							placeholder={t('common.nickname')}
 						/>
@@ -112,7 +174,7 @@ const PlayerForm = ({ cxt }: Props) => {
 							id="cg-player-country"
 							name="country"
 							value={playerForm?.country}
-							//onChange={onChange}
+							onChange={setPlayerField('country')}
 						>
 							<option value="">{t('common.country')}</option>
 							{countries.map(option => (
@@ -132,7 +194,7 @@ const PlayerForm = ({ cxt }: Props) => {
 							type="text"
 							name="steamid"
 							value={playerForm?.steamid}
-							//onChange={onChange}
+							onChange={setPlayerField('steamid')}
 							placeholder={gameIdentifier}
 						/>
 					</FormGroup>
@@ -146,7 +208,7 @@ const PlayerForm = ({ cxt }: Props) => {
 							id="cg-player-player_teams"
 							name="team"
 							value={playerForm?.team}
-							/*onChange={onChange}*/
+							onChange={setPlayerField('team')}
 						>
 							<option value="">{t('common.team')}</option>
 							{cxt.teams
@@ -166,7 +228,7 @@ const PlayerForm = ({ cxt }: Props) => {
 					<FormGroup>
 						<DragFileInput
 							image
-							onChange={() => {}}
+							onChange={fileHandler}
 							id="cg-player-avatar"
 							label={t('players.uploadProfile').toUpperCase()}
 							imgSrc={avatar}
@@ -174,6 +236,13 @@ const PlayerForm = ({ cxt }: Props) => {
 						/>
 						<FormText color="muted">{t('players.avatarInfo')}</FormText>
 					</FormGroup>
+				</Col>
+			</Row>
+			<Row>
+				<Col s={12}>
+					<Button color="primary" className="modal-save" onClick={updatePlayer}>
+						{t('common.save')}
+					</Button>
 				</Col>
 			</Row>
 		</Section>

@@ -1,6 +1,7 @@
 {
 	"translation": {
 		"common": {
+			"panel":"Panel",
 			"or": "or",
 			"save": "Save",
 			"saveAndSend": "Save and send",

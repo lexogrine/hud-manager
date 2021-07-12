@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import Section from '../Section';
-import { Row, Col, FormGroup, Input, FormText } from 'reactstrap';
+import { Row, Col, FormGroup, Input, FormText, Button } from 'reactstrap';
 import { IContextData } from '../../../../Context';
 import { useTranslation } from 'react-i18next';
 import * as I from './../../../../../api/interfaces';
-import { clone } from '../../../../../api/api';
+import api, { clone } from '../../../../../api/api';
 import countries from '../../../countries';
 import DragFileInput from '../../../../DragFileInput';
 import { hash } from '../../../../../hash';
@@ -15,15 +15,47 @@ interface Props {
 }
 
 const TeamForm = ({ cxt }: Props) => {
+	const emptyTeam: I.Team = {
+		_id: 'empty',
+		name: '',
+		shortName: '',
+		country: '',
+		logo: '',
+		game: cxt.game,
+		extra: {}
+	};
 	const { t } = useTranslation();
 
-	const [teamForm, setTeamForm] = useState<I.Team | null>(null);
+	const [teamForm, setTeamForm] = useState<I.Team>(clone(emptyTeam));
 
 	const setTeamToEdit = (e: any) => {
 		const id = e.target.value;
 		const team = cxt.teams.find(team => team._id === id);
 
-		setTeamForm(team ? clone(team) : null);
+		setTeamForm(clone(team || emptyTeam));
+	};
+
+	const setTeamField = (field: keyof I.Team) => (e: any) => {
+		if (!teamForm) return;
+		const { value } = e.target;
+		setTeamForm({ ...teamForm, [field]: value });
+	};
+
+	const fileHandler = (files: FileList) => {
+		if (!files) return;
+		const file = files[0];
+		if (!file) {
+			setTeamForm(prevForm => ({ ...prevForm, logo: '' }));
+			return;
+		}
+		if (!file.type.startsWith('image')) {
+			return;
+		}
+		const reader: any = new FileReader();
+		reader.readAsDataURL(file);
+		reader.onload = () => {
+			setTeamForm(prevForm => ({ ...prevForm, logo: reader.result.replace(/^data:([a-z]+)\/(.+);base64,/, '') }));
+		};
 	};
 
 	let logo = '';
@@ -36,8 +68,28 @@ const TeamForm = ({ cxt }: Props) => {
 		}
 	}
 
+	const updateTeam = async () => {
+		if (!teamForm) return;
+		const form = { ...teamForm };
+		if (form._id === 'empty') {
+			const response = (await api.teams.add(form)) as any;
+			if (response && response._id) {
+				await cxt.reload();
+				setTeamToEdit(response._id);
+			}
+		} else {
+			let logo = form.logo;
+			if (logo && logo.includes('api/teams/logo')) {
+				logo = undefined as any;
+			}
+
+			await api.teams.update(form._id, { ...form, logo });
+			cxt.reload();
+		}
+	};
+
 	return (
-		<Section title="Teams" cxt={cxt}>
+		<Section title="Teams" cxt={cxt} width={400}>
 			<Row>
 				<Col md="12">
 					<FormGroup>
@@ -68,7 +120,7 @@ const TeamForm = ({ cxt }: Props) => {
 							name="name"
 							id="cg-team-team_name"
 							value={teamForm?.name}
-							//onChange={onChange}
+							onChange={setTeamField('name')}
 							placeholder={t('common.teamName')}
 						/>
 					</FormGroup>
@@ -82,7 +134,7 @@ const TeamForm = ({ cxt }: Props) => {
 							name="shortName"
 							id="cg-team-short_name"
 							value={teamForm?.shortName || ''}
-							//onChange={onChange}
+							onChange={setTeamField('shortName')}
 							placeholder={t('common.shortName')}
 						/>
 					</FormGroup>
@@ -96,7 +148,7 @@ const TeamForm = ({ cxt }: Props) => {
 							id="cg-team-country"
 							name="country"
 							value={teamForm?.country}
-							//onChange={onChange}
+							onChange={setTeamField('country')}
 						>
 							<option value="">{t('common.country')}</option>
 							{countries.map(option => (
@@ -113,7 +165,7 @@ const TeamForm = ({ cxt }: Props) => {
 					<FormGroup>
 						<DragFileInput
 							image
-							onChange={() => {}}
+							onChange={fileHandler}
 							id="cg-team-team_logo"
 							removable
 							label={t('teams.uploadLogo')}
@@ -121,6 +173,13 @@ const TeamForm = ({ cxt }: Props) => {
 						/>
 						<FormText color="muted">{t('teams.logoInfo')}</FormText>
 					</FormGroup>
+				</Col>
+			</Row>
+			<Row>
+				<Col s={12}>
+					<Button color="primary" className="modal-save" onClick={updateTeam}>
+						{t('common.save')}
+					</Button>
 				</Col>
 			</Row>
 		</Section>

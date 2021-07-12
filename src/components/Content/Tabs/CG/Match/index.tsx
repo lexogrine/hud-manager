@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import Section from '../Section';
-import { Row, Col, FormGroup, Input } from 'reactstrap';
+import { Row, Col, FormGroup, Input, Button } from 'reactstrap';
 import { IContextData } from '../../../../Context';
 import { useTranslation } from 'react-i18next';
 import api from '../../../../../api/api';
 import * as I from './../../../../../api/interfaces';
 import moment from 'moment';
+import { Orientation } from 'csgogsi-socket';
 
 interface Props {
 	cxt: IContextData;
@@ -13,72 +14,152 @@ interface Props {
 
 const CurrentMatchForm = ({ cxt }: Props) => {
 	const { t } = useTranslation();
-	const currentMatch = cxt.matches.find(match => match.current);
 	const [maps, setMaps] = useState<string[]>([]);
+
+	const [match, setMatch] = useState<I.Match | null>(null);
+
+	const updateMatch = async () => {
+		if (!match) return;
+		const form = { ...match };
+		if (form.id.length) {
+			await api.match.update(form.id, form);
+			cxt.reload();
+		}
+	};
+
+	const setTeamHandler = (side: Orientation, id: string, wins = 0) => {
+		if (!match) return;
+		match[side].id = id;
+		match[side].wins = wins;
+		setMatch({ ...match });
+	};
+
+	const setVetoType = (veto: I.Veto, type: I.VetoType) => {
+		if (!match) return;
+		const newVetos = match.vetos.map(oldVeto => {
+			if (veto !== oldVeto) return oldVeto;
+
+			return { ...veto, type, teamId: type !== 'decider' ? veto.teamId : '' };
+		});
+		setMatch({ ...match, vetos: newVetos });
+	};
+
+	const setTeamForVeto = (index: number, teamId: string) => {
+		if (!match) return;
+		match.vetos = match.vetos.map((veto, i) => {
+			if (index !== i) return veto;
+			return { ...veto, teamId: teamId !== veto.teamId && veto.type !== 'decider' ? teamId : '' };
+		});
+		setMatch({ ...match });
+	};
+
+	const setMap = (veto: I.Veto, map: string) => {
+		if (!match) return;
+		const newVetos = match.vetos.map(oldVeto => {
+			if (veto !== oldVeto) return oldVeto;
+
+			return { ...veto, mapName: map };
+		});
+		setMatch({ ...match, vetos: newVetos });
+	};
+
+	const swapTeams = () => {
+		if (!match) return;
+		[match.left.id, match.right.id] = [match.right.id, match.left.id];
+		setMatch({ ...match });
+	};
+
+	const changeStartTime = (ev: any) => {
+		if (!match) return;
+		const val = ev.target.value;
+		setMatch({ ...match, startTime: moment(val).valueOf() });
+	};
 
 	useEffect(() => {
 		api.match.getMaps().then(maps => {
 			setMaps(maps);
 		});
+		api.match.get().then(matches => {
+			const match = (matches || []).find(match => match.current) || null;
+			setMatch(match);
+		});
 	}, []);
+
+	useEffect(() => {
+		updateMatch();
+	}, [match]);
 
 	const teams: I.Team[] = [];
 
-	if (currentMatch) {
-		for (const veto of currentMatch.vetos) {
-			const index = currentMatch.vetos.indexOf(veto);
+	if (match) {
+		//for (const veto of match.vetos) {
+		//const index = match.vetos.indexOf(veto);
 
-			if (!veto.mapName) {
-				currentMatch.vetos[index] = {
+		/*if (!veto.mapName) {
+				match.vetos[index] = {
 					teamId: '',
 					mapName: '',
 					side: 'NO',
 					mapEnd: false,
 					type: 'pick'
 				};
-			}
-		}
+			}*/
+		//}
 
-		if (currentMatch.left.id) {
-			const leftTeam = cxt.teams.find(team => team._id === currentMatch.left.id);
+		if (match.left.id) {
+			const leftTeam = cxt.teams.find(team => team._id === match.left.id);
 			if (leftTeam) teams.push(leftTeam);
 		}
 
-		if (currentMatch.right.id) {
-			const rightTeam = cxt.teams.find(team => team._id === currentMatch.right.id);
+		if (match.right.id) {
+			const rightTeam = cxt.teams.find(team => team._id === match.right.id);
 			if (rightTeam) teams.push(rightTeam);
 		}
 	}
-
 	return (
 		<Section title="Match" cxt={cxt} width={450}>
-			{currentMatch ? (
+			{match ? (
 				<>
 					<Row>
-						<Col md="6">
+						<Col md="5">
 							<FormGroup>
-								<Input type="select" name="team" value={currentMatch.left.id || undefined}>
+								<Input
+									type="select"
+									name="team"
+									value={match.left.id || undefined}
+									onChange={e => setTeamHandler('left', e.target.value)}
+								>
 									<option value="">{t('common.team')}</option>
 									{cxt.teams
 										.concat()
 										.sort((a, b) => (a.name < b.name ? -1 : 1))
 										.map(team => (
-											<option key={team._id} value={team._id}>
+											<option key={team._id + 'cg'} value={team._id}>
 												{team.name}
 											</option>
 										))}
 								</Input>
 							</FormGroup>
 						</Col>
-						<Col md="6">
+						<Col md="2" style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'center' }}>
+							<Button className="swap-btn" onClick={swapTeams}>
+								Swap
+							</Button>
+						</Col>
+						<Col md="5">
 							<FormGroup>
-								<Input type="select" name="team" value={currentMatch.right.id || undefined}>
+								<Input
+									type="select"
+									name="team"
+									value={match.right.id || undefined}
+									onChange={e => setTeamHandler('right', e.target.value)}
+								>
 									<option value="">{t('common.team')}</option>
 									{cxt.teams
 										.concat()
 										.sort((a, b) => (a.name < b.name ? -1 : 1))
 										.map(team => (
-											<option key={team._id} value={team._id}>
+											<option key={team._id + 'cg'} value={team._id}>
 												{team.name}
 											</option>
 										))}
@@ -92,22 +173,23 @@ const CurrentMatchForm = ({ cxt }: Props) => {
 								<Input
 									type="datetime-local"
 									value={
-										currentMatch.startTime
-											? moment(currentMatch.startTime).format(moment.HTML5_FMT.DATETIME_LOCAL)
+										match.startTime
+											? moment(match.startTime).format(moment.HTML5_FMT.DATETIME_LOCAL)
 											: ''
 									}
-									//onChange={changeStartTime}
+									onChange={changeStartTime}
 								/>
 							</FormGroup>
 						</Col>
 					</Row>
-					{currentMatch.vetos.map((veto, i) => (
+					{match.vetos.map((veto, i) => (
 						<Row key={veto.mapName + veto.teamId + i} className="veto-list">
 							<Col md="5" className="team-picker-container">
-								{teams.map(team => (
+								{teams.map((team, j) => (
 									<div
-										key={team._id}
+										key={team._id + j + i}
 										className={`picker-button ${veto.teamId === team._id ? 'active' : ''}`}
+										onClick={() => setTeamForVeto(i, team._id)}
 									>
 										{team.name}
 									</div>
@@ -129,15 +211,33 @@ const CurrentMatchForm = ({ cxt }: Props) => {
                                 </FormGroup>
                                             </Col>*/}
 							<Col md="2" className="picker-container">
-								<div className={`picker-button ${veto.type === 'pick' ? 'active' : ''}`}>PICK</div>
-								<div className={`picker-button ${veto.type === 'ban' ? 'active' : ''}`}>BAN</div>
-								<div className={`picker-button ${veto.type === 'decider' ? 'active' : ''}`}>
+								<div
+									className={`picker-button ${veto.type === 'pick' ? 'active' : ''}`}
+									onClick={() => setVetoType(veto, 'pick')}
+								>
+									PICK
+								</div>
+								<div
+									className={`picker-button ${veto.type === 'ban' ? 'active' : ''}`}
+									onClick={() => setVetoType(veto, 'ban')}
+								>
+									BAN
+								</div>
+								<div
+									className={`picker-button ${veto.type === 'decider' ? 'active' : ''}`}
+									onClick={() => setVetoType(veto, 'decider')}
+								>
 									DECIDER
 								</div>
 							</Col>
 							<Col md="5">
 								<FormGroup>
-									<Input type="select" name="maps" value={veto.mapName || undefined}>
+									<Input
+										type="select"
+										name="maps"
+										value={veto.mapName || undefined}
+										onChange={e => setMap(veto, e.target.value)}
+									>
 										<option value="">{t('common.map')}</option>
 										{maps.map(map => (
 											<option key={map} value={map}>
