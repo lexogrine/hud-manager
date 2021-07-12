@@ -151,6 +151,17 @@
 			arModuleURL += `?cacheBust=${(new Date()).getTime()}`
 
 			socketio.emit("register", isDev ? (Math.random() * 1000 + 1).toString(36).replace(/[^a-z]+/g, '').substr(0, 15) : dir, isDev);
+			try {
+				const moduleData = await fetch(arModuleURL);
+				
+				const type = moduleData.headers.get("Content-Type");
+				if(!type.startsWith('application/javascript')){
+					return;
+				}
+
+			} catch {
+				return;
+			}
 
 			const customCSS = document.createElement("link");
 			customCSS.setAttribute("rel", "stylesheet");
@@ -158,7 +169,7 @@
 			customCSS.setAttribute("id", "customStylesheet");
 			customCSS.setAttribute("href", !isDev ? `/huds/${dir}/ar/index.css` : '/dev/ar/index.css');
 
-        	document.getElementsByTagName("head")[0].appendChild(customCSS);
+			document.getElementsByTagName("head")[0].appendChild(customCSS);
 
 			const arModule = await import(arModuleURL);
 			currentARModule = arModule;
