@@ -115,7 +115,7 @@ const VetoEntry = ({ map, veto, vetoTeams, onSave, maps }: Props) => {
 		<GameOnly game="csgo">
 			<div className={`entry-container ${veto.teamId === '' ? 'empty' : ''} ${veto.teamId ? veto.type : ''}`}>
 				{vetoTeams.length !== 2 ? (
-					'Pick both teams to set vetos'
+					t('match.pickBothTeams')
 				) : (
 					<>
 						<div className="entry-main">

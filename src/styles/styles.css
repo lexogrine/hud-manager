@@ -335,6 +335,9 @@ img.smallLogo {
 .centered i:hover, .hover-pointer:hover{
     cursor: pointer;
 }
+.hover-pointer.hide {
+    display: none !important;
+}
 .veto-box {
     background-color:red;
     height: 50px;
@@ -1209,16 +1212,16 @@ form .card > .card-body > button.btn {
     
     border-bottom: 2px solid #7ad9f5;
 }
-.veto_modal .form-check {
+.veto_modal .form-check, .veto-list .form-check {
     padding: 0;
 }
-.veto_modal .form-check-input {
+.veto_modal .form-check-input, .veto-list .form-check-input{
     opacity: 0;
     width: 0;
     height: 0;
     margin: 0;
 }
-.veto_modal .form-check-label {
+.veto_modal .form-check-label, .veto-list .form-check-label {
     display: flex;
     align-items: center;
 }
@@ -1499,6 +1502,8 @@ input:checked ~ .customCheckbox {
 .cg-panel {
     display: flex;
     flex-wrap: wrap;
+    height:unset !important;
+    max-height: calc(100vh - 135px - 64px);
 }
 
 .cg-section {
@@ -1511,6 +1516,7 @@ input:checked ~ .customCheckbox {
     padding: 10px;
     background-color: rgba(0,0,0,0.25);
     border-radius: 5px;
+    margin-top:10px;
 }
 .cg-section.hide .cg-content {
     height: 0;
@@ -1518,6 +1524,16 @@ input:checked ~ .customCheckbox {
 }
 .cg-bar .title {
     flex: 1;
+}
+.cg-content .side-picker {
+    display: flex;
+    margin: 5px 0;
+}
+.cg-content .side-reverse{
+    margin: 10px 0;
+}
+.cg-content .side-picker > div {
+    margin: 0 5px;
 }
 .cg-content {
     display: flex;
@@ -1574,9 +1590,49 @@ input:checked ~ .customCheckbox {
     margin: 0.5rem 0;
     padding: 0.5rem 0;
 }
-
+.cg-content .veto-list {
+    background-color: rgba(0,0,0,0.25);
+    padding: 5px 10px;
+    margin: 5px 0;
+}
+.cg-content .veto-list > .row {
+    margin: 0;
+}
 .cg-content .team-picker-container .picker-button {
     height: 22px;
     font-size: 11px;
     margin: 4px 0;
+}
+.cg-content .match-preview {
+    display: flex;
+    background-color: rgba(0,0,0,0.25);
+    margin: 5px 0;
+    padding: 10px 0;
+}
+
+.cg-content .match-preview .team-preview {
+    flex: 1;
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+}
+.cg-content .match-preview .team-preview img {
+    max-height: 35px;
+    margin: 5px 0;
+}
+.cg-content .match-preview .match-versus {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+}
+.cg-content .match-preview .match-edit-button {
+    width: 40px;
+    height:100%;
+    display:flex;
+    align-items: center;
+    cursor: pointer;
 }

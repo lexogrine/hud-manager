@@ -1,12 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import Section from '../Section';
-import { Row, Col, FormGroup, Input } from 'reactstrap';
 import { IContextData } from '../../../../Context';
 import { useTranslation } from 'react-i18next';
-import api from '../../../../../api/api';
 import * as I from './../../../../../api/interfaces';
-import moment from 'moment';
-import { Orientation } from 'csgogsi-socket';
+import editIcon from './../../../../../styles/EditIcon.png';
+import trash from './../../../../../styles/trash.svg';
+import { MatchHandler } from '../Match';
+import api from '../../../../../api/api';
+import uuidv4 from 'uuid/v4';
+import { Row, Col, Button } from 'reactstrap';
+
 
 interface Props {
 	cxt: IContextData;
@@ -20,45 +23,81 @@ const TeamPreview = ({ name, logo }: { name: string; logo?: string }) => (
 );
 
 const MatchPreview = ({ match, cxt }: { match: I.Match; cxt: IContextData }) => {
-	const teams: I.Team[] = [];
+	let left: I.Team | null = null;
+	let right: I.Team | null = null;
 
+	const deleteMatch = async () => {
+		await api.match.delete(match.id);
+		cxt.reload();
+		if(MatchHandler.match?.id === match.id){
+			MatchHandler.edit(null);
+		}
+	};
 	if (match) {
-		//for (const veto of match.vetos) {
-		//const index = match.vetos.indexOf(veto);
-
-		/*if (!veto.mapName) {
-				match.vetos[index] = {
-					teamId: '',
-					mapName: '',
-					side: 'NO',
-					mapEnd: false,
-					type: 'pick'
-				};
-			}*/
-		//}
-
 		if (match.left.id) {
-			const leftTeam = cxt.teams.find(team => team._id === match.left.id);
-			if (leftTeam) teams.push(leftTeam);
+			left = cxt.teams.find(team => team._id === match.left.id) || null;
 		}
 
 		if (match.right.id) {
-			const rightTeam = cxt.teams.find(team => team._id === match.right.id);
-			if (rightTeam) teams.push(rightTeam);
+			right = cxt.teams.find(team => team._id === match.right.id) || null;
 		}
 	}
+
+	return (
+		<div className="match-preview">
+			<TeamPreview name={left?.name || 'Team #1'} logo={left?.logo} />
+			<div className="match-versus">VS</div>
+			<TeamPreview name={right?.name || 'Team #2'} logo={left?.logo} />
+			<div className="match-edit-button" onClick={() => MatchHandler.edit(match) }>
+				<img src={editIcon} />
+			</div>
+			<div className="match-edit-button" onClick={deleteMatch}>
+				<img src={trash} />
+			</div>
+		</div>
+		)
 };
 
 const Matches = ({ cxt }: Props) => {
 	const { t } = useTranslation();
+	
+	const add = async () => {
+		const newMatch: I.Match = {
+			id: uuidv4(),
+			current: false,
+			left: { id: null, wins: 0 },
+			right: { id: null, wins: 0 },
+			matchType: 'bo1',
+			vetos: [],
+			startTime: 0,
+			game: cxt.game
+		};
+
+		for (let i = 0; i < 9; i++) {
+			newMatch.vetos.push({
+				teamId: '',
+				mapName: '',
+				side: 'NO',
+				type: 'pick',
+				mapEnd: false,
+				reverseSide: false
+			});
+		}
+		await api.match.add(newMatch);
+		//await api.match.set(matches);
+		cxt.reload();
+	}
 
 	return (
-		<Section title="Matches" cxt={cxt} width={450}>
-			{cxt.matches.map(match => (
-				<div className="match-preview">
-					<TeamPreview name={} />
-				</div>
-			))}
+		<Section title={t('match.matches')} cxt={cxt} width={600}>
+			{cxt.matches.map(match => <MatchPreview key={match.id} match={match} cxt={cxt} />)}
+			<Row>
+				<Col s={12}>
+					<Button color="primary" className="modal-save" onClick={add}>
+						{t('common.createNew')}
+					</Button>
+				</Col>
+			</Row>
 		</Section>
 	);
 };

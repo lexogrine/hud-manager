@@ -31,69 +31,65 @@ const Navbar = ({ activeTab, toggle, files }: IProps) => {
 		socket.on('config', getConfig);
 		getConfig();
 	}, []);
+
+	const onlyNonCGClass = !config || !config.cg ? '' : 'hide';
 	return (
 		<Nav tabs className="navbar-container">
-			{config && config.cg ? (
-				<NavItem className="hover-pointer">
-					<NavLink
-						active={activeTab === 'cgpanel'}
-						onClick={() => {
-							toggle('cgpanel');
-						}}
-					>
-						<img src={Tabs.Teams} alt="Panel" />
-						<div>{t('common.panel')}</div>
-					</NavLink>
-				</NavItem>
-			) : null}
-			{!config || !config.cg ? (
-				<>
-					<NavItem className="hover-pointer">
-						<NavLink
-							active={activeTab === 'teams'}
-							onClick={() => {
-								toggle('teams');
-							}}
-						>
-							<img src={Tabs.Teams} alt="Teams" />
-							<div>{t('common.teams')}</div>
-						</NavLink>
-					</NavItem>
-					<NavItem className="hover-pointer">
-						<NavLink
-							active={activeTab === 'players'}
-							onClick={() => {
-								toggle('players');
-							}}
-						>
-							<img src={Tabs.Players} alt="Players" />
-							<div>{t('common.players')}</div>
-						</NavLink>
-					</NavItem>
-					<NavItem className="hover-pointer">
-						<NavLink
-							active={activeTab === 'create_match'}
-							onClick={() => {
-								toggle('create_match');
-							}}
-						>
-							<img src={Tabs.Matches} alt="Matches" />
-							<div>{t('match.matches')}</div>
-						</NavLink>
-					</NavItem>
-					<NavItem className="hover-pointer">
-						<NavLink
-							active={activeTab === 'tournaments'}
-							onClick={() => {
-								toggle('tournaments');
-							}}
-						>
-							<img src={Tabs.Tournaments} alt="Tournaments" />
-							<div>{t('common.tournaments')}</div>
-						</NavLink>
-					</NavItem>
-				</>
-			) : null}
+			<NavItem className={`hover-pointer ${config && config.cg ? '' : 'hide'}`}>
+				<NavLink
+					active={activeTab === 'cgpanel'}
+					onClick={() => {
+						toggle('cgpanel');
+					}}
+				>
+					<img src={Tabs.Teams} alt="Panel" />
+					<div>{t('common.panel')}</div>
+				</NavLink>
+			</NavItem>
+			<NavItem className={`hover-pointer ${onlyNonCGClass}`}>
+				<NavLink
+					active={activeTab === 'teams'}
+					onClick={() => {
+						toggle('teams');
+					}}
+				>
+					<img src={Tabs.Teams} alt="Teams" />
+					<div>{t('common.teams')}</div>
+				</NavLink>
+			</NavItem>
+			<NavItem className={`hover-pointer ${onlyNonCGClass}`}>
+				<NavLink
+					active={activeTab === 'players'}
+					onClick={() => {
+						toggle('players');
+					}}
+				>
+					<img src={Tabs.Players} alt="Players" />
+					<div>{t('common.players')}</div>
+				</NavLink>
+			</NavItem>
+			<NavItem className={`hover-pointer ${onlyNonCGClass}`}>
+				<NavLink
+					active={activeTab === 'create_match'}
+					onClick={() => {
+						toggle('create_match');
+					}}
+				>
+					<img src={Tabs.Matches} alt="Matches" />
+					<div>{t('match.matches')}</div>
+				</NavLink>
+			</NavItem>
+			<NavItem className={`hover-pointer ${onlyNonCGClass}`}>
+				<NavLink
+					active={activeTab === 'tournaments'}
+					onClick={() => {
+						toggle('tournaments');
+					}}
+				>
+					<img src={Tabs.Tournaments} alt="Tournaments" />
+					<div>{t('common.tournaments')}</div>
+				</NavLink>
+			</NavItem>
 			<NavItem className="hover-pointer">
 				<NavLink
 					active={activeTab === 'huds'}
