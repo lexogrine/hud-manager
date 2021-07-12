@@ -10,7 +10,6 @@ import api from '../../../../../api/api';
 import uuidv4 from 'uuid/v4';
 import { Row, Col, Button } from 'reactstrap';
 
-
 interface Props {
 	cxt: IContextData;
 }
@@ -29,7 +28,7 @@ const MatchPreview = ({ match, cxt }: { match: I.Match; cxt: IContextData }) => 
 	const deleteMatch = async () => {
 		await api.match.delete(match.id);
 		cxt.reload();
-		if(MatchHandler.match?.id === match.id){
+		if (MatchHandler.match?.id === match.id) {
 			MatchHandler.edit(null);
 		}
 	};
@@ -48,19 +47,19 @@ const MatchPreview = ({ match, cxt }: { match: I.Match; cxt: IContextData }) => 
 			<TeamPreview name={left?.name || 'Team #1'} logo={left?.logo} />
 			<div className="match-versus">VS</div>
 			<TeamPreview name={right?.name || 'Team #2'} logo={left?.logo} />
-			<div className="match-edit-button" onClick={() => MatchHandler.edit(match) }>
+			<div className="match-edit-button" onClick={() => MatchHandler.edit(match)}>
 				<img src={editIcon} />
 			</div>
 			<div className="match-edit-button" onClick={deleteMatch}>
 				<img src={trash} />
 			</div>
 		</div>
-		)
+	);
 };
 
 const Matches = ({ cxt }: Props) => {
 	const { t } = useTranslation();
-	
+
 	const add = async () => {
 		const newMatch: I.Match = {
 			id: uuidv4(),
@@ -86,11 +85,13 @@ const Matches = ({ cxt }: Props) => {
 		await api.match.add(newMatch);
 		//await api.match.set(matches);
 		cxt.reload();
-	}
+	};
 
 	return (
 		<Section title={t('match.matches')} cxt={cxt} width={600}>
-			{cxt.matches.map(match => <MatchPreview key={match.id} match={match} cxt={cxt} />)}
+			{cxt.matches.map(match => (
+				<MatchPreview key={match.id} match={match} cxt={cxt} />
+			))}
 			<Row>
 				<Col s={12}>
 					<Button color="primary" className="modal-save" onClick={add}>
