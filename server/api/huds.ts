@@ -190,7 +190,7 @@ const getHUDPublicKey = (dirName: string) => {
 	} catch (e) {
 		return null;
 	}
-}
+};
 
 export const getHUDData = async (dirName: string): Promise<I.HUD | null> => {
 	const dir = path.join(app.getPath('home'), 'HUDs', dirName);
@@ -209,10 +209,10 @@ export const getHUDData = async (dirName: string): Promise<I.HUD | null> => {
 		const publicKey = getHUDPublicKey(dirName);
 		if (publicKey) {
 			const content = jwt.verify(configFile, publicKey, { algorithms: ['RS256'] }) as any;
-			if (typeof content !== "string" &&  !content.name && !content.version) return null;
+			if (typeof content !== 'string' && !content.name && !content.version) return null;
 			configFile = content;
 		}
-		const config = typeof configFile === 'string' ? JSON.parse(configFile) : configFile as I.HUD;
+		const config = typeof configFile === 'string' ? JSON.parse(configFile) : (configFile as I.HUD);
 		config.dir = dirName;
 		config.game = config.game || 'csgo';
 		config.publicKey = getHUDPublicKey(dirName);
@@ -359,16 +359,16 @@ export const render: express.RequestHandler = (req, res) => {
 
 export const renderOverlay =
 	(devHUD = false): express.RequestHandler =>
-		async (req, res) => {
-			const cfg = await loadConfig();
-			if (!cfg) {
-				return res.sendStatus(500);
-			}
-			if (!devHUD) {
-				return res.send(overlay(`/huds/${req.params.dir}/?port=${cfg.port}&isProd=true`));
-			}
-			return res.send(overlay(`/dev/?port=${cfg.port}`));
-		};
+	async (req, res) => {
+		const cfg = await loadConfig();
+		if (!cfg) {
+			return res.sendStatus(500);
+		}
+		if (!devHUD) {
+			return res.send(overlay(`/huds/${req.params.dir}/?port=${cfg.port}&isProd=true`));
+		}
+		return res.send(overlay(`/dev/?port=${cfg.port}`));
+	};
 
 export const renderThumbnail: express.RequestHandler = (req, res) => {
 	return res.sendFile(getThumbPath(req.params.dir));
@@ -396,12 +396,11 @@ export const renderAssets: express.RequestHandler = async (req, res, next) => {
 		return express.static(path.join(app.getPath('home'), 'HUDs', req.params.dir))(req, res, next);
 	}
 
-
 	try {
 		const signedFileContent = fs.readFileSync(filePath, 'utf8');
 		const content = jwt.verify(signedFileContent, data.publicKey, { algorithms: ['RS256'] });
 
-		if (typeof content !== "string") return res.sendStatus(404);
+		if (typeof content !== 'string') return res.sendStatus(404);
 
 		res.setHeader('Content-Type', req.url.endsWith('.js') ? 'application/javascript' : 'text/css');
 
@@ -409,7 +408,6 @@ export const renderAssets: express.RequestHandler = async (req, res, next) => {
 	} catch {
 		return res.sendStatus(404);
 	}
-
 };
 
 export const renderLegacy: express.RequestHandler = async (req, res) => {
@@ -501,17 +499,18 @@ export const deleteHUD: express.RequestHandler = async (req, res) => {
 	}
 };
 export const removeArchives = () => {
-	const files = fs.readdirSync('./').filter(file => (file.startsWith('hud_temp_') || file.startsWith('ar_temp_')) && file.endsWith('.zip'));
+	const files = fs
+		.readdirSync('./')
+		.filter(file => (file.startsWith('hud_temp_') || file.startsWith('ar_temp_')) && file.endsWith('.zip'));
 	files.forEach(file => {
 		try {
 			if (fs.lstatSync(file).isDirectory()) {
 				return;
 			}
 			if (fs.existsSync(file)) fs.unlinkSync(file);
-		} catch { }
+		} catch {}
 	});
-}
-
+};
 
 async function loadHUD(base64: string, name: string, existingUUID?: string): Promise<I.HUD | null> {
 	removeArchives();
@@ -688,11 +687,11 @@ const getAllFilesToSign = (hudDir: string) => {
 			const fileDirectory = path.join(dir, file);
 			if (fs.statSync(fileDirectory).isDirectory()) return getFiles(fileDirectory);
 			else if (fileDirectory.endsWith('.js')) return files.push(fileDirectory);
-		})
-	}
-	getFiles(hudDir)
+		});
+	};
+	getFiles(hudDir);
 	return files;
-}
+};
 
 export const signHUD = async (hudDir: string) => {
 	const dir = path.join(app.getPath('home'), 'HUDs', hudDir);
@@ -731,12 +730,15 @@ export const signHUD = async (hudDir: string) => {
 		}
 		const content = fs.readFileSync(file, 'utf8');
 		try {
-			const signed = jwt.sign(content, { key: keys.privateKey.toString(), passphrase: 'top secret' }, { algorithm: 'RS256' });
+			const signed = jwt.sign(
+				content,
+				{ key: keys.privateKey.toString(), passphrase: 'top secret' },
+				{ algorithm: 'RS256' }
+			);
 			fileToContent[file] = signed;
 		} catch {
 			success = false;
 		}
-
 	});
 
 	if (!success) return false;
@@ -748,8 +750,7 @@ export const signHUD = async (hudDir: string) => {
 	fs.writeFileSync(keyFile, keys.publicKey.toString());
 
 	return success;
-
-}
+};
 
 export const singHUDByDir: RequestHandler = async (_req, res) => {
 	/*const hudDir = req.params.hudDir;

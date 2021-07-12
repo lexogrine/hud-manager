@@ -20,13 +20,11 @@ export const getARModulesAssets: express.RequestHandler = async (req, res, next)
 	return express.static(path.join(app.getPath('userData'), 'ARs', req.params.dir))(req, res, next);
 };
 
-
 export const openARsDirectory: express.RequestHandler = async (_req, res) => {
 	const dir = path.join(app.getPath('userData'), 'ARs');
 	shell.openPath(dir);
 	return res.sendStatus(200);
 };
-
 
 export const sendAR: express.RequestHandler = async (req, res) => {
 	if (!req.body.ar || !req.body.name) return res.sendStatus(422);

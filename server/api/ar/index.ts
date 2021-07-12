@@ -73,7 +73,6 @@ export const listARModules = () => {
 	return arModules;
 };
 
-
 export async function loadAR(base64: string, name: string, existingUUID?: string): Promise<I.ARModule | null> {
 	removeArchives();
 	return new Promise(res => {

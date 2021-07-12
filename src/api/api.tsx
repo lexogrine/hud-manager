@@ -161,7 +161,7 @@ export default {
 	ar: {
 		get: async (): Promise<I.ARModule[]> => await apiV2('ar'),
 		save: async (ar: string, name: string) => await apiV2(`ar/add`, 'POST', { ar, name }),
-		openDirectory: async () => await apiV2(`huds`, 'POST'),
+		openDirectory: async () => await apiV2(`huds`, 'POST')
 	},
 	files: {
 		imgToBase64: async (url: string) => {
