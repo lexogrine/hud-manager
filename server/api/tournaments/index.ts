@@ -90,6 +90,10 @@ export const fillNextMatch = (matchId: string, type: 'winner' | 'loser') =>
 					return 2;
 				case 'bo5':
 					return 3;
+				case 'bo7':
+					return 4;
+				case 'bo9':
+					return 5;
 				default:
 					return 2;
 			}

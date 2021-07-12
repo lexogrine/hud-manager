@@ -5,6 +5,8 @@ import Navbar from './Navbar/Navbar';
 import Tabs from './Tabs/Tabs';
 import { useTranslation } from 'react-i18next';
 
+export const isCGMode = false;
+
 const Content = ({
 	active,
 	available,

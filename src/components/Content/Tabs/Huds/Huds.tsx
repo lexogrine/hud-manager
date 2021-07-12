@@ -77,6 +77,7 @@ interface IState {
 	enableTest: boolean;
 	isOnLoop: boolean;
 	blocked: string[];
+	isHUDOpened: boolean;
 }
 
 class Huds extends React.Component<IProps, IState> {
@@ -91,7 +92,8 @@ class Huds extends React.Component<IProps, IState> {
 				port: 1349,
 				token: '',
 				afxCEFHudInteropPath: '',
-				sync: true
+				sync: true,
+				cg: false
 			},
 			form: {
 				killfeed: false,
@@ -104,7 +106,8 @@ class Huds extends React.Component<IProps, IState> {
 			currentHUD: null,
 			enableTest: true,
 			isOnLoop: false,
-			blocked: []
+			blocked: [],
+			isHUDOpened: false
 		};
 	}
 
@@ -169,8 +172,12 @@ class Huds extends React.Component<IProps, IState> {
 		socket.on('config', () => {
 			this.getConfig();
 		});
+		socket.on('hud_opened', (status: boolean) => {
+			this.setState({ isHUDOpened: status });
+		});
 		socket.emit('get_active_hlae');
 		socket.emit('get_test_settings');
+		socket.emit('is_hud_opened');
 		this.loadHUDs();
 		this.getConfig();
 	}
@@ -198,7 +205,7 @@ class Huds extends React.Component<IProps, IState> {
 
 	render() {
 		const { killfeed, radar, afx } = this.state.form;
-		const { active, config } = this.state;
+		const { active, config, isHUDOpened } = this.state;
 		const t = this.props.t;
 		const available =
 			this.props.cxt.customer?.license?.type === 'professional' ||
@@ -330,7 +337,7 @@ class Huds extends React.Component<IProps, IState> {
 												<div>{t('huds.warning.specifyAFXInteropPath')}</div>
 											) : null}
 											{afx && config.afxCEFHudInteropPath && config.hlaePath ? (
-												<div>{t('huds.warning.AFXModeInfo')}</div>
+												<div>{t('huds.warning.specifyAFXModeInfo')}</div>
 											) : null}
 										</ElectronOnly>
 									</div>
@@ -400,6 +407,7 @@ class Huds extends React.Component<IProps, IState> {
 									setHUDLoading={this.setHUDLoading}
 									isLoading={!!hud.uuid && this.state.loadingHUDs.includes(hud.uuid)}
 									isCloudAvailable={available}
+									isHUDOpened={isHUDOpened}
 								/>
 							))}
 						</Col>

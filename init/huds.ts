@@ -1,10 +1,11 @@
-import { BrowserWindow, Tray, Menu, globalShortcut } from 'electron';
+import { BrowserWindow, Tray, Menu /*globalShortcut*/ } from 'electron';
 import { getHUDData } from './../server/api/huds';
 import * as path from 'path';
 //import ip from 'ip';
 import socketio from 'socket.io';
 import * as I from './../types/interfaces';
 import { ioPromise } from '../server/socket';
+import { registerKeybind, unregisterKeybind } from '../server/api/keybinder';
 
 class HUD {
 	current: BrowserWindow | null;
@@ -61,19 +62,24 @@ class HUD {
 		this.current = hudWindow;
 		this.hud = hud;
 
+		io.emit('hud_opened', true);
+
 		this.showWindow(hud, io);
 		hudWindow.loadURL(hud.url);
 
 		hudWindow.on('close', () => {
 			if (this.hud && this.hud.keybinds) {
 				for (const keybind of this.hud.keybinds) {
-					globalShortcut.unregister(keybind.bind);
+					//globalShortcut.unregister(keybind.bind);
+					unregisterKeybind(keybind.bind, hud.dir);
 				}
 			}
-			globalShortcut.unregister('Alt+F');
+			unregisterKeybind('Alt+F');
+			// globalShortcut.unregister('Alt+F');
 
 			this.hud = null;
 			this.current = null;
+			io.emit('hud_opened', false);
 			if (this.tray !== null) {
 				this.tray.destroy();
 			}
@@ -87,16 +93,28 @@ class HUD {
 		this.current.setOpacity(1);
 		this.current.show();
 
-		globalShortcut.register('Alt+F', () => {
+		/*globalShortcut.register('Alt+F', () => {
+			if (!this.current || !hud || !hud.url) return;
+			this.current.loadURL(hud.url);
+		});*/
+
+		registerKeybind('Alt+F', () => {
 			if (!this.current || !hud || !hud.url) return;
 			this.current.loadURL(hud.url);
 		});
 
 		if (hud.keybinds) {
 			for (const bind of hud.keybinds) {
-				globalShortcut.register(bind.bind, () => {
+				registerKeybind(
+					bind.bind,
+					() => {
+						io.to(hud.dir).emit('keybindAction', bind.action);
+					},
+					hud.dir
+				);
+				/*globalShortcut.register(bind.bind, () => {
 					io.to(hud.dir).emit('keybindAction', bind.action);
-				});
+				});*/
 			}
 		}
 	}
@@ -108,7 +126,8 @@ class HUD {
 		}
 	}
 
-	close() {
+	async close() {
+		const io = await ioPromise;
 		if (this.tray !== null) {
 			this.tray.destroy();
 		}
@@ -116,6 +135,7 @@ class HUD {
 
 		this.current.close();
 		this.current = null;
+		io.emit('hud_opened', false);
 
 		return true;
 	}

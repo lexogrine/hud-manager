@@ -77,6 +77,10 @@ exports.initGameConnection = async () => {
         socket_1.GSI.digest(req.body);
         res.sendStatus(200);
     });
+    __2.app.post('/dota2', assertUser, (req, res) => {
+        io.to('dota2').emit('update', req.body);
+        res.sendStatus(200);
+    });
     __2.app.post('/api/test', assertUser, (_req, res) => {
         if (exports.playTesting.intervalId)
             stopSendingTestData();

@@ -1,4 +1,7 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const config_1 = require("../api/config");
 const hudstatemanager_1 = require("../api/huds/hudstatemanager");
@@ -6,6 +9,11 @@ const matches_1 = require("../api/matches");
 const socket_1 = require("../socket");
 const play_1 = require("./../api/huds/play");
 const interfaces_1 = require("../../types/interfaces");
+const keybinder_1 = require("../api/keybinder");
+const huds_1 = require("../api/huds");
+const huds_2 = __importDefault(require("../../init/huds"));
+const ar_1 = require("../api/ar");
+let activeModuleDirs = [];
 socket_1.ioPromise.then(io => {
     io.on('connection', socket => {
         const ref = socket.request?.headers?.referer || '';
@@ -70,13 +78,25 @@ socket_1.ioPromise.then(io => {
         socket.on('get_config', (hud) => {
             socket.emit('hud_config', socket_1.HUDState.get(hud, true));
         });
-        socket.on('set_active_hlae', (hudUrl, dir, isDev) => {
+        socket.on('set_active_hlae', async (hudUrl, dir, isDev) => {
             if (socket_1.runtimeConfig.currentHUD.url === hudUrl) {
                 socket_1.runtimeConfig.currentHUD.url = null;
                 socket_1.runtimeConfig.currentHUD.isDev = false;
                 socket_1.runtimeConfig.currentHUD.dir = '';
+                keybinder_1.unregisterAllKeybinds(dir);
             }
             else {
+                if (hudUrl) {
+                    const keybinds = huds_1.getHUDKeyBinds(dir) || [];
+                    for (const bind of keybinds) {
+                        keybinder_1.registerKeybind(bind.bind, () => {
+                            io.to(dir).emit('keybindAction', bind.action);
+                        }, dir);
+                    }
+                }
+                else if (socket_1.runtimeConfig.currentHUD.dir) {
+                    keybinder_1.unregisterAllKeybinds(socket_1.runtimeConfig.currentHUD.dir);
+                }
                 socket_1.runtimeConfig.currentHUD.url = hudUrl;
                 socket_1.runtimeConfig.currentHUD.isDev = isDev;
                 socket_1.runtimeConfig.currentHUD.dir = dir;
@@ -89,6 +109,31 @@ socket_1.ioPromise.then(io => {
         });
         socket.on('get_test_settings', () => {
             socket.emit('enableTest', !play_1.playTesting.intervalId, play_1.playTesting.isOnLoop);
+        });
+        socket.on('is_hud_opened', () => {
+            socket.emit('hud_opened', !!huds_2.default.current);
+        });
+        socket.on('toggle_module', async (moduleDir) => {
+            if (activeModuleDirs.includes(moduleDir)) {
+                activeModuleDirs = activeModuleDirs.filter(dir => dir !== moduleDir);
+                keybinder_1.unregisterAllKeybinds(moduleDir);
+            }
+            else {
+                const ar = await ar_1.getARModuleData(moduleDir);
+                if (!ar) {
+                    return;
+                }
+                for (const bind of ar.keybinds) {
+                    keybinder_1.registerKeybind(bind.bind, () => {
+                        io.emit('keybindAction', bind.action);
+                    }, moduleDir);
+                }
+                activeModuleDirs.push(moduleDir);
+            }
+            io.emit('active_modules', activeModuleDirs);
+        });
+        socket.on('get_active_modules', () => {
+            socket.emit('active_modules', activeModuleDirs);
         });
     });
 });

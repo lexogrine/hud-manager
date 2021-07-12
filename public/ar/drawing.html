@@ -48,7 +48,6 @@
 
 <body>
 	<iframe src="/?hlaegui" style="border: none; overflow:hidden;"></iframe>
-	<script src="./lhm/h2c.js"></script>
 	<script type="text/javascript" src="./common.js"></script>
 	<script type="text/javascript" src="./three.min.js"></script>
 	<script type="text/javascript" src="./css3drenderer.js"></script>
@@ -56,6 +55,7 @@
 	<script type="module">
 		import { CSGOGSI } from './lhm/csgogsi.js';
 		import { ActionManager } from './lhm/actions.js';
+		import { addARModule, removeARModule, setActiveModules } from './lhm/utils.js';
 
 		var actions = new ActionManager();
 		
@@ -74,7 +74,7 @@
 			actions.execute(data.action, data.data);
 		});
 		socketio.on('keybindAction', (action) => {
-			//actions.execute(action);
+			actions.execute(action);
 		});
 
 		const horToVert = hFov => {
@@ -115,6 +115,18 @@
 			WEBGL
 		}
 
+		const arSettings = {
+			scene,
+			camera,
+			renderers,
+			GSI,
+			actions
+		};
+
+		socketio.on('active_modules', activeModules => {
+			setActiveModules(activeModules, arSettings);
+		});
+
 		socketio.on('active_hlae', async (url, dir, isDev) => {
 			socketio.emit('unregister')
 			//console.log('unreg')
@@ -154,6 +166,7 @@
 			startARModule(scene, camera, renderers, GSI, actions);
 		});
 		socketio.emit('get_active_hlae_hud');
+		socketio.emit('get_active_modules');
 
 
 

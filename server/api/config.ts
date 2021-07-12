@@ -26,7 +26,8 @@ const defaultConfig: Config = {
 	port: 1349,
 	hlaePath: '',
 	afxCEFHudInteropPath: '',
-	sync: true
+	sync: true,
+	cg: false
 };
 
 export const loadConfig = async (): Promise<Config> => {
@@ -83,7 +84,8 @@ export const updateConfig: express.RequestHandler = async (req, res) => {
 		token: req.body.token,
 		hlaePath: req.body.hlaePath,
 		afxCEFHudInteropPath: req.body.afxCEFHudInteropPath,
-		sync: !!req.body.sync
+		sync: !!req.body.sync,
+		cg: !!req.body.cg
 	};
 
 	const config = await setConfig(updated);
@@ -126,6 +128,9 @@ export const verifyUrl = async (url: string) => {
 		return true;
 	}
 	if (bases.find(base => url.startsWith(`${base}/ar/drawing.html`))) {
+		return true;
+	}
+	if (bases.find(base => url.startsWith(`${base}/ar2/engine/drawing.html`))) {
 		return true;
 	}
 	const base = bases.find(base => url.startsWith(base));

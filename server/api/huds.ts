@@ -13,16 +13,17 @@ import archiver from 'archiver';
 import { customer } from '.';
 import isSvg from '../../src/isSvg';
 import fetch from 'node-fetch';
-
+import crypto from 'crypto';
+import jwt from 'jsonwebtoken';
 const DecompressZip = require('decompress-zip');
 
-const getRandomString = () =>
+export const getRandomString = () =>
 	(Math.random() * 1000 + 1)
 		.toString(36)
 		.replace(/[^a-z]+/g, '')
 		.substr(0, 15);
 
-const remove = (pathToRemove: string) => {
+export const remove = (pathToRemove: string) => {
 	if (!fs.existsSync(pathToRemove)) {
 		return;
 	}
@@ -177,6 +178,20 @@ export const getHUDARSettings = (dirName: string) => {
 	}
 };
 
+const getHUDPublicKey = (dirName: string) => {
+	const dir = path.join(app.getPath('home'), 'HUDs', dirName);
+	const keyFile = path.join(dir, 'key');
+	if (!fs.existsSync(keyFile)) {
+		return null;
+	}
+	try {
+		const key = fs.readFileSync(keyFile, 'utf8');
+		return key;
+	} catch (e) {
+		return null;
+	}
+};
+
 export const getHUDData = async (dirName: string): Promise<I.HUD | null> => {
 	const dir = path.join(app.getPath('home'), 'HUDs', dirName);
 	const configFileDir = path.join(dir, 'hud.json');
@@ -190,10 +205,17 @@ export const getHUDData = async (dirName: string): Promise<I.HUD | null> => {
 		return null;
 	}
 	try {
-		const configFile = fs.readFileSync(configFileDir, { encoding: 'utf8' });
-		const config = JSON.parse(configFile);
+		let configFile = fs.readFileSync(configFileDir, { encoding: 'utf8' });
+		const publicKey = getHUDPublicKey(dirName);
+		if (publicKey) {
+			const content = jwt.verify(configFile, publicKey, { algorithms: ['RS256'] }) as any;
+			if (typeof content !== 'string' && !content.name && !content.version) return null;
+			configFile = content;
+		}
+		const config = typeof configFile === 'string' ? JSON.parse(configFile) : (configFile as I.HUD);
 		config.dir = dirName;
 		config.game = config.game || 'csgo';
+		config.publicKey = getHUDPublicKey(dirName);
 
 		const panel = getHUDPanelSetting(dirName);
 		const keybinds = getHUDKeyBinds(dirName);
@@ -220,6 +242,7 @@ export const getHUDData = async (dirName: string): Promise<I.HUD | null> => {
 
 		return config;
 	} catch (e) {
+		console.log(e);
 		return null;
 	}
 };
@@ -367,7 +390,24 @@ export const renderAssets: express.RequestHandler = async (req, res, next) => {
 	if (!data) {
 		return res.sendStatus(404);
 	}
-	return express.static(path.join(app.getPath('home'), 'HUDs', req.params.dir))(req, res, next);
+	const filePath = path.join(app.getPath('home'), 'HUDs', data.dir, req.url);
+
+	if ((!req.url.endsWith('.js') && !req.url.endsWith('.css')) || !data.publicKey || !fs.existsSync(filePath)) {
+		return express.static(path.join(app.getPath('home'), 'HUDs', req.params.dir))(req, res, next);
+	}
+
+	try {
+		const signedFileContent = fs.readFileSync(filePath, 'utf8');
+		const content = jwt.verify(signedFileContent, data.publicKey, { algorithms: ['RS256'] });
+
+		if (typeof content !== 'string') return res.sendStatus(404);
+
+		res.setHeader('Content-Type', req.url.endsWith('.js') ? 'application/javascript' : 'text/css');
+
+		return res.send(content);
+	} catch {
+		return res.sendStatus(404);
+	}
 };
 
 export const renderLegacy: express.RequestHandler = async (req, res) => {
@@ -421,8 +461,8 @@ export const showHUD: express.RequestHandler = async (req, res) => {
 	return res.sendStatus(404);
 };
 
-export const closeHUD: express.RequestHandler = (req, res) => {
-	const response = HUDWindow.close();
+export const closeHUD: express.RequestHandler = async (req, res) => {
+	const response = await HUDWindow.close();
 	if (response) {
 		return res.sendStatus(200);
 	}
@@ -458,9 +498,10 @@ export const deleteHUD: express.RequestHandler = async (req, res) => {
 		return res.sendStatus(500);
 	}
 };
-
-function removeArchives() {
-	const files = fs.readdirSync('./').filter(file => file.startsWith('hud_temp_') && file.endsWith('.zip'));
+export const removeArchives = () => {
+	const files = fs
+		.readdirSync('./')
+		.filter(file => (file.startsWith('hud_temp_') || file.startsWith('ar_temp_')) && file.endsWith('.zip'));
 	files.forEach(file => {
 		try {
 			if (fs.lstatSync(file).isDirectory()) {
@@ -469,7 +510,7 @@ function removeArchives() {
 			if (fs.existsSync(file)) fs.unlinkSync(file);
 		} catch {}
 	});
-}
+};
 
 async function loadHUD(base64: string, name: string, existingUUID?: string): Promise<I.HUD | null> {
 	removeArchives();
@@ -488,12 +529,10 @@ async function loadHUD(base64: string, name: string, existingUUID?: string): Pro
 			const tempUnzipper: any = new DecompressZip(tempArchiveName);
 			tempUnzipper.on('extract', async () => {
 				if (fs.existsSync(path.join(hudPath, 'hud.json'))) {
-					const hudFile = fs.readFileSync(path.join(hudPath, 'hud.json'), { encoding: 'utf8' });
-					const hud = JSON.parse(hudFile);
-					if (!hud.name) {
+					const hudData = await getHUDData(path.basename(hudPath));
+					if (!hudData || !hudData.name) {
 						throw new Error();
 					}
-					const hudData = await getHUDData(path.basename(hudPath));
 					removeArchives();
 
 					fs.writeFileSync(path.join(hudPath, 'uuid.lhm'), existingUUID || uuidv4(), 'utf8');
@@ -616,7 +655,6 @@ export const uploadHUD: RequestHandler = async (req, res) => {
 	const hudUploadResponse = await api(`storage/file/${customer.game}/hud/${hud.uuid}`, 'POST', {
 		extra: hud
 	});
-	console.log(hudUploadResponse);
 	if (!hudUploadResponse || !hudUploadResponse.result) {
 		return res.sendStatus(404);
 	}
@@ -631,7 +669,6 @@ export const uploadHUD: RequestHandler = async (req, res) => {
 			'Content-Length': `${fs.statSync(archivePath).size}`
 		}
 	});
-	console.log(response.ok, await response.text());
 	if (!response.ok) {
 		fs.unlinkSync(archivePath);
 
@@ -641,6 +678,85 @@ export const uploadHUD: RequestHandler = async (req, res) => {
 	fs.unlinkSync(archivePath);
 
 	return res.json({ hudUploadResponse });
+};
+
+const getAllFilesToSign = (hudDir: string) => {
+	const files: string[] = [];
+	const getFiles = (dir: string) => {
+		fs.readdirSync(dir).forEach(file => {
+			const fileDirectory = path.join(dir, file);
+			if (fs.statSync(fileDirectory).isDirectory()) return getFiles(fileDirectory);
+			else if (fileDirectory.endsWith('.js')) return files.push(fileDirectory);
+		});
+	};
+	getFiles(hudDir);
+	return files;
+};
+
+export const signHUD = async (hudDir: string) => {
+	const dir = path.join(app.getPath('home'), 'HUDs', hudDir);
+
+	const keyFile = path.join(dir, 'key');
+
+	if (fs.existsSync(keyFile)) {
+		return true;
+	}
+
+	const filesToSign = getAllFilesToSign(dir);
+
+	filesToSign.push(path.join(dir, 'hud.json'));
+
+	const keys = crypto.generateKeyPairSync('rsa', {
+		modulusLength: 4096,
+		publicKeyEncoding: {
+			type: 'spki',
+			format: 'pem'
+		},
+		privateKeyEncoding: {
+			type: 'pkcs8',
+			format: 'pem',
+			cipher: 'aes-256-cbc',
+			passphrase: 'top secret'
+		}
+	});
+
+	let success = true;
+
+	const fileToContent: any = {};
+
+	filesToSign.forEach(file => {
+		if (!success) {
+			return;
+		}
+		const content = fs.readFileSync(file, 'utf8');
+		try {
+			const signed = jwt.sign(
+				content,
+				{ key: keys.privateKey.toString(), passphrase: 'top secret' },
+				{ algorithm: 'RS256' }
+			);
+			fileToContent[file] = signed;
+		} catch {
+			success = false;
+		}
+	});
+
+	if (!success) return false;
+
+	filesToSign.forEach(file => {
+		fs.writeFileSync(file, fileToContent[file]);
+	});
+
+	fs.writeFileSync(keyFile, keys.publicKey.toString());
+
+	return success;
+};
+
+export const singHUDByDir: RequestHandler = async (_req, res) => {
+	/*const hudDir = req.params.hudDir;
+	const result = await signHUD(hudDir);
+	return res.json({ result });*/
+	return res.sendStatus(200);
 };
 
 listHUDs().then(huds => huds.filter(hud => !!hud.dir).map(hud => verifyUniqueID(hud.dir)));

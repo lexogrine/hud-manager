@@ -100,6 +100,10 @@ exports.fillNextMatch = (matchId, type) => new Promise(res => {
                 return 2;
             case 'bo5':
                 return 3;
+            case 'bo7':
+                return 4;
+            case 'bo9':
+                return 5;
             default:
                 return 2;
         }

@@ -26,7 +26,8 @@ const defaultConfig = {
     port: 1349,
     hlaePath: '',
     afxCEFHudInteropPath: '',
-    sync: true
+    sync: true,
+    cg: false
 };
 exports.loadConfig = async () => {
     if (!exports.publicIP) {
@@ -78,7 +79,8 @@ exports.updateConfig = async (req, res) => {
         token: req.body.token,
         hlaePath: req.body.hlaePath,
         afxCEFHudInteropPath: req.body.afxCEFHudInteropPath,
-        sync: !!req.body.sync
+        sync: !!req.body.sync,
+        cg: !!req.body.cg
     };
     const config = await exports.setConfig(updated);
     if (!config) {
@@ -118,6 +120,9 @@ exports.verifyUrl = async (url) => {
         return true;
     }
     if (bases.find(base => url.startsWith(`${base}/ar/drawing.html`))) {
+        return true;
+    }
+    if (bases.find(base => url.startsWith(`${base}/ar2/engine/drawing.html`))) {
         return true;
     }
     const base = bases.find(base => url.startsWith(base));

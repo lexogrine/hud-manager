@@ -78,7 +78,7 @@ const EditMatch = ({ cxt, match, teams, edit, maps }: IProps) => {
 	};
 	const changeMatchType = (event: any) => {
 		const vetos: I.Veto[] = [];
-		for (let i = 0; i < 7; i++) {
+		for (let i = 0; i < 9; i++) {
 			vetos.push({ teamId: '', mapName: '', side: 'NO', type: 'pick', mapEnd: false });
 		}
 		setMatchState({ ...matchState, matchType: event.target.value, vetos });
@@ -151,6 +151,8 @@ const EditMatch = ({ cxt, match, teams, edit, maps }: IProps) => {
 								<option value="bo2">BO2</option>
 								<option value="bo3">BO3</option>
 								<option value="bo5">BO5</option>
+								<option value="bo7">BO7</option>
+								<option value="bo9">BO9</option>
 							</Input>
 						</FormGroup>
 					</Col>

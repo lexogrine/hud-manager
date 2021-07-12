@@ -1,12 +1,12 @@
 import { CSGO } from 'csgogsi-socket';
 
-export type AvailableGames = 'csgo' | 'rocketleague';
+export type AvailableGames = 'csgo' | 'rocketleague' | 'dota2';
 
 export type AvailableResources = 'teams' | 'players' | 'customs' | 'mapconfigs' /* | 'matches'*/;
 
 export const availableResources: AvailableResources[] = ['teams', 'players', 'customs', 'mapconfigs' /*, 'matches'*/];
 
-export const availableGames: AvailableGames[] = ['csgo', 'rocketleague'];
+export const availableGames: AvailableGames[] = ['csgo', 'rocketleague', 'dota2'];
 
 export type ResourcesTypes = Player | Team | CustomFieldStore;
 
@@ -99,7 +99,7 @@ export interface Veto {
 	mapEnd: boolean;
 }
 
-export type BOTypes = 'bo1' | 'bo2' | 'bo3' | 'bo5';
+export type BOTypes = 'bo1' | 'bo2' | 'bo3' | 'bo5' | 'bo7' | 'bo9';
 
 export interface MatchTeam {
 	id: string | null;
@@ -146,6 +146,7 @@ export interface Config {
 	hlaePath: string;
 	afxCEFHudInteropPath: string;
 	sync: boolean;
+	cg: boolean;
 }
 
 export interface ExtendedConfig extends Config {
@@ -239,7 +240,20 @@ export interface HUD {
 	status: HUDSyncStatus;
 	uuid: string;
 	isDev: boolean;
+	publicKey?: string | null;
 }
+
+export interface ARModule {
+	name: string;
+	version: string;
+	author: string;
+	dir: string;
+	entry: string;
+	game: AvailableGames;
+	keybinds: KeyBind[];
+	panel?: PanelTemplate;
+}
+
 export interface User {
 	id: number;
 	email: string;

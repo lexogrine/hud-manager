@@ -33,10 +33,6 @@ const connectSocket = () => {
 		}
 	});
 
-	socket.on('connection', () => {
-		console.log('CONNECTED');
-	});
-
 	socket._socket.onerror = (err: any) => {
 		console.log(err);
 	};

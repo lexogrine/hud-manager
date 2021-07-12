@@ -4,6 +4,12 @@ import { reverseSide } from '../api/matches';
 import { HUDState, ioPromise, runtimeConfig } from '../socket';
 import { playTesting } from './../api/huds/play';
 import { availableGames } from '../../types/interfaces';
+import { unregisterAllKeybinds, registerKeybind } from '../api/keybinder';
+import { getHUDKeyBinds } from '../api/huds';
+import HUDWindow from '../../init/huds';
+import { getARModuleData } from '../api/ar';
+
+let activeModuleDirs: string[] = [];
 
 ioPromise.then(io => {
 	io.on('connection', socket => {
@@ -69,12 +75,27 @@ ioPromise.then(io => {
 			socket.emit('hud_config', HUDState.get(hud, true));
 		});
 
-		socket.on('set_active_hlae', (hudUrl: string | null, dir: string, isDev: boolean) => {
+		socket.on('set_active_hlae', async (hudUrl: string | null, dir: string, isDev: boolean) => {
 			if (runtimeConfig.currentHUD.url === hudUrl) {
 				runtimeConfig.currentHUD.url = null;
 				runtimeConfig.currentHUD.isDev = false;
 				runtimeConfig.currentHUD.dir = '';
+				unregisterAllKeybinds(dir);
 			} else {
+				if (hudUrl) {
+					const keybinds = getHUDKeyBinds(dir) || [];
+					for (const bind of keybinds) {
+						registerKeybind(
+							bind.bind,
+							() => {
+								io.to(dir).emit('keybindAction', bind.action);
+							},
+							dir
+						);
+					}
+				} else if (runtimeConfig.currentHUD.dir) {
+					unregisterAllKeybinds(runtimeConfig.currentHUD.dir);
+				}
 				runtimeConfig.currentHUD.url = hudUrl;
 				runtimeConfig.currentHUD.isDev = isDev;
 				runtimeConfig.currentHUD.dir = dir;
@@ -89,6 +110,38 @@ ioPromise.then(io => {
 
 		socket.on('get_test_settings', () => {
 			socket.emit('enableTest', !playTesting.intervalId, playTesting.isOnLoop);
+		});
+
+		socket.on('is_hud_opened', () => {
+			socket.emit('hud_opened', !!HUDWindow.current);
+		});
+
+		socket.on('toggle_module', async (moduleDir: string) => {
+			if (activeModuleDirs.includes(moduleDir)) {
+				activeModuleDirs = activeModuleDirs.filter(dir => dir !== moduleDir);
+				unregisterAllKeybinds(moduleDir);
+			} else {
+				const ar = await getARModuleData(moduleDir);
+				if (!ar) {
+					return;
+				}
+
+				for (const bind of ar.keybinds) {
+					registerKeybind(
+						bind.bind,
+						() => {
+							io.emit('keybindAction', bind.action);
+						},
+						moduleDir
+					);
+				}
+				activeModuleDirs.push(moduleDir);
+			}
+			io.emit('active_modules', activeModuleDirs);
+		});
+
+		socket.on('get_active_modules', () => {
+			socket.emit('active_modules', activeModuleDirs);
 		});
 	});
 });

@@ -69,7 +69,8 @@ class Config extends React.Component<IProps, IState> {
 				token: '',
 				hlaePath: '',
 				afxCEFHudInteropPath: '',
-				sync: true
+				sync: true,
+				cg: false
 			},
 			cfg: {
 				success: false,
@@ -377,6 +378,13 @@ class Config extends React.Component<IProps, IState> {
 			return state;
 		});
 	};
+	cgToggleHandler = (event: any) => {
+		const val = !!event.target.checked;
+		this.setState(state => {
+			state.config.cg = val;
+			return state;
+		});
+	};
 	toggleModal = () => {
 		this.setState({ importModalOpen: !this.state.importModalOpen });
 	};
@@ -467,6 +475,17 @@ class Config extends React.Component<IProps, IState> {
 							<div className="config-description">Cloud Synchronization</div>
 							<Switch isOn={active} id="sync-toggle" handleToggle={this.toggleHandler} />
 						</Col>
+
+						<ElectronOnly>
+							<Col md="12" className="config-entry">
+								<div className="config-description">CG Mode (Beta):</div>
+								<Switch
+									isOn={this.state.config.cg}
+									id="cg-toggle"
+									handleToggle={this.cgToggleHandler}
+								/>
+							</Col>
+						</ElectronOnly>
 
 						<GameOnly game="csgo">
 							<Col md="12" className="config-entry">

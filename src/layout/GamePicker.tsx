@@ -32,6 +32,15 @@ const GamePicker = ({ isOpen, setGame }: IProps) => {
 							<img src={rl} />
 						</div>
 					</div>
+					{/*<div
+						className={`game-preview ${game === 'dota2' ? 'active' : ''}`}
+						onClick={() => setCurrentGame('dota2')}
+					>
+						<div className="game-title">Dota 2</div>
+						<div className="game-img">
+							<img src={rl} />
+						</div>
+					</div>*/}
 				</div>
 			</ModalBody>
 			<ModalFooter className="no-padding">

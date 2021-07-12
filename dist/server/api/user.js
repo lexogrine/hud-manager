@@ -30,9 +30,6 @@ const connectSocket = () => {
             Cookie: cookieJar.getCookieStringSync(USE_LOCAL_BACKEND ? 'http://localhost:5000/' : 'https://hmapi.lexogrine.com/')
         }
     });
-    exports.socket.on('connection', () => {
-        console.log('CONNECTED');
-    });
     exports.socket._socket.onerror = (err) => {
         console.log(err);
     };

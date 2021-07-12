@@ -79,6 +79,9 @@ async function init() {
     fs_1.default.watch(path_1.default.join(electron_1.app.getPath('home'), 'HUDs'), () => {
         io.emit('reloadHUDs');
     });
+    fs_1.default.watch(path_1.default.join(electron_1.app.getPath('userData'), 'ARs'), () => {
+        io.emit('reloadHUDs');
+    });
     exports.app.use('/', express_1.default.static(path_1.default.join(__dirname, '../build')));
     exports.app.get('*', (_req, res) => {
         res.sendFile(path_1.default.join(__dirname, '../build/index.html'));

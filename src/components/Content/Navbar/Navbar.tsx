@@ -1,10 +1,14 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import * as Tabs from './TabIcons';
 import { GameOnly } from '../Tabs/Config/Config';
 import Tip from '../../Tooltip';
 import { ContextData } from '../../Context';
 import { useTranslation } from 'react-i18next';
+//import { isCGMode } from '../Content';
+import { socket } from '../Tabs/Live/Live';
+import { Config } from '../../../api/interfaces';
+import api from '../../../api/api';
 
 interface IProps {
 	activeTab: string;
@@ -13,10 +17,36 @@ interface IProps {
 }
 
 const Navbar = ({ activeTab, toggle, files }: IProps) => {
+	const [config, setConfig] = useState<Config | null>(null);
 	const { t } = useTranslation();
+
+	const getConfig = async () => {
+		const config = await api.config.get();
+
+		const { ip, ...cfg } = config;
+
+		setConfig(cfg);
+	};
+	useEffect(() => {
+		socket.on('config', getConfig);
+		getConfig();
+	}, []);
+
+	const onlyNonCGClass = !config || !config.cg ? '' : 'hide';
 	return (
 		<Nav tabs className="navbar-container">
-			<NavItem className="hover-pointer">
+			<NavItem className={`hover-pointer ${config && config.cg ? '' : 'hide'}`}>
+				<NavLink
+					active={activeTab === 'cgpanel'}
+					onClick={() => {
+						toggle('cgpanel');
+					}}
+				>
+					<img src={Tabs.Teams} alt="Panel" />
+					<div>{t('common.panel')}</div>
+				</NavLink>
+			</NavItem>
+			<NavItem className={`hover-pointer ${onlyNonCGClass}`}>
 				<NavLink
 					active={activeTab === 'teams'}
 					onClick={() => {
@@ -27,7 +57,7 @@ const Navbar = ({ activeTab, toggle, files }: IProps) => {
 					<div>{t('common.teams')}</div>
 				</NavLink>
 			</NavItem>
-			<NavItem className="hover-pointer">
+			<NavItem className={`hover-pointer ${onlyNonCGClass}`}>
 				<NavLink
 					active={activeTab === 'players'}
 					onClick={() => {
@@ -38,7 +68,7 @@ const Navbar = ({ activeTab, toggle, files }: IProps) => {
 					<div>{t('common.players')}</div>
 				</NavLink>
 			</NavItem>
-			<NavItem className="hover-pointer">
+			<NavItem className={`hover-pointer ${onlyNonCGClass}`}>
 				<NavLink
 					active={activeTab === 'create_match'}
 					onClick={() => {
@@ -49,7 +79,7 @@ const Navbar = ({ activeTab, toggle, files }: IProps) => {
 					<div>{t('match.matches')}</div>
 				</NavLink>
 			</NavItem>
-			<NavItem className="hover-pointer">
+			<NavItem className={`hover-pointer ${onlyNonCGClass}`}>
 				<NavLink
 					active={activeTab === 'tournaments'}
 					onClick={() => {

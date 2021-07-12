@@ -38,7 +38,7 @@ class Matches extends Component<
 			game: this.props.cxt.game
 		};
 
-		for (let i = 0; i < 7; i++) {
+		for (let i = 0; i < 9; i++) {
 			newMatch.vetos.push({
 				teamId: '',
 				mapName: '',
@@ -71,7 +71,7 @@ class Matches extends Component<
 		const { matches } = this.props.cxt;
 		const match = matches.find(match => match.id === id);
 		if (!match) return;
-		match.current = true;
+		match.current = !match.current;
 		await api.match.update(id, match);
 		// await api.match.set(newMatches);
 		this.props.cxt.reload();
