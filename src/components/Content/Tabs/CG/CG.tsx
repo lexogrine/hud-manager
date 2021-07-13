@@ -8,10 +8,10 @@ import Matches from './Matches';
 const CG = ({ cxt }: { cxt: IContextData }) => {
 	return (
 		<div className="cg-panel tab-content-container full-scroll">
-			<CurrentMatchForm cxt={cxt} />
+			<Matches cxt={cxt} />
 			<PlayerForm cxt={cxt} />
 			<TeamForm cxt={cxt} />
-			<Matches cxt={cxt} />
+			<CurrentMatchForm cxt={cxt} />
 		</div>
 	);
 };

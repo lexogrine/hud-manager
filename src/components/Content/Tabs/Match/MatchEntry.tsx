@@ -89,7 +89,7 @@ const MatchEntry = ({ match, teams, cxt, edit, setCurrent }: Props) => {
 						>
 							{t('common.edit')}
 						</Button>
-						<Button className="purple-btn round-btn edit-veto" onClick={() => setCurrent()}>
+						<Button className={`purple-btn round-btn edit-veto ${match.current ? 'current':''}`} onClick={() => setCurrent()}>
 							{t('match.toggleLive')}
 						</Button>
 					</div>

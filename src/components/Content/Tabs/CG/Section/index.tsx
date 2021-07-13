@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { IContextData } from '../../../../Context';
 
-const Section = ({ children, title, width }: { cxt: IContextData; children: any; title: string; width?: number }) => {
+const Section = ({ children, title, width }: { cxt: IContextData; children: any; title: any; width?: number }) => {
 	const [isVisible, setVisible] = useState(true);
 	return (
 		<div className={`cg-section ${!isVisible ? 'hide' : ''}`} style={{ width }}>

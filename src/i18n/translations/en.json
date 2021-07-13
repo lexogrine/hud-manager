@@ -47,13 +47,13 @@
 		},
 		"players":{
 			"edit":"Edit a player",
-			"uploadProfile":"Upload profile picture",
+			"uploadProfile":"Picture",
 			"avatarInfo":"Avatar to be used for player images instead of the default from Steam",
 			"addPlayer":"Add Player"
 		},
 		"teams":{
 			"edit":"Edit a team",
-			"uploadLogo":"Upload logo",
+			"uploadLogo":"Logo",
 			"logoInfo":"Logo to be used for the team, if possible in the given HUD",
 			"addTeam":"Add Team"
 		},

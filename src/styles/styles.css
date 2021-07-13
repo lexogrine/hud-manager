@@ -747,7 +747,10 @@ img.smallLogo {
 }
 
 .btn.purple-btn {
-    background-color: #6b1cff;
+    background-color: #6b1cff2b !important;
+}
+.btn.purple-btn.edit-veto.current {
+    background-color: #6b1cff !important;
 }
 .btn.disabled {
     cursor: default;
@@ -1234,7 +1237,13 @@ form .card > .card-body > button.btn {
     margin-right:10px;
     cursor: pointer;
 }
-
+.cg-content .customCheckbox {
+    width: 16px;
+    height: 16px;
+}
+.veto-list .form-check-label {
+    font-size: 12px;
+}
 input:checked ~ .customCheckbox {
     background-color: grey;
     opacity: 0.5;
@@ -1504,6 +1513,7 @@ input:checked ~ .customCheckbox {
     flex-wrap: wrap;
     height:unset !important;
     max-height: calc(100vh - 135px - 64px);
+    padding: 20px;
 }
 
 .cg-section {
@@ -1524,6 +1534,8 @@ input:checked ~ .customCheckbox {
 }
 .cg-bar .title {
     flex: 1;
+    display: flex;
+    justify-content: space-between;
 }
 .cg-content .side-picker {
     display: flex;
@@ -1553,10 +1565,25 @@ input:checked ~ .customCheckbox {
     width: 100%;
     cursor:pointer;
     font-weight: 700;
-    background-color: #46494f;
+    background-color: #46494f33;
 }
 .cg-content .picker-button.active {
     background-color: #53bf53;
+}
+.cg-content .picker-button.ban.active {
+    background-color: #dc3545;
+}
+.cg-content .picker-button.decider.active {
+    background-color: #6c757d;
+}
+.cg-content .picker-button.CT.active {
+    background-color: lightskyblue;
+}
+.cg-content .picker-button.T.active {
+    background-color: orange;
+}
+.cg-content .picker-button.NO.active {
+    background-color: #6c757d;
 }
 .cg-content .modal-save {
     background-color: #7ad9f5;
@@ -1585,6 +1612,10 @@ input:checked ~ .customCheckbox {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    padding-left: 0;
+}
+.cg-content .map-picker-container {
+    padding-right: 0;
 }
 .cg-content .veto-list .form-group {
     margin: 0.5rem 0;
@@ -1602,6 +1633,11 @@ input:checked ~ .customCheckbox {
     height: 22px;
     font-size: 11px;
     margin: 4px 0;
+    font-weight: 600;
+}
+.cg-content .team-picker-container .picker-button img {
+    height: 16px;
+    margin-right:5px;
 }
 .cg-content .match-preview {
     display: flex;
@@ -1619,6 +1655,10 @@ input:checked ~ .customCheckbox {
     letter-spacing: 1.5px;
     text-transform: uppercase;
 }
+.cg-content .match-preview .team-preview .team-preview-name {
+    font-size: 12px;
+    margin-top: 3px;
+}
 .cg-content .match-preview .team-preview img {
     max-height: 35px;
     margin: 5px 0;
@@ -1629,10 +1669,34 @@ input:checked ~ .customCheckbox {
     justify-content: center;
     font-weight: 700;
 }
-.cg-content .match-preview .match-edit-button {
+.cg-section .match-edit-button {
     width: 40px;
     height:100%;
     display:flex;
     align-items: center;
     cursor: pointer;
+}
+.cg-section .match-edit-button .record-icon {
+    width: 25px;
+    height: 25px;
+    border: 4px solid #404040;
+    border-radius: 50%;
+    background-color: #2d2d2d;
+}
+.cg-section .match-edit-button .record-icon.current {
+    background-color: #de2d2d;
+}
+.cg-section .toggle-section {
+    cursor: pointer;
+}
+.cg-section .swap-btn {
+    margin-top:10px;
+    text-transform: uppercase;
+    font-size: 12px;
+}
+.cg-section .swap-container {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 0;
 }

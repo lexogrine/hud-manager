@@ -89,7 +89,7 @@ const TeamForm = ({ cxt }: Props) => {
 	};
 
 	return (
-		<Section title="Teams" cxt={cxt} width={400}>
+		<Section title="Teams" cxt={cxt} width={300}>
 			<Row>
 				<Col md="12">
 					<FormGroup>
@@ -168,7 +168,7 @@ const TeamForm = ({ cxt }: Props) => {
 							onChange={fileHandler}
 							id="cg-team-team_logo"
 							removable
-							label={t('teams.uploadLogo')}
+							label={t('teams.uploadLogo').toUpperCase()}
 							imgSrc={logo || undefined}
 						/>
 						<FormText color="muted">{t('teams.logoInfo')}</FormText>

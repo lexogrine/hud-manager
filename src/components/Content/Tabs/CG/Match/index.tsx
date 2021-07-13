@@ -113,6 +113,11 @@ const CurrentMatchForm = ({ cxt }: Props) => {
 		setMatch({ ...match, vetos: newVetos });
 	};
 
+	const setCurrent = async () => {
+		if(!match) return;
+		setMatch({ ...match, current: !match.current });
+	};
+
 	useEffect(() => {
 		api.match.getMaps().then(maps => {
 			setMaps(maps);
@@ -152,7 +157,14 @@ const CurrentMatchForm = ({ cxt }: Props) => {
 		}
 	}
 	return (
-		<Section title="Match" cxt={cxt} width={450}>
+		<Section title={
+			<>
+				Match
+				
+				{ match ? <div className={`match-edit-button`} onClick={setCurrent}>
+					<div className={`record-icon  ${match.current ? 'current':''}`} />
+				</div> : null }
+			</>} cxt={cxt} width={450}>
 			{match ? (
 				<>
 					<Row>
@@ -161,7 +173,7 @@ const CurrentMatchForm = ({ cxt }: Props) => {
 								<Input
 									type="select"
 									name="team"
-									value={match.left.id || undefined}
+									value={match.left.id || ''}
 									onChange={e => setTeamHandler('left', e.target.value)}
 								>
 									<option value="">{t('common.team')}</option>
@@ -176,8 +188,8 @@ const CurrentMatchForm = ({ cxt }: Props) => {
 								</Input>
 							</FormGroup>
 						</Col>
-						<Col md="2" style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'center' }}>
-							<Button className="swap-btn" onClick={swapTeams}>
+						<Col md="2" className="swap-container">
+							<Button className="swap-btn picker-button" onClick={swapTeams}>
 								Swap
 							</Button>
 						</Col>
@@ -186,7 +198,7 @@ const CurrentMatchForm = ({ cxt }: Props) => {
 								<Input
 									type="select"
 									name="team"
-									value={match.right.id || undefined}
+									value={match.right.id || ''}
 									onChange={e => setTeamHandler('right', e.target.value)}
 								>
 									<option value="">{t('common.team')}</option>
@@ -231,7 +243,7 @@ const CurrentMatchForm = ({ cxt }: Props) => {
 													}`}
 													onClick={() => setTeamForVeto(i, team._id)}
 												>
-													{team.name}
+													{team.logo ? <img src={team.logo} /> : null}{team.name}
 												</div>
 											))}
 										</Col>
@@ -252,25 +264,25 @@ const CurrentMatchForm = ({ cxt }: Props) => {
                                             </Col>*/}
 										<Col md="2" className="picker-container">
 											<div
-												className={`picker-button ${veto.type === 'pick' ? 'active' : ''}`}
+												className={`picker-button pick ${veto.type === 'pick' ? 'active' : ''}`}
 												onClick={() => setVetoType(veto, 'pick')}
 											>
 												PICK
 											</div>
 											<div
-												className={`picker-button ${veto.type === 'ban' ? 'active' : ''}`}
+												className={`picker-button ban ${veto.type === 'ban' ? 'active' : ''}`}
 												onClick={() => setVetoType(veto, 'ban')}
 											>
 												BAN
 											</div>
 											<div
-												className={`picker-button ${veto.type === 'decider' ? 'active' : ''}`}
+												className={`picker-button decider ${veto.type === 'decider' ? 'active' : ''}`}
 												onClick={() => setVetoType(veto, 'decider')}
 											>
 												DECIDER
 											</div>
 										</Col>
-										<Col md="5">
+										<Col md="5" className="map-picker-container">
 											<FormGroup>
 												<Input
 													type="select"
@@ -291,19 +303,19 @@ const CurrentMatchForm = ({ cxt }: Props) => {
 									<Row>
 										<Col s={12} className="side-picker">
 											<div
-												className={`picker-button ${veto.side === 'CT' ? 'active' : ''}`}
+												className={`picker-button CT ${veto.side === 'CT' ? 'active' : ''}`}
 												onClick={() => setSidePick(veto, 'CT')}
 											>
 												{t('common.ct')}
 											</div>
 											<div
-												className={`picker-button ${veto.side === 'T' ? 'active' : ''}`}
+												className={`picker-button T ${veto.side === 'T' ? 'active' : ''}`}
 												onClick={() => setSidePick(veto, 'T')}
 											>
 												{t('common.t')}
 											</div>
 											<div
-												className={`picker-button ${veto.side === 'NO' ? 'active' : ''}`}
+												className={`picker-button NO ${veto.side === 'NO' ? 'active' : ''}`}
 												onClick={() => setSidePick(veto, 'NO')}
 											>
 												{t('common.no')}

@@ -101,7 +101,7 @@ const PlayerForm = ({ cxt }: Props) => {
 	}, [])*/
 
 	return (
-		<Section title="Players" cxt={cxt} width={400}>
+		<Section title="Players" cxt={cxt} width={300}>
 			<Row>
 				<Col md="12">
 					<FormGroup>

@@ -32,6 +32,12 @@ const MatchPreview = ({ match, cxt }: { match: I.Match; cxt: IContextData }) => 
 			MatchHandler.edit(null);
 		}
 	};
+	
+	const setCurrent = async () => {
+		await api.match.update(match.id, { ...match, current: !match.current });
+		cxt.reload();
+	};
+
 	if (match) {
 		if (match.left.id) {
 			left = cxt.teams.find(team => team._id === match.left.id) || null;
@@ -46,12 +52,15 @@ const MatchPreview = ({ match, cxt }: { match: I.Match; cxt: IContextData }) => 
 		<div className="match-preview">
 			<TeamPreview name={left?.name || 'Team #1'} logo={left?.logo} />
 			<div className="match-versus">VS</div>
-			<TeamPreview name={right?.name || 'Team #2'} logo={left?.logo} />
+			<TeamPreview name={right?.name || 'Team #2'} logo={right?.logo} />
 			<div className="match-edit-button" onClick={() => MatchHandler.edit(match)}>
 				<img src={editIcon} />
 			</div>
 			<div className="match-edit-button" onClick={deleteMatch}>
 				<img src={trash} />
+			</div>
+			<div className={`match-edit-button`} onClick={setCurrent}>
+				<div className={`record-icon  ${match.current ? 'current':''}`} />
 			</div>
 		</div>
 	);
@@ -88,7 +97,7 @@ const Matches = ({ cxt }: Props) => {
 	};
 
 	return (
-		<Section title={t('match.matches')} cxt={cxt} width={600}>
+		<Section title={t('match.matches')} cxt={cxt} width={450}>
 			{cxt.matches.map(match => (
 				<MatchPreview key={match.id} match={match} cxt={cxt} />
 			))}
