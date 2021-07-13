@@ -16,7 +16,9 @@ const hlae_1 = require("./hlae");
 const _1 = require(".");
 const hudstatemanager_1 = require("./api/huds/hudstatemanager");
 require("./api/huds/devhud");
+const players_1 = require("./api/players");
 let lastUpdate = new Date().getTime();
+let lastSideCheck = new Date().getTime();
 exports.runtimeConfig = {
     last: null,
     devSocket: [],
@@ -113,6 +115,38 @@ exports.ioPromise.then(io => {
         io.emit('match', true);
     };
     exports.GSI.on('roundEnd', onRoundEnd);
+    const doesPlayerBelongToOtherTeam = (playerExtensions, otherTeam) => (player) => {
+        const extension = playerExtensions.find(data => data.steamid === player.steamid);
+        if (!extension)
+            return false;
+        return player.team.id !== otherTeam.id && extension.team === otherTeam.id;
+    };
+    exports.GSI.on('data', async (data) => {
+        const now = new Date().getTime();
+        if (now - lastSideCheck <= 5000) {
+            return;
+        }
+        lastSideCheck = now;
+        const game = api_1.customer.game;
+        if (game !== 'csgo')
+            return;
+        if (!data.map.team_ct.id || !data.map.team_t.id) {
+            return;
+        }
+        const ctPlayers = data.players.filter(player => player.team.side === 'CT');
+        const tPlayers = data.players.filter(player => player.team.side === 'T');
+        if (!ctPlayers.length || !tPlayers.length)
+            return;
+        const steamids = data.players.map(player => player.steamid);
+        const $or = [{ game, steamid: { $in: steamids } }, { game: { $exists: false }, steamid: { $in: steamids } }];
+        const playersData = await players_1.getPlayersList({ $or });
+        if (playersData.length !== data.players.length)
+            return;
+        if (ctPlayers.every(doesPlayerBelongToOtherTeam(playersData, data.map.team_t)) && tPlayers.every(doesPlayerBelongToOtherTeam(playersData, data.map.team_ct))) {
+            console.log('Wrong players detected, whoopsie');
+            matches_1.reverseSide();
+        }
+    });
     exports.GSI.on('data', data => {
         const now = new Date().getTime();
         if (now - lastUpdate > 300000 && api_1.customer.customer) {

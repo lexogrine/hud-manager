@@ -31,7 +31,7 @@ const Teamboard = ({ players, team, toggle, cxt }: Props) => {
 		}
 		return {
 			id: data._id,
-			name: data.username,
+			name: data.username || player.name,
 			steamid: data.steamid,
 			realName: data.firstName + ' ' + data.lastName,
 			country: data.country,
