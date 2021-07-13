@@ -17,6 +17,14 @@ export const getPlayers: express.RequestHandler = async (req, res) => {
 	if (game === 'csgo') {
 		$or.push({ game: { $exists: false } });
 	}
+	if(req.query.steamids && typeof req.query.steamids === "string"){
+		const steamids = req.query.steamids.split(";");
+		const steamidOr = { $in: steamids };
+		for(const $orVariant of $or){
+			$orVariant.steamid = steamidOr;
+		}
+	}
+
 	const players = await getPlayersList({ $or });
 	const config = await loadConfig();
 	return res.json(

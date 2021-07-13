@@ -39,7 +39,9 @@ export const getTeam: express.RequestHandler = async (req, res) => {
 		return res.sendStatus(404);
 	}
 
-	return res.json(team);
+	const config = await loadConfig();
+
+	return res.json({ ...team, logo: team.logo && team.logo.length ? `http://${internalIP}:${config.port}/api/teams/logo/${team._id}` : null });
 };
 export const addTeam: express.RequestHandler = async (req, res) => {
 	let cloudStatus = false;

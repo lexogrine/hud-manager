@@ -38,6 +38,13 @@ exports.getPlayers = async (req, res) => {
     if (game === 'csgo') {
         $or.push({ game: { $exists: false } });
     }
+    if (req.query.steamids && typeof req.query.steamids === "string") {
+        const steamids = req.query.steamids.split(";");
+        const steamidOr = { $in: steamids };
+        for (const $orVariant of $or) {
+            $orVariant.steamid = steamidOr;
+        }
+    }
     const players = await index_1.getPlayersList({ $or });
     const config = await config_1.loadConfig();
     return res.json(players.map(player => ({

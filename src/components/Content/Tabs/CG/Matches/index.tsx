@@ -32,7 +32,7 @@ const MatchPreview = ({ match, cxt }: { match: I.Match; cxt: IContextData }) => 
 			MatchHandler.edit(null);
 		}
 	};
-	
+
 	const setCurrent = async () => {
 		await api.match.update(match.id, { ...match, current: !match.current });
 		cxt.reload();
@@ -60,7 +60,7 @@ const MatchPreview = ({ match, cxt }: { match: I.Match; cxt: IContextData }) => 
 				<img src={trash} />
 			</div>
 			<div className={`match-edit-button`} onClick={setCurrent}>
-				<div className={`record-icon  ${match.current ? 'current':''}`} />
+				<div className={`record-icon  ${match.current ? 'current' : ''}`} />
 			</div>
 		</div>
 	);

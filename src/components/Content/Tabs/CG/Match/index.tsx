@@ -114,7 +114,7 @@ const CurrentMatchForm = ({ cxt }: Props) => {
 	};
 
 	const setCurrent = async () => {
-		if(!match) return;
+		if (!match) return;
 		setMatch({ ...match, current: !match.current });
 	};
 
@@ -157,14 +157,20 @@ const CurrentMatchForm = ({ cxt }: Props) => {
 		}
 	}
 	return (
-		<Section title={
-			<>
-				Match
-				
-				{ match ? <div className={`match-edit-button`} onClick={setCurrent}>
-					<div className={`record-icon  ${match.current ? 'current':''}`} />
-				</div> : null }
-			</>} cxt={cxt} width={450}>
+		<Section
+			title={
+				<>
+					Match
+					{match ? (
+						<div className={`match-edit-button`} onClick={setCurrent}>
+							<div className={`record-icon  ${match.current ? 'current' : ''}`} />
+						</div>
+					) : null}
+				</>
+			}
+			cxt={cxt}
+			width={450}
+		>
 			{match ? (
 				<>
 					<Row>
@@ -243,7 +249,8 @@ const CurrentMatchForm = ({ cxt }: Props) => {
 													}`}
 													onClick={() => setTeamForVeto(i, team._id)}
 												>
-													{team.logo ? <img src={team.logo} /> : null}{team.name}
+													{team.logo ? <img src={team.logo} /> : null}
+													{team.name}
 												</div>
 											))}
 										</Col>
@@ -276,7 +283,9 @@ const CurrentMatchForm = ({ cxt }: Props) => {
 												BAN
 											</div>
 											<div
-												className={`picker-button decider ${veto.type === 'decider' ? 'active' : ''}`}
+												className={`picker-button decider ${
+													veto.type === 'decider' ? 'active' : ''
+												}`}
 												onClick={() => setVetoType(veto, 'decider')}
 											>
 												DECIDER
