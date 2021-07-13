@@ -134,43 +134,48 @@ ioPromise.then(io => {
 
 	const doesPlayerBelongToOtherTeam = (playerExtensions: I.Player[], otherTeam: Team) => (player: Player) => {
 		const extension = playerExtensions.find(data => data.steamid === player.steamid);
-		if(!extension) return false;
+		if (!extension) return false;
 
 		return player.team.id !== otherTeam.id && extension.team === otherTeam.id;
-	}
+	};
 
 	GSI.on('data', async data => {
 		const now = new Date().getTime();
-		
+
 		if (now - lastSideCheck <= 5000) {
 			return;
 		}
 		lastSideCheck = now;
 
 		const game = customer.game;
-		if(game !== 'csgo') return;
+		if (game !== 'csgo') return;
 
-		if(!data.map.team_ct.id || !data.map.team_t.id){
+		if (!data.map.team_ct.id || !data.map.team_t.id) {
 			return;
 		}
 
 		const ctPlayers = data.players.filter(player => player.team.side === 'CT');
 		const tPlayers = data.players.filter(player => player.team.side === 'T');
 
-		if(!ctPlayers.length || !tPlayers.length) return;
+		if (!ctPlayers.length || !tPlayers.length) return;
 
 		const steamids = data.players.map(player => player.steamid);
 
-		const $or: any[] = [{ game, steamid: { $in: steamids } }, { game: { $exists: false }, steamid: { $in: steamids } }];
+		const $or: any[] = [
+			{ game, steamid: { $in: steamids } },
+			{ game: { $exists: false }, steamid: { $in: steamids } }
+		];
 
 		const playersData = await getPlayersList({ $or });
 
-		if(playersData.length !== data.players.length) return;
+		if (playersData.length !== data.players.length) return;
 
-		if(ctPlayers.every(doesPlayerBelongToOtherTeam(playersData, data.map.team_t)) && tPlayers.every(doesPlayerBelongToOtherTeam(playersData, data.map.team_ct))) {
+		if (
+			ctPlayers.every(doesPlayerBelongToOtherTeam(playersData, data.map.team_t)) &&
+			tPlayers.every(doesPlayerBelongToOtherTeam(playersData, data.map.team_ct))
+		) {
 			reverseSide();
 		}
-
 	});
 
 	GSI.on('data', data => {
