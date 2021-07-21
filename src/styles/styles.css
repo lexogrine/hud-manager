@@ -71,6 +71,13 @@ body {
     z-index:1;
     top: 0;
 }
+.tab-title {
+    display: flex;
+}
+.tab-title img {
+    margin-left:20px;
+    cursor: pointer;
+}
 .loaded {
     background-color: #24272d;
 }
@@ -768,6 +775,13 @@ img.smallLogo {
 input:not([type="checkbox"]), select.form-control {
     font-size:12px !important;
     height:44px !important;
+}
+select#player_for_names {
+    height: 240px !important;
+}
+
+select#player_for_names.form-control option {
+    color: white;
 }
 /*
 #teams, select, #team_name, #short_name, #country, #players, #first_name, #nick, #last_name, #steamid, #matchType, #type, #side, input[type="text"], input[type="number"], input[type="email"], input[type="password"], select.form-control {

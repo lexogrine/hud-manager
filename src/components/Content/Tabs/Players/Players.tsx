@@ -8,6 +8,9 @@ import PlayerEntry from './Player';
 import PlayerEditModal from './PlayerEditModal';
 import CustomFieldsModal from '../../../CustomFields/CustomFieldsModal';
 import { useTranslation } from 'react-i18next';
+import NamesFileModal from './NamesFileModal';
+import { GameOnly } from '../Config/Config';
+import downloadIcon from './../../../../styles/downloadHUDIcon.png';
 
 interface IProps {
 	cxt: IContextData;
@@ -31,6 +34,8 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 	};
 	const [form, setForm] = useState(emptyPlayer);
 	const [search, setSearch] = useState('');
+
+	const [isFilesOpened, setFilesOpened] = useState(false);
 
 	const [sortBy, setSortBy] = useState<keyof I.Player>('username');
 	const [sortByType, setSortByType] = useState<'DESC' | 'ASC'>('ASC');
@@ -248,7 +253,11 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 	return (
 		<Form>
 			<div className="tab-title-container">
-				<div>{t('common.players')}</div>
+				<div className="tab-title">{t('common.players')}
+					<GameOnly game="csgo">
+						<div onClick={() => setFilesOpened(true)}><img src={downloadIcon} alt="Download Names file"/></div>
+					</GameOnly>
+				</div>
 				<Input
 					type="text"
 					name="name"
@@ -273,6 +282,7 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 				fields={cxt.fields.players}
 				cxt={cxt}
 			/>
+			<NamesFileModal isOpen={isFilesOpened} toggle={() => setFilesOpened(!isFilesOpened)} players={cxt.players} />
 			<CustomFieldsModal
 				fields={customFieldForm}
 				open={fieldsModalState}
