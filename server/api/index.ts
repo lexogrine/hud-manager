@@ -23,6 +23,7 @@ import { createProxyMiddleware } from 'http-proxy-middleware';
 import { ioPromise } from '../socket';
 import { app } from '..';
 import { checkCloudStatus, uploadLocalToCloud, downloadCloudToLocal } from './cloud';
+import { getRadarConfigs } from './huds/radar';
 
 export const customer: I.CustomerData = {
 	customer: null,
@@ -108,6 +109,8 @@ export default async function () {
 	app.route('/api/huds/upload/:hudDir').post(huds.uploadHUD);
 
 	app.route('/api/huds/delete/:uuid').delete(huds.deleteHUDFromCloud);
+
+	app.route('/api/radar/maps').get(getRadarConfigs);
 
 	app.route('/api/gsi').get(gsi.checkGSIFile).put(gsi.createGSIFile);
 

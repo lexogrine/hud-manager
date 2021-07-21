@@ -47,6 +47,7 @@ const http_proxy_middleware_1 = require("http-proxy-middleware");
 const socket_1 = require("../socket");
 const __1 = require("..");
 const cloud_1 = require("./cloud");
+const radar_1 = require("./huds/radar");
 exports.customer = {
     customer: null,
     game: null
@@ -104,6 +105,7 @@ async function default_1() {
     __1.app.route('/api/huds/:hudDir/:section/:asset').get(huds.getHUDCustomAsset);
     __1.app.route('/api/huds/upload/:hudDir').post(huds.uploadHUD);
     __1.app.route('/api/huds/delete/:uuid').delete(huds.deleteHUDFromCloud);
+    __1.app.route('/api/radar/maps').get(radar_1.getRadarConfigs);
     __1.app.route('/api/gsi').get(gsi.checkGSIFile).put(gsi.createGSIFile);
     __1.app.route('/api/import').post(sync.importDb);
     __1.app.route('/api/steam').get((req, res) => res.json({ gamePath: steam_game_path_1.getGamePath(730) }));

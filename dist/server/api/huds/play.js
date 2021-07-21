@@ -41,11 +41,14 @@ exports.initGameConnection = async () => {
     });
     let testDataIndex = 0;
     const startSendingTestData = () => {
+        console.log('started playing', exports.playTesting.intervalId);
         if (exports.playTesting.intervalId)
             return;
         if (socket_1.runtimeConfig.last?.provider?.timestamp &&
-            new Date().getTime() - socket_1.runtimeConfig.last.provider.timestamp * 1000 <= 5000)
+            new Date().getTime() - socket_1.runtimeConfig.last.provider.timestamp * 1000 <= 5000) {
+            console.log('aaaa');
             return;
+        }
         io.emit('enableTest', false, exports.playTesting.isOnLoop);
         exports.playTesting.intervalId = setInterval(() => {
             if (!testing_1.testData[testDataIndex]) {
@@ -60,6 +63,7 @@ exports.initGameConnection = async () => {
         }, 16);
     };
     const stopSendingTestData = () => {
+        console.log('stopping playing');
         if (!exports.playTesting.intervalId)
             return;
         clearInterval(exports.playTesting.intervalId);

@@ -27,7 +27,8 @@ const defaultConfig = {
     hlaePath: '',
     afxCEFHudInteropPath: '',
     sync: true,
-    cg: false
+    cg: false,
+    autoSwitch: false
 };
 exports.loadConfig = async () => {
     if (!exports.publicIP) {
@@ -80,7 +81,8 @@ exports.updateConfig = async (req, res) => {
         hlaePath: req.body.hlaePath,
         afxCEFHudInteropPath: req.body.afxCEFHudInteropPath,
         sync: !!req.body.sync,
-        cg: !!req.body.cg
+        cg: !!req.body.cg,
+        autoSwitch: !!req.body.autoSwitch
     };
     const config = await exports.setConfig(updated);
     if (!config) {

@@ -127,6 +127,9 @@ exports.ioPromise.then(io => {
             return;
         }
         lastSideCheck = now;
+        const cfg = await config_1.loadConfig();
+        if (!cfg.autoSwitch)
+            return;
         const game = api_1.customer.game;
         if (game !== 'csgo')
             return;
@@ -138,12 +141,15 @@ exports.ioPromise.then(io => {
         if (!ctPlayers.length || !tPlayers.length)
             return;
         const steamids = data.players.map(player => player.steamid);
-        const $or = [{ game, steamid: { $in: steamids } }, { game: { $exists: false }, steamid: { $in: steamids } }];
+        const $or = [
+            { game, steamid: { $in: steamids } },
+            { game: { $exists: false }, steamid: { $in: steamids } }
+        ];
         const playersData = await players_1.getPlayersList({ $or });
         if (playersData.length !== data.players.length)
             return;
-        if (ctPlayers.every(doesPlayerBelongToOtherTeam(playersData, data.map.team_t)) && tPlayers.every(doesPlayerBelongToOtherTeam(playersData, data.map.team_ct))) {
-            console.log('Wrong players detected, whoopsie');
+        if (ctPlayers.every(doesPlayerBelongToOtherTeam(playersData, data.map.team_t)) &&
+            tPlayers.every(doesPlayerBelongToOtherTeam(playersData, data.map.team_ct))) {
             matches_1.reverseSide();
         }
     });

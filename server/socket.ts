@@ -149,7 +149,7 @@ ioPromise.then(io => {
 
 		const cfg = await loadConfig();
 
-		if(!cfg.autoSwitch) return;
+		if (!cfg.autoSwitch) return;
 
 		const game = customer.game;
 		if (game !== 'csgo') return;
