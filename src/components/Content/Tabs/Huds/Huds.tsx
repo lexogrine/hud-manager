@@ -93,7 +93,8 @@ class Huds extends React.Component<IProps, IState> {
 				token: '',
 				afxCEFHudInteropPath: '',
 				sync: true,
-				cg: false
+				cg: false,
+				autoSwitch: false
 			},
 			form: {
 				killfeed: false,

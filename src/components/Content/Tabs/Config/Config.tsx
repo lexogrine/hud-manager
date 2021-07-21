@@ -70,7 +70,8 @@ class Config extends React.Component<IProps, IState> {
 				hlaePath: '',
 				afxCEFHudInteropPath: '',
 				sync: true,
-				cg: false
+				cg: false,
+				autoSwitch: false
 			},
 			cfg: {
 				success: false,
@@ -385,6 +386,13 @@ class Config extends React.Component<IProps, IState> {
 			return state;
 		});
 	};
+	autoSwitchToggleHandler = (event: any) => {
+		const val = !!event.target.checked;
+		this.setState(state => {
+			state.config.autoSwitch = val;
+			return state;
+		});
+	};
 	toggleModal = () => {
 		this.setState({ importModalOpen: !this.state.importModalOpen });
 	};
@@ -488,6 +496,14 @@ class Config extends React.Component<IProps, IState> {
 						</ElectronOnly>
 
 						<GameOnly game="csgo">
+							<Col md="12" className="config-entry">
+								<div className="config-description">Auto switch:</div>
+								<Switch
+									isOn={this.state.config.autoSwitch}
+									id="autoswitch-toggle"
+									handleToggle={this.autoSwitchToggleHandler}
+								/>
+							</Col>
 							<Col md="12" className="config-entry">
 								<div className="config-description">
 									HLAE Path: {this.state.config.hlaePath ? 'Loaded' : 'Not loaded'}

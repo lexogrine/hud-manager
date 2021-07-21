@@ -27,7 +27,8 @@ const defaultConfig: Config = {
 	hlaePath: '',
 	afxCEFHudInteropPath: '',
 	sync: true,
-	cg: false
+	cg: false,
+	autoSwitch: false
 };
 
 export const loadConfig = async (): Promise<Config> => {
@@ -85,7 +86,8 @@ export const updateConfig: express.RequestHandler = async (req, res) => {
 		hlaePath: req.body.hlaePath,
 		afxCEFHudInteropPath: req.body.afxCEFHudInteropPath,
 		sync: !!req.body.sync,
-		cg: !!req.body.cg
+		cg: !!req.body.cg,
+		autoSwitch: !!req.body.autoSwitch
 	};
 
 	const config = await setConfig(updated);

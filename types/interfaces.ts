@@ -147,6 +147,7 @@ export interface Config {
 	afxCEFHudInteropPath: string;
 	sync: boolean;
 	cg: boolean;
+	autoSwitch: boolean;
 }
 
 export interface ExtendedConfig extends Config {

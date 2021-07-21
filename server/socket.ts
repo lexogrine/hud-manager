@@ -147,6 +147,10 @@ ioPromise.then(io => {
 		}
 		lastSideCheck = now;
 
+		const cfg = await loadConfig();
+
+		if(!cfg.autoSwitch) return;
+
 		const game = customer.game;
 		if (game !== 'csgo') return;
 
