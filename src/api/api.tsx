@@ -1,6 +1,7 @@
 import { CustomFieldEntry, AvailableGames, CloudSyncStatus } from '../../types/interfaces';
 import config from './config';
 import * as I from './interfaces';
+import { PlayerExtension } from 'csgogsi-socket';
 const apiUrl = config.apiAddress;
 interface DB {
 	teams: I.Team[];
@@ -72,7 +73,8 @@ export default {
 		fields: {
 			get: () => apiV2<CustomFieldEntry[]>('players/fields'),
 			update: (fields: CustomFieldEntry[]) => apiV2<CustomFieldEntry[]>('players/fields', 'PATCH', fields)
-		}
+		},
+		replaceUsernames: (players: PlayerExtension[]) => apiV2('replaceWithMirv', 'POST', { players })
 	},
 	teams: {
 		get: async () => apiV2<I.Team[]>('teams'),

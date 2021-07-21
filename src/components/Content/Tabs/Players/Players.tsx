@@ -253,9 +253,12 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 	return (
 		<Form>
 			<div className="tab-title-container">
-				<div className="tab-title">{t('common.players')}
+				<div className="tab-title">
+					{t('common.players')}
 					<GameOnly game="csgo">
-						<div onClick={() => setFilesOpened(true)}><img src={downloadIcon} alt="Download Names file"/></div>
+						<div onClick={() => setFilesOpened(true)}>
+							<img src={downloadIcon} alt="Download Names file" />
+						</div>
 					</GameOnly>
 				</div>
 				<Input
@@ -282,7 +285,11 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 				fields={cxt.fields.players}
 				cxt={cxt}
 			/>
-			<NamesFileModal isOpen={isFilesOpened} toggle={() => setFilesOpened(!isFilesOpened)} players={cxt.players} />
+			<NamesFileModal
+				isOpen={isFilesOpened}
+				toggle={() => setFilesOpened(!isFilesOpened)}
+				players={cxt.players}
+			/>
 			<CustomFieldsModal
 				fields={customFieldForm}
 				open={fieldsModalState}

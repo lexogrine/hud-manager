@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import config from './../../../../api/config';
-import { Col, Row } from 'reactstrap';
+import { Col, Row, Button } from 'reactstrap';
 import { GSISocket, CSGO, Player, Team, PlayerExtension } from 'csgogsi-socket';
 import { IContextData } from '../../../Context';
 import { useTranslation } from 'react-i18next';
+import api from '../../../../api/api';
 
 export const { GSI, socket } = GSISocket(`${config.isDev ? config.apiAddress : '/'}`, 'update');
 
@@ -14,31 +15,31 @@ interface Props {
 	cxt: IContextData;
 }
 
-const Teamboard = ({ players, team, toggle, cxt }: Props) => {
-	const mapPlayer = (player: Player): PlayerExtension => {
-		const { players } = cxt;
-		const data = players.filter(origin => origin.steamid === player.steamid)[0];
-		if (!data) {
-			return {
-				id: player.steamid,
-				name: player.name,
-				steamid: player.steamid,
-				realName: null,
-				country: null,
-				avatar: null,
-				extra: {}
-			};
-		}
+const mapPlayer = (cxt: IContextData) => (player: Player): PlayerExtension => {
+	const { players } = cxt;
+	const data = players.filter(origin => origin.steamid === player.steamid)[0];
+	if (!data) {
 		return {
-			id: data._id,
-			name: data.username || player.name,
-			steamid: data.steamid,
-			realName: data.firstName + ' ' + data.lastName,
-			country: data.country,
-			avatar: data.avatar,
+			id: player.steamid,
+			name: player.name,
+			steamid: player.steamid,
+			realName: null,
+			country: null,
+			avatar: null,
 			extra: {}
 		};
+	}
+	return {
+		id: data._id,
+		name: data.username || player.name,
+		steamid: data.steamid,
+		realName: data.firstName + ' ' + data.lastName,
+		country: data.country,
+		avatar: data.avatar,
+		extra: {}
 	};
+};
+const Teamboard = ({ players, team, toggle, cxt }: Props) => {
 
 	return (
 		<Col s={12} md={6}>
@@ -51,7 +52,7 @@ const Teamboard = ({ players, team, toggle, cxt }: Props) => {
 				</Col>
 			</Row>
 			<div className={`scoreboard_container ${team.orientation}`}>
-				{players.map(mapPlayer).map(player => (
+				{players.map(mapPlayer(cxt)).map(player => (
 					<div
 						className="scoreboard_player"
 						key={player.steamid}
@@ -93,6 +94,10 @@ const Live = ({ toggle, cxt }: { toggle: (tab: string, data?: any) => void; cxt:
 	const left = teams.find(team => team.orientation === 'left');
 	const right = teams.find(team => team.orientation === 'right');
 
+	const replace = () => {
+		api.players.replaceUsernames(game.players.map(mapPlayer(cxt)));
+	}
+
 	if (!left || !right) {
 		return (
 			<React.Fragment>
@@ -124,6 +129,13 @@ const Live = ({ toggle, cxt }: { toggle: (tab: string, data?: any) => void; cxt:
 						team={right}
 						toggle={toggle}
 					/>
+				</Row>
+				<Row>
+					<Col md="12">
+						<Button className="lightblue-btn round-btn" onClick={replace}>
+							Replace usernames
+						</Button>
+					</Col>
 				</Row>
 			</div>
 		</React.Fragment>

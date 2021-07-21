@@ -41,14 +41,11 @@ exports.initGameConnection = async () => {
     });
     let testDataIndex = 0;
     const startSendingTestData = () => {
-        console.log('started playing', exports.playTesting.intervalId);
         if (exports.playTesting.intervalId)
             return;
         if (socket_1.runtimeConfig.last?.provider?.timestamp &&
-            new Date().getTime() - socket_1.runtimeConfig.last.provider.timestamp * 1000 <= 5000) {
-            console.log('aaaa');
+            new Date().getTime() - socket_1.runtimeConfig.last.provider.timestamp * 1000 <= 5000)
             return;
-        }
         io.emit('enableTest', false, exports.playTesting.isOnLoop);
         exports.playTesting.intervalId = setInterval(() => {
             if (!testing_1.testData[testDataIndex]) {
@@ -63,7 +60,6 @@ exports.initGameConnection = async () => {
         }, 16);
     };
     const stopSendingTestData = () => {
-        console.log('stopping playing');
         if (!exports.playTesting.intervalId)
             return;
         clearInterval(exports.playTesting.intervalId);
@@ -80,6 +76,19 @@ exports.initGameConnection = async () => {
         io.to('game').emit('update', req.body);
         socket_1.GSI.digest(req.body);
         res.sendStatus(200);
+    });
+    const replaceNameForPlayer = (steamid, username) => {
+        socket_1.mirvPgl?.socket?.send(new Uint8Array(Buffer.from(`exec\0mirv_replace_name filter add x${steamid} "${username}"\0`, 'utf8')), { binary: true });
+    };
+    __2.app.post('/replaceWithMirv', assertUser, (req, res) => {
+        const players = req.body.players;
+        if (!players || !Array.isArray(players) || !socket_1.mirvPgl.socket || socket_1.mirvPgl.socket.readyState !== socket_1.mirvPgl.socket.OPEN) {
+            return res.sendStatus(403);
+        }
+        for (const player of players) {
+            replaceNameForPlayer(player.steamid, player.name);
+        }
+        return res.sendStatus(200);
     });
     __2.app.post('/dota2', assertUser, (req, res) => {
         io.to('dota2').emit('update', req.body);
