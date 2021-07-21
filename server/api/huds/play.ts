@@ -91,22 +91,22 @@ export const initGameConnection = async () => {
 
 	const replaceNameForPlayer = (steamid: string, username: string) => {
 		mirvPgl?.socket?.send(
-			new Uint8Array(
-				Buffer.from(
-					`exec\0mirv_replace_name filter add x${steamid} "${username}"\0`,
-					'utf8'
-				)
-			),
+			new Uint8Array(Buffer.from(`exec\0mirv_replace_name filter add x${steamid} "${username}"\0`, 'utf8')),
 			{ binary: true }
 		);
-	}
+	};
 
 	app.post('/api/replaceWithMirv', assertUser, (req, res) => {
 		const players = req.body.players as PlayerExtension[];
-		if(!players || !Array.isArray(players) || !mirvPgl.socket || mirvPgl.socket.readyState !== mirvPgl.socket.OPEN){
+		if (
+			!players ||
+			!Array.isArray(players) ||
+			!mirvPgl.socket ||
+			mirvPgl.socket.readyState !== mirvPgl.socket.OPEN
+		) {
 			return res.sendStatus(403);
 		}
-		for(const player of players){
+		for (const player of players) {
 			replaceNameForPlayer(player.steamid, player.name);
 		}
 		return res.sendStatus(200);

@@ -15,32 +15,33 @@ interface Props {
 	cxt: IContextData;
 }
 
-const mapPlayer = (cxt: IContextData) => (player: Player): PlayerExtension => {
-	const { players } = cxt;
-	const data = players.filter(origin => origin.steamid === player.steamid)[0];
-	if (!data) {
+const mapPlayer =
+	(cxt: IContextData) =>
+	(player: Player): PlayerExtension => {
+		const { players } = cxt;
+		const data = players.filter(origin => origin.steamid === player.steamid)[0];
+		if (!data) {
+			return {
+				id: player.steamid,
+				name: player.name,
+				steamid: player.steamid,
+				realName: null,
+				country: null,
+				avatar: null,
+				extra: {}
+			};
+		}
 		return {
-			id: player.steamid,
-			name: player.name,
-			steamid: player.steamid,
-			realName: null,
-			country: null,
-			avatar: null,
+			id: data._id,
+			name: data.username || player.name,
+			steamid: data.steamid,
+			realName: data.firstName + ' ' + data.lastName,
+			country: data.country,
+			avatar: data.avatar,
 			extra: {}
 		};
-	}
-	return {
-		id: data._id,
-		name: data.username || player.name,
-		steamid: data.steamid,
-		realName: data.firstName + ' ' + data.lastName,
-		country: data.country,
-		avatar: data.avatar,
-		extra: {}
 	};
-};
 const Teamboard = ({ players, team, toggle, cxt }: Props) => {
-
 	return (
 		<Col s={12} md={6}>
 			<Row className={`scoreboard_score ${team.orientation} no-margin-row ${team.side}`}>
@@ -96,7 +97,7 @@ const Live = ({ toggle, cxt }: { toggle: (tab: string, data?: any) => void; cxt:
 
 	const replace = () => {
 		api.players.replaceUsernames(game.players.map(mapPlayer(cxt)));
-	}
+	};
 
 	if (!left || !right) {
 		return (
