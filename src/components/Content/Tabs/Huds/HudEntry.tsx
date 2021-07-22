@@ -48,6 +48,8 @@ const HudEntry = ({
 	const gameToTag = (game: string) => {
 		if (game === 'rocketleague') {
 			return '[RL]';
+		} else if(game === 'dota2'){
+			return '[DOTA2]';
 		}
 		return '[CSGO]';
 	};
