@@ -151,10 +151,9 @@ class ARSettings extends React.Component<IProps, IState> {
 	getCheckboxes = (panel: I.PanelTemplate) => this.filterInputs(panel, 'checkbox');
 
 	renderSection = () => {
-		const { cxt, section, t, hud } = this.props;
+		const { cxt, section, t } = this.props;
 		const { teams, matches, players } = cxt;
 		const { form } = this.state;
-		console.log(section, hud);
 		if (!section) return null;
 		return (
 			<div key={section.label} className="custom_form">

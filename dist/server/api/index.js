@@ -110,7 +110,7 @@ async function default_1() {
     __1.app.route('/api/import').post(sync.importDb);
     __1.app.route('/api/steam').get((req, res) => res.json({ gamePath: steam_game_path_1.getGamePath(730) }));
     __1.app.route('/api/import/verify').post(sync.checkForConflicts);
-    __1.app.route('/api/gsi/download').get(gsi.saveFile('gamestate_integration_hudmanager.cfg', gsi.generateGSIFile()));
+    __1.app.route('/api/gsi/download').get(gsi.saveFile('gamestate_integration_hudmanager.cfg', gsi.generateGSIFile(exports.customer.game)));
     __1.app.route('/api/db/download').get(gsi.saveFile('hudmanagerdb.json', sync.exportDatabase()));
     //router.route('/api/events')
     //    .get(game.getEvents);

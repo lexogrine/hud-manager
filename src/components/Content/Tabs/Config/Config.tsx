@@ -13,12 +13,17 @@ import { socket } from '../Live/Live';
 
 const { isElectron } = config;
 
-interface ConfigStatus extends I.CFGGSIResponse {
+interface ConfigStatus extends I.CFGGSIObject {
 	loading: boolean;
 }
 
 interface ExtendedFile extends File {
 	path: string;
+}
+
+type GameInfo = {
+	gsi: ConfigStatus;
+	cfg: ConfigStatus;
 }
 
 interface IProps {
@@ -28,11 +33,21 @@ interface IProps {
 	t: any;
 }
 
-export const GameOnly = ({ game, children }: { game: I.AvailableGames; children: any }) => (
+let latestGame: I.AvailableGames = 'csgo';
+
+export const GameOnly = ({ game, children }: { game: I.AvailableGames | I.AvailableGames[]; children: any }) => (
 	<ContextData.Consumer>
 		{cxt => {
 			if (!cxt.game) return null;
-			if (game !== cxt.game) return null;
+			if (Array.isArray(game)) {
+				if (
+					!game.includes(cxt.game)
+				) {
+					return null;
+				}
+			} else {
+				if (game !== cxt.game) return null;
+			}
 			return children;
 		}}
 	</ContextData.Consumer>
@@ -40,8 +55,8 @@ export const GameOnly = ({ game, children }: { game: I.AvailableGames; children:
 
 interface IState {
 	config: I.Config;
-	cfg: ConfigStatus;
-	gsi: ConfigStatus;
+	csgo: GameInfo
+	dota2: GameInfo
 	bakkesModStatus: I.BakkesModStatus;
 	bakkesModAutoconfBusy: boolean;
 	bakkesModAutoconfError: string | null;
@@ -73,17 +88,33 @@ class Config extends React.Component<IProps, IState> {
 				cg: false,
 				autoSwitch: false
 			},
-			cfg: {
-				success: false,
-				loading: true,
-				message: 'Loading data about cfg files...',
-				accessible: true
+			csgo: {
+				gsi: {
+					success: false,
+					loading: true,
+					message: 'Loading data about GameState files...',
+					accessible: true
+				},
+				cfg: {
+					success: false,
+					loading: true,
+					message: 'Loading data about cfg files...',
+					accessible: true
+				},
 			},
-			gsi: {
-				success: false,
-				loading: true,
-				message: 'Loading data about GameState files...',
-				accessible: true
+			dota2: {
+				gsi: {
+					success: false,
+					loading: true,
+					message: 'Loading data about GameState files...',
+					accessible: true
+				},
+				cfg: {
+					success: false,
+					loading: true,
+					message: 'Loading data about cfg files...',
+					accessible: true
+				},
 			},
 			bakkesModStatus: {
 				bakkesModExeDownloaded: false,
@@ -130,7 +161,7 @@ class Config extends React.Component<IProps, IState> {
 	import = (data: any, callback: any) => async () => {
 		try {
 			await api.files.sync(data);
-		} catch {}
+		} catch { }
 		this.setState({ data: {}, conflict: { teams: 0, players: 0 }, importModalOpen: false }, callback);
 	};
 	importCheck = (callback: any) => (files: FileList) => {
@@ -161,7 +192,7 @@ class Config extends React.Component<IProps, IState> {
 					importModalOpen: true,
 					data: db
 				});
-			} catch {}
+			} catch { }
 		};
 	};
 	download = (target: 'gsi' | 'cfgs' | 'db') => {
@@ -178,67 +209,118 @@ class Config extends React.Component<IProps, IState> {
 		this.setState({ config: cfg, ip });
 	};
 	createGSI = async () => {
-		const { gsi } = this.state;
-		gsi.message = 'Loading GameState data...';
+		const { game } = this.props.cxt as { game: 'dota2' | 'csgo' };
+		if (!game || (game !== "csgo" && game !== 'dota2')) return;
 
-		this.setState({ gsi });
-		await api.gamestate.create();
+		const { gsi } = this.state[game];
+		gsi.message = 'Loading GameState data...';
+		if (game === 'csgo') {
+			this.setState({ csgo: this.state[game] });
+		} else {
+			this.setState({ dota2: this.state[game] });
+		}
+
+		await api.gamestate.create(game);
 		this.checkGSI();
 		this.props.gsiCheck();
 	};
 	createCFG = async () => {
-		const { cfg } = this.state;
+		const { game } = this.props.cxt as { game: 'dota2' | 'csgo' };
+		if (!game || (game !== "csgo" && game !== 'dota2')) return;
+
+		const { cfg } = this.state[game];
 		cfg.message = 'Loading GameState file data...';
 
-		this.setState({ cfg });
-		await api.cfgs.create();
+		if (game === 'csgo') {
+			this.setState({ csgo: this.state[game] });
+		} else {
+			this.setState({ dota2: this.state[game] });
+		}
+		await api.cfgs.create(game);
 		this.checkCFG();
 		this.props.gsiCheck();
 	};
 	checkGSI = async () => {
-		const { gsi } = this.state;
+		const { game } = this.props.cxt as { game: 'dota2' | 'csgo' };
+		if (!game || (game !== "csgo" && game !== 'dota2')) return;
+		console.log('checking for', game)
+		const { gsi } = this.state[game];
 		gsi.message = 'Loading GameState file data...';
 
-		this.setState({ gsi });
+		if (game === 'csgo') {
+			this.setState({ csgo: this.state[game] });
+		} else {
+			this.setState({ dota2: this.state[game] });
+		}
 
-		const response = await api.gamestate.check();
+		const response = await api.gamestate.check(game);
+
 
 		if (response.success === false) {
-			return this.setState({
-				gsi: {
-					success: false,
-					message: response.message,
-					loading: false,
-					accessible: response.accessible
-				}
-			});
+			gsi.success = false;
+			gsi.message = response.message;
+			gsi.loading = false;
+			gsi.accessible = response.accessible;
+
+		} else {
+			gsi.success = true;
+			gsi.message = undefined;
+			gsi.loading = false;
+			gsi.accessible = true;
 		}
-		return this.setState({
-			gsi: { success: true, loading: false, accessible: true }
-		});
+		if (game === 'csgo') {
+			this.setState({ csgo: this.state[game] });
+		} else {
+			this.setState({ dota2: this.state[game] });
+		}
+
+		return;
 	};
+
 	checkCFG = async () => {
-		const { cfg } = this.state;
+		const { game } = this.props.cxt as { game: 'dota2' | 'csgo' };
+		if (!game || (game !== "csgo" && game !== 'dota2')) return;
+
+		const { cfg } = this.state[game];
 		cfg.message = 'Loading config file data...';
 
-		this.setState({ cfg });
+		if (game === 'csgo') {
+			this.setState({ csgo: this.state[game] });
+		} else {
+			this.setState({ dota2: this.state[game] });
+		}
 
-		const response = await api.cfgs.check();
+		const response = await api.cfgs.check(game);
 
 		if (response.success === false) {
-			return this.setState({
-				cfg: {
-					success: false,
-					message: response.message,
-					loading: false,
-					accessible: response.accessible
-				}
-			});
+			cfg.success = false;
+			cfg.message = response.message;
+			cfg.loading = false;
+			cfg.accessible = response.accessible;
+
+		} else {
+			cfg.success = true;
+			cfg.message = undefined;
+			cfg.loading = false;
+			cfg.accessible = true;
 		}
-		return this.setState({
-			cfg: { success: true, loading: false, accessible: true }
-		});
+		if (game === 'csgo') {
+			this.setState({ csgo: this.state[game] });
+		} else {
+			this.setState({ dota2: this.state[game] });
+		}
+
+		return;
+
 	};
+
+	componentDidUpdate(){
+		if(latestGame !== this.props.cxt.game){
+			latestGame = this.props.cxt.game;
+			this.checkCFG();
+			this.checkGSI();
+		}
+	}
 
 	loadBakkesModStatus = async (keepBusyOnSuccess?: boolean) => {
 		const response = await api.bakkesmod.check();
@@ -407,7 +489,11 @@ class Config extends React.Component<IProps, IState> {
 	};
 	render() {
 		const { cxt, t } = this.props;
-		const { gsi, cfg, importModalOpen, conflict, data, ip, config, update } = this.state;
+		const { importModalOpen, conflict, data, ip, config, update } = this.state;
+
+		const gameInfo = this.state[(cxt.game || 'csgo') as 'dota2' | 'csgo'] as GameInfo;
+		const { gsi, cfg } = gameInfo;
+		console.log(gameInfo);
 
 		const available =
 			cxt.customer?.license?.type === 'professional' || cxt.customer?.license?.type === 'enterprise';
@@ -474,8 +560,8 @@ class Config extends React.Component<IProps, IState> {
 									{update.installing
 										? t('settings.updater.installing')
 										: update.available
-										? t('settings.updater.install')
-										: t('settings.updater.latest')}
+											? t('settings.updater.install')
+											: t('settings.updater.latest')}
 								</Button>
 							</Col>
 						</ElectronOnly>
@@ -533,6 +619,8 @@ class Config extends React.Component<IProps, IState> {
 									/>
 								</Col>
 							}
+						</GameOnly>
+						<GameOnly game={["csgo", 'dota2']}>
 							<Col md="12" className="config-entry">
 								<div className="config-description">
 									GameState Integration: {gsi.message || 'Loaded succesfully'}

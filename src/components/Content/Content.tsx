@@ -4,6 +4,7 @@ import api from '../../api/api';
 import Navbar from './Navbar/Navbar';
 import Tabs from './Tabs/Tabs';
 import { useTranslation } from 'react-i18next';
+import { AvailableGames } from '../../api/interfaces';
 
 export const isCGMode = false;
 
@@ -11,12 +12,14 @@ const Content = ({
 	active,
 	available,
 	toggleSync,
-	clearGame
+	clearGame,
+	game
 }: {
 	available: boolean;
 	active: boolean;
 	toggleSync: () => void;
 	clearGame: () => void;
+	game: AvailableGames
 }) => {
 	const [activeTab, setTab] = useState('huds');
 	const [data, setData] = useState(null);
@@ -24,7 +27,8 @@ const Content = ({
 	const [configs, setConfigs] = useState(true);
 
 	const checkFiles = async () => {
-		const responses = await Promise.all([api.gamestate.check(), api.cfgs.check()]);
+		const responses = await Promise.all([api.gamestate.check(game as any), api.cfgs.check(game as any)]);
+		console.log(responses);
 		setGSI(responses[0].success);
 		setConfigs(responses[1].success);
 	};
@@ -37,7 +41,7 @@ const Content = ({
 	};
 	useEffect(() => {
 		checkFiles();
-	}, []);
+	}, [game]);
 
 	const { t } = useTranslation();
 

@@ -102,12 +102,12 @@ export default {
 		getVersion: (): Promise<{ version: string }> => apiV2('version')
 	},
 	cfgs: {
-		check: async (): Promise<I.CFGGSIResponse> => await apiV2('cfg'),
-		create: async (): Promise<I.CFGGSIResponse> => await apiV2('cfg', 'PUT')
+		check: async (game: 'csgo' | 'dota2'): Promise<I.CFGGSIObject> => await apiV2(`cfg?game=${game}`),
+		create: async (game: 'csgo' | 'dota2'): Promise<I.CFGGSIObject> => await apiV2(`cfg?game=${game}`, 'PUT')
 	},
 	gamestate: {
-		check: async (): Promise<I.CFGGSIResponse> => await apiV2('gsi'),
-		create: async (): Promise<I.CFGGSIResponse> => await apiV2('gsi', 'PUT')
+		check: async (game: 'csgo' | 'dota2'): Promise<I.CFGGSIObject> => await apiV2(`gsi?game=${game}`),
+		create: async (game: 'csgo' | 'dota2'): Promise<I.CFGGSIObject> => await apiV2(`gsi?game=${game}`, 'PUT')
 	},
 	game: {
 		run: async (config: { radar: boolean; killfeed: boolean; afx: boolean; autoexec: boolean }) =>

@@ -29,10 +29,15 @@ export type {
 	ARModule
 } from './../../types/interfaces';
 
-export interface CFGGSIResponse {
+export interface CFGGSIObject {
 	success: boolean;
 	accessible: boolean;
 	message?: string;
+}
+
+export interface CFGGSIResponse {
+	csgo: CFGGSIObject,
+	dota2: CFGGSIObject,
 }
 
 export interface User {

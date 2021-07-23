@@ -251,6 +251,7 @@ export default class Layout extends React.Component<{}, IState> {
 						available={available}
 						toggleSync={this.toggleSync}
 						clearGame={this.clearGame}
+						game={this.state.data.game}
 					/>
 				</div>
 			</Provider>

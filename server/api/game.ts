@@ -69,13 +69,21 @@ function isCorrect(cfg: CFG) {
 }
 
 export const checkCFGs: express.RequestHandler = async (req, res) => {
+	const game = req.query.game as 'dota2' | 'csgo';
+
+	const steamGameId = game === 'csgo' ? 730 : 570;
+
 	const config = await loadConfig();
-	const SteamGamePath = getGamePath(730);
+	const SteamGamePath = getGamePath(steamGameId);
 
 	const gamePath = SteamGamePath?.game?.path;
 
 	if (!config || !gamePath) {
 		return res.json({ success: false, message: "Game path couldn't be found", accessible: false });
+	}
+
+	if(game === 'dota2'){
+		return res.json({ success: true });
 	}
 
 	const switcher = [true, false];
@@ -105,11 +113,19 @@ export const checkCFGs: express.RequestHandler = async (req, res) => {
 	return res.json({ success: true });
 };
 
-export const createCFGs: express.RequestHandler = async (_req, res) => {
+export const createCFGs: express.RequestHandler = async (req, res) => {
+	const game = req.query.game as 'dota2' | 'csgo';
+
+	const steamGameId = game === 'csgo' ? 730 : 570;
+
+	if(game === 'dota2'){
+		return res.json({ success: true, message: 'Configs were successfully saved' });
+	}
+	
 	const config = await loadConfig();
 	let GamePath;
 	try {
-		GamePath = getGamePath(730);
+		GamePath = getGamePath(steamGameId);
 	} catch {
 		return res.json({ success: false, message: 'Unexpected error occured' });
 	}
