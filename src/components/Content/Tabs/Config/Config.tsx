@@ -24,7 +24,7 @@ interface ExtendedFile extends File {
 type GameInfo = {
 	gsi: ConfigStatus;
 	cfg: ConfigStatus;
-}
+};
 
 interface IProps {
 	cxt: IContextData;
@@ -40,9 +40,7 @@ export const GameOnly = ({ game, children }: { game: I.AvailableGames | I.Availa
 		{cxt => {
 			if (!cxt.game) return null;
 			if (Array.isArray(game)) {
-				if (
-					!game.includes(cxt.game)
-				) {
+				if (!game.includes(cxt.game)) {
 					return null;
 				}
 			} else {
@@ -55,8 +53,8 @@ export const GameOnly = ({ game, children }: { game: I.AvailableGames | I.Availa
 
 interface IState {
 	config: I.Config;
-	csgo: GameInfo
-	dota2: GameInfo
+	csgo: GameInfo;
+	dota2: GameInfo;
 	bakkesModStatus: I.BakkesModStatus;
 	bakkesModAutoconfBusy: boolean;
 	bakkesModAutoconfError: string | null;
@@ -100,7 +98,7 @@ class Config extends React.Component<IProps, IState> {
 					loading: true,
 					message: 'Loading data about cfg files...',
 					accessible: true
-				},
+				}
 			},
 			dota2: {
 				gsi: {
@@ -114,7 +112,7 @@ class Config extends React.Component<IProps, IState> {
 					loading: true,
 					message: 'Loading data about cfg files...',
 					accessible: true
-				},
+				}
 			},
 			bakkesModStatus: {
 				bakkesModExeDownloaded: false,
@@ -161,7 +159,7 @@ class Config extends React.Component<IProps, IState> {
 	import = (data: any, callback: any) => async () => {
 		try {
 			await api.files.sync(data);
-		} catch { }
+		} catch {}
 		this.setState({ data: {}, conflict: { teams: 0, players: 0 }, importModalOpen: false }, callback);
 	};
 	importCheck = (callback: any) => (files: FileList) => {
@@ -192,7 +190,7 @@ class Config extends React.Component<IProps, IState> {
 					importModalOpen: true,
 					data: db
 				});
-			} catch { }
+			} catch {}
 		};
 	};
 	download = (target: 'gsi' | 'cfgs' | 'db') => {
@@ -210,7 +208,7 @@ class Config extends React.Component<IProps, IState> {
 	};
 	createGSI = async () => {
 		const { game } = this.props.cxt as { game: 'dota2' | 'csgo' };
-		if (!game || (game !== "csgo" && game !== 'dota2')) return;
+		if (!game || (game !== 'csgo' && game !== 'dota2')) return;
 
 		const { gsi } = this.state[game];
 		gsi.message = 'Loading GameState data...';
@@ -226,7 +224,7 @@ class Config extends React.Component<IProps, IState> {
 	};
 	createCFG = async () => {
 		const { game } = this.props.cxt as { game: 'dota2' | 'csgo' };
-		if (!game || (game !== "csgo" && game !== 'dota2')) return;
+		if (!game || (game !== 'csgo' && game !== 'dota2')) return;
 
 		const { cfg } = this.state[game];
 		cfg.message = 'Loading GameState file data...';
@@ -242,8 +240,8 @@ class Config extends React.Component<IProps, IState> {
 	};
 	checkGSI = async () => {
 		const { game } = this.props.cxt as { game: 'dota2' | 'csgo' };
-		if (!game || (game !== "csgo" && game !== 'dota2')) return;
-		console.log('checking for', game)
+		if (!game || (game !== 'csgo' && game !== 'dota2')) return;
+		console.log('checking for', game);
 		const { gsi } = this.state[game];
 		gsi.message = 'Loading GameState file data...';
 
@@ -255,13 +253,11 @@ class Config extends React.Component<IProps, IState> {
 
 		const response = await api.gamestate.check(game);
 
-
 		if (response.success === false) {
 			gsi.success = false;
 			gsi.message = response.message;
 			gsi.loading = false;
 			gsi.accessible = response.accessible;
-
 		} else {
 			gsi.success = true;
 			gsi.message = undefined;
@@ -279,7 +275,7 @@ class Config extends React.Component<IProps, IState> {
 
 	checkCFG = async () => {
 		const { game } = this.props.cxt as { game: 'dota2' | 'csgo' };
-		if (!game || (game !== "csgo" && game !== 'dota2')) return;
+		if (!game || (game !== 'csgo' && game !== 'dota2')) return;
 
 		const { cfg } = this.state[game];
 		cfg.message = 'Loading config file data...';
@@ -297,7 +293,6 @@ class Config extends React.Component<IProps, IState> {
 			cfg.message = response.message;
 			cfg.loading = false;
 			cfg.accessible = response.accessible;
-
 		} else {
 			cfg.success = true;
 			cfg.message = undefined;
@@ -311,11 +306,10 @@ class Config extends React.Component<IProps, IState> {
 		}
 
 		return;
-
 	};
 
-	componentDidUpdate(){
-		if(latestGame !== this.props.cxt.game){
+	componentDidUpdate() {
+		if (latestGame !== this.props.cxt.game) {
 			latestGame = this.props.cxt.game;
 			this.checkCFG();
 			this.checkGSI();
@@ -560,8 +554,8 @@ class Config extends React.Component<IProps, IState> {
 									{update.installing
 										? t('settings.updater.installing')
 										: update.available
-											? t('settings.updater.install')
-											: t('settings.updater.latest')}
+										? t('settings.updater.install')
+										: t('settings.updater.latest')}
 								</Button>
 							</Col>
 						</ElectronOnly>
@@ -620,7 +614,7 @@ class Config extends React.Component<IProps, IState> {
 								</Col>
 							}
 						</GameOnly>
-						<GameOnly game={["csgo", 'dota2']}>
+						<GameOnly game={['csgo', 'dota2']}>
 							<Col md="12" className="config-entry">
 								<div className="config-description">
 									GameState Integration: {gsi.message || 'Loaded succesfully'}

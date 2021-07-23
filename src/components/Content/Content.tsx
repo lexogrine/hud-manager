@@ -19,7 +19,7 @@ const Content = ({
 	active: boolean;
 	toggleSync: () => void;
 	clearGame: () => void;
-	game: AvailableGames
+	game: AvailableGames;
 }) => {
 	const [activeTab, setTab] = useState('huds');
 	const [data, setData] = useState(null);

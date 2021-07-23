@@ -36,8 +36,8 @@ export interface CFGGSIObject {
 }
 
 export interface CFGGSIResponse {
-	csgo: CFGGSIObject,
-	dota2: CFGGSIObject,
+	csgo: CFGGSIObject;
+	dota2: CFGGSIObject;
 }
 
 export interface User {

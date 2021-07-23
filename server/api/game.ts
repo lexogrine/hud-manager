@@ -82,7 +82,7 @@ export const checkCFGs: express.RequestHandler = async (req, res) => {
 		return res.json({ success: false, message: "Game path couldn't be found", accessible: false });
 	}
 
-	if(game === 'dota2'){
+	if (game === 'dota2') {
 		return res.json({ success: true });
 	}
 
@@ -118,10 +118,10 @@ export const createCFGs: express.RequestHandler = async (req, res) => {
 
 	const steamGameId = game === 'csgo' ? 730 : 570;
 
-	if(game === 'dota2'){
+	if (game === 'dota2') {
 		return res.json({ success: true, message: 'Configs were successfully saved' });
 	}
-	
+
 	const config = await loadConfig();
 	let GamePath;
 	try {

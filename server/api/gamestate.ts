@@ -10,24 +10,24 @@ import generateGSI, { GSI } from 'csgogsi-generator';
 const GSITemplateCSGO = generateGSI('HUDMANAGERGSI', 'http://localhost:1349/').json;
 export const GSITemplateDota2 = {
 	HUDMANAGERGSI: {
-	  uri: "http://localhost:1349/dota2",
-	  timeout: 5.0,
-	  buffer: 0.1,
-	  throttle: 0.1,
-	  heartbeat: 0.1,
-	  data: {
-		buildings: 1,
-		provider: 1,
-		map: 1,
-		player: 1,
-		hero: 1,
-		abilities: 1,
-		items: 1,
-		draft: 1,
-		wearables: 1
-	  }
+		uri: 'http://localhost:1349/dota2',
+		timeout: 5.0,
+		buffer: 0.1,
+		throttle: 0.1,
+		heartbeat: 0.1,
+		data: {
+			buildings: 1,
+			provider: 1,
+			map: 1,
+			player: 1,
+			hero: 1,
+			abilities: 1,
+			items: 1,
+			draft: 1,
+			wearables: 1
+		}
 	}
-  }
+};
 
 export const checkGSIFile: express.RequestHandler = async (req, res) => {
 	const game = req.query.game as 'dota2' | 'csgo';
@@ -45,7 +45,10 @@ export const checkGSIFile: express.RequestHandler = async (req, res) => {
 		return res.json({ success: false, message: "Game path couldn't be found", accessible: false });
 	}
 
-	const pathToFile = game === 'csgo' ? path.join(GamePath.game.path, 'csgo', 'cfg') : path.join(GamePath.game.path, 'game','dota','cfg','gamestate_integration');
+	const pathToFile =
+		game === 'csgo'
+			? path.join(GamePath.game.path, 'csgo', 'cfg')
+			: path.join(GamePath.game.path, 'game', 'dota', 'cfg', 'gamestate_integration');
 
 	const cfgPath = path.join(pathToFile, 'gamestate_integration_hudmanager.cfg');
 	if (!fs.existsSync(cfgPath)) {
@@ -62,7 +65,7 @@ export const checkGSIFile: express.RequestHandler = async (req, res) => {
 			// wrong port
 			return res.json({ success: false, message: 'Wrong address', accessible: true });
 		}
-		if(game === 'csgo'){
+		if (game === 'csgo') {
 			if (JSON.stringify(GSITemplateCSGO.HUDMANAGERGSI.data) !== JSON.stringify(content.data)) {
 				// wrong settings, csgo
 				return res.json({ success: false, message: 'Wrong configuration', accessible: true });
@@ -70,8 +73,8 @@ export const checkGSIFile: express.RequestHandler = async (req, res) => {
 		} else {
 			if (JSON.stringify(GSITemplateDota2.HUDMANAGERGSI.data) !== JSON.stringify(content.data)) {
 				// wrong settings, dota2
-				console.log(JSON.stringify(GSITemplateDota2.HUDMANAGERGSI.data))
-				console.log(JSON.stringify(content.data))
+				console.log(JSON.stringify(GSITemplateDota2.HUDMANAGERGSI.data));
+				console.log(JSON.stringify(content.data));
 				return res.json({ success: false, message: 'Wrong configuration', accessible: true });
 			}
 		}
@@ -88,12 +91,12 @@ export const checkGSIFile: express.RequestHandler = async (req, res) => {
 };
 
 export const generateGSIFile = async (game: any) => {
-	if(!game) return '';
+	if (!game) return '';
 	const config = await loadConfig();
 
 	let address = `http://localhost:${config.port}/`;
-	
-	if(game === 'dota2'){
+
+	if (game === 'dota2') {
 		address += 'dota2';
 		const gsi = JSON.parse(JSON.stringify(GSITemplateDota2));
 		gsi.HUDMANAGERGSI.uri = address;
@@ -109,7 +112,7 @@ export const createGSIFile: express.RequestHandler = async (req, res) => {
 	const game = req.query.game as 'dota2' | 'csgo';
 
 	const steamGameId = game === 'csgo' ? 730 : 570;
-	
+
 	const text = await generateGSIFile(game);
 	if (!text) {
 		return res.sendStatus(422);
@@ -125,13 +128,16 @@ export const createGSIFile: express.RequestHandler = async (req, res) => {
 		return res.json({});
 	}
 
-	const pathToFile = game === 'csgo' ? path.join(GamePath.game.path, 'csgo', 'cfg') : path.join(GamePath.game.path, 'game','dota','cfg','gamestate_integration');
+	const pathToFile =
+		game === 'csgo'
+			? path.join(GamePath.game.path, 'csgo', 'cfg')
+			: path.join(GamePath.game.path, 'game', 'dota', 'cfg', 'gamestate_integration');
 
 	const cfgPath = path.join(pathToFile, 'gamestate_integration_hudmanager.cfg');
 
 	try {
-		if(game === 'dota2'){
-			if(!fs.existsSync(pathToFile)){
+		if (game === 'dota2') {
+			if (!fs.existsSync(pathToFile)) {
 				fs.mkdirSync(pathToFile);
 			}
 		}
