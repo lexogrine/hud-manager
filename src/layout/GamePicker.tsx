@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Modal, ModalHeader, ModalBody, Button, ModalFooter } from 'reactstrap';
 import csgo from './csgo.png';
 import rl from './rocketleague.png';
+import dota2 from './dota2.png';
 interface IProps {
 	isOpen: boolean;
 	setGame: any;
@@ -38,7 +39,7 @@ const GamePicker = ({ isOpen, setGame }: IProps) => {
 					>
 						<div className="game-title">Dota 2</div>
 						<div className="game-img">
-							<img src={rl} />
+							<img src={dota2} />
 						</div>
 					</div>
 				</div>
