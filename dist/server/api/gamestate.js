@@ -33,7 +33,7 @@ const csgogsi_generator_1 = __importDefault(require("csgogsi-generator"));
 const GSITemplateCSGO = csgogsi_generator_1.default('HUDMANAGERGSI', 'http://localhost:1349/').json;
 exports.GSITemplateDota2 = {
     HUDMANAGERGSI: {
-        uri: "http://localhost:1349/dota2",
+        uri: 'http://localhost:1349/dota2',
         timeout: 5.0,
         buffer: 0.1,
         throttle: 0.1,
@@ -65,7 +65,9 @@ exports.checkGSIFile = async (req, res) => {
     if (!config || !GamePath || !GamePath.game || !GamePath.game.path) {
         return res.json({ success: false, message: "Game path couldn't be found", accessible: false });
     }
-    const pathToFile = game === 'csgo' ? path_1.default.join(GamePath.game.path, 'csgo', 'cfg') : path_1.default.join(GamePath.game.path, 'game', 'dota', 'cfg', 'gamestate_integration');
+    const pathToFile = game === 'csgo'
+        ? path_1.default.join(GamePath.game.path, 'csgo', 'cfg')
+        : path_1.default.join(GamePath.game.path, 'game', 'dota', 'cfg', 'gamestate_integration');
     const cfgPath = path_1.default.join(pathToFile, 'gamestate_integration_hudmanager.cfg');
     if (!fs_1.default.existsSync(cfgPath)) {
         return res.json({ success: false, message: "File couldn't be found", accessible: true });
@@ -138,7 +140,9 @@ exports.createGSIFile = async (req, res) => {
     if (!GamePath || !GamePath.game || !GamePath.game.path) {
         return res.json({});
     }
-    const pathToFile = game === 'csgo' ? path_1.default.join(GamePath.game.path, 'csgo', 'cfg') : path_1.default.join(GamePath.game.path, 'game', 'dota', 'cfg', 'gamestate_integration');
+    const pathToFile = game === 'csgo'
+        ? path_1.default.join(GamePath.game.path, 'csgo', 'cfg')
+        : path_1.default.join(GamePath.game.path, 'game', 'dota', 'cfg', 'gamestate_integration');
     const cfgPath = path_1.default.join(pathToFile, 'gamestate_integration_hudmanager.cfg');
     try {
         if (game === 'dota2') {

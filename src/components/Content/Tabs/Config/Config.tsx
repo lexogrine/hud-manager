@@ -486,7 +486,7 @@ class Config extends React.Component<IProps, IState> {
 		const { importModalOpen, conflict, data, ip, config, update } = this.state;
 
 		const gameInfo = this.state[(cxt.game || 'csgo') as 'dota2' | 'csgo'] as GameInfo;
-		const { gsi, cfg } = gameInfo;
+		const { gsi, cfg } = gameInfo || {};
 		console.log(gameInfo);
 
 		const available =
@@ -617,21 +617,21 @@ class Config extends React.Component<IProps, IState> {
 						<GameOnly game={['csgo', 'dota2']}>
 							<Col md="12" className="config-entry">
 								<div className="config-description">
-									GameState Integration: {gsi.message || 'Loaded succesfully'}
+									GameState Integration: {gsi?.message || 'Loaded succesfully'}
 								</div>
 								<Button
 									className="purple-btn round-btn"
-									disabled={gsi.loading || gsi.success || !gsi.accessible}
+									disabled={gsi?.loading || gsi?.success || !gsi?.accessible}
 									onClick={this.createGSI}
 								>
 									Add GSI file
 								</Button>
 							</Col>
 							<Col md="12" className="config-entry">
-								<div className="config-description">Configs: {cfg.message || 'Loaded succesfully'}</div>
+								<div className="config-description">Configs: {cfg?.message || 'Loaded succesfully'}</div>
 								<Button
 									className="purple-btn round-btn"
-									disabled={cfg.loading || cfg.success || !cfg.accessible}
+									disabled={cfg?.loading || cfg?.success || !cfg?.accessible}
 									onClick={this.createCFG}
 								>
 									Add config files
