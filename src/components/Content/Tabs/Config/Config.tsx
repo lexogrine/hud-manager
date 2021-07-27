@@ -625,18 +625,20 @@ class Config extends React.Component<IProps, IState> {
 									Add GSI file
 								</Button>
 							</Col>
-							<Col md="12" className="config-entry">
-								<div className="config-description">
-									Configs: {cfg?.message || 'Loaded succesfully'}
-								</div>
-								<Button
-									className="purple-btn round-btn"
-									disabled={cfg?.loading || cfg?.success || !cfg?.accessible}
-									onClick={this.createCFG}
-								>
-									Add config files
-								</Button>
-							</Col>
+							<GameOnly game="csgo">
+								<Col md="12" className="config-entry">
+									<div className="config-description">
+										Configs: {cfg?.message || 'Loaded succesfully'}
+									</div>
+									<Button
+										className="purple-btn round-btn"
+										disabled={cfg?.loading || cfg?.success || !cfg?.accessible}
+										onClick={this.createCFG}
+									>
+										Add config files
+									</Button>
+								</Col>
+							</GameOnly>
 						</GameOnly>
 
 						<GameOnly game="rocketleague">
