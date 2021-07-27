@@ -241,7 +241,6 @@ class Config extends React.Component<IProps, IState> {
 	checkGSI = async () => {
 		const { game } = this.props.cxt as { game: 'dota2' | 'csgo' };
 		if (!game || (game !== 'csgo' && game !== 'dota2')) return;
-		console.log('checking for', game);
 		const { gsi } = this.state[game];
 		gsi.message = 'Loading GameState file data...';
 
@@ -487,7 +486,6 @@ class Config extends React.Component<IProps, IState> {
 
 		const gameInfo = this.state[(cxt.game || 'csgo') as 'dota2' | 'csgo'] as GameInfo;
 		const { gsi, cfg } = gameInfo || {};
-		console.log(gameInfo);
 
 		const available =
 			cxt.customer?.license?.type === 'professional' || cxt.customer?.license?.type === 'enterprise';
@@ -628,7 +626,9 @@ class Config extends React.Component<IProps, IState> {
 								</Button>
 							</Col>
 							<Col md="12" className="config-entry">
-								<div className="config-description">Configs: {cfg?.message || 'Loaded succesfully'}</div>
+								<div className="config-description">
+									Configs: {cfg?.message || 'Loaded succesfully'}
+								</div>
 								<Button
 									className="purple-btn round-btn"
 									disabled={cfg?.loading || cfg?.success || !cfg?.accessible}
