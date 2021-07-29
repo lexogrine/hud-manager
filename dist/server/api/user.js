@@ -21,7 +21,7 @@ const cookiePath = path_1.default.join(electron_1.app.getPath('userData'), 'cook
 const cookieJar = new tough_cookie_1.CookieJar(new tough_cookie_file_store_1.FileCookieStore(cookiePath));
 exports.fetch = fetch_cookie_1.default(node_fetch_1.default, cookieJar);
 exports.socket = null;
-const USE_LOCAL_BACKEND = false;
+const USE_LOCAL_BACKEND = true;
 const connectSocket = () => {
     if (exports.socket)
         return;
@@ -79,7 +79,7 @@ exports.api = (url, method = 'GET', body, opts) => {
 };
 const userHandlers = {
     get: (machineId) => exports.api(`auth/${machineId}`),
-    login: (username, password, ver) => exports.api('auth', 'POST', { username, password, ver }),
+    login: (username, password, ver, code) => exports.api('auth', 'POST', { username, password, ver, code }),
     logout: () => exports.api('auth', 'DELETE')
 };
 const verifyToken = (token) => {
@@ -111,9 +111,9 @@ const loadUser = async (loggedIn = false) => {
     api_1.customer.customer = userData;
     return { success: true, message: '' };
 };
-const login = async (username, password) => {
+const login = async (username, password, code = '') => {
     const ver = electron_1.app.getVersion();
-    const response = await userHandlers.login(username, password, ver);
+    const response = await userHandlers.login(username, password, ver, code);
     if (response.status === 404 || response.status === 401) {
         return { success: false, message: 'Incorrect username or password.' };
     }
@@ -123,7 +123,7 @@ const login = async (username, password) => {
     return await loadUser(true);
 };
 exports.loginHandler = async (req, res) => {
-    const response = await login(req.body.username, req.body.password);
+    const response = await login(req.body.username, req.body.password, req.body.token);
     res.json(response);
 };
 exports.getCurrent = async (req, res) => {

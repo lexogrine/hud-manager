@@ -87,8 +87,8 @@ export const api = (url: string, method = 'GET', body?: any, opts?: RequestInit)
 
 const userHandlers = {
 	get: (machineId: string): Promise<{ token: string } | { error: string } | false> => api(`auth/${machineId}`),
-	login: (username: string, password: string, ver: string): Promise<{ status: number; message: string }> =>
-		api('auth', 'POST', { username, password, ver }),
+	login: (username: string, password: string, ver: string, code: string): Promise<{ status: number; message: string }> =>
+		api('auth', 'POST', { username, password, ver, code }),
 	logout: () => api('auth', 'DELETE')
 };
 
@@ -125,10 +125,10 @@ const loadUser = async (loggedIn = false) => {
 	return { success: true, message: '' };
 };
 
-const login = async (username: string, password: string) => {
+const login = async (username: string, password: string, code = '') => {
 	const ver = app.getVersion();
 
-	const response = await userHandlers.login(username, password, ver);
+	const response = await userHandlers.login(username, password, ver, code);
 	if (response.status === 404 || response.status === 401) {
 		return { success: false, message: 'Incorrect username or password.' };
 	}
@@ -139,7 +139,7 @@ const login = async (username: string, password: string) => {
 };
 
 export const loginHandler: express.RequestHandler = async (req, res) => {
-	const response = await login(req.body.username, req.body.password);
+	const response = await login(req.body.username, req.body.password, req.body.token);
 	res.json(response);
 };
 

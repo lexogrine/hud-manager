@@ -12,6 +12,7 @@ interface IProps {
 const LoginRegisterModal = ({ isOpen, loading, setLoading, loadUser, error }: IProps) => {
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
+	const [token, setToken] = useState('');
 
 	const handleChange =
 		(setValue: React.Dispatch<React.SetStateAction<string>>) => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -20,7 +21,7 @@ const LoginRegisterModal = ({ isOpen, loading, setLoading, loadUser, error }: IP
 	const login = async () => {
 		setLoading(true);
 		try {
-			const loginResponse = await api.user.login(email, password);
+			const loginResponse = await api.user.login(email, password, token);
 			if (!loginResponse.success) {
 				return setLoading(false, loginResponse.message);
 			}
@@ -69,6 +70,17 @@ const LoginRegisterModal = ({ isOpen, loading, setLoading, loadUser, error }: IP
 						placeholder="Password"
 						value={password}
 						onChange={handleChange(setPassword)}
+						onKeyDown={onEnter}
+					/>
+				</FormGroup>
+				<FormGroup>
+					<Input
+						name="totp"
+						type="text"
+						id="totp"
+						placeholder="2FA Token"
+						value={token}
+						onChange={handleChange(setToken)}
 						onKeyDown={onEnter}
 					/>
 				</FormGroup>
