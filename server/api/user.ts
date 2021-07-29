@@ -87,8 +87,12 @@ export const api = (url: string, method = 'GET', body?: any, opts?: RequestInit)
 
 const userHandlers = {
 	get: (machineId: string): Promise<{ token: string } | { error: string } | false> => api(`auth/${machineId}`),
-	login: (username: string, password: string, ver: string, code: string): Promise<{ status: number; message: string }> =>
-		api('auth', 'POST', { username, password, ver, code }),
+	login: (
+		username: string,
+		password: string,
+		ver: string,
+		code: string
+	): Promise<{ status: number; message: string }> => api('auth', 'POST', { username, password, ver, code }),
 	logout: () => api('auth', 'DELETE')
 };
 
