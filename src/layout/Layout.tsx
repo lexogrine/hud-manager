@@ -74,6 +74,10 @@ export default class Layout extends React.Component<{}, IState> {
 				loadingGame: false,
 				picked: result.game,
 				data
+			}, () => {
+				if(result.init){
+					this.sync();
+				}
 			});
 		});
 		await this.getVersion();

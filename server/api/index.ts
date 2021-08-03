@@ -25,6 +25,8 @@ import { app } from '..';
 import { checkCloudStatus, uploadLocalToCloud, downloadCloudToLocal } from './cloud';
 import { getRadarConfigs } from './huds/radar';
 
+let init = true;
+
 export const customer: I.CustomerData = {
 	customer: null,
 	game: null
@@ -67,7 +69,13 @@ export default async function () {
 	ARHandler();
 
 	app.route('/api/games/start/:game').get(async (req, res) => {
+		const cfg = await config.loadConfig();
+
 		const game = req.params.game as I.AvailableGames;
+		cfg.game = game;
+
+		await config.setConfig(cfg);
+
 		customer.game = game;
 		const result = await checkCloudStatus(game);
 
@@ -92,7 +100,10 @@ export default async function () {
 		return res.json({ result });
 	});
 
-	app.route('/api/games/current').get((req, res) => res.json({ game: customer.game }));
+	app.route('/api/games/current').get((req, res) => {
+		res.json({ game: customer.game, init });
+		init = false;
+	});
 
 	app.route('/api/huds').get(huds.getHUDs).post(huds.openHUDsDirectory).delete(huds.deleteHUD);
 

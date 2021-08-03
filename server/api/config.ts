@@ -79,6 +79,9 @@ export const getConfig: express.RequestHandler = async (_req, res) => {
 };
 export const updateConfig: express.RequestHandler = async (req, res) => {
 	const io = await ioPromise;
+
+	const currentConfig = await loadConfig();
+
 	const updated: Config = {
 		steamApiKey: req.body.steamApiKey,
 		port: Number(req.body.port),
@@ -87,7 +90,8 @@ export const updateConfig: express.RequestHandler = async (req, res) => {
 		afxCEFHudInteropPath: req.body.afxCEFHudInteropPath,
 		sync: !!req.body.sync,
 		cg: !!req.body.cg,
-		autoSwitch: !!req.body.autoSwitch
+		autoSwitch: !!req.body.autoSwitch,
+		game: currentConfig.game
 	};
 
 	const config = await setConfig(updated);

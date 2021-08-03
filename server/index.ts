@@ -8,7 +8,7 @@ import path from 'path';
 import http from 'http';
 import { ioPromise } from './socket';
 import './sockets/index';
-import router from './api';
+import router, { customer } from './api';
 import { loadConfig, setConfig } from './api/config';
 import { Config } from '../types/interfaces';
 
@@ -55,6 +55,9 @@ export default async function init() {
 		config = await setConfig({ ...config, port: port });
 	}
 	console.log(`Server listening on ${port}`);
+	if(config.game){
+		customer.game = config.game;
+	}
 	app.use(parsePayload(config));
 
 	await router();

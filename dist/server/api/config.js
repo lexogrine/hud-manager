@@ -74,6 +74,7 @@ exports.getConfig = async (_req, res) => {
 };
 exports.updateConfig = async (req, res) => {
     const io = await socket_1.ioPromise;
+    const currentConfig = await exports.loadConfig();
     const updated = {
         steamApiKey: req.body.steamApiKey,
         port: Number(req.body.port),
@@ -82,7 +83,8 @@ exports.updateConfig = async (req, res) => {
         afxCEFHudInteropPath: req.body.afxCEFHudInteropPath,
         sync: !!req.body.sync,
         cg: !!req.body.cg,
-        autoSwitch: !!req.body.autoSwitch
+        autoSwitch: !!req.body.autoSwitch,
+        game: currentConfig.game
     };
     const config = await exports.setConfig(updated);
     if (!config) {

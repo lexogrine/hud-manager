@@ -33,7 +33,7 @@ const path_1 = __importDefault(require("path"));
 const http_1 = __importDefault(require("http"));
 const socket_1 = require("./socket");
 require("./sockets/index");
-const api_1 = __importDefault(require("./api"));
+const api_1 = __importStar(require("./api"));
 const config_1 = require("./api/config");
 const parsePayload = (config) => (req, res, next) => {
     try {
@@ -73,6 +73,9 @@ async function init() {
         config = await config_1.setConfig({ ...config, port: port });
     }
     console.log(`Server listening on ${port}`);
+    if (config.game) {
+        api_1.customer.game = config.game;
+    }
     exports.app.use(parsePayload(config));
     await api_1.default();
     const io = await socket_1.ioPromise;

@@ -48,6 +48,7 @@ const socket_1 = require("../socket");
 const __1 = require("..");
 const cloud_1 = require("./cloud");
 const radar_1 = require("./huds/radar");
+let init = true;
 exports.customer = {
     customer: null,
     game: null
@@ -76,7 +77,10 @@ async function default_1() {
     routes_4.default();
     routes_5.default();
     __1.app.route('/api/games/start/:game').get(async (req, res) => {
+        const cfg = await config.loadConfig();
         const game = req.params.game;
+        cfg.game = game;
+        await config.setConfig(cfg);
         exports.customer.game = game;
         const result = await cloud_1.checkCloudStatus(game);
         io.emit('reloadHUDs');
@@ -96,7 +100,10 @@ async function default_1() {
         const result = await cloud_1.downloadCloudToLocal(game);
         return res.json({ result });
     });
-    __1.app.route('/api/games/current').get((req, res) => res.json({ game: exports.customer.game }));
+    __1.app.route('/api/games/current').get((req, res) => {
+        res.json({ game: exports.customer.game, init });
+        init = false;
+    });
     __1.app.route('/api/huds').get(huds.getHUDs).post(huds.openHUDsDirectory).delete(huds.deleteHUD);
     __1.app.route('/api/huds/add').post(huds.sendHUD);
     __1.app.route('/api/huds/close').post(huds.closeHUD);

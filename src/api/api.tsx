@@ -116,7 +116,7 @@ export default {
 		toggleLoop: () => apiV2('test/loop', 'POST')
 	},
 	games: {
-		getCurrent: (): Promise<{ game: AvailableGames }> => apiV2(`games/current`),
+		getCurrent: (): Promise<{ game: AvailableGames, init: boolean }> => apiV2(`games/current`),
 		startServices: (game: AvailableGames): Promise<{ result: CloudSyncStatus }> => apiV2(`games/start/${game}`)
 	},
 	cloud: {

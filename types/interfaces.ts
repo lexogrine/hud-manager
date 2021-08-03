@@ -148,6 +148,7 @@ export interface Config {
 	sync: boolean;
 	cg: boolean;
 	autoSwitch: boolean;
+	game?: AvailableGames
 }
 
 export interface ExtendedConfig extends Config {
