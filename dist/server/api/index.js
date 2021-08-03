@@ -70,6 +70,7 @@ async function default_1() {
     __1.app.route('/api/auth').get(user.getCurrent).post(user.loginHandler).delete(user.logout);
     __1.app.route('/api/config').get(config.getConfig).patch(config.updateConfig);
     __1.app.route('/api/version').get((req, res) => res.json({ version: electron_1.app.getVersion() }));
+    __1.app.route('/api/version/last').get(machine.getLastLaunchedVersion).post(machine.saveLastLaunchedVersion);
     routes_1.default();
     routes_2.default();
     routes_3.default();

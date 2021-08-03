@@ -11,6 +11,7 @@ import { hash } from '../hash';
 import GamePicker from './GamePicker';
 import { AvailableGames, CloudSyncStatus } from '../../types/interfaces';
 import SyncModal from './SyncModal';
+import Changelog from './ChangelogModal';
 
 declare let window: any;
 const isElectron = config.isElectron;
@@ -70,15 +71,18 @@ export default class Layout extends React.Component<{}, IState> {
 		api.games.getCurrent().then(result => {
 			const { data } = this.state;
 			data.game = result.game;
-			this.setState({
-				loadingGame: false,
-				picked: result.game,
-				data
-			}, () => {
-				if(result.init){
-					this.sync();
+			this.setState(
+				{
+					loadingGame: false,
+					picked: result.game,
+					data
+				},
+				() => {
+					if (result.init) {
+						this.sync();
+					}
 				}
-			});
+			);
 		});
 		await this.getVersion();
 		this.loadUser();
@@ -249,6 +253,7 @@ export default class Layout extends React.Component<{}, IState> {
 						syncStatus={synchronizationStatus}
 						reload={this.state.data.reload}
 					/>
+					{ version !== '-' ? <Changelog version={version} customer={data.customer} /> : null }
 					<GamePicker isOpen={Boolean(data.customer && !this.state.picked)} setGame={this.setGame} />
 					<Content
 						active={active}

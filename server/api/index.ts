@@ -55,6 +55,8 @@ export default async function () {
 	app.route('/api/config').get(config.getConfig).patch(config.updateConfig);
 
 	app.route('/api/version').get((req, res) => res.json({ version: Application.getVersion() }));
+	
+	app.route('/api/version/last').get(machine.getLastLaunchedVersion).post(machine.saveLastLaunchedVersion);
 
 	TournamentHandler();
 

@@ -1,4 +1,4 @@
-import { CustomFieldEntry, AvailableGames, CloudSyncStatus } from '../../types/interfaces';
+import { CustomFieldEntry, AvailableGames, CloudSyncStatus, LastLaunchedVersion } from '../../types/interfaces';
 import config from './config';
 import * as I from './interfaces';
 import { PlayerExtension } from 'csgogsi-socket';
@@ -99,7 +99,9 @@ export default {
 			}
 			window.location.assign(`${config.isDev ? apiUrl : '/'}api/${target}/download`);
 		},
-		getVersion: (): Promise<{ version: string }> => apiV2('version')
+		getVersion: (): Promise<{ version: string }> => apiV2('version'),
+		getLastVersion: (): Promise<LastLaunchedVersion> => apiV2('version/last'),
+		setLastVersion: (version: string, releaseDate: string) => apiV2('version/last', "POST", { version, releaseDate })
 	},
 	cfgs: {
 		check: async (game: 'csgo' | 'dota2'): Promise<I.CFGGSIObject> => await apiV2(`cfg?game=${game}`),
@@ -116,7 +118,7 @@ export default {
 		toggleLoop: () => apiV2('test/loop', 'POST')
 	},
 	games: {
-		getCurrent: (): Promise<{ game: AvailableGames, init: boolean }> => apiV2(`games/current`),
+		getCurrent: (): Promise<{ game: AvailableGames; init: boolean }> => apiV2(`games/current`),
 		startServices: (game: AvailableGames): Promise<{ result: CloudSyncStatus }> => apiV2(`games/start/${game}`)
 	},
 	cloud: {

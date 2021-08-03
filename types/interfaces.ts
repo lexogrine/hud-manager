@@ -148,7 +148,7 @@ export interface Config {
 	sync: boolean;
 	cg: boolean;
 	autoSwitch: boolean;
-	game?: AvailableGames
+	game?: AvailableGames;
 }
 
 export interface ExtendedConfig extends Config {
@@ -306,4 +306,9 @@ export type Replacer = {
 export interface ResourceResponseStatus {
 	resource: AvailableResources;
 	status: string | null;
+}
+
+export interface LastLaunchedVersion {
+	version: string;
+	releaseDate: string;
 }

@@ -55,7 +55,7 @@ export default async function init() {
 		config = await setConfig({ ...config, port: port });
 	}
 	console.log(`Server listening on ${port}`);
-	if(config.game){
+	if (config.game) {
 		customer.game = config.game;
 	}
 	app.use(parsePayload(config));
