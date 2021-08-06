@@ -10,6 +10,7 @@ const socket_1 = require("../../socket");
 const testing_1 = require("../testing");
 const ws_1 = __importDefault(require("ws"));
 const aco_1 = require("../../aco");
+const electron_1 = require("electron");
 const assertUser = (req, res, next) => {
     if (!__1.customer.customer) {
         return res.sendStatus(403);
@@ -24,21 +25,23 @@ exports.initGameConnection = async () => {
     const io = await socket_1.ioPromise;
     const director = aco_1.createDirector();
     director.pgl = socket_1.mirvPgl;
+    const toggleDirector = () => {
+        if (!__1.customer.customer ||
+            !__1.customer.customer.license ||
+            __1.customer.customer.license?.type === 'free' ||
+            __1.customer.customer.license?.type === 'personal') {
+            return;
+        }
+        director.status ? director.stop() : director.start();
+        io.emit('directorStatus', director.status);
+    };
     io.on('connection', socket => {
         socket.on('getDirectorStatus', () => {
             socket.emit('directorStatus', director.status);
         });
-        socket.on('toggleDirector', () => {
-            if (!__1.customer.customer ||
-                !__1.customer.customer.license ||
-                __1.customer.customer.license?.type === 'free' ||
-                __1.customer.customer.license?.type === 'personal') {
-                return;
-            }
-            director.status ? director.stop() : director.start();
-            socket.emit('directorStatus', director.status);
-        });
+        socket.on('toggleDirector', toggleDirector);
     });
+    electron_1.globalShortcut.register("Alt+K", toggleDirector);
     let testDataIndex = 0;
     const startSendingTestData = () => {
         if (exports.playTesting.intervalId)
@@ -94,6 +97,7 @@ exports.initGameConnection = async () => {
         return res.sendStatus(200);
     });
     __2.app.post('/dota2', assertUser, (req, res) => {
+        socket_1.runtimeConfig.last = req.body;
         io.to('dota2').emit('update', req.body);
         res.sendStatus(200);
     });

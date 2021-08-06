@@ -61,14 +61,14 @@ export default function overlay(hud: string) {
 			!customer.customer || customer.customer.license.type === 'free'
 				? `<div style="
                     position: fixed !important;
-                    bottom: 20px !important;
-                    top: unset !important;
+                    bottom: unset !important;
+                    top: 20px !important;
                     left: unset !important;
-                    right: 10px !important;
+                    right: 5000px !important;
                     font-family: Arial !important;
                     font-weight: 600 !important;
                     color: rgba(255,255,255,0.5) !important;
-                    font-size: 14pt !important;
+                    font-size: 24pt !important;
                     z-index:2 !important;
                     display: block !important;
                     opacity: 1 !important;

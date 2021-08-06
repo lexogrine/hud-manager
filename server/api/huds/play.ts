@@ -6,6 +6,7 @@ import { testData } from '../testing';
 import WebSocket from 'ws';
 import { createDirector } from '../../aco';
 import { PlayerExtension } from 'csgogsi-socket';
+import { globalShortcut } from 'electron';
 
 const assertUser: express.RequestHandler = (req, res, next) => {
 	if (!customer.customer) {
@@ -26,23 +27,27 @@ export const initGameConnection = async () => {
 
 	director.pgl = mirvPgl;
 
+	const toggleDirector = () => {
+		if (
+			!customer.customer ||
+			!customer.customer.license ||
+			customer.customer.license?.type === 'free' ||
+			customer.customer.license?.type === 'personal'
+		) {
+			return;
+		}
+		director.status ? director.stop() : director.start();
+		io.emit('directorStatus', director.status);
+	}
+
 	io.on('connection', socket => {
 		socket.on('getDirectorStatus', () => {
 			socket.emit('directorStatus', director.status);
 		});
-		socket.on('toggleDirector', () => {
-			if (
-				!customer.customer ||
-				!customer.customer.license ||
-				customer.customer.license?.type === 'free' ||
-				customer.customer.license?.type === 'personal'
-			) {
-				return;
-			}
-			director.status ? director.stop() : director.start();
-			socket.emit('directorStatus', director.status);
-		});
+		socket.on('toggleDirector', toggleDirector);
 	});
+
+	globalShortcut.register("Alt+K", toggleDirector);
 
 	let testDataIndex = 0;
 
@@ -113,6 +118,7 @@ export const initGameConnection = async () => {
 	});
 
 	app.post('/dota2', assertUser, (req, res) => {
+		runtimeConfig.last = req.body;
 		io.to('dota2').emit('update', req.body);
 		res.sendStatus(200);
 	});

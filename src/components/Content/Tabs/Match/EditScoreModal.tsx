@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal, ModalHeader, ModalBody, Button } from 'reactstrap';
+import { Modal, ModalHeader, ModalBody, Button, Input } from 'reactstrap';
 import { hash } from '../../../../hash';
 import * as I from './../../../../api/interfaces';
 import WinnerCrown from './../../../../styles/winnerCrown.png';
@@ -19,6 +19,10 @@ const EditScoreModal = ({ isOpen, toggle, veto, saveScore, teams, setWinner }: P
 	const renderTeamScore = (team: I.Team | undefined, score: number) => {
 		if (!team) return null;
 		const isWinner = veto && veto.winner && veto.winner === team._id;
+		const handleChanger = (e: any) => {
+			const val = e.target.value;
+			saveScore(team._id, val)();
+		}
 		return (
 			<div key={team._id} className="team-score-container">
 				<div className={`winner-crown ${isWinner ? 'winner' : ''}`}>
@@ -28,12 +32,15 @@ const EditScoreModal = ({ isOpen, toggle, veto, saveScore, teams, setWinner }: P
 					<img src={`${team.logo}?hash=${hash()}`} alt={t('match.scoreModal.teamLogo')}></img>
 				</div>
 				<div className="team-score-edit-container">
-					<div className="add">
-						<div onClick={saveScore(team._id, score + 1)}>+</div>
-					</div>
-					<div className="map-score">{score}</div>
-					<div className="remove">
-						<div onClick={saveScore(team._id, score - 1)}>-</div>
+					<div className="map-score">
+						<Input
+							type="number"
+							name="mapScore"
+							onChange={handleChanger}
+							placeholder="Score"
+							value={score}
+							style={{maxWidth: '100px'}}
+						/>
 					</div>
 				</div>
 				<div className="winner-button-container">

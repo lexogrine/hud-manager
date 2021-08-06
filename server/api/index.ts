@@ -76,9 +76,12 @@ export default async function () {
 		const game = req.params.game as I.AvailableGames;
 		cfg.game = game;
 
+		delete (cfg as any)._id;
+
 		await config.setConfig(cfg);
 
 		customer.game = game;
+		
 		const result = await checkCloudStatus(game);
 
 		io.emit('reloadHUDs');
@@ -185,6 +188,7 @@ export default async function () {
 	globalShortcut.register('Alt+Shift+F', () => io.emit('refreshHUD'));
 
 	globalShortcut.register('Alt+R', match.reverseSide);
+
 	/**
 	 * LEGACY ROUTING
 	 */

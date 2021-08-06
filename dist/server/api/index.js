@@ -81,6 +81,7 @@ async function default_1() {
         const cfg = await config.loadConfig();
         const game = req.params.game;
         cfg.game = game;
+        delete cfg._id;
         await config.setConfig(cfg);
         exports.customer.game = game;
         const result = await cloud_1.checkCloudStatus(game);
