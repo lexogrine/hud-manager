@@ -253,7 +253,7 @@ export default class Layout extends React.Component<{}, IState> {
 						syncStatus={synchronizationStatus}
 						reload={this.state.data.reload}
 					/>
-					{ version !== '-' ? <Changelog version={version} customer={data.customer} /> : null }
+					{version !== '-' ? <Changelog version={version} customer={data.customer} /> : null}
 					<GamePicker isOpen={Boolean(data.customer && !this.state.picked)} setGame={this.setGame} />
 					<Content
 						active={active}

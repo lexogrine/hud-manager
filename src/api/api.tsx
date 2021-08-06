@@ -101,7 +101,8 @@ export default {
 		},
 		getVersion: (): Promise<{ version: string }> => apiV2('version'),
 		getLastVersion: (): Promise<LastLaunchedVersion> => apiV2('version/last'),
-		setLastVersion: (version: string, releaseDate: string) => apiV2('version/last', "POST", { version, releaseDate })
+		setLastVersion: (version: string, releaseDate: string) =>
+			apiV2('version/last', 'POST', { version, releaseDate })
 	},
 	cfgs: {
 		check: async (game: 'csgo' | 'dota2'): Promise<I.CFGGSIObject> => await apiV2(`cfg?game=${game}`),

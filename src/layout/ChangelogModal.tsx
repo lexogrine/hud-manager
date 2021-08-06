@@ -4,40 +4,39 @@ import api from '../api/api';
 import { Customer } from '../../types/interfaces';
 interface IProps {
 	version: string;
-    customer?: Customer
+	customer?: Customer;
 }
 
 const Changelog = ({ version, customer }: IProps) => {
 	const [changelog, setChangelog] = useState<any | null>(null);
 	const [isVisible, setVisible] = useState(false);
 
+	useEffect(() => {
+		api.config.getLastVersion().then(async res => {
+			if (res.version === version) return;
 
-    useEffect(() => {
-        api.config.getLastVersion().then(async res => {
-            if(res.version === version) return;
+			const releaseInfo = await fetch(
+				`https://api.github.com/repos/lexogrine/hud-manager/releases/tags/v${version}`
+			).then(res => res.json());
 
-            const releaseInfo = await fetch(`https://api.github.com/repos/lexogrine/hud-manager/releases/tags/v${version}`).then(res => res.json());
-            
-            if(!releaseInfo.body) return;
+			if (!releaseInfo.body) return;
 
-            setChangelog(releaseInfo);
-            setVisible(true);
-        });
-    }, []);
+			setChangelog(releaseInfo);
+			setVisible(true);
+		});
+	}, []);
 
-    const closeModal = () => {
-        if(changelog){
-            api.config.setLastVersion(changelog.name, changelog.published_at)
-        }
-        setVisible(false);
-    }
+	const closeModal = () => {
+		if (changelog) {
+			api.config.setLastVersion(changelog.name, changelog.published_at);
+		}
+		setVisible(false);
+	};
 
 	return (
 		<Modal isOpen={isVisible && !!customer} toggle={() => {}} className="veto_modal">
 			<ModalHeader>Changelog v{version}</ModalHeader>
-			<ModalBody>
-				{changelog?.body}
-			</ModalBody>
+			<ModalBody>{changelog?.body}</ModalBody>
 			<ModalFooter className="no-padding">
 				<Button color="primary" className="modal-save" onClick={closeModal}>
 					OK

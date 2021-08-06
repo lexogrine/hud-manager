@@ -37,14 +37,14 @@ exports.getLastLaunchedVersion = async (req, res) => {
     const releasePathDirectory = path_1.default.join(electron_1.app.getPath('appData'), '.lexogrine');
     const releasePath = path_1.default.join(releasePathDirectory, 'release.hm');
     if (!fs_1.default.existsSync(releasePath)) {
-        return res.json({ version: '2.0', releaseDate: "2021-07-24T03:12:24Z" });
+        return res.json({ version: '2.0', releaseDate: '2021-07-24T03:12:24Z' });
     }
     try {
         const lastRelease = JSON.parse(fs_1.default.readFileSync(releasePath, 'utf8'));
         return res.json(lastRelease);
     }
     catch {
-        return res.json({ version: '2.0', releaseDate: "2021-07-24T03:12:24Z" });
+        return res.json({ version: '2.0', releaseDate: '2021-07-24T03:12:24Z' });
     }
 };
 exports.saveLastLaunchedVersion = async (req, res) => {

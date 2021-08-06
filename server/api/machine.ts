@@ -4,8 +4,6 @@ import { app } from 'electron';
 import path from 'path';
 import { LastLaunchedVersion } from '../../types/interfaces';
 
-
-
 export const getMachineId = () => {
 	const machinePathDirectory = path.join(app.getPath('appData'), '.lexogrine');
 
@@ -45,8 +43,8 @@ export const getLastLaunchedVersion: express.RequestHandler = async (req, res) =
 
 	const releasePath = path.join(releasePathDirectory, 'release.hm');
 
-	if(!fs.existsSync(releasePath)){
-		return res.json({ version: '2.0', releaseDate: "2021-07-24T03:12:24Z" });
+	if (!fs.existsSync(releasePath)) {
+		return res.json({ version: '2.0', releaseDate: '2021-07-24T03:12:24Z' });
 	}
 
 	try {
@@ -54,9 +52,9 @@ export const getLastLaunchedVersion: express.RequestHandler = async (req, res) =
 
 		return res.json(lastRelease);
 	} catch {
-		return res.json({ version: '2.0', releaseDate: "2021-07-24T03:12:24Z" });
+		return res.json({ version: '2.0', releaseDate: '2021-07-24T03:12:24Z' });
 	}
-}
+};
 
 export const saveLastLaunchedVersion: express.RequestHandler = async (req, res) => {
 	const releasePathDirectory = path.join(app.getPath('appData'), '.lexogrine');
@@ -65,7 +63,7 @@ export const saveLastLaunchedVersion: express.RequestHandler = async (req, res) 
 
 	const { version, releaseDate } = req.body;
 
-	fs.writeFileSync(releasePath, JSON.stringify({ version, releaseDate }),'utf8');
+	fs.writeFileSync(releasePath, JSON.stringify({ version, releaseDate }), 'utf8');
 
 	return res.sendStatus(200);
-}
+};
