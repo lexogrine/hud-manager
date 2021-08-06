@@ -62,9 +62,9 @@ function overlay(hud) {
         ? `<div style="
                     position: fixed !important;
                     bottom: unset !important;
-                    top: 20px !important;
+                    top: 40px !important;
                     left: unset !important;
-                    right: 5000px !important;
+                    right: 500px !important;
                     font-family: Arial !important;
                     font-weight: 600 !important;
                     color: rgba(255,255,255,0.5) !important;

@@ -41,7 +41,7 @@ exports.initGameConnection = async () => {
         });
         socket.on('toggleDirector', toggleDirector);
     });
-    electron_1.globalShortcut.register("Alt+K", toggleDirector);
+    electron_1.globalShortcut.register('Alt+K', toggleDirector);
     let testDataIndex = 0;
     const startSendingTestData = () => {
         if (exports.playTesting.intervalId)
