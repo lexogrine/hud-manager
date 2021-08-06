@@ -38,7 +38,7 @@ export const initGameConnection = async () => {
 		}
 		director.status ? director.stop() : director.start();
 		io.emit('directorStatus', director.status);
-	}
+	};
 
 	io.on('connection', socket => {
 		socket.on('getDirectorStatus', () => {
@@ -47,7 +47,7 @@ export const initGameConnection = async () => {
 		socket.on('toggleDirector', toggleDirector);
 	});
 
-	globalShortcut.register("Alt+K", toggleDirector);
+	globalShortcut.register('Alt+K', toggleDirector);
 
 	let testDataIndex = 0;
 

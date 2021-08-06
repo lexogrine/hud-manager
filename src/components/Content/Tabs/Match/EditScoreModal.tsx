@@ -22,7 +22,7 @@ const EditScoreModal = ({ isOpen, toggle, veto, saveScore, teams, setWinner }: P
 		const handleChanger = (e: any) => {
 			const val = e.target.value;
 			saveScore(team._id, val)();
-		}
+		};
 		return (
 			<div key={team._id} className="team-score-container">
 				<div className={`winner-crown ${isWinner ? 'winner' : ''}`}>
@@ -39,7 +39,7 @@ const EditScoreModal = ({ isOpen, toggle, veto, saveScore, teams, setWinner }: P
 							onChange={handleChanger}
 							placeholder="Score"
 							value={score}
-							style={{maxWidth: '100px'}}
+							style={{ maxWidth: '100px' }}
 						/>
 					</div>
 				</div>

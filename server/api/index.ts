@@ -81,7 +81,7 @@ export default async function () {
 		await config.setConfig(cfg);
 
 		customer.game = game;
-		
+
 		const result = await checkCloudStatus(game);
 
 		io.emit('reloadHUDs');
