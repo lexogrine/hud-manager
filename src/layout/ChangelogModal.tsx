@@ -17,9 +17,9 @@ const Changelog = ({ version, customer }: IProps) => {
 
 			const releaseInfo = await fetch(
 				`https://api.github.com/repos/lexogrine/hud-manager/releases/tags/v${version}`
-			).then(res => res.json());
+			).then(res => res.json()).catch(() => null);
 
-			if (!releaseInfo.body) return;
+			if (!releaseInfo?.body) return;
 
 			setChangelog(releaseInfo);
 			setVisible(true);
