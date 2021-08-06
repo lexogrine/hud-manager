@@ -38,7 +38,7 @@ const Changelog = ({ version, customer }: IProps) => {
 	return (
 		<Modal isOpen={isVisible && !!customer} toggle={() => {}} className="veto_modal">
 			<ModalHeader>Changelog v{version}</ModalHeader>
-			<ModalBody>{changelog?.body}</ModalBody>
+			<ModalBody>{changelog?.body.split(`\n`).map((entry: string) => <div key={entry}>{entry}</div>)}</ModalBody>
 			<ModalFooter className="no-padding">
 				<Button color="primary" className="modal-save" onClick={closeModal}>
 					OK

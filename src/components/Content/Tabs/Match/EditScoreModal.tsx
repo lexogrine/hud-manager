@@ -29,7 +29,7 @@ const EditScoreModal = ({ isOpen, toggle, veto, saveScore, teams, setWinner }: P
 					<img src={WinnerCrown} />
 				</div>
 				<div className={`team-logo-container`}>
-					<img src={`${team.logo}?hash=${hash()}`} alt={t('match.scoreModal.teamLogo')}></img>
+					{ team.logo ? <img src={`${team.logo}?hash=${hash()}`} alt={t('match.scoreModal.teamLogo')}></img> : team.name}
 				</div>
 				<div className="team-score-edit-container">
 					<div className="map-score">

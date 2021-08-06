@@ -474,6 +474,7 @@ img.smallLogo {
     color: #f2cb54;
     font-size: 10px;
     font-weight: 700;
+    margin: 0 3px;
 }
 .map-score .win-icon:not(.active){
     opacity: 0;
