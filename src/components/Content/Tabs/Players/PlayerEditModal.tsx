@@ -47,7 +47,7 @@ const PlayerEditModal = ({
 			avatar = `data:image/${encoding};base64,${player.avatar}`;
 		}
 	}
-	const gameIdentifier = cxt.game === 'csgo' ? 'SteamID64' : 'In-game name';
+	const gameIdentifier = cxt.game === 'csgo' || cxt.game === 'dota2' ? 'SteamID64' : 'In-game name';
 	const renderInput = (
 		field: string,
 		type: Exclude<I.PanelInputType, 'select' | 'action' | 'checkbox'>,

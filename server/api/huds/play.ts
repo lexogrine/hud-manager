@@ -1,7 +1,7 @@
 import express from 'express';
 import { customer } from '..';
 import { app } from '../..';
-import { GSI, ioPromise, runtimeConfig, mirvPgl } from '../../socket';
+import { GSI, ioPromise, runtimeConfig, mirvPgl, Dota2GSI } from '../../socket';
 import { testData } from '../testing';
 import WebSocket from 'ws';
 import { createDirector } from '../../aco';
@@ -120,6 +120,7 @@ export const initGameConnection = async () => {
 	app.post('/dota2', assertUser, (req, res) => {
 		runtimeConfig.last = req.body;
 		io.to('dota2').emit('update', req.body);
+		Dota2GSI.digest(req.body);
 		res.sendStatus(200);
 	});
 

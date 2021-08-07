@@ -16,6 +16,7 @@
     "csgogsi-socket": "^2.1.0",
     "decompress-zip": "^0.2.2",
     "del": "^6.0.0",
+    "dotagsi": "^1.1.0",
     "electron-updater": "^4.3.5",
     "express": "^4.17.1",
     "fetch-cookie": "^0.11.0",

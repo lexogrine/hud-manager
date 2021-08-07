@@ -1,5 +1,6 @@
 import { Server, Socket } from 'socket.io';
 import { CSGOGSI, CSGORaw, Score, Player, Team } from 'csgogsi-socket';
+import { DOTA2GSI } from 'dotagsi';
 import fetch from 'node-fetch';
 import { updateRound, updateMatch, getActiveGameMatches, reverseSide } from './api/matches';
 import { internalIP, loadConfig, publicIP } from './api/config';
@@ -40,6 +41,8 @@ export const runtimeConfig: RuntimeConfig = {
 export const HUDState = new HUDStateManager();
 
 export const GSI = new CSGOGSI();
+
+export const Dota2GSI = new DOTA2GSI();
 
 export const ioPromise = loadConfig().then(cfg => {
 	const corsOrigins = [`http://${internalIP}:${cfg.port}`, `http://localhost:${cfg.port}`];
@@ -131,6 +134,22 @@ ioPromise.then(io => {
 	};
 
 	GSI.on('roundEnd', onRoundEnd);
+
+	Dota2GSI.on("matchEnd", async matchSummary => {
+		
+		const matches = await getActiveGameMatches();
+		const match = matches.find(match => match.current && match.game === 'dota2');
+		if (!match) return;
+
+		if(matchSummary.faction === 'radiant'){
+			match.left.wins += 1;
+		} else {
+			match.right.wins += 1;
+		}
+		await updateMatch(match);
+
+		io.emit('match', true);
+	})
 
 	const doesPlayerBelongToOtherTeam = (playerExtensions: I.Player[], otherTeam: Team) => (player: Player) => {
 		const extension = playerExtensions.find(data => data.steamid === player.steamid);
