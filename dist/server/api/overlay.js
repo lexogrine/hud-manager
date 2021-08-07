@@ -274,7 +274,7 @@ function overlay(hud) {
                     shape-outside: none !important;
                     tab-size: 8 !important;
                     table-layout: auto !important;
-                    text-align: initial !important;
+                    text-align: center !important;
                     text-align-last: auto !important;
                     text-combine-upright: none !important;
                     text-decoration-color: currentcolor !important;
