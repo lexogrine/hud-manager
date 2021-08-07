@@ -1,4 +1,3 @@
-
 import { Row, Col } from 'reactstrap';
 import { useTranslation } from 'react-i18next';
 

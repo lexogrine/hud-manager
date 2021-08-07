@@ -10,7 +10,6 @@ import { socket } from '../Tabs/Live/Live';
 import { Config } from '../../../api/interfaces';
 import api from '../../../api/api';
 
-
 interface IProps {
 	activeTab: string;
 	toggle: (tab: string, data?: any) => void;

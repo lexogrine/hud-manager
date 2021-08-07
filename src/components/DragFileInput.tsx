@@ -1,4 +1,3 @@
-
 import { Component } from 'react';
 import DragIcon from './../styles/upload.png';
 

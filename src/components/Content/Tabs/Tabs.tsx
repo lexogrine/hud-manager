@@ -1,4 +1,3 @@
-
 import { TabContent, TabPane } from 'reactstrap';
 import Teams from './Teams/Teams';
 import Players from './Players/Players';

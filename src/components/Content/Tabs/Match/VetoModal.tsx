@@ -1,4 +1,3 @@
-
 import { useTranslation } from 'react-i18next';
 import { Modal, ModalHeader, ModalBody, FormGroup, Label, Input } from 'reactstrap';
 import * as I from './../../../../api/interfaces';

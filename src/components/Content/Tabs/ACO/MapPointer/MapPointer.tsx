@@ -1,4 +1,3 @@
-
 import { ScaleConfig } from './';
 import { MapAreaConfig } from '../../../../../api/interfaces';
 import React, { Fragment } from 'react';

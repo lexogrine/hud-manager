@@ -1,4 +1,3 @@
-
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import { HUD } from '../../../../api/interfaces';
 import { useTranslation } from 'react-i18next';

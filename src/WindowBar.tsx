@@ -1,4 +1,3 @@
-
 import config from './api/config';
 import ElectronOnly from './components/ElectronOnly';
 declare let window: any;

@@ -1,4 +1,3 @@
-
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 
 interface Props {

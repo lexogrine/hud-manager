@@ -1,4 +1,3 @@
-
 import { Modal, ModalHeader, ModalBody, Button, FormGroup, Input, ModalFooter, Row, Col, FormText } from 'reactstrap';
 import { hash } from '../../../../hash';
 import isSvg from '../../../../isSvg';

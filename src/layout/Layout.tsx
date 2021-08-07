@@ -1,4 +1,3 @@
-
 import Content from '../components/Content/Content';
 import { ContextData, IContextData } from './../components/Context';
 import api from './../api/api';

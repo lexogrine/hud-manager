@@ -1,4 +1,3 @@
-
 import './switch.css';
 
 interface IProps {

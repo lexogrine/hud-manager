@@ -1,4 +1,3 @@
-
 import * as I from '../../api/interfaces';
 import isSvg from '../../isSvg';
 import { getMatchName } from '../../utils';

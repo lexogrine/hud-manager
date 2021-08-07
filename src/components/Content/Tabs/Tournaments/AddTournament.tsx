@@ -1,4 +1,3 @@
-
 import { Modal, ModalHeader, ModalBody, Button, FormGroup, Input, ModalFooter, Row, Col, FormText } from 'reactstrap';
 import DragFileInput from '../../../DragFileInput';
 import api from '../../../../api/api';
