@@ -135,13 +135,12 @@ ioPromise.then(io => {
 
 	GSI.on('roundEnd', onRoundEnd);
 
-	Dota2GSI.on("matchEnd", async matchSummary => {
-		
+	Dota2GSI.on('matchEnd', async matchSummary => {
 		const matches = await getActiveGameMatches();
 		const match = matches.find(match => match.current && match.game === 'dota2');
 		if (!match) return;
 
-		if(matchSummary.faction === 'radiant'){
+		if (matchSummary.faction === 'radiant') {
 			match.left.wins += 1;
 		} else {
 			match.right.wins += 1;
@@ -149,7 +148,7 @@ ioPromise.then(io => {
 		await updateMatch(match);
 
 		io.emit('match', true);
-	})
+	});
 
 	const doesPlayerBelongToOtherTeam = (playerExtensions: I.Player[], otherTeam: Team) => (player: Player) => {
 		const extension = playerExtensions.find(data => data.steamid === player.steamid);
