@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { IContextData } from './../../../../components/Context';
 import api from './../../../../api/api';
 import * as I from './../../../../api/interfaces';
@@ -8,6 +8,7 @@ import FileInput from './../../../DragFileInput';
 import isSvg from './../../../../isSvg';
 import ColorPicker from '../../../ColorPicker/ColorPicker';
 import { withTranslation } from 'react-i18next';
+import { Component } from 'react';
 
 interface IProps {
 	section?: I.PanelTemplate;
@@ -18,7 +19,7 @@ interface IProps {
 interface IState {
 	form: any;
 }
-class ARSettings extends React.Component<IProps, IState> {
+class ARSettings extends Component<IProps, IState> {
 	constructor(props: IProps) {
 		super(props);
 		this.state = {

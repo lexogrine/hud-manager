@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Col } from 'reactstrap';
 import api from '../../api/api';
 import Navbar from './Navbar/Navbar';

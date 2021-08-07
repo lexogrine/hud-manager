@@ -8,7 +8,7 @@ const database_1 = __importDefault(require("./../../../init/database"));
 const __1 = require("..");
 const cloud_1 = require("../cloud");
 const { custom } = database_1.default;
-exports.initiateCustomFields = (game = 'csgo', dontCreateOnCall = false) => new Promise(res => {
+const initiateCustomFields = (game = 'csgo', dontCreateOnCall = false) => new Promise(res => {
     const or = [{ game }];
     if (game === 'csgo') {
         or.push({ game: { $exists: false } });
@@ -26,7 +26,8 @@ exports.initiateCustomFields = (game = 'csgo', dontCreateOnCall = false) => new 
         });
     });
 });
-exports.replaceLocalCustomFieldStores = (stores, game, existing) => new Promise(res => {
+exports.initiateCustomFields = initiateCustomFields;
+const replaceLocalCustomFieldStores = (stores, game, existing) => new Promise(res => {
     const or = [
         { game, _id: { $nin: existing } },
         { game, _id: { $in: stores.map(store => store._id) } }
@@ -43,19 +44,22 @@ exports.replaceLocalCustomFieldStores = (stores, game, existing) => new Promise(
         });
     });
 });
-exports.getCustomFieldsDb = async (game) => {
+exports.replaceLocalCustomFieldStores = replaceLocalCustomFieldStores;
+const getCustomFieldsDb = async (game) => {
     const customFields = await exports.initiateCustomFields(game, true);
     if (!customFields)
         return [];
     return [customFields];
 };
-exports.getFields = async (type, game) => {
+exports.getCustomFieldsDb = getCustomFieldsDb;
+const getFields = async (type, game) => {
     const store = await exports.initiateCustomFields(game, true);
     if (!store)
         return [];
     return store[type];
 };
-exports.updateFields = async (fields, type, game) => {
+exports.getFields = getFields;
+const updateFields = async (fields, type, game) => {
     const store = await exports.initiateCustomFields(game);
     const deletedFields = store[type].filter(field => !fields.find(newField => newField.name === field.name));
     const createdFields = fields.filter(newField => !store[type].find(field => field.name === newField.name));
@@ -88,3 +92,4 @@ exports.updateFields = async (fields, type, game) => {
         });
     });
 };
+exports.updateFields = updateFields;

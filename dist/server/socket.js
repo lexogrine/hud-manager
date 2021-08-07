@@ -3,9 +3,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.mirvPgl = exports.ioPromise = exports.GSI = exports.HUDState = exports.runtimeConfig = void 0;
+exports.mirvPgl = exports.ioPromise = exports.Dota2GSI = exports.GSI = exports.HUDState = exports.runtimeConfig = void 0;
 const socket_io_1 = require("socket.io");
 const csgogsi_socket_1 = require("csgogsi-socket");
+const dotagsi_1 = require("dotagsi");
 const node_fetch_1 = __importDefault(require("node-fetch"));
 const matches_1 = require("./api/matches");
 const config_1 = require("./api/config");
@@ -30,6 +31,7 @@ exports.runtimeConfig = {
 };
 exports.HUDState = new hudstatemanager_1.HUDStateManager();
 exports.GSI = new csgogsi_socket_1.CSGOGSI();
+exports.Dota2GSI = new dotagsi_1.DOTA2GSI();
 exports.ioPromise = config_1.loadConfig().then(cfg => {
     const corsOrigins = [`http://${config_1.internalIP}:${cfg.port}`, `http://localhost:${cfg.port}`];
     if (config_1.publicIP) {
@@ -115,6 +117,20 @@ exports.ioPromise.then(io => {
         io.emit('match', true);
     };
     exports.GSI.on('roundEnd', onRoundEnd);
+    exports.Dota2GSI.on('matchEnd', async (matchSummary) => {
+        const matches = await matches_1.getActiveGameMatches();
+        const match = matches.find(match => match.current && match.game === 'dota2');
+        if (!match)
+            return;
+        if (matchSummary.faction === 'radiant') {
+            match.left.wins += 1;
+        }
+        else {
+            match.right.wins += 1;
+        }
+        await matches_1.updateMatch(match);
+        io.emit('match', true);
+    });
     const doesPlayerBelongToOtherTeam = (playerExtensions, otherTeam) => (player) => {
         const extension = playerExtensions.find(data => data.steamid === player.steamid);
         if (!extension)

@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 import config from './../api/config';
 
 const ElectronOnly = ({ children }: { children: React.ReactNode }) => {

@@ -64,7 +64,7 @@ export default function overlay(hud: string) {
                     bottom: unset !important;
                     top: 40px !important;
                     left: unset !important;
-                    right: 500px !important;
+                    right: unset !important;
                     font-family: Arial !important;
                     font-weight: 600 !important;
                     color: rgba(255,255,255,0.5) !important;
@@ -72,7 +72,7 @@ export default function overlay(hud: string) {
                     z-index:2 !important;
                     display: block !important;
                     opacity: 1 !important;
-                    transform: none !important;
+                    transform: translateX(-50%) !important;
 
                     align-content: stretch !important;
                     align-items: stretch !important;
@@ -209,7 +209,7 @@ export default function overlay(hud: string) {
                     margin-bottom: 0 !important;
                     margin-inline-end: 0 !important;
                     margin-inline-start: 0 !important;
-                    margin-left: 0 !important;
+                    margin-left: 50% !important;
                     margin-right: 0 !important;
                     margin-top: 0 !important;
                     mask-clip: border-box !important;
@@ -274,7 +274,7 @@ export default function overlay(hud: string) {
                     shape-outside: none !important;
                     tab-size: 8 !important;
                     table-layout: auto !important;
-                    text-align: initial !important;
+                    text-align: center !important;
                     text-align-last: auto !important;
                     text-combine-upright: none !important;
                     text-decoration-color: currentcolor !important;
@@ -313,7 +313,7 @@ export default function overlay(hud: string) {
                     -moz-appearance: none !important;
                     -ms-appearance: none !important;
                     appearance: none !important;
-                ">Powered by Lexogrine HUD Manager</div>`
+                ">Powered by Lexogrine HUD Manager<br/>Only for non commercial usage</div>`
 				: ''
 		}
     </body>

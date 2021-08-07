@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Row, FormGroup, Input } from 'reactstrap';
 import maps from './MapPointer';
 import trash from './../../../../styles/trash.svg';
@@ -106,7 +106,7 @@ const ACO = () => {
 	const config = 'config' in activeMapConfig ? activeMapConfig.config : activeMapConfig.configs[0].config;
 	const areas = acos.find(aco => aco.map === activeMap)?.areas || [];
 	return (
-		<React.Fragment>
+		<>
 			<SaveAreaModal
 				isOpen={isModalOpened}
 				close={() => {
@@ -225,7 +225,7 @@ const ACO = () => {
 					) : null}
 				</Row>
 			</div>
-		</React.Fragment>
+		</>
 	);
 };
 

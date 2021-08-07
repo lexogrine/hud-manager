@@ -14,7 +14,7 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
     __setModuleDefault(result, mod);
     return result;
 };
@@ -53,7 +53,7 @@ exports.customer = {
     customer: null,
     game: null
 };
-exports.validateCloudAbility = async () => {
+const validateCloudAbility = async () => {
     const cfg = await config.loadConfig();
     if (!cfg.sync)
         return false;
@@ -64,6 +64,7 @@ exports.validateCloudAbility = async () => {
     }
     return !!exports.customer.game;
 };
+exports.validateCloudAbility = validateCloudAbility;
 async function default_1() {
     const io = await socket_1.ioPromise;
     play_1.initGameConnection();

@@ -67,7 +67,7 @@ const verifyPluginList = () => {
         return false;
     return true;
 };
-exports.checkStatus = async (req, res) => {
+const checkStatus = async (req, res) => {
     const status = {
         bakkesModExeDownloaded: false,
         bakkesModDataDownloaded: false,
@@ -91,7 +91,8 @@ exports.checkStatus = async (req, res) => {
         status.sosConfigSet = true;
     return res.json({ success: true, status });
 };
-exports.downloadBakkesMod = async (req, res) => {
+exports.checkStatus = checkStatus;
+const downloadBakkesMod = async (req, res) => {
     request_1.default(bakkesModDownloadUrl)
         .on('error', () => {
         return res.json({ success: false });
@@ -101,7 +102,8 @@ exports.downloadBakkesMod = async (req, res) => {
     })
         .pipe(fs_1.default.createWriteStream(bakkesModExePath));
 };
-exports.downloadBakkesModData = async (req, res) => {
+exports.downloadBakkesMod = downloadBakkesMod;
+const downloadBakkesModData = async (req, res) => {
     request_1.default(bakkesModDataDownloadUrl)
         .on('error', () => {
         return res.json({ success: false });
@@ -111,7 +113,8 @@ exports.downloadBakkesModData = async (req, res) => {
     })
         .pipe(fs_1.default.createWriteStream(bakkesModDataDownloadFilePath));
 };
-exports.downloadSosPlugin = async (req, res) => {
+exports.downloadBakkesModData = downloadBakkesModData;
+const downloadSosPlugin = async (req, res) => {
     request_1.default(sosPluginDownloadAPIPath, (error, _response, body) => {
         if (error)
             return res.json({ success: false });
@@ -128,7 +131,8 @@ exports.downloadSosPlugin = async (req, res) => {
             .pipe(fs_1.default.createWriteStream(sosPluginDownloadFilePath));
     });
 };
-exports.runBakkesMod = async (req, res) => {
+exports.downloadSosPlugin = downloadSosPlugin;
+const runBakkesMod = async (req, res) => {
     if (!fs_1.default.existsSync(bakkesModExePath))
         return res.json({ success: false, message: 'BakkesMod needs to be downloaded first' });
     //execFile(bakkesModExePath);
@@ -156,7 +160,8 @@ exports.runBakkesMod = async (req, res) => {
         child_process_1.spawn(startCommand + ' ' + rocketLeagueUrl, { detached: true, stdio: 'ignore', shell: true });
     }
 };
-exports.installBakkesModData = async (req, res) => {
+exports.runBakkesMod = runBakkesMod;
+const installBakkesModData = async (req, res) => {
     if (!fs_1.default.existsSync(bakkesModDataDownloadFilePath))
         return res.json({ success: false, message: 'BakkesMod data needs to be downloaded first' });
     fs_1.default.mkdirSync(bakkesModDirPath, { recursive: true });
@@ -173,7 +178,8 @@ exports.installBakkesModData = async (req, res) => {
     });
     unzipper.extract({ path: bakkesModDirPath });
 };
-exports.installSosPlugin = async (req, res) => {
+exports.installBakkesModData = installBakkesModData;
+const installSosPlugin = async (req, res) => {
     if (!fs_1.default.existsSync(sosPluginDownloadFilePath))
         return res.json({ success: false, message: 'SOS plugin needs to be downloaded first' });
     if (fs_1.default.existsSync(sosPluginExtractPath)) {
@@ -209,3 +215,4 @@ exports.installSosPlugin = async (req, res) => {
     });
     unzipper.extract({ path: sosPluginExtractPath });
 };
+exports.installSosPlugin = installSosPlugin;

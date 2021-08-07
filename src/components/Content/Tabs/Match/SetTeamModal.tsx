@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, cloneElement } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, FormGroup, Input } from 'reactstrap';
 import * as I from './../../../../api/interfaces';
 import { useTranslation } from 'react-i18next';
@@ -84,14 +84,14 @@ const TeamModal = ({ button, side, team, teams, onSave }: TeamModalsProps) => {
 	const toggle = () => setOpen(!isOpen);
 
 	const setOnPress = (element: JSX.Element) => {
-		return React.cloneElement(element, { onClick: toggle });
+		return cloneElement(element, { onClick: toggle });
 	};
 
 	return (
-		<React.Fragment>
+		<>
 			{setOnPress(button)}
 			<SetTeamModal isOpen={isOpen} toggle={toggle} side={side} team={team} teams={teams} onSave={onSave} />
-		</React.Fragment>
+		</>
 	);
 };
 

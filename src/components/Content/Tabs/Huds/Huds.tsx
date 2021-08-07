@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { IContextData } from './../../../../components/Context';
 import api from './../../../../api/api';
 import * as I from './../../../../api/interfaces';
@@ -13,6 +13,7 @@ import goBack from './../../../../styles/goBack.png';
 import config from './../../../../api/config';
 import { withTranslation } from 'react-i18next';
 import { GameOnly } from '../Config/Config';
+import { Component } from 'react';
 const isElectron = config.isElectron;
 
 function createCFG(
@@ -80,7 +81,7 @@ interface IState {
 	isHUDOpened: boolean;
 }
 
-class Huds extends React.Component<IProps, IState> {
+class Huds extends Component<IProps, IState> {
 	constructor(props: IProps) {
 		super(props);
 		this.state = {
@@ -213,7 +214,7 @@ class Huds extends React.Component<IProps, IState> {
 			this.props.cxt.customer?.license?.type === 'enterprise';
 		if (active) {
 			return (
-				<React.Fragment>
+				<>
 					<div className="tab-title-container">
 						<img src={goBack} onClick={this.toggleConfig()} className="go-back-button" alt="Go back" />
 						HUD Settings
@@ -221,11 +222,11 @@ class Huds extends React.Component<IProps, IState> {
 					<div className="tab-content-container full-scroll no-padding">
 						<Panel hud={active} cxt={this.props.cxt} />
 					</div>
-				</React.Fragment>
+				</>
 			);
 		}
 		return (
-			<React.Fragment>
+			<>
 				<div className="tab-title-container">{t('huds.header')}</div>
 				<div className={`tab-content-container no-padding ${!isElectron ? 'full-scroll' : ''}`}>
 					<GameOnly game="csgo">
@@ -426,7 +427,7 @@ class Huds extends React.Component<IProps, IState> {
 						''
 					)}
 				</div>
-			</React.Fragment>
+			</>
 		);
 	}
 }

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import config from './../../../../api/config';
 import { Col, Row, Button } from 'reactstrap';
 import { GSISocket, CSGO, Player, Team, PlayerExtension } from 'csgogsi-socket';
@@ -86,10 +86,10 @@ const Live = ({ toggle, cxt }: { toggle: (tab: string, data?: any) => void; cxt:
 
 	if (!game)
 		return (
-			<React.Fragment>
+			<>
 				<div className="tab-title-container">{t('live.header')}</div>
 				<div className="tab-content-container full-scroll">{t('live.noGame')}</div>
-			</React.Fragment>
+			</>
 		);
 	const teams = [game.map.team_ct, game.map.team_t];
 	const left = teams.find(team => team.orientation === 'left');
@@ -101,15 +101,15 @@ const Live = ({ toggle, cxt }: { toggle: (tab: string, data?: any) => void; cxt:
 
 	if (!left || !right) {
 		return (
-			<React.Fragment>
+			<>
 				<div className="tab-title-container">{t('live.header')}</div>
 				<div className="tab-content-container full-scroll">{t('live.noGame')}</div>
-			</React.Fragment>
+			</>
 		);
 	}
 
 	return (
-		<React.Fragment>
+		<>
 			<div className="tab-title-container">{t('live.header')}</div>
 			<div className="tab-content-container full-scroll">
 				<Row>
@@ -139,7 +139,7 @@ const Live = ({ toggle, cxt }: { toggle: (tab: string, data?: any) => void; cxt:
 					</Col>
 				</Row>
 			</div>
-		</React.Fragment>
+		</>
 	);
 };
 

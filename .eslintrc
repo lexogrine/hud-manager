@@ -12,6 +12,8 @@
     ],
     "rules": {
         "no-console": 1,
+        "react/jsx-uses-react": "off",
+        "react/react-in-jsx-scope": "off",
         "@typescript-eslint/explicit-module-boundary-types": 0,
         "@typescript-eslint/ban-types": 0,
         "@typescript-eslint/no-explicit-any": 0,

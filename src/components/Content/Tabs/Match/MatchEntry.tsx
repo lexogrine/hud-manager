@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import api from './../../../../api/api';
 import * as I from './../../../../api/interfaces';
 import { Button } from 'reactstrap';

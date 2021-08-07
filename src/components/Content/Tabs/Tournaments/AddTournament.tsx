@@ -1,10 +1,11 @@
-import React from 'react';
+
 import { Modal, ModalHeader, ModalBody, Button, FormGroup, Input, ModalFooter, Row, Col, FormText } from 'reactstrap';
 import DragFileInput from '../../../DragFileInput';
 import api from '../../../../api/api';
 import isSvg from '../../../../isSvg';
 import { hash } from '../../../../hash';
 import { withTranslation } from 'react-i18next';
+import { Component } from 'react';
 
 interface Props {
 	isOpen: boolean;
@@ -30,7 +31,7 @@ interface State {
 	isLoading: boolean;
 }
 
-class AddTournamentModal extends React.Component<Props, State> {
+class AddTournamentModal extends Component<Props, State> {
 	constructor(props: Props) {
 		super(props);
 		this.state = {

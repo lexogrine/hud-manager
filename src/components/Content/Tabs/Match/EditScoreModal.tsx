@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { Modal, ModalHeader, ModalBody, Button, Input } from 'reactstrap';
 import { hash } from '../../../../hash';
 import * as I from './../../../../api/interfaces';

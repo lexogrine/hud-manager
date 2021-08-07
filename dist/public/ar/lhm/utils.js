@@ -14,7 +14,7 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
     __setModuleDefault(result, mod);
     return result;
 };
@@ -40,8 +40,9 @@ const parsePlayer = (basePlayer, steamid, team, extensions) => {
     };
     return player;
 };
-exports.mapSteamIDToPlayer = (players, teams, extensions) => (steamid) => parsePlayer(players[steamid], steamid, teams[players[steamid].team], extensions);
-exports.parseTeam = (team, orientation, side, extension) => ({
+const mapSteamIDToPlayer = (players, teams, extensions) => (steamid) => parsePlayer(players[steamid], steamid, teams[players[steamid].team], extensions);
+exports.mapSteamIDToPlayer = mapSteamIDToPlayer;
+const parseTeam = (team, orientation, side, extension) => ({
     score: team.score,
     logo: (extension && extension.logo) || null,
     consecutive_round_losses: team.consecutive_round_losses,
@@ -54,9 +55,10 @@ exports.parseTeam = (team, orientation, side, extension) => ({
     orientation,
     extra: (extension && extension.extra) || {}
 });
+exports.parseTeam = parseTeam;
 let currentModules = [];
 const getARModule = (dir) => currentModules.find(arModule => arModule.id === dir) || null;
-exports.addARModule = async (dir, { scene, camera, renderers, GSI, actions }) => {
+const addARModule = async (dir, { scene, camera, renderers, GSI, actions }) => {
     const duplicate = getARModule(dir);
     if (duplicate) {
         return;
@@ -76,7 +78,8 @@ exports.addARModule = async (dir, { scene, camera, renderers, GSI, actions }) =>
     arModule.startARModule(scene, camera, renderers, GSI, actions);
     return;
 };
-exports.removeARModule = (dir, { scene, GSI }) => {
+exports.addARModule = addARModule;
+const removeARModule = (dir, { scene, GSI }) => {
     const customStyleSheet = document.getElementById(`ar-stylesheet-${dir}`);
     if (customStyleSheet) {
         customStyleSheet.remove();
@@ -87,7 +90,8 @@ exports.removeARModule = (dir, { scene, GSI }) => {
     arModule.module.cleanUpARModule(scene, GSI);
     return;
 };
-exports.setActiveModules = async (dirs, arSettings) => {
+exports.removeARModule = removeARModule;
+const setActiveModules = async (dirs, arSettings) => {
     for (const dir of dirs) {
         const currentModule = getARModule(dir);
         if (!currentModule) {
@@ -101,3 +105,4 @@ exports.setActiveModules = async (dirs, arSettings) => {
         }
     }
 };
+exports.setActiveModules = setActiveModules;

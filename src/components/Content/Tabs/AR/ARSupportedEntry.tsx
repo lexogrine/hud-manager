@@ -1,4 +1,3 @@
-import React from 'react';
 import { Row, Col, UncontrolledCollapse } from 'reactstrap';
 import Config from './../../../../api/config';
 import * as I from './../../../../api/interfaces';

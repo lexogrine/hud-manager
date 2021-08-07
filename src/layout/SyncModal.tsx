@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Modal, ModalHeader, ModalBody, Button, ModalFooter } from 'reactstrap';
 import { CloudSyncStatus } from '../../types/interfaces';
 import api from '../api/api';

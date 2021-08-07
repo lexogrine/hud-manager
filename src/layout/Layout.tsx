@@ -1,4 +1,4 @@
-import React from 'react';
+
 import Content from '../components/Content/Content';
 import { ContextData, IContextData } from './../components/Context';
 import api from './../api/api';
@@ -12,6 +12,7 @@ import GamePicker from './GamePicker';
 import { AvailableGames, CloudSyncStatus } from '../../types/interfaces';
 import SyncModal from './SyncModal';
 import Changelog from './ChangelogModal';
+import { Component } from 'react';
 
 declare let window: any;
 const isElectron = config.isElectron;
@@ -32,7 +33,7 @@ interface IState {
 	isSyncModalOpen: boolean;
 	config: I.ExtendedConfig | null;
 }
-export default class Layout extends React.Component<{}, IState> {
+export default class Layout extends Component<{}, IState> {
 	constructor(props: {}) {
 		super(props);
 		this.state = {

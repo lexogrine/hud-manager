@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { Form, FormGroup, Input, Row, Col, Button } from 'reactstrap';
 import * as I from './../../../../api/interfaces';
 import api from './../../../../api/api';
@@ -10,6 +10,7 @@ import ElectronOnly from '../../../ElectronOnly';
 import { withTranslation } from 'react-i18next';
 import Switch from '../../../Switch/Switch';
 import { socket } from '../Live/Live';
+import { Component } from 'react';
 
 const { isElectron } = config;
 
@@ -72,7 +73,7 @@ interface IState {
 	data: any;
 }
 
-class Config extends React.Component<IProps, IState> {
+class Config extends Component<IProps, IState> {
 	constructor(props: IProps) {
 		super(props);
 		this.state = {

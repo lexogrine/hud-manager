@@ -32,7 +32,7 @@ async function getPlayerBySteamId(steamid, avatar = false) {
     });
 }
 exports.getPlayerBySteamId = getPlayerBySteamId;
-exports.getPlayersList = (query) => new Promise(res => {
+const getPlayersList = (query) => new Promise(res => {
     players.find(query, (err, players) => {
         if (err) {
             return res([]);
@@ -40,7 +40,8 @@ exports.getPlayersList = (query) => new Promise(res => {
         return res([...players].sort((a, b) => (a.username > b.username ? 1 : -1)));
     });
 });
-exports.replaceLocalPlayers = (newPlayers, game, existing) => new Promise(res => {
+exports.getPlayersList = getPlayersList;
+const replaceLocalPlayers = (newPlayers, game, existing) => new Promise(res => {
     const or = [
         { game, _id: { $nin: existing } },
         { game, _id: { $in: newPlayers.map(player => player._id) } }
@@ -58,3 +59,4 @@ exports.replaceLocalPlayers = (newPlayers, game, existing) => new Promise(res =>
         });
     });
 });
+exports.replaceLocalPlayers = replaceLocalPlayers;

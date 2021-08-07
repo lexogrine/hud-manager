@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { IContextData } from '../../../Context';
 import PlayerForm from './Player';
 import TeamForm from './Team';

@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.isInPolygon = void 0;
-exports.isInPolygon = (p, polygon) => {
+const isInPolygon = (p, polygon) => {
     let i = 0;
     let ii = 0;
     let k = 0;
@@ -73,3 +73,4 @@ exports.isInPolygon = (p, polygon) => {
         return false;
     return true;
 };
+exports.isInPolygon = isInPolygon;

@@ -14,7 +14,7 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
     __setModuleDefault(result, mod);
     return result;
 };
@@ -83,7 +83,7 @@ const updateLastDateLocally = (game, resources) => {
     }
     return lastUpdateLocal;
 };
-exports.addResource = async (game, resource, data) => {
+const addResource = async (game, resource, data) => {
     const result = (await user_1.api(`storage/${resource}/${game}`, 'POST', data));
     if (!result) {
         cloudErrorHandler();
@@ -92,7 +92,8 @@ exports.addResource = async (game, resource, data) => {
     updateLastDateLocally(game, [{ resource, status: result.lastUpdateTime }]);
     return result;
 };
-exports.updateResource = async (game, resource, data) => {
+exports.addResource = addResource;
+const updateResource = async (game, resource, data) => {
     const status = await exports.checkCloudStatus(game);
     if (status !== 'ALL_SYNCED') {
         return;
@@ -105,7 +106,8 @@ exports.updateResource = async (game, resource, data) => {
     updateLastDateLocally(game, [{ resource, status: result.lastUpdateTime }]);
     return result;
 };
-exports.deleteResource = async (game, resource, id) => {
+exports.updateResource = updateResource;
+const deleteResource = async (game, resource, id) => {
     const status = await exports.checkCloudStatus(game);
     if (status !== 'ALL_SYNCED') {
         return;
@@ -118,7 +120,8 @@ exports.deleteResource = async (game, resource, id) => {
     updateLastDateLocally(game, [{ resource, status: result.lastUpdateTime }]);
     return result;
 };
-exports.getResource = async (game, resource, fromDate) => {
+exports.deleteResource = deleteResource;
+const getResource = async (game, resource, fromDate) => {
     let url = `storage/${resource}/${game}`;
     if (fromDate) {
         url += `?fromDate=${fromDate}`;
@@ -130,6 +133,7 @@ exports.getResource = async (game, resource, fromDate) => {
     }
     return result || null;
 };
+exports.getResource = getResource;
 /**
  * If sync off (2.0+ was at least run once), do nothing.
  * Ask backend: Server will return EMPTY if no cloud data. Ask then if you want to upload current db
@@ -173,7 +177,7 @@ const downloadCloudData = async (game, resource, fromDate) => {
         return false;
     }
 };
-exports.downloadCloudToLocal = async (game) => {
+const downloadCloudToLocal = async (game) => {
     try {
         const result = (await user_1.api(`storage/${game}/status`));
         await Promise.all(I.availableResources.map(resource => downloadCloudData(game, resource)));
@@ -184,7 +188,8 @@ exports.downloadCloudToLocal = async (game) => {
         return false;
     }
 };
-exports.uploadLocalToCloud = async (game) => {
+exports.downloadCloudToLocal = downloadCloudToLocal;
+const uploadLocalToCloud = async (game) => {
     const resources = await Promise.all([
         players_1.getPlayersList({ game }),
         teams_1.getTeamsList({ game }),
@@ -212,7 +217,8 @@ exports.uploadLocalToCloud = async (game) => {
         return false;
     }
 };
-exports.checkCloudStatus = async (game) => {
+exports.uploadLocalToCloud = uploadLocalToCloud;
+const checkCloudStatus = async (game) => {
     if (__1.customer.customer?.license.type !== 'professional' && __1.customer.customer?.license.type !== 'enterprise') {
         return 'ALL_SYNCED';
     }
@@ -280,3 +286,4 @@ exports.checkCloudStatus = async (game) => {
         return 'UNKNOWN_ERROR';
     }
 };
+exports.checkCloudStatus = checkCloudStatus;

@@ -14,7 +14,7 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
     __setModuleDefault(result, mod);
     return result;
 };
@@ -27,11 +27,12 @@ const express_1 = __importDefault(require("express"));
 const path_1 = __importDefault(require("path"));
 const electron_1 = require("electron");
 const AR = __importStar(require("./index"));
-exports.getARModules = (req, res) => {
+const getARModules = (req, res) => {
     const ars = AR.listARModules();
     return res.json(ars);
 };
-exports.getARModulesAssets = async (req, res, next) => {
+exports.getARModules = getARModules;
+const getARModulesAssets = async (req, res, next) => {
     if (!req.params.dir) {
         return res.sendStatus(404);
     }
@@ -41,12 +42,14 @@ exports.getARModulesAssets = async (req, res, next) => {
     }
     return express_1.default.static(path_1.default.join(electron_1.app.getPath('userData'), 'ARs', req.params.dir))(req, res, next);
 };
-exports.openARsDirectory = async (_req, res) => {
+exports.getARModulesAssets = getARModulesAssets;
+const openARsDirectory = async (_req, res) => {
     const dir = path_1.default.join(electron_1.app.getPath('userData'), 'ARs');
     electron_1.shell.openPath(dir);
     return res.sendStatus(200);
 };
-exports.sendAR = async (req, res) => {
+exports.openARsDirectory = openARsDirectory;
+const sendAR = async (req, res) => {
     if (!req.body.ar || !req.body.name)
         return res.sendStatus(422);
     const response = await AR.loadAR(req.body.ar, req.body.name);
@@ -60,3 +63,4 @@ exports.sendAR = async (req, res) => {
     }
     return res.sendStatus(response ? 200 : 500);
 };
+exports.sendAR = sendAR;

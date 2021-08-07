@@ -1,5 +1,4 @@
 import React from 'react';
-
 import * as I from './../api/interfaces';
 
 export interface IContextData {

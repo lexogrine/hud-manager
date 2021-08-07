@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Modal, ModalHeader, ModalBody, FormGroup, Input, Button, ModalFooter } from 'reactstrap';
 import api from './../api/api';
 interface IProps {

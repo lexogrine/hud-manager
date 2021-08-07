@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { IContextData } from '../../../../Context';
 
 const Section = ({ children, title, width }: { cxt: IContextData; children: any; title: any; width?: number }) => {

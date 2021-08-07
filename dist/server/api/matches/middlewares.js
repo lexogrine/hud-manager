@@ -14,7 +14,7 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
     __setModuleDefault(result, mod);
     return result;
 };
@@ -29,7 +29,7 @@ const fs_1 = __importDefault(require("fs"));
 const M = __importStar(require("./index"));
 const socket_1 = require("../../socket");
 const __1 = require("..");
-exports.getMatchesRoute = async (req, res) => {
+const getMatchesRoute = async (req, res) => {
     const game = __1.customer.game;
     const $or = [{ game }];
     if (game === 'csgo') {
@@ -45,7 +45,8 @@ exports.getMatchesRoute = async (req, res) => {
     });
     return res.json(matches);
 };
-exports.getMatchRoute = async (req, res) => {
+exports.getMatchesRoute = getMatchesRoute;
+const getMatchRoute = async (req, res) => {
     if (!req.params.id) {
         return res.sendStatus(422);
     }
@@ -55,30 +56,35 @@ exports.getMatchRoute = async (req, res) => {
     }
     return res.json(match);
 };
-exports.addMatchRoute = async (req, res) => {
+exports.getMatchRoute = getMatchRoute;
+const addMatchRoute = async (req, res) => {
     req.body.game = __1.customer.game;
     const match = await M.addMatch(req.body);
     return res.sendStatus(match ? 200 : 500);
 };
-exports.getCurrentMatchRoute = async (req, res) => {
+exports.addMatchRoute = addMatchRoute;
+const getCurrentMatchRoute = async (req, res) => {
     const match = await M.getCurrent();
     if (!match) {
         return res.sendStatus(404);
     }
     return res.json(match);
 };
-exports.deleteMatchRoute = async (req, res) => {
+exports.getCurrentMatchRoute = getCurrentMatchRoute;
+const deleteMatchRoute = async (req, res) => {
     const match = await M.deleteMatch(req.params.id);
     return res.sendStatus(match ? 200 : 500);
 };
-exports.updateMatchRoute = async (req, res) => {
+exports.deleteMatchRoute = deleteMatchRoute;
+const updateMatchRoute = async (req, res) => {
     const io = await socket_1.ioPromise;
     req.body.game = __1.customer.game;
     const match = await M.updateMatch(req.body);
     io.emit('match');
     return res.sendStatus(match ? 200 : 500);
 };
-exports.getMaps = (req, res) => {
+exports.updateMatchRoute = updateMatchRoute;
+const getMaps = (req, res) => {
     const defaultMaps = [
         'de_mirage',
         'de_dust2',
@@ -106,3 +112,4 @@ exports.getMaps = (req, res) => {
         return res.json(defaultMaps);
     }
 };
+exports.getMaps = getMaps;

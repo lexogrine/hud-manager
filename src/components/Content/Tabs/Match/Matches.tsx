@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import api from './../../../../api/api';
 import * as I from './../../../../api/interfaces';
 import { Row, Button, Col } from 'reactstrap';
@@ -134,7 +134,7 @@ class Matches extends Component<
 		const t = this.props.t;
 		const { match, maps } = this.state;
 		return (
-			<React.Fragment>
+			<>
 				{match ? (
 					<div className="tab-title-container">
 						<img
@@ -191,7 +191,7 @@ class Matches extends Component<
 						</>
 					)}
 				</div>
-			</React.Fragment>
+			</>
 		);
 	}
 }

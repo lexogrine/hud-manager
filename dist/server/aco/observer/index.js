@@ -19,7 +19,7 @@ const getRandomElement = (array) => {
     const index = Math.floor(Math.random() * array.length);
     return array[index];
 };
-exports.getActiveAreasSorted = (mapName, players) => {
+const getActiveAreasSorted = (mapName, players) => {
     const config = areas_1.default.areas.find(cfg => cfg.map === mapName);
     if (!config) {
         return [];
@@ -41,7 +41,8 @@ exports.getActiveAreasSorted = (mapName, players) => {
         .sort(sortAreas);
     return areasWithPlayers;
 };
-exports.getBestArea = (mapName, players) => {
+exports.getActiveAreasSorted = getActiveAreasSorted;
+const getBestArea = (mapName, players) => {
     const activeAreas = exports.getActiveAreasSorted(mapName, players);
     const activeAreasConfigs = [];
     for (const activeArea of activeAreas) {
@@ -63,3 +64,4 @@ exports.getBestArea = (mapName, players) => {
     const maxStrength = Math.max(...unique.map(config => config.strength));
     return getRandomElement(unique);
 };
+exports.getBestArea = getBestArea;

@@ -1,4 +1,5 @@
-import React from 'react';
+
+import { Component } from 'react';
 import DragIcon from './../styles/upload.png';
 
 interface Props {
@@ -15,7 +16,7 @@ interface State {
 	highlight: boolean;
 }
 
-export default class DragFileInput extends React.Component<Props, State> {
+export default class DragFileInput extends Component<Props, State> {
 	constructor(props: Props) {
 		super(props);
 		this.state = {

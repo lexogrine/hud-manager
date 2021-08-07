@@ -1,4 +1,4 @@
-import React from 'react';
+
 import Section from '../Section';
 import { IContextData } from '../../../../Context';
 import { useTranslation } from 'react-i18next';

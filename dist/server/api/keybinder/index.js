@@ -7,7 +7,7 @@ const handleKeybind = (accelerator) => () => {
     const keybinds = registeredKeybinds.get(accelerator) || [];
     keybinds.forEach(keybind => keybind.callback());
 };
-exports.registerKeybind = (accelerator, callback, owner) => {
+const registerKeybind = (accelerator, callback, owner) => {
     const isRegistered = electron_1.globalShortcut.isRegistered(accelerator);
     if (!isRegistered) {
         const didRegister = electron_1.globalShortcut.register(accelerator, handleKeybind(accelerator));
@@ -20,13 +20,16 @@ exports.registerKeybind = (accelerator, callback, owner) => {
     registeredKeybinds.set(accelerator, currentCallbacks);
     return true;
 };
-exports.unregisterKeybind = (accelerator, owner) => {
+exports.registerKeybind = registerKeybind;
+const unregisterKeybind = (accelerator, owner) => {
     const currentCallbacks = [...(registeredKeybinds.get(accelerator) || [])];
     registeredKeybinds.set(accelerator, currentCallbacks.filter(keybind => !(keybind.owner === owner || !owner)));
 };
-exports.unregisterAllKeybinds = (owner) => {
+exports.unregisterKeybind = unregisterKeybind;
+const unregisterAllKeybinds = (owner) => {
     const entries = registeredKeybinds.entries();
     for (const entry of entries) {
         registeredKeybinds.set(entry[0], entry[1].filter(keybind => keybind.owner !== owner || !owner));
     }
 };
+exports.unregisterAllKeybinds = unregisterAllKeybinds;

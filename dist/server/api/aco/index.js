@@ -20,7 +20,7 @@ async function getACOByMapName(mapName) {
     });
 }
 exports.getACOByMapName = getACOByMapName;
-exports.getACOs = () => new Promise(res => {
+const getACOs = () => new Promise(res => {
     aco.find({}, (err, acoConfigs) => {
         if (err) {
             return res([]);
@@ -28,12 +28,14 @@ exports.getACOs = () => new Promise(res => {
         return res(acoConfigs);
     });
 });
-exports.loadNewConfigs = () => {
+exports.getACOs = getACOs;
+const loadNewConfigs = () => {
     exports.getACOs().then(acos => {
         areas_1.default.areas = acos;
     });
 };
-exports.updateACO = (config) => new Promise(res => {
+exports.loadNewConfigs = loadNewConfigs;
+const updateACO = (config) => new Promise(res => {
     getACOByMapName(config.map).then(async (oldConfig) => {
         let cloudStatus = false;
         if (await __1.validateCloudAbility()) {
@@ -70,7 +72,8 @@ exports.updateACO = (config) => new Promise(res => {
         }
     });
 });
-exports.replaceLocalMapConfigs = (newMapConfigs, game, existing) => new Promise(res => {
+exports.updateACO = updateACO;
+const replaceLocalMapConfigs = (newMapConfigs, game, existing) => new Promise(res => {
     const or = [
         { game, _id: { $nin: existing } },
         { game, _id: { $in: newMapConfigs.map(mapConfig => mapConfig._id) } }
@@ -88,4 +91,5 @@ exports.replaceLocalMapConfigs = (newMapConfigs, game, existing) => new Promise(
         });
     });
 });
+exports.replaceLocalMapConfigs = replaceLocalMapConfigs;
 exports.loadNewConfigs();

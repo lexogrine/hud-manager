@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Modal, ModalHeader, ModalBody, Button, ModalFooter } from 'reactstrap';
 import csgo from './csgo.png';
 import rl from './rocketleague.png';

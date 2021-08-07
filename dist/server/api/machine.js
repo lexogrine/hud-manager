@@ -7,7 +7,7 @@ exports.saveLastLaunchedVersion = exports.getLastLaunchedVersion = exports.getMa
 const fs_1 = __importDefault(require("fs"));
 const electron_1 = require("electron");
 const path_1 = __importDefault(require("path"));
-exports.getMachineId = () => {
+const getMachineId = () => {
     const machinePathDirectory = path_1.default.join(electron_1.app.getPath('appData'), '.lexogrine');
     const machinePath = path_1.default.join(machinePathDirectory, 'machine.hm');
     const machineOldPath = path_1.default.join(electron_1.app.getPath('userData'), 'machine.hm');
@@ -30,10 +30,12 @@ exports.getMachineId = () => {
     fs_1.default.writeFileSync(machinePath, id, { encoding: 'UTF-8' });
     return id;
 };
-exports.getMachineIdRoute = async (req, res) => {
+exports.getMachineId = getMachineId;
+const getMachineIdRoute = async (req, res) => {
     return res.json({ id: exports.getMachineId() });
 };
-exports.getLastLaunchedVersion = async (req, res) => {
+exports.getMachineIdRoute = getMachineIdRoute;
+const getLastLaunchedVersion = async (req, res) => {
     const releasePathDirectory = path_1.default.join(electron_1.app.getPath('appData'), '.lexogrine');
     const releasePath = path_1.default.join(releasePathDirectory, 'release.hm');
     if (!fs_1.default.existsSync(releasePath)) {
@@ -47,10 +49,12 @@ exports.getLastLaunchedVersion = async (req, res) => {
         return res.json({ version: '2.0', releaseDate: '2021-07-24T03:12:24Z' });
     }
 };
-exports.saveLastLaunchedVersion = async (req, res) => {
+exports.getLastLaunchedVersion = getLastLaunchedVersion;
+const saveLastLaunchedVersion = async (req, res) => {
     const releasePathDirectory = path_1.default.join(electron_1.app.getPath('appData'), '.lexogrine');
     const releasePath = path_1.default.join(releasePathDirectory, 'release.hm');
     const { version, releaseDate } = req.body;
     fs_1.default.writeFileSync(releasePath, JSON.stringify({ version, releaseDate }), 'utf8');
     return res.sendStatus(200);
 };
+exports.saveLastLaunchedVersion = saveLastLaunchedVersion;

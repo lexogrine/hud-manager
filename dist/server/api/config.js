@@ -30,7 +30,7 @@ const defaultConfig = {
     cg: false,
     autoSwitch: false
 };
-exports.loadConfig = async () => {
+const loadConfig = async () => {
     if (!exports.publicIP) {
         try {
             exports.publicIP = await public_ip_1.default.v4();
@@ -64,7 +64,8 @@ exports.loadConfig = async () => {
         });
     });
 };
-exports.getConfig = async (_req, res) => {
+exports.loadConfig = loadConfig;
+const getConfig = async (_req, res) => {
     const config = await exports.loadConfig();
     if (!config) {
         return res.sendStatus(500);
@@ -72,7 +73,8 @@ exports.getConfig = async (_req, res) => {
     const response = { ...config, ip: exports.internalIP };
     return res.json(response);
 };
-exports.updateConfig = async (req, res) => {
+exports.getConfig = getConfig;
+const updateConfig = async (req, res) => {
     const io = await socket_1.ioPromise;
     const currentConfig = await exports.loadConfig();
     const updated = {
@@ -93,7 +95,8 @@ exports.updateConfig = async (req, res) => {
     io.emit('config');
     return res.json(config);
 };
-exports.setConfig = async (config) => new Promise(res => {
+exports.updateConfig = updateConfig;
+const setConfig = async (config) => new Promise(res => {
     configs.update({}, { $set: config }, { multi: true }, async (err) => {
         if (err) {
             return res(defaultConfig);
@@ -105,7 +108,8 @@ exports.setConfig = async (config) => new Promise(res => {
         return res(newConfig);
     });
 });
-exports.verifyUrl = async (url) => {
+exports.setConfig = setConfig;
+const verifyUrl = async (url) => {
     if (!url || typeof url !== 'string')
         return false;
     const cfg = await exports.loadConfig();
@@ -141,3 +145,4 @@ exports.verifyUrl = async (url) => {
     const pathRegex = /^\/huds\/([a-zA-Z0-9_-]+)$/;
     return pathRegex.test(path);
 };
+exports.verifyUrl = verifyUrl;

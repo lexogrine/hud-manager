@@ -14,7 +14,7 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
     __setModuleDefault(result, mod);
     return result;
 };
@@ -32,7 +32,7 @@ const __1 = require("..");
 const cloud_1 = require("../cloud");
 const teams = database_1.default.teams;
 const players = database_1.default.players;
-exports.getTeams = async (req, res) => {
+const getTeams = async (req, res) => {
     const game = __1.customer.game;
     const $or = [{ game }];
     if (game === 'csgo') {
@@ -45,7 +45,8 @@ exports.getTeams = async (req, res) => {
         logo: team.logo && team.logo.length ? `http://${config_1.internalIP}:${config.port}/api/teams/logo/${team._id}` : null
     })));
 };
-exports.getTeam = async (req, res) => {
+exports.getTeams = getTeams;
+const getTeam = async (req, res) => {
     if (!req.params.id) {
         return res.sendStatus(422);
     }
@@ -59,7 +60,8 @@ exports.getTeam = async (req, res) => {
         logo: team.logo && team.logo.length ? `http://${config_1.internalIP}:${config.port}/api/teams/logo/${team._id}` : null
     });
 };
-exports.addTeam = async (req, res) => {
+exports.getTeam = getTeam;
+const addTeam = async (req, res) => {
     let cloudStatus = false;
     if (await __1.validateCloudAbility()) {
         cloudStatus = (await cloud_1.checkCloudStatus(__1.customer.game)) === 'ALL_SYNCED';
@@ -82,7 +84,8 @@ exports.addTeam = async (req, res) => {
         return res.json(team);
     });
 };
-exports.updateTeam = async (req, res) => {
+exports.addTeam = addTeam;
+const updateTeam = async (req, res) => {
     if (!req.params.id) {
         return res.sendStatus(422);
     }
@@ -116,7 +119,8 @@ exports.updateTeam = async (req, res) => {
         return res.json(team);
     });
 };
-exports.deleteTeam = async (req, res) => {
+exports.updateTeam = updateTeam;
+const deleteTeam = async (req, res) => {
     if (!req.params.id) {
         return res.sendStatus(422);
     }
@@ -139,7 +143,8 @@ exports.deleteTeam = async (req, res) => {
         return res.sendStatus(n ? 200 : 404);
     });
 };
-exports.getLogoFile = async (req, res) => {
+exports.deleteTeam = deleteTeam;
+const getLogoFile = async (req, res) => {
     if (!req.params.id) {
         return res.sendStatus(422);
     }
@@ -154,14 +159,17 @@ exports.getLogoFile = async (req, res) => {
     });
     res.end(imgBuffer);
 };
-exports.getFields = async (req, res) => {
+exports.getLogoFile = getLogoFile;
+const getFields = async (req, res) => {
     const fields = await F.getFields('teams', __1.customer.game);
     return res.json(fields);
 };
-exports.updateFields = async (req, res) => {
+exports.getFields = getFields;
+const updateFields = async (req, res) => {
     if (!req.body) {
         return res.sendStatus(422);
     }
     const newFields = await F.updateFields(req.body, 'teams', __1.customer.game);
     return res.json(newFields);
 };
+exports.updateFields = updateFields;

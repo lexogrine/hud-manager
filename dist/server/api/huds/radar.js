@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.getRadarConfigs = void 0;
 const maps_1 = require("./radar/maps");
 const config_1 = require("../config");
-exports.getRadarConfigs = async (req, res) => {
+const getRadarConfigs = async (req, res) => {
     const config = await config_1.loadConfig();
     const mapNames = Object.keys(maps_1.maps);
     for (const mapName of mapNames) {
@@ -14,3 +14,4 @@ exports.getRadarConfigs = async (req, res) => {
     }
     return res.json(maps_1.maps);
 };
+exports.getRadarConfigs = getRadarConfigs;

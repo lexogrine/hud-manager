@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Row, Col, UncontrolledCollapse } from 'reactstrap';
 import Config from './../../../../api/config';
 import Tip from './../../../Tooltip';

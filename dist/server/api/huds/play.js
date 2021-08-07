@@ -21,7 +21,7 @@ exports.playTesting = {
     intervalId: null,
     isOnLoop: false
 };
-exports.initGameConnection = async () => {
+const initGameConnection = async () => {
     const io = await socket_1.ioPromise;
     const director = aco_1.createDirector();
     director.pgl = socket_1.mirvPgl;
@@ -99,6 +99,7 @@ exports.initGameConnection = async () => {
     __2.app.post('/dota2', assertUser, (req, res) => {
         socket_1.runtimeConfig.last = req.body;
         io.to('dota2').emit('update', req.body);
+        socket_1.Dota2GSI.digest(req.body);
         res.sendStatus(200);
     });
     __2.app.post('/api/test', assertUser, (_req, res) => {
@@ -127,3 +128,4 @@ exports.initGameConnection = async () => {
     };
     connectToRocketLeague();
 };
+exports.initGameConnection = initGameConnection;

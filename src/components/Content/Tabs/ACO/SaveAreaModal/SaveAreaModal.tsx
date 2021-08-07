@@ -1,4 +1,3 @@
-import React from 'react';
 import { FormGroup, Input, Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 
 interface IProps {

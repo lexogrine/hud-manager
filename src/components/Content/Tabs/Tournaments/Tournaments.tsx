@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { Button, Form, FormGroup, Input, Row, Col } from 'reactstrap';
 import api from './../../../../api/api';
 import * as I from './../../../../api/interfaces';
@@ -7,6 +7,7 @@ import { TournamentMatchup, DepthTournamentMatchup } from '../../../../../types/
 import BindModal from './BindModal';
 import AddTournamentModal from './AddTournament';
 import { withTranslation } from 'react-i18next';
+import { Component } from 'react';
 
 interface MatchData {
 	left: { name: string; score: string | number; logo: string };
@@ -27,7 +28,7 @@ interface State {
 	};
 }
 
-class Tournaments extends React.Component<{ cxt: IContextData; t: any }, State> {
+class Tournaments extends Component<{ cxt: IContextData; t: any }, State> {
 	constructor(props: { cxt: IContextData; t: any }) {
 		super(props);
 		this.state = {

@@ -4,14 +4,15 @@ exports.clearQueue = exports.addToQueue = exports.isConfigAvailableForUsage = vo
 const MAX_ELEMENTS_IN_QUEUE = 3;
 const MAX_CONFIGS_IN_QUEUE_ELEMENT = 3;
 const queue = [];
-exports.isConfigAvailableForUsage = (areaName, configName) => {
+const isConfigAvailableForUsage = (areaName, configName) => {
     const areaInQueue = queue.find(element => element.areaName === areaName);
     if (!areaInQueue) {
         return true;
     }
     return !areaInQueue.lastConfigs.includes(configName);
 };
-exports.addToQueue = (areaName, configName) => {
+exports.isConfigAvailableForUsage = isConfigAvailableForUsage;
+const addToQueue = (areaName, configName) => {
     const areaInQueue = queue.find(element => element.areaName === areaName);
     if (!areaInQueue) {
         if (queue.length >= MAX_ELEMENTS_IN_QUEUE) {
@@ -25,6 +26,8 @@ exports.addToQueue = (areaName, configName) => {
     }
     areaInQueue.lastConfigs.unshift(configName);
 };
-exports.clearQueue = () => {
+exports.addToQueue = addToQueue;
+const clearQueue = () => {
     queue.length = 0;
 };
+exports.clearQueue = clearQueue;

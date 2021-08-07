@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Modal, ModalHeader, ModalBody, Button, ModalFooter } from 'reactstrap';
 import api from '../api/api';
 import { Customer } from '../../types/interfaces';

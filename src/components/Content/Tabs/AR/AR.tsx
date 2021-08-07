@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { IContextData } from './../../../../components/Context';
 import * as I from './../../../../api/interfaces';
 import goBack from './../../../../styles/goBack.png';
@@ -60,7 +60,7 @@ const AR = ({ cxt, toggle }: IProps) => {
 
 	if (active) {
 		return (
-			<React.Fragment>
+			<>
 				<div className="tab-title-container">
 					<img src={goBack} onClick={() => setActive(null)} className="go-back-button" alt="Go back" />
 					AR
@@ -68,11 +68,11 @@ const AR = ({ cxt, toggle }: IProps) => {
 				<div className="tab-content-container full-scroll no-padding">
 					<ARSettings cxt={cxt} hud={active.dir} section={isAssetHUD(active) ? active.ar : active.panel} />
 				</div>
-			</React.Fragment>
+			</>
 		);
 	}
 	return (
-		<React.Fragment>
+		<>
 			<div className="tab-title-container">
 				<img src={goBack} onClick={() => toggle('huds')} className="go-back-button" alt="Go back" />
 				AR
@@ -113,7 +113,7 @@ const AR = ({ cxt, toggle }: IProps) => {
 					</Row>
 				</ElectronOnly>
 			</div>
-		</React.Fragment>
+		</>
 	);
 };
 

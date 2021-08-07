@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import Section from '../Section';
 import { Row, Col, FormGroup, Input, FormText, Button } from 'reactstrap';
 import countries from '../../../countries';

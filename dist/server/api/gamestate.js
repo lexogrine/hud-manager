@@ -14,7 +14,7 @@ var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (
 var __importStar = (this && this.__importStar) || function (mod) {
     if (mod && mod.__esModule) return mod;
     var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
     __setModuleDefault(result, mod);
     return result;
 };
@@ -51,7 +51,7 @@ exports.GSITemplateDota2 = {
         }
     }
 };
-exports.checkGSIFile = async (req, res) => {
+const checkGSIFile = async (req, res) => {
     const game = req.query.game;
     const steamGameId = game === 'csgo' ? 730 : 570;
     const config = await config_1.loadConfig();
@@ -109,7 +109,8 @@ exports.checkGSIFile = async (req, res) => {
         return res.json({ success: false, message: 'Unexpected error occured', accessible: true });
     }
 };
-exports.generateGSIFile = async (game) => {
+exports.checkGSIFile = checkGSIFile;
+const generateGSIFile = async (game) => {
     if (!game)
         return '';
     const config = await config_1.loadConfig();
@@ -123,7 +124,8 @@ exports.generateGSIFile = async (game) => {
     const text = csgogsi_generator_1.default('HUDMANAGERGSI', address, config.token).vdf;
     return text;
 };
-exports.createGSIFile = async (req, res) => {
+exports.generateGSIFile = generateGSIFile;
+const createGSIFile = async (req, res) => {
     const game = req.query.game;
     const steamGameId = game === 'csgo' ? 730 : 570;
     const text = await exports.generateGSIFile(game);
@@ -160,7 +162,8 @@ exports.createGSIFile = async (req, res) => {
         return res.json({ success: false, message: 'Unexpected error occured' });
     }
 };
-exports.saveFile = (name, content, base64 = false) => async (_req, res) => {
+exports.createGSIFile = createGSIFile;
+const saveFile = (name, content, base64 = false) => async (_req, res) => {
     res.sendStatus(200);
     const result = await electron_1.dialog.showSaveDialog({ defaultPath: name });
     const text = typeof content === 'string' ? content : await content;
@@ -168,4 +171,5 @@ exports.saveFile = (name, content, base64 = false) => async (_req, res) => {
         fs_1.default.writeFileSync(result.filePath, text, { encoding: base64 ? 'base64' : 'UTF-8' });
     }
 };
+exports.saveFile = saveFile;
 exports.cfgsZIPBase64 = 'UEsDBBQAAAAIAJOYXE84wXDJWAAAAHQAAAAWAAAAaHVkX3JhZGFyX2tpbGxmZWVkLmNmZ1XKQQqAIBAAwHuvEO8h4iHoM4uoZbC5sa5Jv48giM4zASGy70AFL4jJSy4kW0hV2eG13CIsxCH9fbTDvvEJx4qqMSrd62wMUvCYqcrsrHOTeYr+YhXPcgNQSwMEFAAAAAgAk5hcTyCrGb0xAAAANAAAAAcAAABodWQuY2ZnS86JTylKLI/Pz8upjE9JTSzJyMsvyUxOLVYw5ILKZZSmxKflFyWnxhclpiQWKRgCAFBLAwQUAAAACACTmFxPoMM5S18AAACNAAAAEAAAAGh1ZF9raWxsZmVlZC5jZmdtyzEKgDAMQNHdUxR3KaWD0MuE0FYrRCNpVLy9CIIIzv/9SJAED+CFTkgZtSysU8zVuOZpZUswsMQMggnlL3zGzjXzJDusI5lNyLRHDdYSR6TCVYN33vf2Ju0Lq6LoBVBLAwQUAAAACACTmFxPJlBm3h0AAAAbAAAADQAAAGh1ZF9yYWRhci5jZmdLzolPKUosj8/Py6mMT0lNLMnIyy/JTE4tVjAEAFBLAQIfABQAAAAIAJOYXE84wXDJWAAAAHQAAAAWACQAAAAAAAAAIAAAAAAAAABodWRfcmFkYXJfa2lsbGZlZWQuY2ZnCgAgAAAAAAABABgA9RNKKrqN1QFdZynbBcfVAUpAKdsFx9UBUEsBAh8AFAAAAAgAk5hcTyCrGb0xAAAANAAAAAcAJAAAAAAAAAAgAAAAjAAAAGh1ZC5jZmcKACAAAAAAAAEAGACvXUwquo3VAYS1KdsFx9UBhLUp2wXH1QFQSwECHwAUAAAACACTmFxPoMM5S18AAACNAAAAEAAkAAAAAAAAACAAAADiAAAAaHVkX2tpbGxmZWVkLmNmZwoAIAAAAAAAAQAYAFpzSyq6jdUBfisq2wXH1QGtAyrbBcfVAVBLAQIfABQAAAAIAJOYXE8mUGbeHQAAABsAAAANACQAAAAAAAAAIAAAAG8BAABodWRfcmFkYXIuY2ZnCgAgAAAAAAABABgALddKKrqN1QHxnyrbBcfVAeR4KtsFx9UBUEsFBgAAAAAEAAQAggEAALcBAAAAAA==';

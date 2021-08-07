@@ -1,14 +1,15 @@
-import React from 'react';
+
 import Layout from './layout/Layout';
 import './styles/styles.css';
 import './styles/dark-mode.css';
 import { socket } from './components/Content/Tabs/Live/Live';
 import './i18n/i18n';
+import { Component } from 'react';
 
 interface IState {
 	hudURL: string | null;
 }
-export default class App extends React.Component<any, IState> {
+export default class App extends Component<any, IState> {
 	constructor(props: any) {
 		super(props);
 		this.state = {

@@ -10,7 +10,7 @@ const teams_1 = require("./../teams");
 const v4_1 = __importDefault(require("uuid/v4"));
 const __1 = require("..");
 const matchesDb = database_1.default.matches;
-exports.getMatches = (query) => {
+const getMatches = (query) => {
     return new Promise(res => {
         matchesDb.find(query, (err, matches) => {
             if (err) {
@@ -20,7 +20,8 @@ exports.getMatches = (query) => {
         });
     });
 };
-exports.getActiveGameMatches = () => {
+exports.getMatches = getMatches;
+const getActiveGameMatches = () => {
     const game = __1.customer.game;
     const $or = [{ game }];
     if (game === 'csgo') {
@@ -28,6 +29,7 @@ exports.getActiveGameMatches = () => {
     }
     return exports.getMatches({ $or });
 };
+exports.getActiveGameMatches = getActiveGameMatches;
 async function getMatchById(id) {
     return new Promise(res => {
         matchesDb.findOne({ id }, (err, match) => {
@@ -39,7 +41,7 @@ async function getMatchById(id) {
     });
 }
 exports.getMatchById = getMatchById;
-exports.setMatches = (matches) => {
+const setMatches = (matches) => {
     return new Promise(res => {
         matchesDb.remove({}, { multi: true }, err => {
             if (err) {
@@ -54,7 +56,8 @@ exports.setMatches = (matches) => {
         });
     });
 };
-exports.updateMatches = async (updateMatches) => {
+exports.setMatches = setMatches;
+const updateMatches = async (updateMatches) => {
     const currents = updateMatches.filter(match => match.current);
     if (currents.length > 1) {
         updateMatches = updateMatches.map(match => ({ ...match, current: false }));
@@ -91,7 +94,8 @@ exports.updateMatches = async (updateMatches) => {
     });
     await exports.setMatches(matchesFixed);
 };
-exports.addMatch = (match) => new Promise(res => {
+exports.updateMatches = updateMatches;
+const addMatch = (match) => new Promise(res => {
     if (!match.id) {
         match.id = v4_1.default();
     }
@@ -105,7 +109,8 @@ exports.addMatch = (match) => new Promise(res => {
         return res(doc);
     });
 });
-exports.deleteMatch = (id) => new Promise(res => {
+exports.addMatch = addMatch;
+const deleteMatch = (id) => new Promise(res => {
     matchesDb.remove({ id }, async (err) => {
         if (err)
             return res(false);
@@ -115,10 +120,12 @@ exports.deleteMatch = (id) => new Promise(res => {
         return res(true);
     });
 });
-exports.getCurrent = async () => {
+exports.deleteMatch = deleteMatch;
+const getCurrent = async () => {
     const activeGameMatches = await exports.getActiveGameMatches();
     return activeGameMatches.find(match => match.current);
 };
+exports.getCurrent = getCurrent;
 /*
 export const setCurrent = (id: string) =>
     new Promise(res => {
@@ -131,7 +138,7 @@ export const setCurrent = (id: string) =>
         });
     });
 */
-exports.updateMatch = (match) => new Promise(res => {
+const updateMatch = (match) => new Promise(res => {
     matchesDb.update({ id: match.id }, match, {}, err => {
         if (err)
             return res(false);
@@ -177,7 +184,8 @@ exports.updateMatch = (match) => new Promise(res => {
         });
     });
 });
-exports.reverseSide = async () => {
+exports.updateMatch = updateMatch;
+const reverseSide = async () => {
     const io = await socket_1.ioPromise;
     const matches = await exports.getActiveGameMatches();
     const current = matches.find(match => match.current);
@@ -198,7 +206,8 @@ exports.reverseSide = async () => {
     await exports.updateMatch(current);
     io.emit('match', true);
 };
-exports.updateRound = async (game) => {
+exports.reverseSide = reverseSide;
+const updateRound = async (game) => {
     const getWinType = (round_win) => {
         switch (round_win) {
             case 'ct_win_defuse':
@@ -260,7 +269,8 @@ exports.updateRound = async (game) => {
     });
     return exports.updateMatch(match);
 };
-exports.replaceLocalMatches = (newMatches, game) => new Promise(res => {
+exports.updateRound = updateRound;
+const replaceLocalMatches = (newMatches, game) => new Promise(res => {
     const or = [{ game }];
     if (game === 'csgo') {
         or.push({ game: { $exists: false } });
@@ -274,3 +284,4 @@ exports.replaceLocalMatches = (newMatches, game) => new Promise(res => {
         });
     });
 });
+exports.replaceLocalMatches = replaceLocalMatches;

@@ -11,7 +11,7 @@ const __1 = require("..");
 const huds_1 = require("../huds");
 const v4_1 = __importDefault(require("uuid/v4"));
 const DecompressZip = require('decompress-zip');
-exports.getARKeyBinds = (dirName) => {
+const getARKeyBinds = (dirName) => {
     const dir = path_1.default.join(electron_1.app.getPath('userData'), 'ARs', dirName);
     const keybindsFileDir = path_1.default.join(dir, 'keybinds.json');
     if (!fs_1.default.existsSync(keybindsFileDir)) {
@@ -26,7 +26,8 @@ exports.getARKeyBinds = (dirName) => {
         return [];
     }
 };
-exports.getARPanelSetting = (dirName) => {
+exports.getARKeyBinds = getARKeyBinds;
+const getARPanelSetting = (dirName) => {
     const dir = path_1.default.join(electron_1.app.getPath('userData'), 'ARs', dirName);
     const panelFileDir = path_1.default.join(dir, 'panel.json');
     if (!fs_1.default.existsSync(panelFileDir)) {
@@ -41,7 +42,8 @@ exports.getARPanelSetting = (dirName) => {
         return undefined;
     }
 };
-exports.getARModuleData = (directory) => {
+exports.getARPanelSetting = getARPanelSetting;
+const getARModuleData = (directory) => {
     const dir = path_1.default.join(electron_1.app.getPath('userData'), 'ARs', directory);
     const configFileDir = path_1.default.join(dir, 'ar.json');
     try {
@@ -56,13 +58,14 @@ exports.getARModuleData = (directory) => {
         return null;
     }
 };
+exports.getARModuleData = getARModuleData;
 const filterValidARModules = (ar) => {
     if (!ar || !ar.game || !ar.entry || !ar.name || !ar.dir || ar.game !== __1.customer.game)
         return false;
     const entryPath = path_1.default.join(electron_1.app.getPath('userData'), 'ARs', ar.dir, ar.entry);
     return fs_1.default.existsSync(entryPath);
 };
-exports.listARModules = () => {
+const listARModules = () => {
     if (!__1.customer.game)
         return [];
     const dir = path_1.default.join(electron_1.app.getPath('userData'), 'ARs');
@@ -74,6 +77,7 @@ exports.listARModules = () => {
     const arModules = filtered.map(directory => exports.getARModuleData(directory)).filter(filterValidARModules);
     return arModules;
 };
+exports.listARModules = listARModules;
 async function loadAR(base64, name, existingUUID) {
     huds_1.removeArchives();
     return new Promise(res => {

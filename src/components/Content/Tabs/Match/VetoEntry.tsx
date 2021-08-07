@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Button } from 'reactstrap';
 import * as I from '../../../../api/interfaces';
 import VetoModal from './VetoModal';

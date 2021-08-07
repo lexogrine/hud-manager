@@ -54,13 +54,14 @@ const connectSocket = () => {
         setTimeout(connectSocket, 2000);
     });
 };
-exports.verifyGame = (req, res, next) => {
+const verifyGame = (req, res, next) => {
     if (!api_1.customer.game) {
         return res.sendStatus(403);
     }
     return next();
 };
-exports.api = (url, method = 'GET', body, opts) => {
+exports.verifyGame = verifyGame;
+const api = (url, method = 'GET', body, opts) => {
     const options = opts || {
         method,
         headers: {
@@ -77,6 +78,7 @@ exports.api = (url, method = 'GET', body, opts) => {
         return res.json().catch(() => data && data.status < 300);
     });
 };
+exports.api = api;
 const userHandlers = {
     get: (machineId) => exports.api(`auth/${machineId}`),
     login: (username, password, ver, code) => exports.api('auth', 'POST', { username, password, ver, code }),
@@ -122,11 +124,12 @@ const login = async (username, password, code = '') => {
     }
     return await loadUser(true);
 };
-exports.loginHandler = async (req, res) => {
+const loginHandler = async (req, res) => {
     const response = await login(req.body.username, req.body.password, req.body.token);
     res.json(response);
 };
-exports.getCurrent = async (req, res) => {
+exports.loginHandler = loginHandler;
+const getCurrent = async (req, res) => {
     if (api_1.customer.customer) {
         return res.json(api_1.customer.customer);
     }
@@ -138,7 +141,8 @@ exports.getCurrent = async (req, res) => {
     }
     return res.status(403).json(response);
 };
-exports.logout = async (req, res) => {
+exports.getCurrent = getCurrent;
+const logout = async (req, res) => {
     api_1.customer.customer = null;
     if (exports.socket) {
         exports.socket._socket.close();
@@ -146,3 +150,4 @@ exports.logout = async (req, res) => {
     await userHandlers.logout();
     return res.sendStatus(200);
 };
+exports.logout = logout;

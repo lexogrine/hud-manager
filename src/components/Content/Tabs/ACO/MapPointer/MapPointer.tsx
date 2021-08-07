@@ -1,6 +1,7 @@
-import React from 'react';
+
 import { ScaleConfig } from './';
 import { MapAreaConfig } from '../../../../../api/interfaces';
+import React, { Fragment } from 'react';
 
 interface IProps {
 	config: ScaleConfig;
@@ -54,7 +55,7 @@ const MapPointer = ({ config, file, onPointAdd, areas, onClickArea, addingNew }:
 	return (
 		<div className="aco_picker">
 			{areas.map(area => (
-				<React.Fragment key={area.name}>
+				<Fragment key={area.name}>
 					<div
 						onClick={() => !addingNew && onClickArea(area)}
 						className="aco_area"
@@ -71,7 +72,7 @@ const MapPointer = ({ config, file, onPointAdd, areas, onClickArea, addingNew }:
 							}}
 						/>
 					))}
-				</React.Fragment>
+				</Fragment>
 			))}
 			<img src={file} style={{ width: '512px' }} onClick={handleClick} />
 		</div>

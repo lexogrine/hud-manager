@@ -19,7 +19,7 @@ async function getTeamById(id, logo = false) {
     });
 }
 exports.getTeamById = getTeamById;
-exports.getTeamsList = (query) => new Promise(res => {
+const getTeamsList = (query) => new Promise(res => {
     teams.find(query, (err, teams) => {
         if (err) {
             return res([]);
@@ -27,7 +27,8 @@ exports.getTeamsList = (query) => new Promise(res => {
         return res([...teams].sort((a, b) => (a.name > b.name ? 1 : -1)));
     });
 });
-exports.replaceLocalTeams = (newTeams, game, existing) => new Promise(res => {
+exports.getTeamsList = getTeamsList;
+const replaceLocalTeams = (newTeams, game, existing) => new Promise(res => {
     const or = [
         { game, _id: { $nin: existing } },
         { game, _id: { $in: newTeams.map(team => team._id) } }
@@ -44,3 +45,4 @@ exports.replaceLocalTeams = (newTeams, game, existing) => new Promise(res => {
         });
     });
 });
+exports.replaceLocalTeams = replaceLocalTeams;

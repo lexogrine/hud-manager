@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import * as Tabs from './TabIcons';
 import { GameOnly } from '../Tabs/Config/Config';
@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { socket } from '../Tabs/Live/Live';
 import { Config } from '../../../api/interfaces';
 import api from '../../../api/api';
+
 
 interface IProps {
 	activeTab: string;
