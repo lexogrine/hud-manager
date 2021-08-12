@@ -104,16 +104,20 @@ const VetoEntry = ({ map, veto, vetoTeams, onSave, maps }: Props) => {
 	let team = vetoTeams[0];
 	let secTeam = vetoTeams[1];
 
-	if("teamId" in veto && veto.teamId){
+	if ('teamId' in veto && veto.teamId) {
 		team = vetoTeams.filter(team => team._id === veto.teamId)[0];
-		secTeam = vetoTeams.filter(team => team._id !== veto.teamId)[0];	
+		secTeam = vetoTeams.filter(team => team._id !== veto.teamId)[0];
 	}
 
 	const { t } = useTranslation();
 
 	return (
-		<GameOnly game={["csgo", "dota2"]}>
-			<div className={`entry-container ${"teamId" in veto ? `${veto.teamId === '' ? 'empty' : ''} ${veto.teamId ? veto.type : ''}`:''}`}>
+		<GameOnly game={['csgo', 'dota2']}>
+			<div
+				className={`entry-container ${
+					'teamId' in veto ? `${veto.teamId === '' ? 'empty' : ''} ${veto.teamId ? veto.type : ''}` : ''
+				}`}
+			>
 				{vetoTeams.length !== 2 ? (
 					t('match.pickBothTeams')
 				) : (
@@ -125,10 +129,12 @@ const VetoEntry = ({ map, veto, vetoTeams, onSave, maps }: Props) => {
 								} `}
 							>
 								<div className={`veto-title`}>{t('common.vetoNumber', { num: map + 1 })}:</div>
-								<div className={`veto-summary`}>{"mapName" in veto ? generateDescription(veto, t, team, secTeam) : null}</div>
+								<div className={`veto-summary`}>
+									{'mapName' in veto ? generateDescription(veto, t, team, secTeam) : null}
+								</div>
 							</div>
 							<VetoScore veto={veto} left={team} right={secTeam} />
-							{"mapName" in veto && veto.mapName ? (
+							{'mapName' in veto && veto.mapName ? (
 								<div
 									className={`preview ${veto.mapName.replace('de_', '')} ${veto.type}`}
 									onClick={() => setVetoModal(!isVetoModalOpen)}
@@ -142,7 +148,7 @@ const VetoEntry = ({ map, veto, vetoTeams, onSave, maps }: Props) => {
 									<Button onClick={resetScore} className="edit-veto purple-btn">
 										{t('match.resetScore')}
 									</Button>
-									{!("mapName" in veto) || veto.mapName ? (
+									{!('mapName' in veto) || veto.mapName ? (
 										<Button
 											onClick={() => setScoreOpen(!isScoreOpen)}
 											className="edit-veto purple-btn"
@@ -159,13 +165,13 @@ const VetoEntry = ({ map, veto, vetoTeams, onSave, maps }: Props) => {
 								</div>
 							</div>
 						</div>
-						{!("mapName" in veto) || veto.mapName ? (
+						{!('mapName' in veto) || veto.mapName ? (
 							<EditScoreModal
 								setWinner={setWinner}
 								teams={vetoTeams}
 								toggle={() => setScoreOpen(!isScoreOpen)}
 								isOpen={isScoreOpen}
-								order={map+1}
+								order={map + 1}
 								veto={veto}
 								saveScore={setScore}
 							/>

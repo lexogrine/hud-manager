@@ -131,11 +131,11 @@ export interface MatchFactory<T extends Veto, N extends AvailableGames> {
 	startTime: number;
 }
 
-export type Dota2Match = MatchFactory<Dota2Veto, "dota2">;
+export type Dota2Match = MatchFactory<Dota2Veto, 'dota2'>;
 
-export type CSGOMatch = MatchFactory<CSGOVeto, "csgo">;
+export type CSGOMatch = MatchFactory<CSGOVeto, 'csgo'>;
 
-export type RocketLeagueMatch = MatchFactory<RocketLeagueVeto, "rocketleague">;
+export type RocketLeagueMatch = MatchFactory<RocketLeagueVeto, 'rocketleague'>;
 
 export type BOTypes = 'bo1' | 'bo2' | 'bo3' | 'bo5' | 'bo7' | 'bo9';
 

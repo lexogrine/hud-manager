@@ -62,7 +62,7 @@ const EditScoreModal = ({ isOpen, toggle, veto, saveScore, teams, setWinner, ord
 	return (
 		<Modal isOpen={isOpen} toggle={toggle} className={'veto_modal'}>
 			<ModalHeader className="bordered" toggle={toggle}>
-				{ "mapName" in veto ? veto.mapName.toUpperCase() : `Map #${order}`}
+				{'mapName' in veto ? veto.mapName.toUpperCase() : `Map #${order}`}
 			</ModalHeader>
 			<ModalBody>
 				<div className="score-editor">

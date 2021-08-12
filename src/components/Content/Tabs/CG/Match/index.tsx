@@ -17,7 +17,7 @@ export const MatchHandler: {
 	match: I.Match | null;
 	handler: (match: I.Match | null) => void;
 } = {
-	handler: () => { },
+	handler: () => {},
 	match: null,
 	edit: (match: I.Match | null) => {
 		if (match && MatchHandler.match && match.id === MatchHandler.match.id) {
@@ -53,7 +53,7 @@ const CurrentMatchForm = ({ cxt }: Props) => {
 	};
 
 	const setVetoType = (veto: I.Veto, type: I.VetoType) => {
-		if (!match || match.game !== "csgo") return;
+		if (!match || match.game !== 'csgo') return;
 		const newVetos = match.vetos.map(oldVeto => {
 			if (veto !== oldVeto) return oldVeto;
 
@@ -63,7 +63,7 @@ const CurrentMatchForm = ({ cxt }: Props) => {
 	};
 
 	const setTeamForVeto = (index: number, teamId: string) => {
-		if (!match || match.game !== "csgo") return;
+		if (!match || match.game !== 'csgo') return;
 		match.vetos = match.vetos.map((veto, i) => {
 			if (index !== i) return veto;
 			return { ...veto, teamId: teamId !== veto.teamId && veto.type !== 'decider' ? teamId : '' };
@@ -72,7 +72,7 @@ const CurrentMatchForm = ({ cxt }: Props) => {
 	};
 
 	const setMap = (veto: I.Veto, map: string) => {
-		if (!match || match.game !== "csgo") return;
+		if (!match || match.game !== 'csgo') return;
 		const newVetos = match.vetos.map(oldVeto => {
 			if (veto !== oldVeto) return oldVeto;
 
@@ -93,7 +93,6 @@ const CurrentMatchForm = ({ cxt }: Props) => {
 		setMatch({ ...match, startTime: moment(val).valueOf() });
 	};
 
-	
 	const setReversed = (veto: I.Veto, checked: boolean) => {
 		if (!match) return;
 		const newVetos = match.vetos.map(oldVeto => {
@@ -106,7 +105,7 @@ const CurrentMatchForm = ({ cxt }: Props) => {
 	};
 
 	const setSidePick = (veto: I.Veto, side: Side | 'NO') => {
-		if (!match || match.game !== "csgo" || !("side" in veto)) return;
+		if (!match || match.game !== 'csgo' || !('side' in veto)) return;
 		const newVetos = match.vetos.map(oldVeto => {
 			if (veto !== oldVeto) return oldVeto;
 
@@ -127,8 +126,7 @@ const CurrentMatchForm = ({ cxt }: Props) => {
 					{teams.map((team, j) => (
 						<div
 							key={team._id + j + i}
-							className={`picker-button ${veto.teamId === team._id ? 'active' : ''
-								}`}
+							className={`picker-button ${veto.teamId === team._id ? 'active' : ''}`}
 							onClick={() => setTeamForVeto(i, team._id)}
 						>
 							{team.logo ? <img src={team.logo} /> : null}
@@ -150,8 +148,7 @@ const CurrentMatchForm = ({ cxt }: Props) => {
 						BAN
 					</div>
 					<div
-						className={`picker-button decider ${veto.type === 'decider' ? 'active' : ''
-							}`}
+						className={`picker-button decider ${veto.type === 'decider' ? 'active' : ''}`}
 						onClick={() => setVetoType(veto, 'decider')}
 					>
 						DECIDER
@@ -216,11 +213,11 @@ const CurrentMatchForm = ({ cxt }: Props) => {
 	);
 
 	const renderVeto = (match: I.Match) => {
-		if(match.game === 'csgo'){
+		if (match.game === 'csgo') {
 			return match.vetos.map((veto, i) => getCSGOVeto(veto, i));
 		}
 		return null;
-	}
+	};
 
 	useEffect(() => {
 		api.match.getMaps().then(maps => {
@@ -339,9 +336,7 @@ const CurrentMatchForm = ({ cxt }: Props) => {
 							</FormGroup>
 						</Col>
 					</Row>
-					{teams.length !== 2
-						? t('match.pickBothTeams')
-						: renderVeto(match)}
+					{teams.length !== 2 ? t('match.pickBothTeams') : renderVeto(match)}
 				</>
 			) : null}
 		</Section>

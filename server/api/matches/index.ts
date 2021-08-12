@@ -199,11 +199,11 @@ export const reverseSide = async () => {
 
 	if (!current) return;
 
-	if (current.game === "csgo" && current.vetos.filter(veto => veto.teamId).length > 0 && !GSI.last) {
+	if (current.game === 'csgo' && current.vetos.filter(veto => veto.teamId).length > 0 && !GSI.last) {
 		return;
 	}
 
-	if(current.game === "csgo"){
+	if (current.game === 'csgo') {
 		if (current.vetos.filter(veto => veto.teamId).length === 0) {
 			current.left = [current.right, (current.right = current.left)][0];
 			await updateMatch(current);
@@ -215,7 +215,7 @@ export const reverseSide = async () => {
 	} else {
 		const currentVetoMap = current.vetos.find(veto => !veto.mapEnd);
 		if (!currentVetoMap) {
-			if(current.vetos.length) return;
+			if (current.vetos.length) return;
 			current.left = [current.right, (current.right = current.left)][0];
 		} else {
 			currentVetoMap.reverseSide = !currentVetoMap.reverseSide;
@@ -273,7 +273,7 @@ export const updateRound = async (game: CSGO) => {
 	const matches = await getActiveGameMatches();
 	const match = matches.find(match => match.current);
 
-	if (!match || match.game !== "csgo") return;
+	if (!match || match.game !== 'csgo') return;
 
 	const mapName = game.map.name.substring(game.map.name.lastIndexOf('/') + 1);
 	const veto = match.vetos.find(veto => veto.mapName === mapName && !veto.mapEnd);

@@ -22,25 +22,30 @@ const VetoModal = ({ onChange, map, isOpen, toggle, veto, teams, maps }: Props) 
 	return (
 		<Modal isOpen={isOpen} toggle={toggle} className="veto_modal">
 			<ModalHeader toggle={toggle}>Edit Veto {map + 1}</ModalHeader>
-			{"type" in veto ? <div className="veto_type">
-				<div
-					className={`type pick ${veto.type === 'pick' ? 'active' : ''}`}
-					onClick={changeTypeHandler('pick')}
-				>
-					{t('match.vetoType.pick').toUpperCase()}
+			{'type' in veto ? (
+				<div className="veto_type">
+					<div
+						className={`type pick ${veto.type === 'pick' ? 'active' : ''}`}
+						onClick={changeTypeHandler('pick')}
+					>
+						{t('match.vetoType.pick').toUpperCase()}
+					</div>
+					<div
+						className={`type ban ${veto.type === 'ban' ? 'active' : ''}`}
+						onClick={changeTypeHandler('ban')}
+					>
+						{t('match.vetoType.ban').toUpperCase()}
+					</div>
+					<div
+						className={`type decider ${veto.type === 'decider' ? 'active' : ''}`}
+						onClick={changeTypeHandler('decider')}
+					>
+						{t('match.vetoType.decider').toUpperCase()}
+					</div>
 				</div>
-				<div className={`type ban ${veto.type === 'ban' ? 'active' : ''}`} onClick={changeTypeHandler('ban')}>
-					{t('match.vetoType.ban').toUpperCase()}
-				</div>
-				<div
-					className={`type decider ${veto.type === 'decider' ? 'active' : ''}`}
-					onClick={changeTypeHandler('decider')}
-				>
-					{t('match.vetoType.decider').toUpperCase()}
-				</div>
-			</div> : null}
+			) : null}
 			<ModalBody>
-				{"type" in veto && veto.type !== 'decider' ? (
+				{'type' in veto && veto.type !== 'decider' ? (
 					<>
 						<FormGroup>
 							<Input
@@ -76,25 +81,27 @@ const VetoModal = ({ onChange, map, isOpen, toggle, veto, teams, maps }: Props) 
 						</FormGroup>
 					</>
 				) : null}
-				{ "mapName" in veto ? <FormGroup>
-					<Input
-						type="select"
-						name="type"
-						id="type"
-						value={veto.mapName}
-						onChange={e => onChange('mapName', map, e.target.value)}
-					>
-						<option value="" disabled defaultChecked>
-							{t('common.map')}
-						</option>
-						{maps.map(map => (
-							<option value={map} key={map}>
-								{map.replace('de_', '')[0].toUpperCase()}
-								{map.replace('de_', '').substr(1)}
+				{'mapName' in veto ? (
+					<FormGroup>
+						<Input
+							type="select"
+							name="type"
+							id="type"
+							value={veto.mapName}
+							onChange={e => onChange('mapName', map, e.target.value)}
+						>
+							<option value="" disabled defaultChecked>
+								{t('common.map')}
 							</option>
-						))}
-					</Input>
-				</FormGroup> : null}
+							{maps.map(map => (
+								<option value={map} key={map}>
+									{map.replace('de_', '')[0].toUpperCase()}
+									{map.replace('de_', '').substr(1)}
+								</option>
+							))}
+						</Input>
+					</FormGroup>
+				) : null}
 				<FormGroup check>
 					<Label check>
 						<Input

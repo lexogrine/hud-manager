@@ -78,7 +78,7 @@ ioPromise.then(io => {
 		}
 		const matches = await getActiveGameMatches();
 		const match = matches.filter(match => match.current)[0];
-		if (!match || match.game !== "csgo") return;
+		if (!match || match.game !== 'csgo') return;
 		const { vetos } = match;
 		const mapName = score.map.name.substring(score.map.name.lastIndexOf('/') + 1);
 		vetos.map(veto => {
@@ -145,30 +145,34 @@ ioPromise.then(io => {
 
 		let isReversed = false;
 
-		if(firstNotFinished){
-		
+		if (firstNotFinished) {
 			firstNotFinished.mapEnd = true;
 
 			isReversed = !!firstNotFinished.reverseSide;
-			if(matchSummary.teamId){
+			if (matchSummary.teamId) {
 				firstNotFinished.winner = matchSummary.teamId;
 			}
-			
-			if(Dota2GSI.last && match.left.id && match.right.id){
-				const radiantScore = Dota2GSI.last.players.filter(player => player.team_name === "dire").map(player => player.deaths).reduce((a, b) => a+b,0);
-				const direScore = Dota2GSI.last.players.filter(player => player.team_name === "radiant").map(player => player.deaths).reduce((a, b) => a+b,0);
-				
-				firstNotFinished.score = { };
+
+			if (Dota2GSI.last && match.left.id && match.right.id) {
+				const radiantScore = Dota2GSI.last.players
+					.filter(player => player.team_name === 'dire')
+					.map(player => player.deaths)
+					.reduce((a, b) => a + b, 0);
+				const direScore = Dota2GSI.last.players
+					.filter(player => player.team_name === 'radiant')
+					.map(player => player.deaths)
+					.reduce((a, b) => a + b, 0);
+
+				firstNotFinished.score = {};
 
 				firstNotFinished.score[!isReversed ? match.left.id : match.right.id] = radiantScore;
 				firstNotFinished.score[!isReversed ? match.right.id : match.left.id] = direScore;
 			}
-			
 		}
 		if (matchSummary.faction === 'radiant') {
-			match[isReversed ? 'right': 'left'].wins +=1;
+			match[isReversed ? 'right' : 'left'].wins += 1;
 		} else {
-			match[!isReversed ? 'right': 'left'].wins +=1;
+			match[!isReversed ? 'right' : 'left'].wins += 1;
 		}
 		await updateMatch(match);
 
