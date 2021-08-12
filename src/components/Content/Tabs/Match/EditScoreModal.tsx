@@ -8,12 +8,13 @@ interface Props {
 	isOpen: boolean;
 	toggle: () => void;
 	veto: I.Veto;
-	saveScore: any;
+	saveScore: (teamId: string, score: number) => () => void;
 	teams: I.Team[];
 	setWinner: any;
+	order: number;
 }
 
-const EditScoreModal = ({ isOpen, toggle, veto, saveScore, teams, setWinner }: Props) => {
+const EditScoreModal = ({ isOpen, toggle, veto, saveScore, teams, setWinner, order }: Props) => {
 	const { t } = useTranslation();
 	const renderTeamScore = (team: I.Team | undefined, score: number) => {
 		if (!team) return null;
@@ -61,7 +62,7 @@ const EditScoreModal = ({ isOpen, toggle, veto, saveScore, teams, setWinner }: P
 	return (
 		<Modal isOpen={isOpen} toggle={toggle} className={'veto_modal'}>
 			<ModalHeader className="bordered" toggle={toggle}>
-				{veto.mapName.toUpperCase()}
+				{ "mapName" in veto ? veto.mapName.toUpperCase() : `Map #${order}`}
 			</ModalHeader>
 			<ModalBody>
 				<div className="score-editor">

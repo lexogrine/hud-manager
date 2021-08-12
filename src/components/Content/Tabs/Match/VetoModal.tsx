@@ -22,7 +22,7 @@ const VetoModal = ({ onChange, map, isOpen, toggle, veto, teams, maps }: Props) 
 	return (
 		<Modal isOpen={isOpen} toggle={toggle} className="veto_modal">
 			<ModalHeader toggle={toggle}>Edit Veto {map + 1}</ModalHeader>
-			<div className="veto_type">
+			{"type" in veto ? <div className="veto_type">
 				<div
 					className={`type pick ${veto.type === 'pick' ? 'active' : ''}`}
 					onClick={changeTypeHandler('pick')}
@@ -38,9 +38,9 @@ const VetoModal = ({ onChange, map, isOpen, toggle, veto, teams, maps }: Props) 
 				>
 					{t('match.vetoType.decider').toUpperCase()}
 				</div>
-			</div>
+			</div> : null}
 			<ModalBody>
-				{veto.type !== 'decider' ? (
+				{"type" in veto && veto.type !== 'decider' ? (
 					<>
 						<FormGroup>
 							<Input
@@ -76,7 +76,7 @@ const VetoModal = ({ onChange, map, isOpen, toggle, veto, teams, maps }: Props) 
 						</FormGroup>
 					</>
 				) : null}
-				<FormGroup>
+				{ "mapName" in veto ? <FormGroup>
 					<Input
 						type="select"
 						name="type"
@@ -94,7 +94,7 @@ const VetoModal = ({ onChange, map, isOpen, toggle, veto, teams, maps }: Props) 
 							</option>
 						))}
 					</Input>
-				</FormGroup>
+				</FormGroup> : null}
 				<FormGroup check>
 					<Label check>
 						<Input

@@ -136,7 +136,8 @@ export const fillNextMatch = (matchId: string, type: 'winner' | 'loser') =>
 						right: { id: null, wins: 0 },
 						matchType: 'bo1',
 						vetos: [],
-						startTime: 0
+						startTime: 0,
+						game: "csgo"
 					};
 
 					for (let i = 0; i < 7; i++) {

@@ -84,7 +84,7 @@ export interface Team {
 
 export type VetoType = 'ban' | 'pick' | 'decider';
 
-export interface Veto {
+export interface CSGOVeto {
 	teamId: string;
 	mapName: string;
 	side: 'CT' | 'T' | 'NO';
@@ -99,6 +99,44 @@ export interface Veto {
 	mapEnd: boolean;
 }
 
+export interface Dota2Veto {
+	mapEnd: boolean;
+	winner?: string;
+	score?: {
+		[key: string]: number;
+	};
+	reverseSide?: boolean;
+}
+
+export interface RocketLeagueVeto {
+	mapEnd: boolean;
+	winner?: string;
+	score?: {
+		[key: string]: number;
+	};
+	reverseSide?: boolean;
+	// map: string
+}
+
+export type Veto = CSGOVeto | Dota2Veto | RocketLeagueVeto;
+
+export interface MatchFactory<T extends Veto, N extends AvailableGames> {
+	id: string;
+	current: boolean;
+	left: MatchTeam;
+	right: MatchTeam;
+	game: N;
+	matchType: BOTypes;
+	vetos: T[];
+	startTime: number;
+}
+
+export type Dota2Match = MatchFactory<Dota2Veto, "dota2">;
+
+export type CSGOMatch = MatchFactory<CSGOVeto, "csgo">;
+
+export type RocketLeagueMatch = MatchFactory<RocketLeagueVeto, "rocketleague">;
+
 export type BOTypes = 'bo1' | 'bo2' | 'bo3' | 'bo5' | 'bo7' | 'bo9';
 
 export interface MatchTeam {
@@ -106,6 +144,9 @@ export interface MatchTeam {
 	wins: number;
 }
 
+export type Match = CSGOMatch | Dota2Match | RocketLeagueMatch;
+
+/*
 export interface Match {
 	id: string;
 	current: boolean;
@@ -115,7 +156,7 @@ export interface Match {
 	matchType: BOTypes;
 	vetos: Veto[];
 	startTime: number;
-}
+}*/
 
 export interface TournamentMatchup {
 	_id: string;

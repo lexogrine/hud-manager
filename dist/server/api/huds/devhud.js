@@ -9,17 +9,11 @@ const socket_1 = require("../../socket");
 const hudstatemanager_1 = require("./hudstatemanager");
 const node_fetch_1 = __importDefault(require("node-fetch"));
 class DevHUDListener {
+    port;
+    status;
+    interval;
+    callback;
     constructor(port) {
-        this.checkPort = () => {
-            portscanner_1.default.checkPortStatus(this.port, '127.0.0.1', (err, portStatus) => {
-                const status = portStatus === 'open';
-                if (status !== this.status) {
-                    this.callback(status);
-                }
-                this.status = status;
-            });
-            /**/
-        };
         this.port = port;
         this.status = false;
         this.callback = () => { };
@@ -28,6 +22,16 @@ class DevHUDListener {
     onChange(callback) {
         this.callback = callback;
     }
+    checkPort = () => {
+        portscanner_1.default.checkPortStatus(this.port, '127.0.0.1', (err, portStatus) => {
+            const status = portStatus === 'open';
+            if (status !== this.status) {
+                this.callback(status);
+            }
+            this.status = status;
+        });
+        /**/
+    };
     start() {
         if (this.interval !== -1)
             return;

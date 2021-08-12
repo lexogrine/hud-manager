@@ -25,6 +25,10 @@ const path = __importStar(require("path"));
 const socket_1 = require("../server/socket");
 const keybinder_1 = require("../server/api/keybinder");
 class HUD {
+    current;
+    tray;
+    show;
+    hud;
     constructor() {
         this.current = null;
         this.tray = null;

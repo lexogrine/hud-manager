@@ -11,6 +11,8 @@ const teams_1 = require("../teams");
 const players_1 = require("../players");
 const matches_1 = require("../matches");
 class HUDStateManager {
+    data;
+    devHUD;
     constructor() {
         this.data = new Map();
         this.devHUD = null;
@@ -42,36 +44,36 @@ class HUDStateManager {
             return undefined;
         }
     }
+    static extend = async (hudData) => {
+        if (!hudData || typeof hudData !== 'object')
+            return hudData;
+        for (const data of Object.values(hudData)) {
+            if (!data || typeof data !== 'object')
+                return hudData;
+            const entries = Object.values(data);
+            for (const entry of entries) {
+                if (!entry || typeof entry !== 'object')
+                    continue;
+                if (!('type' in entry) || !('id' in entry))
+                    continue;
+                let extraData;
+                switch (entry.type) {
+                    case 'match':
+                        extraData = await matches_1.getMatchById(entry.id);
+                        break;
+                    case 'player':
+                        extraData = await players_1.getPlayerById(entry.id);
+                        break;
+                    case 'team':
+                        extraData = await teams_1.getTeamById(entry.id);
+                        break;
+                    default:
+                        continue;
+                }
+                entry[entry.type] = extraData;
+            }
+        }
+        return hudData;
+    };
 }
 exports.HUDStateManager = HUDStateManager;
-HUDStateManager.extend = async (hudData) => {
-    if (!hudData || typeof hudData !== 'object')
-        return hudData;
-    for (const data of Object.values(hudData)) {
-        if (!data || typeof data !== 'object')
-            return hudData;
-        const entries = Object.values(data);
-        for (const entry of entries) {
-            if (!entry || typeof entry !== 'object')
-                continue;
-            if (!('type' in entry) || !('id' in entry))
-                continue;
-            let extraData;
-            switch (entry.type) {
-                case 'match':
-                    extraData = await matches_1.getMatchById(entry.id);
-                    break;
-                case 'player':
-                    extraData = await players_1.getPlayerById(entry.id);
-                    break;
-                case 'team':
-                    extraData = await teams_1.getTeamById(entry.id);
-                    break;
-                default:
-                    continue;
-            }
-            entry[entry.type] = extraData;
-        }
-    }
-    return hudData;
-};

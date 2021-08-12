@@ -26,6 +26,12 @@ export type {
 	onExtraChangeFunction,
 	MapAreaConfig,
 	MapConfig,
+	Dota2Veto,
+	Dota2Match,
+	CSGOVeto,
+	CSGOMatch,
+	RocketLeagueVeto,
+	RocketLeagueMatch,
 	ARModule
 } from './../../types/interfaces';
 

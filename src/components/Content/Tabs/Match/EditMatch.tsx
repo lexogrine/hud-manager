@@ -64,24 +64,45 @@ const EditMatch = ({ cxt, match, teams, edit, maps }: IProps) => {
 	};
 
 	const vetoHandler = (name: string, map: number, value: any) => {
-		const { vetos }: any = matchState;
-		const veto = { teamId: '', mapName: '', side: 'NO', ...vetos[map] };
+		const { vetos } = matchState;
+		const veto = { ...vetos[map] } as any;
 		veto[name] = value;
-		if (veto.teamId === '' && veto.type !== 'decider') {
-			veto.mapName = '';
-		}
-		if (veto.type === 'decider') {
-			veto.side = 'NO';
+		if(matchState.game === "csgo"){
+			if (veto.teamId === '' && veto.type !== 'decider') {
+				veto.mapName = '';
+			}
+			if (veto.type === 'decider') {
+				veto.side = 'NO';
+			}
 		}
 		vetos[map] = veto;
-		setMatchState({ ...matchState, vetos });
+		setMatchState({ ...matchState });
 	};
+
 	const changeMatchType = (event: any) => {
-		const vetos: I.Veto[] = [];
-		for (let i = 0; i < 9; i++) {
-			vetos.push({ teamId: '', mapName: '', side: 'NO', type: 'pick', mapEnd: false });
+		const vetos = {
+			dota2: [] as I.Dota2Veto[],
+			csgo: [] as I.CSGOVeto[],
+			rocketleague: [] as I.RocketLeagueVeto[]
 		}
-		setMatchState({ ...matchState, matchType: event.target.value, vetos });
+		for (let i = 0; i < 9; i++) {
+			vetos.csgo.push({ teamId: '', mapName: '', side: 'NO', type: 'pick', mapEnd: false });
+			vetos.dota2.push({ mapEnd: false });
+			vetos.rocketleague.push({ mapEnd: false });
+		}
+		switch(matchState.game){
+			case "csgo":
+				matchState.vetos = vetos.csgo;
+				break;
+			case "rocketleague":
+				matchState.vetos = vetos.rocketleague;
+				break;
+			case "dota2":
+				matchState.vetos = vetos.dota2;
+				break;
+		}
+		matchState.matchType = event.target.value;
+		setMatchState({ ...matchState });
 	};
 	const changeStartTime = (ev: any) => {
 		const val = ev.target.value;
