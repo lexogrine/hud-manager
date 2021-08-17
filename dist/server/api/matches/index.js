@@ -191,10 +191,10 @@ const reverseSide = async () => {
     const current = matches.find(match => match.current);
     if (!current)
         return;
-    if (current.game === "csgo" && current.vetos.filter(veto => veto.teamId).length > 0 && !socket_1.GSI.last) {
+    if (current.game === 'csgo' && current.vetos.filter(veto => veto.teamId).length > 0 && !socket_1.GSI.last) {
         return;
     }
-    if (current.game === "csgo") {
+    if (current.game === 'csgo') {
         if (current.vetos.filter(veto => veto.teamId).length === 0) {
             current.left = [current.right, (current.right = current.left)][0];
             await exports.updateMatch(current);
@@ -261,7 +261,7 @@ const updateRound = async (game) => {
     }
     const matches = await exports.getActiveGameMatches();
     const match = matches.find(match => match.current);
-    if (!match || match.game !== "csgo")
+    if (!match || match.game !== 'csgo')
         return;
     const mapName = game.map.name.substring(game.map.name.lastIndexOf('/') + 1);
     const veto = match.vetos.find(veto => veto.mapName === mapName && !veto.mapEnd);

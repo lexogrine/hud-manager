@@ -119,7 +119,7 @@ const listHUDs = async () => {
         }
         return hud;
     };
-    return huds.map(mapHUDStatus).filter(hud => _1.customer.game === hud.game || (_1.customer.game === 'csgo' && !hud.game));
+    return huds.map(mapHUDStatus).filter(hud => _1.customer.game === hud.game || (_1.customer.game === 'csgo' && !hud.game) || hud.game === 'all');
 };
 exports.listHUDs = listHUDs;
 const getHUDs = async (req, res) => {
@@ -623,7 +623,7 @@ const uploadHUD = async (req, res) => {
     if (!_1.customer.game || !hudDir)
         return res.sendStatus(422);
     const hud = await exports.getHUDData(hudDir);
-    if (!hud || !hud.uuid)
+    if (!hud || !hud.uuid || hud.game === "all")
         return res.sendStatus(422);
     const presignedURLResponse = (await user_1.api(`storage/file/url/${_1.customer.game}/PUT/${hud.uuid}`));
     if (!presignedURLResponse || !presignedURLResponse.url) {

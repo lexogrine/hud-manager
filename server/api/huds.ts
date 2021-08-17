@@ -108,7 +108,9 @@ export const listHUDs = async () => {
 		}
 		return hud;
 	};
-	return huds.map(mapHUDStatus).filter(hud => customer.game === hud.game || (customer.game === 'csgo' && !hud.game));
+	return huds
+		.map(mapHUDStatus)
+		.filter(hud => customer.game === hud.game || (customer.game === 'csgo' && !hud.game) || hud.game === 'all');
 };
 
 export const getHUDs: express.RequestHandler = async (req, res) => {
@@ -644,7 +646,7 @@ export const uploadHUD: RequestHandler = async (req, res) => {
 
 	const hud = await getHUDData(hudDir);
 
-	if (!hud || !hud.uuid) return res.sendStatus(422);
+	if (!hud || !hud.uuid || hud.game === 'all') return res.sendStatus(422);
 
 	const presignedURLResponse = (await api(`storage/file/url/${customer.game}/PUT/${hud.uuid}`)) as { url: string };
 

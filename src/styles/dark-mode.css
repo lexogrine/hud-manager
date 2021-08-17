@@ -348,3 +348,10 @@ button.btn-primary {
     width:5px;
     height:5px;
 }
+.huds-separator {
+    
+    background-color: #4d504d;
+    height: 1px;
+    width: 100%;
+    margin-bottom: 20px;
+}

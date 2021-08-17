@@ -62,7 +62,7 @@ exports.ioPromise.then(io => {
         }
         const matches = await matches_1.getActiveGameMatches();
         const match = matches.filter(match => match.current)[0];
-        if (!match || match.game !== "csgo")
+        if (!match || match.game !== 'csgo')
             return;
         const { vetos } = match;
         const mapName = score.map.name.substring(score.map.name.lastIndexOf('/') + 1);
@@ -132,8 +132,14 @@ exports.ioPromise.then(io => {
                 firstNotFinished.winner = matchSummary.teamId;
             }
             if (exports.Dota2GSI.last && match.left.id && match.right.id) {
-                const radiantScore = exports.Dota2GSI.last.players.filter(player => player.team_name === "dire").map(player => player.deaths).reduce((a, b) => a + b, 0);
-                const direScore = exports.Dota2GSI.last.players.filter(player => player.team_name === "radiant").map(player => player.deaths).reduce((a, b) => a + b, 0);
+                const radiantScore = exports.Dota2GSI.last.players
+                    .filter(player => player.team_name === 'dire')
+                    .map(player => player.deaths)
+                    .reduce((a, b) => a + b, 0);
+                const direScore = exports.Dota2GSI.last.players
+                    .filter(player => player.team_name === 'radiant')
+                    .map(player => player.deaths)
+                    .reduce((a, b) => a + b, 0);
                 firstNotFinished.score = {};
                 firstNotFinished.score[!isReversed ? match.left.id : match.right.id] = radiantScore;
                 firstNotFinished.score[!isReversed ? match.right.id : match.left.id] = direScore;

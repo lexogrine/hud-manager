@@ -206,7 +206,7 @@ class Huds extends Component<IProps, IState> {
 
 	render() {
 		const { killfeed, radar, afx } = this.state.form;
-		const { active, config, isHUDOpened } = this.state;
+		const { active, config, isHUDOpened, huds } = this.state;
 		const t = this.props.t;
 		const available =
 			this.props.cxt.customer?.license?.type === 'professional' ||
@@ -224,6 +224,10 @@ class Huds extends Component<IProps, IState> {
 				</>
 			);
 		}
+
+		const gameHUDs = huds.filter(hud => hud.game !== 'all');
+		const independentHUDs = huds.filter(hud => hud.game === 'all');
+
 		return (
 			<>
 				<div className="tab-title-container">{t('huds.header')}</div>
@@ -397,20 +401,39 @@ class Huds extends Component<IProps, IState> {
 									accept=".zip"
 								/>
 							</Col>
-							{this.state.huds.map(hud => (
-								<HudEntry
-									key={hud.dir}
-									hud={hud}
-									toggleConfig={this.toggleConfig}
-									isActive={hud.url === this.state.currentHUD}
-									customFields={this.props.cxt.fields}
-									loadHUDs={this.loadHUDs}
-									setHUDLoading={this.setHUDLoading}
-									isLoading={!!hud.uuid && this.state.loadingHUDs.includes(hud.uuid)}
-									isCloudAvailable={available}
-									isHUDOpened={isHUDOpened}
-								/>
-							))}
+							{independentHUDs
+								.filter(hud => hud.game === 'all')
+								.map(hud => (
+									<HudEntry
+										key={hud.dir}
+										hud={hud}
+										toggleConfig={this.toggleConfig}
+										isActive={hud.url === this.state.currentHUD}
+										customFields={this.props.cxt.fields}
+										loadHUDs={this.loadHUDs}
+										setHUDLoading={this.setHUDLoading}
+										isLoading={!!hud.uuid && this.state.loadingHUDs.includes(hud.uuid)}
+										isCloudAvailable={available}
+										isHUDOpened={isHUDOpened}
+									/>
+								))}
+							{independentHUDs.length && gameHUDs.length ? <div className="huds-separator" /> : null}
+							{gameHUDs
+								.filter(hud => hud.game !== 'all')
+								.map(hud => (
+									<HudEntry
+										key={hud.dir}
+										hud={hud}
+										toggleConfig={this.toggleConfig}
+										isActive={hud.url === this.state.currentHUD}
+										customFields={this.props.cxt.fields}
+										loadHUDs={this.loadHUDs}
+										setHUDLoading={this.setHUDLoading}
+										isLoading={!!hud.uuid && this.state.loadingHUDs.includes(hud.uuid)}
+										isCloudAvailable={available}
+										isHUDOpened={isHUDOpened}
+									/>
+								))}
 						</Col>
 					</Row>
 

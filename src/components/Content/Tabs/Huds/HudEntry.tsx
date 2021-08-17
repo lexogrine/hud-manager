@@ -260,7 +260,7 @@ const HudEntry = ({
 									>
 										{t('huds.actions.overlay')}
 									</Tip>
-									{isNotRemote && isCloudAvailable && !hud.isDev ? (
+									{isNotRemote && isCloudAvailable && !hud.isDev && hud.game !== 'all' ? (
 										!isLoading ? (
 											<Tip
 												id={`hud_upload_button_${hashCode(hud.dir)}`}

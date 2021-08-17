@@ -146,7 +146,7 @@ const fillNextMatch = (matchId, type) => new Promise(res => {
                 matchType: 'bo1',
                 vetos: [],
                 startTime: 0,
-                game: "csgo"
+                game: 'csgo'
             };
             for (let i = 0; i < 7; i++) {
                 newMatch.vetos.push({
