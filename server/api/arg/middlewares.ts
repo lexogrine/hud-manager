@@ -14,7 +14,7 @@ export const connect: express.RequestHandler = async (req, res) => {
 
 export const disconnect: express.RequestHandler = async (req, res) => {
 	try {
-		argSocket.socket?.disconnect();
+		argSocket.socket?._socket.close();
 	} catch {}
 
 	return res.sendStatus(200);

@@ -2,7 +2,7 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.sendKillsToARG = exports.connectToARG = exports.sendARGStatus = exports.getIP = exports.argSocket = void 0;
 const socket_1 = require("../../socket");
-const socket_io_client_1 = require("socket.io-client");
+const simple_websockets_1 = require("simple-websockets");
 exports.argSocket = {
     delay: 7,
     socket: null,
@@ -12,7 +12,7 @@ const getIP = (code) => {
     const ipNumbers = code.split('-').map(n => parseInt(n, 16));
     const port = ipNumbers.pop();
     const ip = `${ipNumbers.join('.')}:${port}`;
-    const address = `http://${ip}`;
+    const address = `ws://${ip}`;
     return address;
 };
 exports.getIP = getIP;
@@ -23,26 +23,26 @@ const sendARGStatus = async () => {
 exports.sendARGStatus = sendARGStatus;
 const connectToARG = (code) => {
     if (exports.argSocket.socket) {
-        console.log('jest socket juz');
         return;
     }
     const socketAddress = exports.getIP(code);
-    console.log('trying to connect to', socketAddress);
     const onClose = (err) => {
-        console.log(err);
         exports.argSocket.socket = null;
         exports.argSocket.id = null;
         exports.sendARGStatus();
     };
-    const socket = socket_io_client_1.io(socketAddress);
-    socket.on('connect', () => {
-        socket.emit('register');
+    const socket = new simple_websockets_1.SimpleWebSocket(socketAddress);
+    socket.on('connection', () => {
+        console.log('aa');
+        socket.send('register');
     });
     socket.on('registered', exports.sendARGStatus);
     exports.argSocket.socket = socket;
     exports.argSocket.id = code;
-    socket.on('error', onClose);
-    socket.on('disconnect', onClose);
+    if ('on' in socket._socket) {
+        socket._socket.on('error', onClose);
+        socket._socket.on('close', onClose);
+    }
 };
 exports.connectToARG = connectToARG;
 const getNewKills = (kill, oldKillsStatistics) => {
@@ -55,7 +55,7 @@ const getNewKills = (kill, oldKillsStatistics) => {
 };
 const sendKillsToARG = (last, csgo) => {
     if (last.round?.phase === 'freezetime' && csgo.round?.phase !== 'freezetime' && exports.argSocket.socket) {
-        exports.argSocket.socket.emit('clear');
+        exports.argSocket.socket.send('clear');
     }
     const playerKills = csgo.players.map(player => ({
         steamid: player.steamid,
@@ -84,7 +84,7 @@ const sendKillsToARG = (last, csgo) => {
         });
     }
     if (exports.argSocket.socket && argKillEntries.length) {
-        exports.argSocket.socket.emit('kills', argKillEntries);
+        exports.argSocket.socket.send('kills', argKillEntries);
     }
 };
 exports.sendKillsToARG = sendKillsToARG;
