@@ -137,7 +137,7 @@ ioPromise.then(io => {
 	GSI.on('roundEnd', onRoundEnd);
 
 	GSI.on('data', csgo => {
-		if(!GSI.last) return;
+		if (!GSI.last) return;
 		sendKillsToARG(GSI.last, csgo);
 	});
 
