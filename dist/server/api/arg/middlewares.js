@@ -13,7 +13,7 @@ const connect = async (req, res) => {
 exports.connect = connect;
 const disconnect = async (req, res) => {
     try {
-        index_1.argSocket.socket?._socket.close();
+        index_1.argSocket.socket?.disconnect();
     }
     catch { }
     return res.sendStatus(200);

@@ -1,8 +1,9 @@
 import { ioPromise } from '../../socket';
 import { SimpleWebSocket } from 'simple-websockets';
 import { CSGO } from 'csgogsi-socket';
+import { io, Socket } from 'socket.io-client'
 
-export const argSocket: { socket: SimpleWebSocket | null; id: string | null; delay: number } = {
+export const argSocket: { socket: Socket | null; id: string | null; delay: number } = {
 	delay: 7,
 	socket: null,
 	id: null
@@ -14,7 +15,7 @@ export const getIP = (code: string) => {
 	const port = ipNumbers.pop();
 
 	const ip = `${ipNumbers.join('.')}:${port}`;
-	const address = `ws://${ip}`;
+	const address = `http://${ip}`;
 	return address;
 };
 
@@ -29,16 +30,16 @@ export const connectToARG = (code: string) => {
 	}
 	const socketAddress = getIP(code);
 
-	const onClose = () => {
+	const onClose = (err: any) => {
 		argSocket.socket = null;
 		argSocket.id = null;
 		sendARGStatus();
 	};
+	
+	const socket = io(socketAddress);
 
-	const socket = new SimpleWebSocket(socketAddress);
-
-	socket.on('connection', () => {
-		socket.send('register');
+	socket.on('connect', () => {
+		socket.emit('register');
 	});
 
 	socket.on('registered', sendARGStatus);
@@ -46,10 +47,8 @@ export const connectToARG = (code: string) => {
 	argSocket.socket = socket;
 	argSocket.id = code;
 
-	if ('on' in socket._socket) {
-		socket._socket.on('error', onClose);
-		socket._socket.on('close', onClose);
-	}
+	socket.on('error', onClose);
+	socket.on('disconnect', onClose);
 };
 
 interface ARGKillEntry {
@@ -77,7 +76,7 @@ const getNewKills = (kill: KillStatistics, oldKillsStatistics: KillStatistics[])
 
 export const sendKillsToARG = (last: CSGO, csgo: CSGO) => {
 	if (last.round?.phase === 'freezetime' && csgo.round?.phase !== 'freezetime' && argSocket.socket) {
-		argSocket.socket.send('clear');
+		argSocket.socket.emit('clear');
 	}
 	const playerKills: KillStatistics[] = csgo.players.map(player => ({
 		steamid: player.steamid,
@@ -109,6 +108,6 @@ export const sendKillsToARG = (last: CSGO, csgo: CSGO) => {
 	}
 
 	if (argSocket.socket && argKillEntries.length) {
-		argSocket.socket.send('kills', argKillEntries);
+		argSocket.socket.emit('kills', argKillEntries);
 	}
 };
