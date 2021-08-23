@@ -18,6 +18,7 @@ const _1 = require(".");
 const hudstatemanager_1 = require("./api/huds/hudstatemanager");
 require("./api/huds/devhud");
 const players_1 = require("./api/players");
+const arg_1 = require("./api/arg");
 let lastUpdate = new Date().getTime();
 let lastSideCheck = new Date().getTime();
 exports.runtimeConfig = {
@@ -117,6 +118,11 @@ exports.ioPromise.then(io => {
         io.emit('match', true);
     };
     exports.GSI.on('roundEnd', onRoundEnd);
+    exports.GSI.on('data', csgo => {
+        if (!exports.GSI.last)
+            return;
+        arg_1.sendKillsToARG(exports.GSI.last, csgo);
+    });
     exports.Dota2GSI.on('matchEnd', async (matchSummary) => {
         const matches = await matches_1.getActiveGameMatches();
         const match = matches.find(match => match.current && match.game === 'dota2');

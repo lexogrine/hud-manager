@@ -90,6 +90,12 @@ export default {
 			update: (fields: CustomFieldEntry[]) => apiV2<CustomFieldEntry[]>('teams/fields', 'PATCH', fields)
 		}
 	},
+	arg: {
+		connect: (id: string) => apiV2('arg', 'POST', { id }),
+		disconnect: () => apiV2('arg', 'DELETE'),
+		requestStatus: () => apiV2('arg'),
+		setDelay: (delay: number) => apiV2('arg/delay', 'POST', { delay })
+	},
 	config: {
 		get: async (): Promise<I.ExtendedConfig> => await apiV2('config'),
 		update: async (config: I.Config) => await apiV2('config', 'PATCH', config),

@@ -11,6 +11,7 @@ import Live from './Live/Live';
 import { ContextData } from './../../Context';
 import ACO from './ACO/ACO';
 import CG from './CG/CG';
+import ARG from './ARG/ARG';
 
 interface IProps {
 	activeTab: string;
@@ -40,6 +41,9 @@ const Tabs = ({ activeTab, data, toggle, gsiCheck }: IProps) => (
 				</TabPane>
 				<TabPane tabId="tournaments">
 					<Tournaments cxt={cxt}></Tournaments>
+				</TabPane>
+				<TabPane tabId="arg">
+					<ARG></ARG>
 				</TabPane>
 				<TabPane tabId="live">
 					<Live toggle={toggle} cxt={cxt}></Live>

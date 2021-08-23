@@ -13,6 +13,7 @@ import { app, server } from '.';
 import { HUDStateManager } from './api/huds/hudstatemanager';
 import './api/huds/devhud';
 import { getPlayersList } from './api/players';
+import { sendKillsToARG } from './api/arg';
 
 interface RuntimeConfig {
 	last: CSGORaw | null;
@@ -134,6 +135,11 @@ ioPromise.then(io => {
 	};
 
 	GSI.on('roundEnd', onRoundEnd);
+
+	GSI.on('data', csgo => {
+		if(!GSI.last) return;
+		sendKillsToARG(GSI.last, csgo);
+	});
 
 	Dota2GSI.on('matchEnd', async matchSummary => {
 		const matches = await getActiveGameMatches();

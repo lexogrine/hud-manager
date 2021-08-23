@@ -101,6 +101,17 @@ const Navbar = ({ activeTab, toggle, files }: IProps) => {
 					<div>{t('navbar.huds')}</div>
 				</NavLink>
 			</NavItem>
+			<NavItem className="hover-pointer">
+				<NavLink
+					active={activeTab === 'arg'}
+					onClick={() => {
+						toggle('arg');
+					}}
+				>
+					<img src={Tabs.HUDs} alt="ARG" />
+					<div>aRG</div>
+				</NavLink>
+			</NavItem>
 			<GameOnly game="csgo">
 				<ContextData.Consumer>
 					{data =>
