@@ -30,8 +30,7 @@ export const connectToARG = (code: string) => {
 	}
 	const socketAddress = getIP(code);
 
-	const onClose = (err: any) => {
-		console.log(err);
+	const onClose = () => {
 		argSocket.socket = null;
 		argSocket.id = null;
 		sendARGStatus();
@@ -43,7 +42,7 @@ export const connectToARG = (code: string) => {
 		socket.send('register');
 	});
 
-	socket.on('registered', sendARGStatus)
+	socket.on('registered', sendARGStatus);
 
 	argSocket.socket = socket;
 	argSocket.id = code;
@@ -79,7 +78,9 @@ const getNewKills = (kill: KillStatistics, oldKillsStatistics: KillStatistics[])
 
 export const sendKillsToARG = (last: CSGO, csgo: CSGO) => {
 	if (last.round?.phase === 'freezetime' && csgo.round?.phase !== 'freezetime' && argSocket.socket) {
-		argSocket.socket.send('clear');
+		argSocket.socket.send('clearReplay');
+	} else if(csgo.round?.phase === 'freezetime' && last.round?.phase !== "freezetime" && argSocket.socket){
+		argSocket.socket.send('showReplay');
 	}
 	const playerKills: KillStatistics[] = csgo.players.map(player => ({
 		steamid: player.steamid,

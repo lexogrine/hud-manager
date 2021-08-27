@@ -17,6 +17,10 @@ If you are in the business of broadcasting professional CS:GO matches, the Lexog
   * [Player cam feed](#player-cam-feed)
   * [Custom database fields](#custom-database-fields)
   * [AR](#ar)
+  * [ACO](#aco)
+  * [ARG](#arg)
+* [Cloud Storage](#cloud)
+* [Supported games](#games)
 * [Settings](#settings)
 * [AFX Mode](#embedded-hud)
 * [HUD API](#hud-api)
@@ -101,6 +105,7 @@ There is available an experimental mode to render HUD, which uses afx_interop. U
 
 
 ### Testing
+CS:GO only for now
 
 To not have too many applications opened at once to develop the HUD, or just to see how the HUD is looking, you can click `RUN TEST DATA` button in HUDs tab. It will start playing ~40s of data from memory to all connected HUDs, simulating basically one round of live match (killfeed won't work in this mode though).
 
@@ -159,6 +164,47 @@ For HUD to be considered AR-compatible it needs to have `ar` property in `hud.js
 In the future we will allow for external AR modules, which will work independently from HUDs.
 
 
+## ACO 
+
+Auto Cinematic Observer is CS:GO feature that allows for automatization of camera flybies. It requires developer to create their own campaths though. For it to work user must define "areas", which specifies place on map, that algorithm will look for players in. To those areas user must add configs. Configs are commands to execute by CS:GO to start a campath.
+
+Every 5s ACO gets all areas defined by user, then sorts them by amount of alive players that are in that area. After that it tries to choose config that will provide the best and most unique viewier experience.
+
+It is recommended to create a lot of small areas with multiple configs each. It will require more work, but will allow for more detailed observing.
+
+## ARG
+
+Auto Replay Generator (Beta) is feature that integrates with vMix's Instant Replay feature. It automates observing, clipping, and then playing clipped fragments on stream.
+
+Example setup:
+ - PC#1 - CS:GO on main GOTV, delay: X seconds
+ - PC#2 - CS:GO with HLAE on replay GOTV, delay: X + 7 seconds, has vMix with Instant Replay feature
+
+LHM on PC#1 sends information about kills to Lexogrine Auto Replay Generator on PC#2. PC#2 is delayed, therefore it knows about kills, before they happen on it. Lexogrine Auto Replay Generator then uses HLAE to switch to kills it deems interesting and using vMix API clips them. When round ends, LARG will play clips to vMix output, and after a while, it will remove them.
+
+ARG requires vMix 24.0.0.62 or newer.
+
+It is up to user to configure vMix output on PC#2.
+
+>Note - Delay between PCs is configurable on LHM's part
+
+>Note #2 - To connect LHM to PC#2, you just need to enter PC 2's code to LHM and click connect.
+
+>Note #3 - CS:GO on PC#2 must be opened with HLAE, and then user have to execute command that is shown by Lexogrine Auto Replay Generator
+
+
+## Cloud Storage
+
+Currently we offer cloud storage for Professional plans. It will help you keep all of your devices synced with each other, removing the need for copying files between the PCs.
+
+## Supported Games
+
+Currently we support CS:GO, Dota 2 & Rocket League, but that list will only expand.
+
+## Signing HUDs
+
+Signing HUDs is first step towards helping developers feel safe about their creations. We allow for signing HUDs (`npm run sign` in CS:GO React HUD repo), which will make them much more resistant to change - Lexogrine HUD Manager will not run HUD that has incorrect signature, preventing unwanted changes to the code.
+
 ## Embedded HUD
 
 At this point there is an option to embedd any HUD in CS:GO using HLAE and afx_interop. It gives the advantage of being able to use CS:GO in fullscreen mode while using the custom HUDs. It must be noted however, that this mode may affect the framerate.
@@ -175,6 +221,12 @@ A HUD **must have** a valid `hud.json` to be considered legitimate. For optional
   {
 	"name":"Example HUD", //Name of the HUD
 	"version":"1.0.0", //Version
+	"game": "csgo", // csgo is default. Allowed values: csgo, dota2, rl
+	"requiredFields": {
+		"teams": {
+			"theme":"color"
+		}
+	},  // You can specify custom fields and their type, that are required to exist in DB for HUD to work properly
 	"author":"osztenkurden", //Author(s)
 	"legacy": false, //Specify whether it was created for the old system - it should work, but keep in mind that this functionality is deprecated
 	"radar": true, //Does the HUD include radar support
