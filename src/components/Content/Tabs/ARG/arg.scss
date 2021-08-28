@@ -6,3 +6,29 @@
         width: unset;
     }
 }
+.arg-title {
+    span {
+        display: flex;
+        align-items: center;
+        font-size: 12px;
+        font-weight: 700;
+        margin-left: 100px;
+        &.disconnected {
+            div {
+                background-color: red;
+            }
+        }
+        &.connected {
+            div {
+                
+                background-color: #17b21b;
+            }
+        }
+        div {
+            width: 10px;
+            height: 10px;
+            border-radius: 100%;
+            margin-right:7px;
+        }
+    }
+}

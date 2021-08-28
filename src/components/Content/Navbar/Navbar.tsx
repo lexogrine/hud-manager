@@ -108,7 +108,7 @@ const Navbar = ({ activeTab, toggle, files }: IProps) => {
 						toggle('arg');
 					}}
 				>
-					<img src={Tabs.HUDs} alt="ARG" />
+					<img src={Tabs.ARG} alt="ARG" />
 					<div>aRG</div>
 				</NavLink>
 			</NavItem>
