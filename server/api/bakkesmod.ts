@@ -147,7 +147,7 @@ export const runBakkesMod: express.RequestHandler = async (req, res) => {
 	let gamePath = null;
 	try {
 		gamePath = getGamePath(252950);
-	} catch(e) {
+	} catch (e) {
 		Sentry.captureException(e);
 		useSteam = false;
 	}

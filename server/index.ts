@@ -15,36 +15,35 @@ import * as Sentry from '@sentry/node';
 // import * as Tracing from '@sentry/tracing';
 
 Sentry.init({
-	dsn: "https://a467f6451cab4fdcaa82ce545d367158@o955227.ingest.sentry.io/5934611",
-	tracesSampleRate: 1.0,
+	dsn: 'https://a467f6451cab4fdcaa82ce545d367158@o955227.ingest.sentry.io/5934611',
+	tracesSampleRate: 1.0
 });
-
 
 const parsePayload =
 	(config: Config): express.RequestHandler =>
-		(req, res, next) => {
-			try {
-				if (req.body) {
-					const payload = req.body.toString();
-					const obj = JSON.parse(payload);
-					if (obj.provider && obj.provider.appid === 730) {
-						if (config.token && (!obj.auth || !obj.auth.token)) {
-							return res.sendStatus(200);
-						}
-						if (config.token && config.token !== obj.auth.token) {
-							return res.sendStatus(200);
-						}
+	(req, res, next) => {
+		try {
+			if (req.body) {
+				const payload = req.body.toString();
+				const obj = JSON.parse(payload);
+				if (obj.provider && obj.provider.appid === 730) {
+					if (config.token && (!obj.auth || !obj.auth.token)) {
+						return res.sendStatus(200);
 					}
-					const text = payload
-						.replace(/"(player|owner)":([ ]*)([0-9]+)/gm, '"$1": "$3"')
-						.replace(/(player|owner):([ ]*)([0-9]+)/gm, '"$1": "$3"');
-					req.body = JSON.parse(text);
+					if (config.token && config.token !== obj.auth.token) {
+						return res.sendStatus(200);
+					}
 				}
-				next();
-			} catch (e) {
-				next();
+				const text = payload
+					.replace(/"(player|owner)":([ ]*)([0-9]+)/gm, '"$1": "$3"')
+					.replace(/(player|owner):([ ]*)([0-9]+)/gm, '"$1": "$3"');
+				req.body = JSON.parse(text);
 			}
-		};
+			next();
+		} catch (e) {
+			next();
+		}
+	};
 
 export const app = express();
 export const server = http.createServer(app);
@@ -86,10 +85,10 @@ export default async function init() {
 	return server.listen(config.port);
 }
 
-process.on("unhandledRejection", err => {
+process.on('unhandledRejection', err => {
 	Sentry.captureException(err);
-})
+});
 
-process.on("uncaughtException", err => {
+process.on('uncaughtException', err => {
 	Sentry.captureException(err);
 });

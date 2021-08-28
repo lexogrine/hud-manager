@@ -178,7 +178,7 @@ const downloadCloudData = async (game: I.AvailableGames, resource: I.AvailableRe
 		);
 
 		return true;
-	} catch(e) {
+	} catch (e) {
 		Sentry.captureException(e);
 		return false;
 	}
@@ -192,7 +192,7 @@ export const downloadCloudToLocal = async (game: I.AvailableGames) => {
 		updateLastDateLocally(game, result);
 
 		return true;
-	} catch(e) {
+	} catch (e) {
 		Sentry.captureException(e);
 		return false;
 	}
@@ -221,7 +221,7 @@ export const uploadLocalToCloud = async (game: I.AvailableGames) => {
 			result.push(response);
 		}
 		return result.every(response => response.lastUpdateTime);
-	} catch(e) {
+	} catch (e) {
 		Sentry.captureException(e);
 		return false;
 	}
