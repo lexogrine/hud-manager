@@ -105,8 +105,8 @@ const Navbar = ({ activeTab, toggle, files }: IProps) => {
 				<ContextData.Consumer>
 					{data =>
 						!data?.customer?.license?.type ||
-							data.customer?.license.type === 'free' ||
-							data.customer.license.type === 'personal' ? (
+						data.customer?.license.type === 'free' ||
+						data.customer.license.type === 'personal' ? (
 							<>
 								<Tip
 									id="aco_nav"
