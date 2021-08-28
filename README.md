@@ -175,7 +175,7 @@ It is recommended to create a lot of small areas with multiple configs each. It 
 
 ## ARG
 
-Auto Replay Generator (Beta) is feature that integrates with vMix's Instant Replay feature. It automates observing, clipping, and then playing clipped fragments on stream.
+Auto Replay Generator (Beta) is feature that integrates with vMix's Instant Replay feature. It automates observing, clipping, and then playing clipped fragments on stream. Complementary app can be found [HERE](https://github.com/lexogrine/auto-replay-generator)
 
 Example setup:
  - PC#1 - CS:GO on main GOTV, delay: X seconds
