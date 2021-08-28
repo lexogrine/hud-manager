@@ -19,8 +19,9 @@ If you are in the business of broadcasting professional CS:GO matches, the Lexog
   * [AR](#ar)
   * [ACO](#aco)
   * [ARG](#arg)
-* [Cloud Storage](#cloud)
-* [Supported games](#games)
+* [Cloud Storage](#cloud-storage)
+* [Supported games](#supported-games)
+* [Signing HUDs](#signing-huds)
 * [Settings](#settings)
 * [AFX Mode](#embedded-hud)
 * [HUD API](#hud-api)
@@ -201,6 +202,16 @@ Currently we offer cloud storage for Professional plans. It will help you keep a
 
 Currently we support CS:GO, Dota 2 & Rocket League, but that list will only expand.
 
+Additonally it's possible to create non-game HUD, which will be available from any game.
+
+Example of the HUDs:
+
+ - [CSGO](https://github.com/lexogrine/csgo-react-hud)
+ - [Dota 2](https://github.com/lexogrine/dota2-react-hud)
+ - [Rocket League](https://github.com/lexogrine/rl-react-hud)
+ - [All](https://github.com/lexogrine/all-react-hud)
+
+
 ## Signing HUDs
 
 Signing HUDs is first step towards helping developers feel safe about their creations. We allow for signing HUDs (`npm run sign` in CS:GO React HUD repo), which will make them much more resistant to change - Lexogrine HUD Manager will not run HUD that has incorrect signature, preventing unwanted changes to the code.
@@ -221,7 +232,7 @@ A HUD **must have** a valid `hud.json` to be considered legitimate. For optional
   {
 	"name":"Example HUD", //Name of the HUD
 	"version":"1.0.0", //Version
-	"game": "csgo", // csgo is default. Allowed values: csgo, dota2, rl
+	"game": "csgo", // csgo is default. Allowed values: csgo, dota2, rl, all
 	"requiredFields": {
 		"teams": {
 			"theme":"color"
