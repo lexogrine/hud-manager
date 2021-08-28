@@ -68,7 +68,8 @@
 			"aco":"ACO",
 			"ar":"AR",
 			"live":"Live",
-			"professionalOnly":"Professional only"
+			"professionalOnly":"Professional only",
+			"nonFreeOnly":"Non-free only"
 		},
 		"tournaments":{
 			"edit":"Edit a tournament",
