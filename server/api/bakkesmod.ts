@@ -4,6 +4,7 @@ import { app as Application } from 'electron';
 import express from 'express';
 import request from 'request';
 import del from 'del';
+import * as Sentry from '@sentry/node';
 import { exec, execFile, spawn } from 'child_process';
 import { getGamePath } from 'steam-game-path';
 
@@ -146,7 +147,8 @@ export const runBakkesMod: express.RequestHandler = async (req, res) => {
 	let gamePath = null;
 	try {
 		gamePath = getGamePath(252950);
-	} catch {
+	} catch (e) {
+		Sentry.captureException(e);
 		useSteam = false;
 	}
 

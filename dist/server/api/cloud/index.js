@@ -34,6 +34,7 @@ const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
 const __1 = require("..");
 const fields_1 = require("../fields");
+const Sentry = __importStar(require("@sentry/node"));
 const cloudErrorHandler = () => { };
 const getLastUpdateDateLocally = () => {
     const userData = electron_1.app.getPath('userData');
@@ -57,7 +58,7 @@ const getLastUpdateDateLocally = () => {
         return lastUpdated;
     }
     catch (e) {
-        console.log(e);
+        Sentry.captureException(e);
         for (const game of I.availableGames) {
             if (!lastUpdated[game]) {
                 lastUpdated[game] = {};
@@ -173,7 +174,8 @@ const downloadCloudData = async (game, resource, fromDate) => {
         await replacer[resource](resources.resources.map(resource => ({ ...resource, game })), game, resources.existing);
         return true;
     }
-    catch {
+    catch (e) {
+        Sentry.captureException(e);
         return false;
     }
 };
@@ -184,7 +186,8 @@ const downloadCloudToLocal = async (game) => {
         updateLastDateLocally(game, result);
         return true;
     }
-    catch {
+    catch (e) {
+        Sentry.captureException(e);
         return false;
     }
 };
@@ -213,7 +216,8 @@ const uploadLocalToCloud = async (game) => {
         }
         return result.every(response => response.lastUpdateTime);
     }
-    catch {
+    catch (e) {
+        Sentry.captureException(e);
         return false;
     }
 };
@@ -282,7 +286,7 @@ const checkCloudStatus = async (game) => {
         return 'ALL_SYNCED';
     }
     catch (e) {
-        console.log(e);
+        Sentry.captureException(e);
         return 'UNKNOWN_ERROR';
     }
 };

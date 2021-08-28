@@ -10,6 +10,7 @@ import path from 'path';
 import fs from 'fs';
 import { customer } from '..';
 import { getCustomFieldsDb, replaceLocalCustomFieldStores } from '../fields';
+import * as Sentry from '@sentry/node';
 import c from 'fetch-cookie';
 
 const cloudErrorHandler = () => {};
@@ -40,7 +41,7 @@ const getLastUpdateDateLocally = () => {
 
 		return lastUpdated;
 	} catch (e) {
-		console.log(e);
+		Sentry.captureException(e);
 		for (const game of I.availableGames) {
 			if (!lastUpdated[game]) {
 				lastUpdated[game] = {} as I.ResourceUpdateStatus;
@@ -177,7 +178,8 @@ const downloadCloudData = async (game: I.AvailableGames, resource: I.AvailableRe
 		);
 
 		return true;
-	} catch {
+	} catch (e) {
+		Sentry.captureException(e);
 		return false;
 	}
 };
@@ -190,7 +192,8 @@ export const downloadCloudToLocal = async (game: I.AvailableGames) => {
 		updateLastDateLocally(game, result);
 
 		return true;
-	} catch {
+	} catch (e) {
+		Sentry.captureException(e);
 		return false;
 	}
 };
@@ -218,7 +221,8 @@ export const uploadLocalToCloud = async (game: I.AvailableGames) => {
 			result.push(response);
 		}
 		return result.every(response => response.lastUpdateTime);
-	} catch {
+	} catch (e) {
+		Sentry.captureException(e);
 		return false;
 	}
 };
@@ -324,7 +328,7 @@ export const checkCloudStatus = async (game: I.AvailableGames) => {
 
 		return 'ALL_SYNCED';
 	} catch (e) {
-		console.log(e);
+		Sentry.captureException(e);
 		return 'UNKNOWN_ERROR';
 	}
 };

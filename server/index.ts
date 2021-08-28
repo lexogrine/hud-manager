@@ -11,6 +11,13 @@ import './sockets/index';
 import router, { customer } from './api';
 import { loadConfig, setConfig } from './api/config';
 import { Config } from '../types/interfaces';
+import * as Sentry from '@sentry/node';
+// import * as Tracing from '@sentry/tracing';
+
+Sentry.init({
+	dsn: 'https://a467f6451cab4fdcaa82ce545d367158@o955227.ingest.sentry.io/5934611',
+	tracesSampleRate: 1.0
+});
 
 const parsePayload =
 	(config: Config): express.RequestHandler =>
@@ -77,3 +84,11 @@ export default async function init() {
 	});
 	return server.listen(config.port);
 }
+
+process.on('unhandledRejection', err => {
+	Sentry.captureException(err);
+});
+
+process.on('uncaughtException', err => {
+	Sentry.captureException(err);
+});
