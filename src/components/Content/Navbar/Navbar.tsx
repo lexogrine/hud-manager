@@ -101,54 +101,78 @@ const Navbar = ({ activeTab, toggle, files }: IProps) => {
 					<div>{t('navbar.huds')}</div>
 				</NavLink>
 			</NavItem>
-			<NavItem className="hover-pointer">
-				<NavLink
-					active={activeTab === 'arg'}
-					onClick={() => {
-						toggle('arg');
-					}}
-				>
-					<img src={Tabs.ARG} alt="ARG" />
-					<div>aRG</div>
-				</NavLink>
-			</NavItem>
 			<GameOnly game="csgo">
 				<ContextData.Consumer>
 					{data =>
 						!data?.customer?.license?.type ||
-						data.customer?.license.type === 'free' ||
-						data.customer.license.type === 'personal' ? (
-							<Tip
-								id="aco_nav"
-								label={
-									<NavItem className="hover-pointer">
-										<NavLink
-											active={activeTab === 'aco'}
-											disabled
-											onClick={() => {
-												toggle('aco');
-											}}
-										>
-											<img src={Tabs.ACO} alt="ACO" />
-											<div>{t('navbar.aco')}</div>
-										</NavLink>
-									</NavItem>
-								}
-							>
-								{t('navbar.professionalOnly')}
-							</Tip>
-						) : (
-							<NavItem className="hover-pointer">
-								<NavLink
-									active={activeTab === 'aco'}
-									onClick={() => {
-										toggle('aco');
-									}}
+							data.customer?.license.type === 'free' ||
+							data.customer.license.type === 'personal' ? (
+							<>
+								<Tip
+									id="aco_nav"
+									label={
+										<NavItem className="hover-pointer">
+											<NavLink
+												active={activeTab === 'aco'}
+												disabled
+												onClick={() => {
+													toggle('aco');
+												}}
+											>
+												<img src={Tabs.ACO} alt="ACO" />
+												<div>{t('navbar.aco')}</div>
+											</NavLink>
+										</NavItem>
+									}
 								>
-									<img src={Tabs.ACO} alt="ACO" />
-									<div>{t('navbar.aco')}</div>
-								</NavLink>
-							</NavItem>
+									{t('navbar.professionalOnly')}
+								</Tip>
+								<Tip
+									id="arg_nav"
+									label={
+										<NavItem className="hover-pointer">
+											<NavLink
+												active={activeTab === 'arg'}
+												disabled
+												onClick={() => {
+													toggle('arg');
+												}}
+											>
+												<img src={Tabs.ARG} alt="ARG" />
+												<div>ARG</div>
+											</NavLink>
+										</NavItem>
+									}
+								>
+									{t('navbar.professionalOnly')}
+								</Tip>
+							</>
+						) : (
+							<>
+								<NavItem className="hover-pointer">
+									<NavLink
+										active={activeTab === 'aco'}
+										onClick={() => {
+											toggle('aco');
+										}}
+									>
+										<img src={Tabs.ACO} alt="ACO" />
+										<div>{t('navbar.aco')}</div>
+									</NavLink>
+								</NavItem>
+
+								<NavItem className="hover-pointer">
+									<NavLink
+										active={activeTab === 'arg'}
+										onClick={() => {
+											toggle('arg');
+										}}
+									>
+										<img src={Tabs.ARG} alt="ARG" />
+										<div>ARG</div>
+									</NavLink>
+								</NavItem>
+							</>
 						)
 					}
 				</ContextData.Consumer>
