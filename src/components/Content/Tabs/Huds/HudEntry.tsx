@@ -50,8 +50,8 @@ const HudEntry = ({
 			return '[RL]';
 		} else if (game === 'dota2') {
 			return '[DOTA2]';
-		} else if (game === "all"){
-			return '[ALL]'
+		} else if (game === 'all') {
+			return '[ALL]';
 		}
 		return '[CSGO]';
 	};
