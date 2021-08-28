@@ -56,7 +56,7 @@ const sendKillsToARG = (last, csgo) => {
     if (last.round?.phase === 'freezetime' && csgo.round?.phase !== 'freezetime' && exports.argSocket.socket) {
         exports.argSocket.socket.send('clearReplay');
     }
-    else if (csgo.round?.phase === 'freezetime' && last.round?.phase !== "freezetime" && exports.argSocket.socket) {
+    else if (csgo.round?.phase === 'freezetime' && last.round?.phase !== 'freezetime' && exports.argSocket.socket) {
         exports.argSocket.socket.send('showReplay');
     }
     const playerKills = csgo.players.map(player => ({

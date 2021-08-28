@@ -184,7 +184,7 @@ LHM on PC#1 sends information about kills to Lexogrine Auto Replay Generator on 
 
 ARG requires vMix 24.0.0.62 or newer.
 
-It is up to user to configure vMix output on PC#2.
+It is up to user to configure vMix output on PC#2 and to make sure both PCs time is synchronized.
 
 >Note - Delay between PCs is configurable on LHM's part
 

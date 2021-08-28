@@ -1,7 +1,6 @@
 import { ioPromise } from '../../socket';
 import { SimpleWebSocket } from 'simple-websockets';
 import { CSGO } from 'csgogsi-socket';
-import { io, Socket } from 'socket.io-client';
 
 export const argSocket: { socket: SimpleWebSocket | null; id: string | null; delay: number } = {
 	delay: 7,
@@ -79,7 +78,7 @@ const getNewKills = (kill: KillStatistics, oldKillsStatistics: KillStatistics[])
 export const sendKillsToARG = (last: CSGO, csgo: CSGO) => {
 	if (last.round?.phase === 'freezetime' && csgo.round?.phase !== 'freezetime' && argSocket.socket) {
 		argSocket.socket.send('clearReplay');
-	} else if(csgo.round?.phase === 'freezetime' && last.round?.phase !== "freezetime" && argSocket.socket){
+	} else if (csgo.round?.phase === 'freezetime' && last.round?.phase !== 'freezetime' && argSocket.socket) {
 		argSocket.socket.send('showReplay');
 	}
 	const playerKills: KillStatistics[] = csgo.players.map(player => ({
