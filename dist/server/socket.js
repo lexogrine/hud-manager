@@ -52,7 +52,7 @@ exports.ioPromise = config_1.loadConfig().then(cfg => {
 exports.mirvPgl = new hlae_1.MIRVPGL(exports.ioPromise);
 exports.ioPromise.then(io => {
     const onRoundEnd = async (score) => {
-        const lastGSIEntry = exports.GSI.last;
+        const lastGSIEntry = exports.GSI.current;
         if (lastGSIEntry)
             await matches_1.updateRound(lastGSIEntry);
         if (score.loser && score.loser.logo) {

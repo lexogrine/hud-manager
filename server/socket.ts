@@ -1,5 +1,5 @@
 import { Server, Socket } from 'socket.io';
-import { CSGOGSI, CSGORaw, Score, Player, Team } from 'csgogsi-socket';
+import { CSGOGSI, CSGORaw, Score, Player, Team, mapSteamIDToPlayer } from 'csgogsi-socket';
 import { DOTA2GSI } from 'dotagsi';
 import fetch from 'node-fetch';
 import { updateRound, updateMatch, getActiveGameMatches, reverseSide } from './api/matches';
@@ -69,7 +69,7 @@ export const mirvPgl = new MIRVPGL(ioPromise);
 
 ioPromise.then(io => {
 	const onRoundEnd = async (score: Score) => {
-		const lastGSIEntry = GSI.last;
+		const lastGSIEntry = GSI.current;
 		if (lastGSIEntry) await updateRound(lastGSIEntry);
 		if (score.loser && score.loser.logo) {
 			score.loser.logo = '';

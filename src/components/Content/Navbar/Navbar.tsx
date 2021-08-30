@@ -106,8 +106,8 @@ const Navbar = ({ activeTab, toggle, files }: IProps) => {
 					{data => (
 						<>
 							{!data?.customer?.license?.type ||
-								data.customer?.license.type === 'free' ||
-								data.customer.license.type === 'personal' ? (
+							data.customer?.license.type === 'free' ||
+							data.customer.license.type === 'personal' ? (
 								<Tip
 									id="aco_nav"
 									label={
@@ -127,19 +127,20 @@ const Navbar = ({ activeTab, toggle, files }: IProps) => {
 								>
 									{t('navbar.professionalOnly')}
 								</Tip>
-							) : <NavItem className="hover-pointer">
-								<NavLink
-									active={activeTab === 'aco'}
-									onClick={() => {
-										toggle('aco');
-									}}
-								>
-									<img src={Tabs.ACO} alt="ACO" />
-									<div>{t('navbar.aco')}</div>
-								</NavLink>
-							</NavItem>}
-							{!data?.customer?.license?.type ||
-								data.customer?.license.type === 'free' ? (
+							) : (
+								<NavItem className="hover-pointer">
+									<NavLink
+										active={activeTab === 'aco'}
+										onClick={() => {
+											toggle('aco');
+										}}
+									>
+										<img src={Tabs.ACO} alt="ACO" />
+										<div>{t('navbar.aco')}</div>
+									</NavLink>
+								</NavItem>
+							)}
+							{!data?.customer?.license?.type || data.customer?.license.type === 'free' ? (
 								<Tip
 									id="arg_nav"
 									label={
@@ -159,17 +160,19 @@ const Navbar = ({ activeTab, toggle, files }: IProps) => {
 								>
 									{t('navbar.nonFreeOnly')}
 								</Tip>
-							) : <NavItem className="hover-pointer">
-							<NavLink
-								active={activeTab === 'arg'}
-								onClick={() => {
-									toggle('arg');
-								}}
-							>
-								<img src={Tabs.ARG} alt="ARG" />
-								<div>ARG</div>
-							</NavLink>
-						</NavItem>}
+							) : (
+								<NavItem className="hover-pointer">
+									<NavLink
+										active={activeTab === 'arg'}
+										onClick={() => {
+											toggle('arg');
+										}}
+									>
+										<img src={Tabs.ARG} alt="ARG" />
+										<div>ARG</div>
+									</NavLink>
+								</NavItem>
+							)}
 						</>
 					)}
 				</ContextData.Consumer>

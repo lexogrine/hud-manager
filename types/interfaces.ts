@@ -256,6 +256,8 @@ export interface PlayerRoundData {
 	kills: number;
 	killshs: number;
 	damage: number;
+	assists: number;
+	deaths: number;
 }
 
 export type RequiredFields = {

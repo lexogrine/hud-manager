@@ -83,6 +83,8 @@ const VetoEntry = ({ map, veto, vetoTeams, onSave, maps }: Props) => {
 		onSave('winner', map, undefined);
 		onSave('mapEnd', map, false);
 		onSave('score', map, {});
+		onSave('game', map, undefined);
+		onSave('rounds', map, undefined);
 	};
 
 	const setWinner = (team?: string) => () => {

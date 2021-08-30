@@ -238,6 +238,14 @@ const updateRound = async (game) => {
     };
     if (!game || !game.map || game.map.phase !== 'live')
         return;
+    const matches = await exports.getActiveGameMatches();
+    const match = matches.find(match => match.current);
+    if (!match || match.game !== 'csgo')
+        return;
+    const mapName = game.map.name.substring(game.map.name.lastIndexOf('/') + 1);
+    const veto = match.vetos.find(veto => veto.mapName === mapName && !veto.mapEnd);
+    if (!veto || veto.mapEnd)
+        return;
     let round = game.map.round;
     if (game.round && game.round.phase !== 'over') {
         round++;
@@ -253,20 +261,18 @@ const updateRound = async (game) => {
         roundData.win_type = getWinType(game.map.round_wins[round]);
     }
     for (const player of game.players) {
+        const previousAssists = veto.rounds?.[roundData.round - 2].players[player.steamid].assists || 0;
+        const previousDeaths = veto.rounds?.[roundData.round - 2].players[player.steamid].deaths || 0;
+        const assists = player.stats.assists - previousAssists;
+        const deaths = player.stats.deaths - previousDeaths;
         roundData.players[player.steamid] = {
             kills: player.state.round_kills,
             killshs: player.state.round_killhs,
-            damage: player.state.round_totaldmg
+            damage: player.state.round_totaldmg,
+            assists,
+            deaths
         };
     }
-    const matches = await exports.getActiveGameMatches();
-    const match = matches.find(match => match.current);
-    if (!match || match.game !== 'csgo')
-        return;
-    const mapName = game.map.name.substring(game.map.name.lastIndexOf('/') + 1);
-    const veto = match.vetos.find(veto => veto.mapName === mapName && !veto.mapEnd);
-    if (!veto || veto.mapEnd)
-        return;
     if (veto.rounds &&
         veto.rounds[roundData.round - 1] &&
         JSON.stringify(veto.rounds[roundData.round - 1]) === JSON.stringify(roundData))
