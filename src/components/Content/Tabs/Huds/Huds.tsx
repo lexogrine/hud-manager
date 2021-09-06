@@ -401,37 +401,35 @@ class Huds extends Component<IProps, IState> {
 									accept=".zip"
 								/>
 							</Col>
-							{independentOrDevHUDs
-								.map(hud => (
-									<HudEntry
-										key={hud.dir}
-										hud={hud}
-										toggleConfig={this.toggleConfig}
-										isActive={hud.url === this.state.currentHUD}
-										customFields={this.props.cxt.fields}
-										loadHUDs={this.loadHUDs}
-										setHUDLoading={this.setHUDLoading}
-										isLoading={!!hud.uuid && this.state.loadingHUDs.includes(hud.uuid)}
-										isCloudAvailable={available}
-										isHUDOpened={isHUDOpened}
-									/>
-								))}
+							{independentOrDevHUDs.map(hud => (
+								<HudEntry
+									key={hud.dir}
+									hud={hud}
+									toggleConfig={this.toggleConfig}
+									isActive={hud.url === this.state.currentHUD}
+									customFields={this.props.cxt.fields}
+									loadHUDs={this.loadHUDs}
+									setHUDLoading={this.setHUDLoading}
+									isLoading={!!hud.uuid && this.state.loadingHUDs.includes(hud.uuid)}
+									isCloudAvailable={available}
+									isHUDOpened={isHUDOpened}
+								/>
+							))}
 							{independentOrDevHUDs.length && gameHUDs.length ? <div className="huds-separator" /> : null}
-							{gameHUDs
-								.map(hud => (
-									<HudEntry
-										key={hud.dir}
-										hud={hud}
-										toggleConfig={this.toggleConfig}
-										isActive={hud.url === this.state.currentHUD}
-										customFields={this.props.cxt.fields}
-										loadHUDs={this.loadHUDs}
-										setHUDLoading={this.setHUDLoading}
-										isLoading={!!hud.uuid && this.state.loadingHUDs.includes(hud.uuid)}
-										isCloudAvailable={available}
-										isHUDOpened={isHUDOpened}
-									/>
-								))}
+							{gameHUDs.map(hud => (
+								<HudEntry
+									key={hud.dir}
+									hud={hud}
+									toggleConfig={this.toggleConfig}
+									isActive={hud.url === this.state.currentHUD}
+									customFields={this.props.cxt.fields}
+									loadHUDs={this.loadHUDs}
+									setHUDLoading={this.setHUDLoading}
+									isLoading={!!hud.uuid && this.state.loadingHUDs.includes(hud.uuid)}
+									isCloudAvailable={available}
+									isHUDOpened={isHUDOpened}
+								/>
+							))}
 						</Col>
 					</Row>
 
