@@ -225,8 +225,8 @@ class Huds extends Component<IProps, IState> {
 			);
 		}
 
-		const gameHUDs = huds.filter(hud => hud.game !== 'all');
-		const independentHUDs = huds.filter(hud => hud.game === 'all');
+		const gameHUDs = huds.filter(hud => hud.game !== 'all' && !hud.isDev);
+		const independentOrDevHUDs = huds.filter(hud => hud.game === 'all' || hud.isDev);
 
 		return (
 			<>
@@ -401,8 +401,7 @@ class Huds extends Component<IProps, IState> {
 									accept=".zip"
 								/>
 							</Col>
-							{independentHUDs
-								.filter(hud => hud.game === 'all')
+							{independentOrDevHUDs
 								.map(hud => (
 									<HudEntry
 										key={hud.dir}
@@ -417,9 +416,8 @@ class Huds extends Component<IProps, IState> {
 										isHUDOpened={isHUDOpened}
 									/>
 								))}
-							{independentHUDs.length && gameHUDs.length ? <div className="huds-separator" /> : null}
+							{independentOrDevHUDs.length && gameHUDs.length ? <div className="huds-separator" /> : null}
 							{gameHUDs
-								.filter(hud => hud.game !== 'all')
 								.map(hud => (
 									<HudEntry
 										key={hud.dir}

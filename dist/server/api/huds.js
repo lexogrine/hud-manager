@@ -99,10 +99,12 @@ const listHUDs = async () => {
         return [];
     const onlineHUDs = await getOnlineHUDs();
     const dir = path.join(electron_1.app.getPath('home'), 'HUDs');
-    const filtered = fs.existsSync(dir) ? fs
-        .readdirSync(dir, { withFileTypes: true })
-        .filter(dirent => dirent.isDirectory())
-        .filter(dirent => /^[0-9a-zA-Z-_]+$/g.test(dirent.name)) : [];
+    const filtered = fs.existsSync(dir)
+        ? fs
+            .readdirSync(dir, { withFileTypes: true })
+            .filter(dirent => dirent.isDirectory())
+            .filter(dirent => /^[0-9a-zA-Z-_]+$/g.test(dirent.name))
+        : [];
     const huds = (await Promise.all(filtered.map(async (dirent) => await exports.getHUDData(dirent.name)))).filter(hud => hud !== null);
     if (socket_1.HUDState.devHUD) {
         huds.unshift(socket_1.HUDState.devHUD);
