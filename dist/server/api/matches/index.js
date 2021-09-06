@@ -261,8 +261,8 @@ const updateRound = async (game) => {
         roundData.win_type = getWinType(game.map.round_wins[round]);
     }
     for (const player of game.players) {
-        const previousAssists = veto.rounds?.[roundData.round - 2].players[player.steamid].assists || 0;
-        const previousDeaths = veto.rounds?.[roundData.round - 2].players[player.steamid].deaths || 0;
+        const previousAssists = veto.rounds?.[roundData.round - 2]?.players?.[player.steamid]?.assists || 0;
+        const previousDeaths = veto.rounds?.[roundData.round - 2]?.players?.[player.steamid]?.deaths || 0;
         const assists = player.stats.assists - previousAssists;
         const deaths = player.stats.deaths - previousDeaths;
         roundData.players[player.steamid] = {

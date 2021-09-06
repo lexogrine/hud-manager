@@ -115,6 +115,8 @@ export default async function () {
 
 	app.route('/api/huds').get(huds.getHUDs).post(huds.openHUDsDirectory).delete(huds.deleteHUD);
 
+	app.route('/api/huds/action/:hudDir/:action').post(huds.sendActionByHTTP);
+
 	app.route('/api/huds/add').post(huds.sendHUD);
 
 	app.route('/api/huds/close').post(huds.closeHUD);

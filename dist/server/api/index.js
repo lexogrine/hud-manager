@@ -110,6 +110,7 @@ async function default_1() {
         init = false;
     });
     __1.app.route('/api/huds').get(huds.getHUDs).post(huds.openHUDsDirectory).delete(huds.deleteHUD);
+    __1.app.route('/api/huds/action/:hudDir/:action').post(huds.sendActionByHTTP);
     __1.app.route('/api/huds/add').post(huds.sendHUD);
     __1.app.route('/api/huds/close').post(huds.closeHUD);
     __1.app.route('/api/huds/:hudDir/start').post(huds.showHUD);

@@ -41,6 +41,9 @@ const createDEBracket = (teams) => {
     const upperBracket = exports.createSEBracket(teams);
     if (!upperBracket.length)
         return [];
+    if (teams === 2) {
+        return upperBracket;
+    }
     const grandFinal = createMatchup();
     upperBracket.push(grandFinal);
     upperBracket[0].winner_to = grandFinal._id;

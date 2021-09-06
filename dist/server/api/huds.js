@@ -22,7 +22,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.singHUDByDir = exports.signHUD = exports.uploadHUD = exports.deleteHUDFromCloud = exports.downloadHUD = exports.removeArchives = exports.deleteHUD = exports.sendHUD = exports.closeHUD = exports.showHUD = exports.legacyCSS = exports.legacyJS = exports.renderLegacy = exports.renderAssets = exports.getThumbPath = exports.renderThumbnail = exports.renderOverlay = exports.render = exports.verifyOverlay = exports.renderHUD = exports.openHUDsDirectory = exports.getHUDPanelSetting = exports.getHUDKeyBinds = exports.getHUDData = exports.getHUDARSettings = exports.getHUDCustomAsset = exports.getHUDs = exports.listHUDs = exports.remove = exports.getRandomString = void 0;
+exports.singHUDByDir = exports.signHUD = exports.uploadHUD = exports.deleteHUDFromCloud = exports.downloadHUD = exports.removeArchives = exports.sendActionByHTTP = exports.deleteHUD = exports.sendHUD = exports.closeHUD = exports.showHUD = exports.legacyCSS = exports.legacyJS = exports.renderLegacy = exports.renderAssets = exports.getThumbPath = exports.renderThumbnail = exports.renderOverlay = exports.render = exports.verifyOverlay = exports.renderHUD = exports.openHUDsDirectory = exports.getHUDPanelSetting = exports.getHUDKeyBinds = exports.getHUDData = exports.getHUDARSettings = exports.getHUDCustomAsset = exports.getHUDs = exports.listHUDs = exports.remove = exports.getRandomString = void 0;
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
 const electron_1 = require("electron");
@@ -99,10 +99,10 @@ const listHUDs = async () => {
         return [];
     const onlineHUDs = await getOnlineHUDs();
     const dir = path.join(electron_1.app.getPath('home'), 'HUDs');
-    const filtered = fs
+    const filtered = fs.existsSync(dir) ? fs
         .readdirSync(dir, { withFileTypes: true })
         .filter(dirent => dirent.isDirectory())
-        .filter(dirent => /^[0-9a-zA-Z-_]+$/g.test(dirent.name));
+        .filter(dirent => /^[0-9a-zA-Z-_]+$/g.test(dirent.name)) : [];
     const huds = (await Promise.all(filtered.map(async (dirent) => await exports.getHUDData(dirent.name)))).filter(hud => hud !== null);
     if (socket_1.HUDState.devHUD) {
         huds.unshift(socket_1.HUDState.devHUD);
@@ -506,6 +506,23 @@ const deleteHUD = async (req, res) => {
     }
 };
 exports.deleteHUD = deleteHUD;
+const sendActionByHTTP = async (req, res) => {
+    const io = await socket_1.ioPromise;
+    let { hudDir } = req.params;
+    const { action } = req.params;
+    const data = req.body;
+    if (hudDir === 'development' && 'isDev' in req.query && socket_1.HUDState.devHUD?.dir) {
+        hudDir = socket_1.HUDState.devHUD.dir;
+    }
+    if (data) {
+        io.to(hudDir).emit('hud_action', { data, action });
+    }
+    else {
+        io.to(hudDir).emit('keybindAction', action);
+    }
+    return res.sendStatus(200);
+};
+exports.sendActionByHTTP = sendActionByHTTP;
 const removeArchives = () => {
     const files = fs
         .readdirSync('./')

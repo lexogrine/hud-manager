@@ -83,10 +83,11 @@ export const listHUDs = async () => {
 	const onlineHUDs = await getOnlineHUDs();
 
 	const dir = path.join(app.getPath('home'), 'HUDs');
-	const filtered = fs
+
+	const filtered = fs.existsSync(dir) ? fs
 		.readdirSync(dir, { withFileTypes: true })
 		.filter(dirent => dirent.isDirectory())
-		.filter(dirent => /^[0-9a-zA-Z-_]+$/g.test(dirent.name));
+		.filter(dirent => /^[0-9a-zA-Z-_]+$/g.test(dirent.name)) : [];
 
 	const huds = (await Promise.all(filtered.map(async dirent => await getHUDData(dirent.name)))).filter(
 		hud => hud !== null
@@ -500,6 +501,26 @@ export const deleteHUD: express.RequestHandler = async (req, res) => {
 		return res.sendStatus(500);
 	}
 };
+
+export const sendActionByHTTP: express.RequestHandler = async (req, res) => {
+	const io = await ioPromise;
+	let { hudDir } = req.params;
+	const { action } = req.params;
+
+	const data = req.body;
+
+	if (hudDir === 'development' && 'isDev' in req.query && HUDState.devHUD?.dir) {
+		hudDir = HUDState.devHUD.dir;
+	}
+
+	if(data){
+		io.to(hudDir).emit('hud_action', { data, action });
+	} else {
+		io.to(hudDir).emit('keybindAction', action);
+	}
+	return res.sendStatus(200);
+};
+
 export const removeArchives = () => {
 	const files = fs
 		.readdirSync('./')

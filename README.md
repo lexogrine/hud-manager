@@ -400,9 +400,10 @@ If the build has been successful, an `app` directory should appear with the inst
 |`/api/teams/:id`|GET|Find team by ID|
 |`/api/teams/logo/:id`|GET|Find team logo by ID|
 |`/api/config`|GET|Get manager config|
-|`/api/match`|GET|Array of matches|
+|`/api/match`|GET|Array of matches. Add `?full` to get also last entry of GSI data for each match|
 |`/api/match/current`|GET|Current match|
 |`/api/match/:id`|GET|Find match by ID|
+|`/api/huds/action/:hudDir/:action`|POST|Send action to the HUD. Simulates actions from HUD settings panel if body exists on the request, or keybind action if body is empty|
 |`/api/huds`|GET|Array of available HUDs|
 |`/api/maps`|GET|Map pool array|
 |`/api/gsi`|GET|Check if GSI file is loaded|
