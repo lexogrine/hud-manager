@@ -84,10 +84,12 @@ export const listHUDs = async () => {
 
 	const dir = path.join(app.getPath('home'), 'HUDs');
 
-	const filtered = fs.existsSync(dir) ? fs
-		.readdirSync(dir, { withFileTypes: true })
-		.filter(dirent => dirent.isDirectory())
-		.filter(dirent => /^[0-9a-zA-Z-_]+$/g.test(dirent.name)) : [];
+	const filtered = fs.existsSync(dir)
+		? fs
+				.readdirSync(dir, { withFileTypes: true })
+				.filter(dirent => dirent.isDirectory())
+				.filter(dirent => /^[0-9a-zA-Z-_]+$/g.test(dirent.name))
+		: [];
 
 	const huds = (await Promise.all(filtered.map(async dirent => await getHUDData(dirent.name)))).filter(
 		hud => hud !== null
@@ -513,7 +515,7 @@ export const sendActionByHTTP: express.RequestHandler = async (req, res) => {
 		hudDir = HUDState.devHUD.dir;
 	}
 
-	if(data){
+	if (data) {
 		io.to(hudDir).emit('hud_action', { data, action });
 	} else {
 		io.to(hudDir).emit('keybindAction', action);

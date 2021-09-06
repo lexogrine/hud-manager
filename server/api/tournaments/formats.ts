@@ -40,8 +40,8 @@ export const createDEBracket = (teams: number) => {
 	const upperBracket = createSEBracket(teams);
 
 	if (!upperBracket.length) return [];
-	
-	if(teams === 2){
+
+	if (teams === 2) {
 		return upperBracket;
 	}
 
