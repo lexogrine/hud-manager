@@ -200,6 +200,7 @@ export type PanelInputType =
 	| 'text'
 	| 'team'
 	| 'image'
+	| 'images'
 	| 'match'
 	| 'player'
 	| 'select'
