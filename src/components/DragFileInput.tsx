@@ -54,16 +54,14 @@ export default class DragFileInput extends Component<Props, State> {
 	};
 
 	renderPreview = (imgSrc?: string | string[]) => {
-		if(!imgSrc) return null;
+		if (!imgSrc) return null;
 
-		if(typeof imgSrc === "string") return (
-			<img src={imgSrc} className="drag-file-img-preview" alt={'Preview'} />
-		);
+		if (typeof imgSrc === 'string') return <img src={imgSrc} className="drag-file-img-preview" alt={'Preview'} />;
 
 		return imgSrc.map(imgSrc => (
 			<img key={imgSrc} src={imgSrc} className="drag-file-img-preview" alt={'Preview'} />
 		));
-	}
+	};
 
 	render() {
 		let accept = '';
@@ -92,7 +90,13 @@ export default class DragFileInput extends Component<Props, State> {
 						X
 					</div>
 				) : null}
-				<input type="file" multiple={this.props.multiple} id={this.props.id} accept={accept} onChange={this.uploadHandler} />
+				<input
+					type="file"
+					multiple={this.props.multiple}
+					id={this.props.id}
+					accept={accept}
+					onChange={this.uploadHandler}
+				/>
 				<label className="centered" htmlFor={this.props.id}>
 					<img src={DragIcon} alt="Drag file here" />
 					{this.props.label}

@@ -70,52 +70,55 @@ class ActionPanel extends Component<IProps, IState> {
 		socket.emit('get_config', hud.dir);
 	}
 
-	handleImages = (name: string, sectionName: string, multiple = false) => async (files: FileList) => {
-		if (!files) return;
+	handleImages =
+		(name: string, sectionName: string, multiple = false) =>
+		async (files: FileList) => {
+			if (!files) return;
 
-		const images: string[] = [];
+			const images: string[] = [];
 
-		const loadImage = (file: File) => new Promise<string | null>(res => {
-			if (!file.type.startsWith('image')) {
-				return res(null);
-			}
-			const reader = new FileReader();
-			reader.readAsDataURL(file);
-			reader.onload = () => {
-				if(typeof reader.result !== "string") return res(null);
-				const image = reader.result.replace(/^data:([a-z]+)\/(.+);base64,/, '');
-				images.push(image);
-				return res(image);
-			}
+			const loadImage = (file: File) =>
+				new Promise<string | null>(res => {
+					if (!file.type.startsWith('image')) {
+						return res(null);
+					}
+					const reader = new FileReader();
+					reader.readAsDataURL(file);
+					reader.onload = () => {
+						if (typeof reader.result !== 'string') return res(null);
+						const image = reader.result.replace(/^data:([a-z]+)\/(.+);base64,/, '');
+						images.push(image);
+						return res(image);
+					};
 
-			reader.onerror = () => {
-				res(null);
-			}
-		});
-		const { form } = this.state;
-		if(!multiple){
-			const file = files[0];
-			if (!file) {
-				form[sectionName][name] = '';
+					reader.onerror = () => {
+						res(null);
+					};
+				});
+			const { form } = this.state;
+			if (!multiple) {
+				const file = files[0];
+				if (!file) {
+					form[sectionName][name] = '';
+					this.setState({ form });
+					return;
+				}
+
+				const imageData = await loadImage(file);
+
+				if (!imageData) return;
+
+				form[sectionName][name] = imageData;
 				this.setState({ form });
 				return;
 			}
 
-			const imageData = await loadImage(file);
+			await Promise.all([...files].map(file => loadImage(file)));
 
-			if(!imageData) return;
-
-			form[sectionName][name] = imageData;
+			form[sectionName][name] = JSON.stringify(images);
 			this.setState({ form });
 			return;
-		}
-
-		await Promise.all([...files].map(file => loadImage(file)));
-
-		form[sectionName][name] = JSON.stringify(images);
-		this.setState({ form });
-		return;
-	};
+		};
 
 	sendSection(name: string) {
 		const section = this.state.form[name];
@@ -394,11 +397,10 @@ class ActionPanel extends Component<IProps, IState> {
 									label={(input && input.label && input.label.toUpperCase()) || ''}
 									imgSrc={
 										form[section.name] && form[section.name][input.name]
-											? JSON.parse(form[section.name][input.name]).map((img: string) => (
-												`data:image/${this.getEncoding(img)};base64,${
-													img
-											  }`
-											)):undefined
+											? JSON.parse(form[section.name][input.name]).map(
+													(img: string) => `data:image/${this.getEncoding(img)};base64,${img}`
+											  )
+											: undefined
 									}
 								/>
 							</Col>
