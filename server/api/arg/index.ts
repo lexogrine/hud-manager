@@ -75,7 +75,11 @@ const getNewKills = (kill: KillStatistics, oldKillsStatistics: KillStatistics[])
 	const oldKillEntry = oldKillsStatistics.find(entry => entry.steamid === kill.steamid);
 	if (!oldKillEntry) return { kills: 0, headshot: false, teamkill: false };
 	if (kill.kills - oldKillEntry.kills < 0) return { kills: 0, headshot: false, teamkill: true };
-	return { kills: kill.kills - oldKillEntry.kills, headshot: kill.headshots > oldKillEntry.headshots, teamkill: false };
+	return {
+		kills: kill.kills - oldKillEntry.kills,
+		headshot: kill.headshots > oldKillEntry.headshots,
+		teamkill: false
+	};
 };
 
 export const sendKillsToARG = (last: CSGO, csgo: CSGO) => {

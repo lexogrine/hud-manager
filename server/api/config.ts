@@ -113,7 +113,7 @@ export const setConfig = async (config: Config) =>
 			if (!newConfig) {
 				return res(defaultConfig);
 			}
-			if(!customer?.customer || customer.customer.license.type === "free"){
+			if (!customer?.customer || customer.customer.license.type === 'free') {
 				newConfig.cg = false;
 			}
 			return res(newConfig);

@@ -4,7 +4,15 @@ export type AvailableGames = 'csgo' | 'rocketleague' | 'dota2';
 
 export type AvailableResources = 'teams' | 'players' | 'customs' | 'mapconfigs' | 'matches' | 'tournaments' | 'arg';
 
-export const availableResources: AvailableResources[] = ['teams', 'players', 'customs', 'mapconfigs' , 'matches', 'tournaments', 'arg'];
+export const availableResources: AvailableResources[] = [
+	'teams',
+	'players',
+	'customs',
+	'mapconfigs',
+	'matches',
+	'tournaments',
+	'arg'
+];
 
 export const availableGames: AvailableGames[] = ['csgo', 'rocketleague', 'dota2'];
 

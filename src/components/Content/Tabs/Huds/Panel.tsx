@@ -113,7 +113,7 @@ class ActionPanel extends Component<IProps, IState> {
 				return;
 			}
 
-			for(const file of files){
+			for (const file of files) {
 				await loadImage(file);
 			}
 

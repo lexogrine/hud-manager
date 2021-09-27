@@ -44,7 +44,7 @@ export const addMatchRoute: RequestHandler = async (req, res) => {
 	if (await validateCloudAbility()) {
 		cloudStatus = (await checkCloudStatus(customer.game as AvailableGames)) === 'ALL_SYNCED';
 	}
-	if(match && cloudStatus){
+	if (match && cloudStatus) {
 		await addResource(customer.game as AvailableGames, 'matches', match);
 	}
 	return res.sendStatus(match ? 200 : 500);

@@ -35,6 +35,4 @@ export const saveDelay: express.RequestHandler = async (req, res) => {
 	return res.sendStatus(200);
 };
 
-export const saveConfig: express.RequestHandler = async (req, res) => {
-
-}
+export const saveConfig: express.RequestHandler = async (req, res) => {};

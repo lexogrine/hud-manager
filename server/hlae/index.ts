@@ -123,8 +123,8 @@ export class MIRVPGL {
 							return;
 						}
 						const gameEvent = gameEventUnserializer.unserialize(bufferReader);
-						
-						if(gameEvent.name === "player_hurt"){
+
+						if (gameEvent.name === 'player_hurt') {
 							io.to('game').emit('update_mirv', gameEvent, 'player_hurt');
 						}
 						if (gameEvent.name === 'player_death') {

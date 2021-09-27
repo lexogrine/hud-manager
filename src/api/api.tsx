@@ -4,9 +4,9 @@ import * as I from './interfaces';
 import { PlayerExtension } from 'csgogsi-socket';
 
 export interface Item {
-	id: string
-	text: string
-	active: boolean
+	id: string;
+	text: string;
+	active: boolean;
 }
 
 const apiUrl = config.apiAddress;
