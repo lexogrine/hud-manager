@@ -11,6 +11,7 @@ const public_ip_1 = __importDefault(require("public-ip"));
 const internal_ip_1 = __importDefault(require("internal-ip"));
 const electron_1 = require("../../electron");
 const socket_1 = require("../socket");
+const _1 = require(".");
 const configs = database_1.default.config;
 exports.publicIP = null;
 exports.internalIP = internal_ip_1.default.v4.sync() || ip_1.default.address();
@@ -104,6 +105,9 @@ const setConfig = async (config) => new Promise(res => {
         const newConfig = await exports.loadConfig();
         if (!newConfig) {
             return res(defaultConfig);
+        }
+        if (!_1.customer?.customer || _1.customer.customer.license.type === "free") {
+            newConfig.cg = false;
         }
         return res(newConfig);
     });

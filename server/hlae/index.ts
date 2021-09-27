@@ -4,6 +4,7 @@ import BufferReader from './BufferReader';
 import GameEventUnserializer from './GameEventUnserializer';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 
+const knownGameEvents: string[] = [];
 export class MIRVPGL {
 	socket: WebSocket | null;
 	constructor(ioPromise: Promise<Server<DefaultEventsMap, DefaultEventsMap>>) {
@@ -20,7 +21,8 @@ export class MIRVPGL {
 	private init = async (ioPromise: Promise<Server<DefaultEventsMap, DefaultEventsMap>>) => {
 		const io = await ioPromise;
 		const enrichments = {
-			player_death: ['userid', 'attacker', 'assister']
+			player_death: ['userid', 'attacker', 'assister'],
+			player_hurt: ['userid', 'attacker']
 		};
 
 		io.on('connection', incoming => {
@@ -96,6 +98,24 @@ export class MIRVPGL {
 								),
 								{ binary: true }
 							);
+							socket.send(
+								new Uint8Array(
+									Buffer.from(
+										'exec\0mirv_pgl events enrich eventProperty "useridWithSteamId" "player_hurt" "userid"\0',
+										'utf8'
+									)
+								),
+								{ binary: true }
+							);
+							socket.send(
+								new Uint8Array(
+									Buffer.from(
+										'exec\0mirv_pgl events enrich eventProperty "useridWithSteamId" "player_hurt" "attacker"\0',
+										'utf8'
+									)
+								),
+								{ binary: true }
+							);
 							socket.send(new Uint8Array(Buffer.from('exec\0mirv_pgl events enabled 1\0', 'utf8')), {
 								binary: true
 							});
@@ -103,6 +123,10 @@ export class MIRVPGL {
 							return;
 						}
 						const gameEvent = gameEventUnserializer.unserialize(bufferReader);
+						
+						if(gameEvent.name === "player_hurt"){
+							io.to('game').emit('update_mirv', gameEvent, 'player_hurt');
+						}
 						if (gameEvent.name === 'player_death') {
 							io.to('game').emit('update_mirv', gameEvent);
 						}

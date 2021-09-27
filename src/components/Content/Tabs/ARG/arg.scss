@@ -6,6 +6,46 @@
         width: unset;
     }
 }
+.arg-setting-entry-container {
+    height: 44px;
+    display: flex;
+    align-items: center;
+    margin-bottom:14px;
+    &:first-child {
+        margin-top: 14px;
+    }
+
+    .checkbox {
+        width: 15px;
+        height: 15px;
+        border-radius: 4px;
+        border: 1px solid rgba(255,255,255,0.2);
+        margin-right: 15px;
+        cursor: pointer;
+        font-size: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        &.active {
+            background-color: #6f13ff;
+        }
+    }
+    .arg-setting-entry {
+        flex: 1;
+        display: flex;
+        cursor: pointer;
+        text-transform: uppercase;
+        padding: 0 27px;
+        height: 100%;
+        font-size: 10px;
+        font-weight: 700;
+        align-items: center;
+        background-color: #2f3238;
+        background-position: center right 40px;
+        background-repeat: no-repeat;
+        background-image: url('./hand.png');
+    }
+}
 .arg-title {
     span {
         display: flex;

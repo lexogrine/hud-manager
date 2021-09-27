@@ -110,7 +110,7 @@ export const addMatch = (match: Match) =>
 		});
 	});
 
-export const deleteMatch = (id: string) =>
+export const deleteMatch = (id: string): Promise<boolean> =>
 	new Promise(res => {
 		matchesDb.remove({ id }, async err => {
 			if (err) return res(false);
@@ -306,11 +306,17 @@ export const updateRound = async (game: CSGO) => {
 	return updateMatch(match);
 };
 
-export const replaceLocalMatches = (newMatches: Match[], game: AvailableGames) =>
+export const replaceLocalMatches = (newMatches: Match[], game: AvailableGames, existing: string[]) =>
 	new Promise<boolean>(res => {
-		const or: any[] = [{ game }];
+		const or: any[] = [
+			{ game, _id: { $nin: existing } },
+			{ game, _id: { $in: newMatches.map(match => match.id) } }
+		];
 		if (game === 'csgo') {
-			or.push({ game: { $exists: false } });
+			or.push(
+				{ game: { $exists: false }, id: { $nin: existing } },
+				{ game: { $exists: false }, id: { $in: newMatches.map(team => team.id) } }
+			);
 		}
 		matchesDb.remove({ $or: or }, { multi: true }, err => {
 			if (err) {

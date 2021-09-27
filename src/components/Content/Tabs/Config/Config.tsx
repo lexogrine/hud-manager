@@ -159,7 +159,7 @@ class Config extends Component<IProps, IState> {
 	import = (data: any, callback: any) => async () => {
 		try {
 			await api.files.sync(data);
-		} catch {}
+		} catch { }
 		this.setState({ data: {}, conflict: { teams: 0, players: 0 }, importModalOpen: false }, callback);
 	};
 	importCheck = (callback: any) => (files: FileList) => {
@@ -190,7 +190,7 @@ class Config extends Component<IProps, IState> {
 					importModalOpen: true,
 					data: db
 				});
-			} catch {}
+			} catch { }
 		};
 	};
 	download = (target: 'gsi' | 'cfgs' | 'db') => {
@@ -491,6 +491,8 @@ class Config extends Component<IProps, IState> {
 			cxt.customer?.license?.type === 'professional' || cxt.customer?.license?.type === 'enterprise';
 		const active = Boolean(available && config.sync);
 
+		const didBuy = cxt.customer?.license?.type && cxt.customer.license.type !== 'free'
+
 		return (
 			<Form>
 				<div className="tab-title-container">{t('settings.header')}</div>
@@ -552,8 +554,8 @@ class Config extends Component<IProps, IState> {
 									{update.installing
 										? t('settings.updater.installing')
 										: update.available
-										? t('settings.updater.install')
-										: t('settings.updater.latest')}
+											? t('settings.updater.install')
+											: t('settings.updater.latest')}
 								</Button>
 							</Col>
 						</ElectronOnly>
@@ -569,6 +571,7 @@ class Config extends Component<IProps, IState> {
 									isOn={this.state.config.cg}
 									id="cg-toggle"
 									handleToggle={this.cgToggleHandler}
+									disabled={!didBuy}
 								/>
 							</Col>
 						</ElectronOnly>

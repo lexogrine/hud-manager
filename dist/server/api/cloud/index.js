@@ -29,12 +29,14 @@ const config_1 = require("../config");
 const players_1 = require("../players");
 const teams_1 = require("../teams");
 const aco_1 = require("../aco");
+const matches_1 = require("../matches");
 const electron_1 = require("electron");
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
 const __1 = require("..");
 const fields_1 = require("../fields");
 const Sentry = __importStar(require("@sentry/node"));
+const middlewares_1 = require("../tournaments/middlewares");
 const cloudErrorHandler = () => { };
 const getLastUpdateDateLocally = () => {
     const userData = electron_1.app.getPath('userData');
@@ -148,9 +150,12 @@ const downloadCloudData = async (game, resource, fromDate) => {
     const replacer = {};
     for (const resource of I.availableResources) {
         switch (resource) {
-            /*case 'matches':
-                replacer.matches = replaceLocalMatches;
-                break;*/
+            case 'tournaments':
+                replacer.tournaments = middlewares_1.replaceLocalTournaments;
+                break;
+            case 'matches':
+                replacer.matches = matches_1.replaceLocalMatches;
+                break;
             case 'customs':
                 replacer.customs = fields_1.replaceLocalCustomFieldStores;
                 break;

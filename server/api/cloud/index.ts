@@ -12,6 +12,7 @@ import { customer } from '..';
 import { getCustomFieldsDb, replaceLocalCustomFieldStores } from '../fields';
 import * as Sentry from '@sentry/node';
 import c from 'fetch-cookie';
+import { replaceLocalTournaments } from '../tournaments/middlewares';
 
 const cloudErrorHandler = () => {};
 
@@ -148,9 +149,12 @@ const downloadCloudData = async (game: I.AvailableGames, resource: I.AvailableRe
 
 	for (const resource of I.availableResources) {
 		switch (resource) {
-			/*case 'matches':
+			case 'tournaments':
+				replacer.tournaments = replaceLocalTournaments;
+				break;
+			case 'matches':
 				replacer.matches = replaceLocalMatches;
-				break;*/
+				break;
 			case 'customs':
 				replacer.customs = replaceLocalCustomFieldStores;
 				break;

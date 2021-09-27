@@ -47,10 +47,10 @@ exports.connectToARG = connectToARG;
 const getNewKills = (kill, oldKillsStatistics) => {
     const oldKillEntry = oldKillsStatistics.find(entry => entry.steamid === kill.steamid);
     if (!oldKillEntry)
-        return 0;
+        return { kills: 0, headshot: false, teamkill: false };
     if (kill.kills - oldKillEntry.kills < 0)
-        return 0;
-    return kill.kills - oldKillEntry.kills;
+        return { kills: 0, headshot: false, teamkill: true };
+    return { kills: kill.kills - oldKillEntry.kills, headshot: kill.headshots > oldKillEntry.headshots, teamkill: false };
 };
 const sendKillsToARG = (last, csgo) => {
     if (last.round?.phase === 'freezetime' && csgo.round?.phase !== 'freezetime' && exports.argSocket.socket) {
@@ -63,26 +63,30 @@ const sendKillsToARG = (last, csgo) => {
         steamid: player.steamid,
         kills: player.stats.kills,
         health: player.state.health,
-        name: player.name
+        name: player.name,
+        headshots: player.state.round_killhs
     }));
     const oldPlayerKills = last.players.map(player => ({
         steamid: player.steamid,
         kills: player.stats.kills,
         health: player.state.health,
-        name: player.name
+        name: player.name,
+        headshots: player.state.round_killhs
     }));
     const argKillEntries = [];
     for (const playerKill of playerKills) {
         const newKills = getNewKills(playerKill, oldPlayerKills);
-        if (!newKills)
+        if (!newKills.kills)
             continue;
         argKillEntries.push({
             killer: playerKill.steamid,
             timestamp: new Date().getTime() + exports.argSocket.delay * 1000,
             round: csgo.map.round,
             killerHealth: playerKill.health,
-            newKills,
-            name: playerKill.name
+            newKills: newKills.kills,
+            name: playerKill.name,
+            teamkill: newKills.teamkill,
+            headshot: newKills.headshot
         });
     }
     if (exports.argSocket.socket && argKillEntries.length) {

@@ -18,10 +18,15 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteTournament = exports.updateTournament = exports.bindMatchToMatchup = exports.addTournament = exports.getTournaments = exports.getCurrentTournament = void 0;
+exports.replaceLocalTournaments = exports.deleteTournament = exports.updateTournament = exports.bindMatchToMatchup = exports.addTournament = exports.getTournaments = exports.getCurrentTournament = void 0;
 const T = __importStar(require("./"));
+const database_1 = __importDefault(require("./../../../init/database"));
 const matches_1 = require("../matches");
+const tournamentsDb = database_1.default.tournaments;
 const getCurrentTournament = async (req, res) => {
     const matches = await matches_1.getActiveGameMatches();
     const current = matches.find(match => match.current);
@@ -77,3 +82,21 @@ const deleteTournament = async (req, res) => {
     return res.sendStatus(del ? 200 : 500);
 };
 exports.deleteTournament = deleteTournament;
+const replaceLocalTournaments = (newTournaments, game, existing) => new Promise(res => {
+    const or = [
+        { game, _id: { $nin: existing } },
+        { game, _id: { $in: newTournaments.map(tournament => tournament._id) } }
+    ];
+    if (game === 'csgo') {
+        or.push({ game: { $exists: false }, id: { $nin: existing } }, { game: { $exists: false }, id: { $in: newTournaments.map(tournament => tournament._id) } });
+    }
+    tournamentsDb.remove({ $or: or }, { multi: true }, err => {
+        if (err) {
+            return res(false);
+        }
+        tournamentsDb.insert(newTournaments, (err, docs) => {
+            return res(!err);
+        });
+    });
+});
+exports.replaceLocalTournaments = replaceLocalTournaments;

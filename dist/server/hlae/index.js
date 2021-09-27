@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.MIRVPGL = void 0;
 const BufferReader_1 = __importDefault(require("./BufferReader"));
 const GameEventUnserializer_1 = __importDefault(require("./GameEventUnserializer"));
+const knownGameEvents = [];
 class MIRVPGL {
     socket;
     constructor(ioPromise) {
@@ -20,7 +21,8 @@ class MIRVPGL {
     init = async (ioPromise) => {
         const io = await ioPromise;
         const enrichments = {
-            player_death: ['userid', 'attacker', 'assister']
+            player_death: ['userid', 'attacker', 'assister'],
+            player_hurt: ['userid', 'attacker']
         };
         io.on('connection', incoming => {
             const newSocket = incoming?.client?.conn?.transport?.socket;
@@ -62,6 +64,8 @@ class MIRVPGL {
                             socket.send(new Uint8Array(Buffer.from('exec\0mirv_pgl events enrich eventProperty "useridWithSteamId" "player_death" "userid"\0', 'utf8')), { binary: true });
                             socket.send(new Uint8Array(Buffer.from('exec\0mirv_pgl events enrich eventProperty "useridWithSteamId" "player_death" "attacker"\0', 'utf8')), { binary: true });
                             socket.send(new Uint8Array(Buffer.from('exec\0mirv_pgl events enrich eventProperty "useridWithSteamId" "player_death" "assister"\0', 'utf8')), { binary: true });
+                            socket.send(new Uint8Array(Buffer.from('exec\0mirv_pgl events enrich eventProperty "useridWithSteamId" "player_hurt" "userid"\0', 'utf8')), { binary: true });
+                            socket.send(new Uint8Array(Buffer.from('exec\0mirv_pgl events enrich eventProperty "useridWithSteamId" "player_hurt" "attacker"\0', 'utf8')), { binary: true });
                             socket.send(new Uint8Array(Buffer.from('exec\0mirv_pgl events enabled 1\0', 'utf8')), {
                                 binary: true
                             });
@@ -69,6 +73,9 @@ class MIRVPGL {
                             return;
                         }
                         const gameEvent = gameEventUnserializer.unserialize(bufferReader);
+                        if (gameEvent.name === "player_hurt") {
+                            io.to('game').emit('update_mirv', gameEvent, 'player_hurt');
+                        }
                         if (gameEvent.name === 'player_death') {
                             io.to('game').emit('update_mirv', gameEvent);
                         }

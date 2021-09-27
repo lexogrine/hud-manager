@@ -380,7 +380,7 @@ Lexogrine HUD Manager was written with Windows & Linux environment in mind. It p
 
 ### Build
 
-In case you want to compile the Lexogrine HUD Manager by yourself, you should clone the repo, run `npm install` and after that `npm run compile`. You might stumble into errors, that usually are fixed by the following commands:
+In case you want to compile the Lexogrine HUD Manager by yourself, you should clone the repo, run `npm install` and after that `npm run compile`. You might stumble into errors, that usally are fixed by the following commands:
 
 ```
 npm rebuild
@@ -409,6 +409,10 @@ If the build has been successful, an `app` directory should appear with the inst
 |`/api/gsi`|GET|Check if GSI file is loaded|
 |`/api/cfg`|GET|Check if config files are loaded|
 |`/api/game`|GET|Get latest data from CS:GO|
+|`/api/players`|POST| Adding Player. Body must by player object without _id|
+|`/api/players/:id`|PATCH| Updating Player |
+|`/api/teams`|POST| Adding Team. Body must by Team object without _id|
+|`/api/teams/:id`|PATCH| Updating Team |
 
 
 

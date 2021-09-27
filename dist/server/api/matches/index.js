@@ -289,10 +289,13 @@ const updateRound = async (game) => {
     return exports.updateMatch(match);
 };
 exports.updateRound = updateRound;
-const replaceLocalMatches = (newMatches, game) => new Promise(res => {
-    const or = [{ game }];
+const replaceLocalMatches = (newMatches, game, existing) => new Promise(res => {
+    const or = [
+        { game, _id: { $nin: existing } },
+        { game, _id: { $in: newMatches.map(match => match.id) } }
+    ];
     if (game === 'csgo') {
-        or.push({ game: { $exists: false } });
+        or.push({ game: { $exists: false }, id: { $nin: existing } }, { game: { $exists: false }, id: { $in: newMatches.map(team => team.id) } });
     }
     matchesDb.remove({ $or: or }, { multi: true }, err => {
         if (err) {

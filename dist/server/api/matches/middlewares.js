@@ -29,6 +29,7 @@ const fs_1 = __importDefault(require("fs"));
 const M = __importStar(require("./index"));
 const socket_1 = require("../../socket");
 const __1 = require("..");
+const cloud_1 = require("../cloud");
 const getMatchesRoute = async (req, res) => {
     const game = __1.customer.game;
     const $or = [{ game }];
@@ -60,6 +61,13 @@ exports.getMatchRoute = getMatchRoute;
 const addMatchRoute = async (req, res) => {
     req.body.game = __1.customer.game;
     const match = await M.addMatch(req.body);
+    let cloudStatus = false;
+    if (await __1.validateCloudAbility()) {
+        cloudStatus = (await cloud_1.checkCloudStatus(__1.customer.game)) === 'ALL_SYNCED';
+    }
+    if (match && cloudStatus) {
+        await cloud_1.addResource(__1.customer.game, 'matches', match);
+    }
     return res.sendStatus(match ? 200 : 500);
 };
 exports.addMatchRoute = addMatchRoute;
@@ -72,14 +80,28 @@ const getCurrentMatchRoute = async (req, res) => {
 };
 exports.getCurrentMatchRoute = getCurrentMatchRoute;
 const deleteMatchRoute = async (req, res) => {
+    let cloudStatus = false;
+    if (await __1.validateCloudAbility()) {
+        cloudStatus = (await cloud_1.checkCloudStatus(__1.customer.game)) === 'ALL_SYNCED';
+    }
     const match = await M.deleteMatch(req.params.id);
+    if (cloudStatus && match) {
+        await cloud_1.deleteResource(__1.customer.game, 'matches', req.params.id);
+    }
     return res.sendStatus(match ? 200 : 500);
 };
 exports.deleteMatchRoute = deleteMatchRoute;
 const updateMatchRoute = async (req, res) => {
     const io = await socket_1.ioPromise;
     req.body.game = __1.customer.game;
+    let cloudStatus = false;
+    if (await __1.validateCloudAbility()) {
+        cloudStatus = (await cloud_1.checkCloudStatus(__1.customer.game)) === 'ALL_SYNCED';
+    }
     const match = await M.updateMatch(req.body);
+    if (cloudStatus && match) {
+        await cloud_1.updateResource(__1.customer.game, 'teams', { ...req.body, _id: req.params.id });
+    }
     io.emit('match');
     return res.sendStatus(match ? 200 : 500);
 };
@@ -93,7 +115,8 @@ const getMaps = (req, res) => {
         'de_train',
         'de_overpass',
         'de_vertigo',
-        'de_ancient'
+        'de_ancient',
+        'de_cache'
     ];
     const mapFilePath = path_1.default.join(electron_1.app.getPath('userData'), 'maps.json');
     try {

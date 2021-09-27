@@ -7,6 +7,7 @@ import publicIp from 'public-ip';
 import internalIp from 'internal-ip';
 import { isDev } from '../../electron';
 import { ioPromise } from '../socket';
+import { customer } from '.';
 
 const configs = db.config;
 
@@ -111,6 +112,9 @@ export const setConfig = async (config: Config) =>
 			const newConfig = await loadConfig();
 			if (!newConfig) {
 				return res(defaultConfig);
+			}
+			if(!customer?.customer || customer.customer.license.type === "free"){
+				newConfig.cg = false;
 			}
 			return res(newConfig);
 		});

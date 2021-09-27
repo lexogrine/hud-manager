@@ -59,6 +59,8 @@ interface ARGKillEntry {
 	killerHealth: number;
 	newKills: number;
 	name: string;
+	teamkill: boolean;
+	headshot: boolean;
 }
 
 interface KillStatistics {
@@ -66,13 +68,14 @@ interface KillStatistics {
 	kills: number;
 	health: number;
 	name: string;
+	headshots: number;
 }
 
 const getNewKills = (kill: KillStatistics, oldKillsStatistics: KillStatistics[]) => {
 	const oldKillEntry = oldKillsStatistics.find(entry => entry.steamid === kill.steamid);
-	if (!oldKillEntry) return 0;
-	if (kill.kills - oldKillEntry.kills < 0) return 0;
-	return kill.kills - oldKillEntry.kills;
+	if (!oldKillEntry) return { kills: 0, headshot: false, teamkill: false };
+	if (kill.kills - oldKillEntry.kills < 0) return { kills: 0, headshot: false, teamkill: true };
+	return { kills: kill.kills - oldKillEntry.kills, headshot: kill.headshots > oldKillEntry.headshots, teamkill: false };
 };
 
 export const sendKillsToARG = (last: CSGO, csgo: CSGO) => {
@@ -85,28 +88,32 @@ export const sendKillsToARG = (last: CSGO, csgo: CSGO) => {
 		steamid: player.steamid,
 		kills: player.stats.kills,
 		health: player.state.health,
-		name: player.name
+		name: player.name,
+		headshots: player.state.round_killhs
 	}));
 	const oldPlayerKills: KillStatistics[] = last.players.map(player => ({
 		steamid: player.steamid,
 		kills: player.stats.kills,
 		health: player.state.health,
-		name: player.name
+		name: player.name,
+		headshots: player.state.round_killhs
 	}));
 
 	const argKillEntries: ARGKillEntry[] = [];
 
 	for (const playerKill of playerKills) {
 		const newKills = getNewKills(playerKill, oldPlayerKills);
-		if (!newKills) continue;
+		if (!newKills.kills) continue;
 
 		argKillEntries.push({
 			killer: playerKill.steamid,
 			timestamp: new Date().getTime() + argSocket.delay * 1000,
 			round: csgo.map.round,
 			killerHealth: playerKill.health,
-			newKills,
-			name: playerKill.name
+			newKills: newKills.kills,
+			name: playerKill.name,
+			teamkill: newKills.teamkill,
+			headshot: newKills.headshot
 		});
 	}
 

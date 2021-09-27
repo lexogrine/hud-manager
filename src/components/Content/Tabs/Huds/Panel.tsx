@@ -113,7 +113,9 @@ class ActionPanel extends Component<IProps, IState> {
 				return;
 			}
 
-			await Promise.all([...files].map(file => loadImage(file)));
+			for(const file of files){
+				await loadImage(file);
+			}
 
 			form[sectionName][name] = JSON.stringify(images);
 			this.setState({ form });

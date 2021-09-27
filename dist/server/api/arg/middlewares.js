@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.saveDelay = exports.requestARGStatus = exports.disconnect = exports.connect = void 0;
+exports.saveConfig = exports.saveDelay = exports.requestARGStatus = exports.disconnect = exports.connect = void 0;
 const index_1 = require("./index");
 const connect = async (req, res) => {
     const id = req.body.id;
@@ -33,3 +33,6 @@ const saveDelay = async (req, res) => {
     return res.sendStatus(200);
 };
 exports.saveDelay = saveDelay;
+const saveConfig = async (req, res) => {
+};
+exports.saveConfig = saveConfig;

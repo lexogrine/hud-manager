@@ -21,7 +21,7 @@ const cookiePath = path_1.default.join(electron_1.app.getPath('userData'), 'cook
 const cookieJar = new tough_cookie_1.CookieJar(new tough_cookie_file_store_1.FileCookieStore(cookiePath));
 exports.fetch = fetch_cookie_1.default(node_fetch_1.default, cookieJar);
 exports.socket = null;
-const USE_LOCAL_BACKEND = false;
+const USE_LOCAL_BACKEND = true;
 const connectSocket = () => {
     if (exports.socket)
         return;
