@@ -106,7 +106,7 @@ const setConfig = async (config) => new Promise(res => {
         if (!newConfig) {
             return res(defaultConfig);
         }
-        if (!_1.customer?.customer || _1.customer.customer.license.type === "free") {
+        if (!_1.customer?.customer || _1.customer.customer.license.type === 'free') {
             newConfig.cg = false;
         }
         return res(newConfig);

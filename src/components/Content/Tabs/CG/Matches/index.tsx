@@ -38,11 +38,12 @@ const MatchPreview = ({ match, cxt }: { match: I.Match; cxt: IContextData }) => 
 	};
 
 	if (match) {
-		if (match.left.id) {
+		console.log(match)
+		if (match.left && match.left.id) {
 			left = cxt.teams.find(team => team._id === match.left.id) || null;
 		}
 
-		if (match.right.id) {
+		if (match.right && match.right.id) {
 			right = cxt.teams.find(team => team._id === match.right.id) || null;
 		}
 	}

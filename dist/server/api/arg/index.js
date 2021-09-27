@@ -50,7 +50,11 @@ const getNewKills = (kill, oldKillsStatistics) => {
         return { kills: 0, headshot: false, teamkill: false };
     if (kill.kills - oldKillEntry.kills < 0)
         return { kills: 0, headshot: false, teamkill: true };
-    return { kills: kill.kills - oldKillEntry.kills, headshot: kill.headshots > oldKillEntry.headshots, teamkill: false };
+    return {
+        kills: kill.kills - oldKillEntry.kills,
+        headshot: kill.headshots > oldKillEntry.headshots,
+        teamkill: false
+    };
 };
 const sendKillsToARG = (last, csgo) => {
     if (last.round?.phase === 'freezetime' && csgo.round?.phase !== 'freezetime' && exports.argSocket.socket) {

@@ -33,6 +33,5 @@ const saveDelay = async (req, res) => {
     return res.sendStatus(200);
 };
 exports.saveDelay = saveDelay;
-const saveConfig = async (req, res) => {
-};
+const saveConfig = async (req, res) => { };
 exports.saveConfig = saveConfig;

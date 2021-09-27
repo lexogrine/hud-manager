@@ -25,10 +25,10 @@ const USE_LOCAL_BACKEND = true;
 
 const connectSocket = () => {
 	if (socket) return;
-	socket = new SimpleWebSocket(USE_LOCAL_BACKEND ? 'ws://localhost:5000' : 'wss://hmapi.lexogrine.com/', {
+	socket = new SimpleWebSocket(USE_LOCAL_BACKEND ? 'ws://192.168.50.40:5000' : 'wss://hmapi.lexogrine.com/', {
 		headers: {
 			Cookie: cookieJar.getCookieStringSync(
-				USE_LOCAL_BACKEND ? 'http://localhost:5000/' : 'https://hmapi.lexogrine.com/'
+				USE_LOCAL_BACKEND ? 'http://192.168.50.40:5000/' : 'https://hmapi.lexogrine.com/'
 			)
 		}
 	});
@@ -77,7 +77,7 @@ export const api = (url: string, method = 'GET', body?: any, opts?: RequestInit)
 	}
 	let data: any = null;
 	return fetch(
-		USE_LOCAL_BACKEND ? `http://localhost:5000/${url}` : `https://hmapi.lexogrine.com/${url}`,
+		USE_LOCAL_BACKEND ? `http://192.168.50.40:5000/${url}` : `https://hmapi.lexogrine.com/${url}`,
 		options
 	).then(res => {
 		data = res;

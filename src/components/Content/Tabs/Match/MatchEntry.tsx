@@ -33,8 +33,8 @@ const MatchEntry = ({ match, teams, cxt, edit, setCurrent }: Props) => {
 		bo9: 5
 	};
 
-	const left = teams.filter(team => team._id === match.left.id)[0];
-	const right = teams.filter(team => team._id === match.right.id)[0];
+	const left = teams.filter(team => match.left && team._id === match.left.id)[0];
+	const right = teams.filter(team => match.right && team._id === match.right.id)[0];
 	return (
 		<div className={`entry-container ${match.current ? 'live' : ''} match-entry`}>
 			<div className={`entry-main ${isExpanded ? 'expanded' : 'collapsed'}`}>
@@ -45,7 +45,7 @@ const MatchEntry = ({ match, teams, cxt, edit, setCurrent }: Props) => {
 				</div>
 
 				<div className="map-score">
-					<div className={`win-icon ${match.left.wins === boToWinsMap[match.matchType] ? 'active' : ''}`}>
+					<div className={`win-icon ${match.left?.wins === boToWinsMap[match.matchType] ? 'active' : ''}`}>
 						{t('match.wins')}
 					</div>
 					{left?.logo ? (
@@ -53,15 +53,15 @@ const MatchEntry = ({ match, teams, cxt, edit, setCurrent }: Props) => {
 					) : (
 						''
 					)}
-					<div className="score">{match.left.wins}</div>
+					<div className="score">{match.left?.wins || 0}</div>
 					<div className="versus">{t('common.vs')}</div>
-					<div className="score">{match.right.wins}</div>
+					<div className="score">{match.right?.wins || 0}</div>
 					{right?.logo ? (
 						<img src={`${right.logo}?hash=${hash()}`} alt={`${right.name} logo`} className="team-logo" />
 					) : (
 						''
 					)}
-					<div className={`win-icon ${match.right.wins === boToWinsMap[match.matchType] ? 'active' : ''}`}>
+					<div className={`win-icon ${match.right?.wins === boToWinsMap[match.matchType] ? 'active' : ''}`}>
 						{t('match.wins')}
 					</div>
 				</div>
