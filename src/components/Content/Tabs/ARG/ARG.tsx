@@ -13,7 +13,6 @@ const ARG = () => {
 	const [delay, setDelay] = useState(7);
 	const [pcID, setPCID] = useState('');
 
-
 	const [cards, setCards] = useState<Item[]>([
 		{
 			id: 'multikills',

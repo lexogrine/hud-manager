@@ -126,7 +126,9 @@ class Matches extends Component<
 		if (bo === 2) {
 			isEnded = picks.filter(pick => pick.mapEnd).length === 2 || match.left.wins + match.right.wins >= 2;
 		} else {
-			isEnded = (match.left && match.left.wins === boToWinsMap[bo]) || (match.right && match.right.wins === boToWinsMap[bo]);
+			isEnded =
+				(match.left && match.left.wins === boToWinsMap[bo]) ||
+				(match.right && match.right.wins === boToWinsMap[bo]);
 		}
 		if (activeTab === 'ended') {
 			return isEnded;

@@ -38,7 +38,7 @@ const MatchPreview = ({ match, cxt }: { match: I.Match; cxt: IContextData }) => 
 	};
 
 	if (match) {
-		console.log(match)
+		console.log(match);
 		if (match.left && match.left.id) {
 			left = cxt.teams.find(team => team._id === match.left.id) || null;
 		}
