@@ -3,6 +3,8 @@ import * as T from './';
 import db from './../../../init/database';
 import { getActiveGameMatches } from '../matches';
 import { AvailableGames, Tournament } from '../../../types/interfaces';
+import { validateCloudAbility, customer } from '..';
+import { checkCloudStatus, addResource, updateResource, deleteResource } from '../cloud';
 
 const tournamentsDb = db.tournaments;
 
@@ -24,6 +26,10 @@ export const getTournaments: express.RequestHandler = async (req, res) => {
 };
 
 export const addTournament: express.RequestHandler = async (req, res) => {
+	let cloudStatus = false;
+	if (await validateCloudAbility()) {
+		cloudStatus = (await checkCloudStatus(customer.game as AvailableGames)) === 'ALL_SYNCED';
+	}
 	const { name, logo, teams, type } = req.body;
 	const tournament = T.createTournament(type, teams);
 
@@ -33,6 +39,9 @@ export const addTournament: express.RequestHandler = async (req, res) => {
 	delete tournament._id;
 
 	const tournamentWithId = await T.addTournament(tournament);
+	if (cloudStatus) {
+		await addResource(customer.game as AvailableGames, 'tournaments', tournamentWithId);
+	}
 
 	if (!tournamentWithId) return res.sendStatus(500);
 	return res.json(tournamentWithId);
@@ -54,12 +63,27 @@ export const updateTournament: express.RequestHandler = async (req, res) => {
 	if (logo) {
 		tournament.logo = logo;
 	}
+	let cloudStatus = false;
+	if (await validateCloudAbility()) {
+		cloudStatus = (await checkCloudStatus(customer.game as AvailableGames)) === 'ALL_SYNCED';
+	}
 	const newTournament = await T.updateTournament(tournament);
+
+	if (cloudStatus) {
+		await updateResource(customer.game as AvailableGames, 'teams', { ...newTournament, _id: req.params.id });
+	}
 	return res.sendStatus(newTournament ? 200 : 500);
 };
 
 export const deleteTournament: express.RequestHandler = async (req, res) => {
+	let cloudStatus = false;
+	if (await validateCloudAbility()) {
+		cloudStatus = (await checkCloudStatus(customer.game as AvailableGames)) === 'ALL_SYNCED';
+	}
 	const del = await T.deleteTournament(req.params.id);
+	if (cloudStatus) {
+		await deleteResource(customer.game as AvailableGames, 'teams', req.params.id);
+	}
 	return res.sendStatus(del ? 200 : 500);
 };
 

@@ -6,9 +6,9 @@ import db from './../../../init/database';
 
 const { tournaments } = db;
 
-export const getTournaments = (): Promise<I.Tournament[]> =>
+export const getTournaments = (opts: any = {}): Promise<I.Tournament[]> =>
 	new Promise(res => {
-		tournaments.find({}, (err: any, docs: I.Tournament[]) => {
+		tournaments.find(opts, (err: any, docs: I.Tournament[]) => {
 			if (err) return res([]);
 			return res(docs);
 		});

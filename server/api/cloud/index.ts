@@ -4,7 +4,7 @@ import { loadConfig, setConfig } from '../config';
 import { getPlayersList, replaceLocalPlayers } from '../players';
 import { getTeamsList, replaceLocalTeams } from '../teams';
 import { getACOs, replaceLocalMapConfigs } from '../aco';
-import { getMatches, replaceLocalMatches } from '../matches';
+import { getActiveGameMatches, getMatches, replaceLocalMatches } from '../matches';
 import { app } from 'electron';
 import path from 'path';
 import fs from 'fs';
@@ -13,6 +13,7 @@ import { getCustomFieldsDb, replaceLocalCustomFieldStores } from '../fields';
 import * as Sentry from '@sentry/node';
 import c from 'fetch-cookie';
 import { replaceLocalTournaments } from '../tournaments/middlewares';
+import { getTournaments } from '../tournaments';
 
 const cloudErrorHandler = () => {};
 
@@ -207,15 +208,18 @@ export const uploadLocalToCloud = async (game: I.AvailableGames) => {
 		getPlayersList({ game }),
 		getTeamsList({ game }),
 		getCustomFieldsDb(game),
-		getACOs() /*, getMatches()*/
+		getACOs(),
+		getActiveGameMatches(),
+		getTournaments({ game })
 	]);
 
 	const mappedResources = {
 		players: resources[0],
 		teams: resources[1],
 		customs: resources[2],
-		mapconfigs: resources[3]
-		//matches: resources[2],
+		mapconfigs: resources[3],
+		matches: resources[4],
+		tournaments: resources[5]
 	} as { [resource in I.AvailableResources]: any };
 	try {
 		const result = [] as { entries: number; lastUpdateTime: string | null }[];
