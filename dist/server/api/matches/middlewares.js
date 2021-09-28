@@ -62,7 +62,7 @@ const addMatchRoute = async (req, res) => {
     req.body.game = __1.customer.game;
     const match = await M.addMatch(req.body);
     let cloudStatus = false;
-    if (await __1.validateCloudAbility()) {
+    if (await __1.validateCloudAbility('matches')) {
         cloudStatus = (await cloud_1.checkCloudStatus(__1.customer.game)) === 'ALL_SYNCED';
     }
     if (match && cloudStatus) {
@@ -81,7 +81,7 @@ const getCurrentMatchRoute = async (req, res) => {
 exports.getCurrentMatchRoute = getCurrentMatchRoute;
 const deleteMatchRoute = async (req, res) => {
     let cloudStatus = false;
-    if (await __1.validateCloudAbility()) {
+    if (await __1.validateCloudAbility('matches')) {
         cloudStatus = (await cloud_1.checkCloudStatus(__1.customer.game)) === 'ALL_SYNCED';
     }
     const match = await M.deleteMatch(req.params.id);
@@ -95,7 +95,7 @@ const updateMatchRoute = async (req, res) => {
     const io = await socket_1.ioPromise;
     req.body.game = __1.customer.game;
     let cloudStatus = false;
-    if (await __1.validateCloudAbility()) {
+    if (await __1.validateCloudAbility('matches')) {
         cloudStatus = (await cloud_1.checkCloudStatus(__1.customer.game)) === 'ALL_SYNCED';
     }
     const match = await M.updateMatch(req.body);

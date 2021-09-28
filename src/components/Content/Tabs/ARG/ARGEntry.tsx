@@ -7,6 +7,7 @@ export interface CardProps {
 	text: string;
 	toggle: () => void;
 	index: number;
+	save: () => void;
 	active: boolean;
 	moveCard: (dragIndex: number, hoverIndex: number) => void;
 }
@@ -17,7 +18,7 @@ interface DragItem {
 	type: string;
 }
 
-export const Card: FC<CardProps> = ({ id, text, index, moveCard, toggle, active }: CardProps) => {
+export const Card: FC<CardProps> = ({ id, text, index, moveCard, toggle, active, save }: CardProps) => {
 	const ref = useRef<HTMLDivElement>(null);
 	const [{ handlerId }, drop] = useDrop({
 		accept: 'card',
@@ -28,6 +29,7 @@ export const Card: FC<CardProps> = ({ id, text, index, moveCard, toggle, active 
 		},
 		drop: () => {
 			console.log('dropeped');
+			save();
 		},
 		hover(item: DragItem, monitor: DropTargetMonitor) {
 			if (!ref.current) {

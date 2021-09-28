@@ -1,11 +1,29 @@
 import { ioPromise } from '../../socket';
 import { SimpleWebSocket } from 'simple-websockets';
 import { CSGO } from 'csgogsi-socket';
+import { Item } from '../../../types/interfaces';
 
-export const argSocket: { socket: SimpleWebSocket | null; id: string | null; delay: number } = {
+export const argSocket: { socket: SimpleWebSocket | null; id: string | null; delay: number, order: Item[] } = {
 	delay: 7,
 	socket: null,
-	id: null
+	id: null,
+	order: [
+		{
+			id: 'multikills',
+			text: 'Prioritize multi kills',
+			active: true
+		},
+		{
+			id: 'headshots',
+			text: 'Prioritize headshots',
+			active: true
+		},
+		{
+			id: 'teamkill',
+			text: 'Prioritize team kills',
+			active: false
+		}
+	]
 };
 
 export const getIP = (code: string) => {
@@ -38,7 +56,7 @@ export const connectToARG = (code: string) => {
 	const socket = new SimpleWebSocket(socketAddress);
 
 	socket.on('connection', () => {
-		socket.send('register');
+		socket.send('register', argSocket.order.map(item => ({ id: item.id, active: item.active })));
 	});
 
 	socket.on('registered', sendARGStatus);

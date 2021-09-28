@@ -1,12 +1,13 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Row, Button, Col, Input } from 'reactstrap';
-import api, { Item } from '../../../../api/api';
+import api from '../../../../api/api';
 import { socket } from '../Live/Live';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import update from 'immutability-helper';
 import './arg.scss';
 import { Card } from './ARGEntry';
+import { Item } from '../../../../api/interfaces';
 
 const ARG = () => {
 	const [isConnected, setIsConnected] = useState(false);
@@ -55,9 +56,15 @@ const ARG = () => {
 		api.arg.setDelay(delay);
 	};
 
+	const save = (overwrite?: Item[]) => {
+		api.arg.save(overwrite || cards);
+	}
 	const toggleById = (id: string) => () => {
-		setCards(cards.map(card => ({ ...card, active: card.id === id ? !card.active : card.active })));
+		const result = cards.map(card => ({ ...card, active: card.id === id ? !card.active : card.active }));
+		save(result);
+		setCards(result);
 	};
+
 
 	const renderCard = (card: Item, index: number) => {
 		return (
@@ -66,6 +73,7 @@ const ARG = () => {
 				index={index}
 				id={card.id}
 				active={card.active}
+				save={save}
 				text={card.text}
 				moveCard={moveCard}
 				toggle={toggleById(card.id)}
@@ -83,6 +91,9 @@ const ARG = () => {
 		});
 		setTimeout(() => {
 			api.arg.requestStatus();
+			api.arg.get().then(order => {
+				setCards(order);
+			}).catch(() => {})
 		}, 100);
 	}, []);
 

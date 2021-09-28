@@ -3,12 +3,6 @@ import config from './config';
 import * as I from './interfaces';
 import { PlayerExtension } from 'csgogsi-socket';
 
-export interface Item {
-	id: string;
-	text: string;
-	active: boolean;
-}
-
 const apiUrl = config.apiAddress;
 interface DB {
 	teams: I.Team[];
@@ -102,7 +96,8 @@ export default {
 		disconnect: () => apiV2('arg', 'DELETE'),
 		requestStatus: () => apiV2('arg'),
 		setDelay: (delay: number) => apiV2('arg/delay', 'POST', { delay }),
-		save: (order: Item[]) => apiV2('arg/order', 'POST', order)
+		save: (order: I.Item[]) => apiV2('arg/order', 'POST', order),
+		get: (): Promise<I.Item[]> => apiV2('arg/order')
 	},
 	config: {
 		get: async (): Promise<I.ExtendedConfig> => await apiV2('config'),

@@ -1,7 +1,22 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.saveConfig = exports.saveDelay = exports.requestARGStatus = exports.disconnect = exports.connect = void 0;
+exports.saveConfig = exports.saveDelay = exports.requestARGStatus = exports.disconnect = exports.connect = exports.getOrder = exports.setOrder = void 0;
 const index_1 = require("./index");
+const setOrder = async (req, res) => {
+    const order = req.body;
+    if (!order || !Array.isArray(order))
+        return res.sendStatus(422);
+    if (index_1.argSocket) {
+        index_1.argSocket.order = order;
+        index_1.argSocket.socket?.send('config', order.map(item => ({ id: item.id, active: item.active })));
+    }
+    return res.sendStatus(200);
+};
+exports.setOrder = setOrder;
+const getOrder = async (req, res) => {
+    return res.json(index_1.argSocket.order);
+};
+exports.getOrder = getOrder;
 const connect = async (req, res) => {
     const id = req.body.id;
     if (!id || typeof id !== 'string' || index_1.argSocket.socket) {

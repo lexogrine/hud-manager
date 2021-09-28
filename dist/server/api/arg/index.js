@@ -6,7 +6,24 @@ const simple_websockets_1 = require("simple-websockets");
 exports.argSocket = {
     delay: 7,
     socket: null,
-    id: null
+    id: null,
+    order: [
+        {
+            id: 'multikills',
+            text: 'Prioritize multi kills',
+            active: true
+        },
+        {
+            id: 'headshots',
+            text: 'Prioritize headshots',
+            active: true
+        },
+        {
+            id: 'teamkill',
+            text: 'Prioritize team kills',
+            active: false
+        }
+    ]
 };
 const getIP = (code) => {
     const ipNumbers = code.split('-').map(n => parseInt(n, 16));
@@ -33,7 +50,7 @@ const connectToARG = (code) => {
     };
     const socket = new simple_websockets_1.SimpleWebSocket(socketAddress);
     socket.on('connection', () => {
-        socket.send('register');
+        socket.send('register', exports.argSocket.order.map(item => ({ id: item.id, active: item.active })));
     });
     socket.on('registered', exports.sendARGStatus);
     exports.argSocket.socket = socket;

@@ -31,6 +31,7 @@ export type {
 	CSGOVeto,
 	CSGOMatch,
 	RocketLeagueVeto,
+	Item,
 	RocketLeagueMatch,
 	ARModule
 } from './../../types/interfaces';

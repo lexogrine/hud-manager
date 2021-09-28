@@ -202,14 +202,17 @@ const uploadLocalToCloud = async (game) => {
         players_1.getPlayersList({ game }),
         teams_1.getTeamsList({ game }),
         fields_1.getCustomFieldsDb(game),
-        aco_1.getACOs() /*, getMatches()*/
+        aco_1.getACOs(),
+        //getActiveGameMatches(),
+        //getTournaments({ game })
     ]);
     const mappedResources = {
         players: resources[0],
         teams: resources[1],
         customs: resources[2],
-        mapconfigs: resources[3]
-        //matches: resources[2],
+        mapconfigs: resources[3],
+        //matches: resources[4],
+        //tournaments: resources[5]
     };
     try {
         const result = [];
@@ -265,10 +268,11 @@ const checkCloudStatus = async (game) => {
             return 'ALL_SYNCED';
         }
         const lastUpdateStatusLocal = getLastUpdateDateLocally();
-        if (I.availableResources.find(availableResource => !lastUpdateStatusLocal[game][availableResource] && lastUpdateStatusOnline[availableResource])) {
+        const syncConflicted = I.availableResources.filter(availableResource => !lastUpdateStatusLocal[game][availableResource] && lastUpdateStatusOnline[availableResource]);
+        if (syncConflicted.length) {
             // resources exist both locally and remotely, but local db wasnt ever synced
             // show options: download cloud, no sync
-            console.log('SYNC CONFLICT, WHAT DO? #1');
+            console.log('SYNC CONFLICT, WHAT DO? #1', syncConflicted);
             return 'NO_SYNC_LOCAL';
         }
         const nonSyncedResources = I.availableResources.filter(availableResource => lastUpdateStatusOnline[availableResource] !== lastUpdateStatusLocal[game][availableResource]);

@@ -33,7 +33,8 @@ export const customer: I.CustomerData = {
 	game: null
 };
 
-export const validateCloudAbility = async () => {
+export const validateCloudAbility = async (resource?: I.AvailableResources) => {
+	if(resource && !I.availableResources.includes(resource)) return false;
 	const cfg = await config.loadConfig();
 	if (!cfg.sync) return false;
 	if (

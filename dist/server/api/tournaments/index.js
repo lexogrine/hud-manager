@@ -28,8 +28,8 @@ const M = __importStar(require("./../matches"));
 const v4_1 = __importDefault(require("uuid/v4"));
 const database_1 = __importDefault(require("./../../../init/database"));
 const { tournaments } = database_1.default;
-const getTournaments = () => new Promise(res => {
-    tournaments.find({}, (err, docs) => {
+const getTournaments = (opts = {}) => new Promise(res => {
+    tournaments.find(opts, (err, docs) => {
         if (err)
             return res([]);
         return res(docs);

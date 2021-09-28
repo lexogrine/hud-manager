@@ -6,8 +6,8 @@ exports.availableResources = [
     'players',
     'customs',
     'mapconfigs',
-    'matches',
-    'tournaments',
-    'arg'
+    //'matches',
+    //'tournaments',
+    //'arg'
 ];
 exports.availableGames = ['csgo', 'rocketleague', 'dota2'];

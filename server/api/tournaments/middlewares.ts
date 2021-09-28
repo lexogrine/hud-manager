@@ -27,7 +27,7 @@ export const getTournaments: express.RequestHandler = async (req, res) => {
 
 export const addTournament: express.RequestHandler = async (req, res) => {
 	let cloudStatus = false;
-	if (await validateCloudAbility()) {
+	if (await validateCloudAbility('tournaments')) {
 		cloudStatus = (await checkCloudStatus(customer.game as AvailableGames)) === 'ALL_SYNCED';
 	}
 	const { name, logo, teams, type } = req.body;
@@ -64,7 +64,7 @@ export const updateTournament: express.RequestHandler = async (req, res) => {
 		tournament.logo = logo;
 	}
 	let cloudStatus = false;
-	if (await validateCloudAbility()) {
+	if (await validateCloudAbility('tournaments')) {
 		cloudStatus = (await checkCloudStatus(customer.game as AvailableGames)) === 'ALL_SYNCED';
 	}
 	const newTournament = await T.updateTournament(tournament);
@@ -77,7 +77,7 @@ export const updateTournament: express.RequestHandler = async (req, res) => {
 
 export const deleteTournament: express.RequestHandler = async (req, res) => {
 	let cloudStatus = false;
-	if (await validateCloudAbility()) {
+	if (await validateCloudAbility('tournaments')) {
 		cloudStatus = (await checkCloudStatus(customer.game as AvailableGames)) === 'ALL_SYNCED';
 	}
 	const del = await T.deleteTournament(req.params.id);

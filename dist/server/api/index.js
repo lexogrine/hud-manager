@@ -35,6 +35,7 @@ const sync = __importStar(require("./sync"));
 const machine = __importStar(require("./machine"));
 const user = __importStar(require("./user"));
 const bakkesmod = __importStar(require("./bakkesmod"));
+const I = __importStar(require("./../../types/interfaces"));
 const play_1 = require("./huds/play");
 const routes_1 = __importDefault(require("./tournaments/routes"));
 const routes_2 = __importDefault(require("./matches/routes"));
@@ -54,7 +55,9 @@ exports.customer = {
     customer: null,
     game: null
 };
-const validateCloudAbility = async () => {
+const validateCloudAbility = async (resource) => {
+    if (resource && !I.availableResources.includes(resource))
+        return false;
     const cfg = await config.loadConfig();
     if (!cfg.sync)
         return false;
