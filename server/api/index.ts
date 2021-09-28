@@ -34,7 +34,7 @@ export const customer: I.CustomerData = {
 };
 
 export const validateCloudAbility = async (resource?: I.AvailableResources) => {
-	if(resource && !I.availableResources.includes(resource)) return false;
+	if (resource && !I.availableResources.includes(resource)) return false;
 	const cfg = await config.loadConfig();
 	if (!cfg.sync) return false;
 	if (

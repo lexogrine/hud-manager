@@ -1,21 +1,22 @@
 import express from 'express';
 import { connectToARG, argSocket, sendARGStatus } from './index';
 
-
-
 export const setOrder: express.RequestHandler = async (req, res) => {
 	const order = req.body;
-	if(!order || !Array.isArray(order)) return res.sendStatus(422);
-	if(argSocket){
+	if (!order || !Array.isArray(order)) return res.sendStatus(422);
+	if (argSocket) {
 		argSocket.order = order;
-		argSocket.socket?.send('config', order.map(item => ({ id: item.id, active: item.active })));
+		argSocket.socket?.send(
+			'config',
+			order.map(item => ({ id: item.id, active: item.active }))
+		);
 	}
 	return res.sendStatus(200);
-}
+};
 
 export const getOrder: express.RequestHandler = async (req, res) => {
 	return res.json(argSocket.order);
-}
+};
 
 export const connect: express.RequestHandler = async (req, res) => {
 	const id = req.body.id;

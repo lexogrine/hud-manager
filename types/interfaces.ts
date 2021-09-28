@@ -14,7 +14,7 @@ export const availableResources: AvailableResources[] = [
 	'teams',
 	'players',
 	'customs',
-	'mapconfigs',
+	'mapconfigs'
 	//'matches',
 	//'tournaments',
 	//'arg'

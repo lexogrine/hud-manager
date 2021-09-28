@@ -3,7 +3,7 @@ import { SimpleWebSocket } from 'simple-websockets';
 import { CSGO } from 'csgogsi-socket';
 import { Item } from '../../../types/interfaces';
 
-export const argSocket: { socket: SimpleWebSocket | null; id: string | null; delay: number, order: Item[] } = {
+export const argSocket: { socket: SimpleWebSocket | null; id: string | null; delay: number; order: Item[] } = {
 	delay: 7,
 	socket: null,
 	id: null,
@@ -56,7 +56,10 @@ export const connectToARG = (code: string) => {
 	const socket = new SimpleWebSocket(socketAddress);
 
 	socket.on('connection', () => {
-		socket.send('register', argSocket.order.map(item => ({ id: item.id, active: item.active })));
+		socket.send(
+			'register',
+			argSocket.order.map(item => ({ id: item.id, active: item.active }))
+		);
 	});
 
 	socket.on('registered', sendARGStatus);

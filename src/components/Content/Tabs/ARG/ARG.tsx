@@ -58,13 +58,12 @@ const ARG = () => {
 
 	const save = (overwrite?: Item[]) => {
 		api.arg.save(overwrite || cards);
-	}
+	};
 	const toggleById = (id: string) => () => {
 		const result = cards.map(card => ({ ...card, active: card.id === id ? !card.active : card.active }));
 		save(result);
 		setCards(result);
 	};
-
 
 	const renderCard = (card: Item, index: number) => {
 		return (
@@ -91,9 +90,12 @@ const ARG = () => {
 		});
 		setTimeout(() => {
 			api.arg.requestStatus();
-			api.arg.get().then(order => {
-				setCards(order);
-			}).catch(() => {})
+			api.arg
+				.get()
+				.then(order => {
+					setCards(order);
+				})
+				.catch(() => {});
 		}, 100);
 	}, []);
 
