@@ -64,7 +64,7 @@ export default async function () {
 	TournamentHandler();
 
 	MatchHandler();
-	
+
 	TimelineHandler();
 
 	PlayerHandler();
