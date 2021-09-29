@@ -19,6 +19,7 @@ If you are in the business of broadcasting professional CS:GO matches, the Lexog
   * [AR](#ar)
   * [ACO](#aco)
   * [ARG](#arg)
+  * [Timeline](#timeline)
 * [Cloud Storage](#cloud-storage)
 * [Supported games](#supported-games)
 * [Signing HUDs](#signing-huds)
@@ -175,7 +176,7 @@ It is recommended to create a lot of small areas with multiple configs each. It 
 
 ## ARG
 
-Auto Replay Generator (Beta) is feature that integrates with vMix's Instant Replay feature. It automates observing, clipping, and then playing clipped fragments on stream. Complementary app can be found [HERE](https://github.com/lexogrine/auto-replay-generator)
+Auto Replay Generator (Beta) is feature that integrates with vMix's Instant Replay feature. It automates observing, clipping, and then playing clipped fragments on stream. Complementary app can be found [HERE](https://github.com/lexogrine/auto-replay-generator). Additionaly you can modify priorities of the ARG.
 
 Example setup:
  - PC#1 - CS:GO on main GOTV, delay: X seconds
@@ -193,6 +194,10 @@ It is up to user to configure vMix output on PC#2 and to make sure both PCs time
 
 >Note #3 - CS:GO on PC#2 must be opened with HLAE, and then user have to execute command that is shown by Lexogrine Auto Replay Generator
 
+
+## Timeline
+
+For Dota 2 we offer timeline feature - it's API endpoint which shows progression of the player stats during the game in small packets, allowing to see how player performed during the whole game. It calculates differences of most of the players statistics every 5 minutes.
 
 ## Cloud Storage
 
@@ -413,6 +418,7 @@ If the build has been successful, an `app` directory should appear with the inst
 |`/api/players/:id`|PATCH| Updating Player |
 |`/api/teams`|POST| Adding Team. Body must by Team object without _id|
 |`/api/teams/:id`|PATCH| Updating Team |
+|`/api/timeline/:game`|GET| Get Timeline for given game. Dota 2 only |
 
 
 

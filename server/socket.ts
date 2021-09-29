@@ -9,11 +9,12 @@ import { customer } from './api';
 import { isDev } from '../electron';
 import { /*hlaeServer,*/ MIRVPGL } from './hlae';
 import * as I from '../types/interfaces';
-import { app, server } from '.';
+import { server } from '.';
 import { HUDStateManager } from './api/huds/hudstatemanager';
 import './api/huds/devhud';
 import { getPlayersList } from './api/players';
 import { sendKillsToARG } from './api/arg';
+import { dota2TimelineHandler } from './api/timeline/dota2';
 
 interface RuntimeConfig {
 	last: CSGORaw | null;
@@ -184,6 +185,8 @@ ioPromise.then(io => {
 
 		io.emit('match', true);
 	});
+
+	dota2TimelineHandler(Dota2GSI);
 
 	const doesPlayerBelongToOtherTeam = (playerExtensions: I.Player[], otherTeam: Team) => (player: Player) => {
 		const extension = playerExtensions.find(data => data.steamid === player.steamid);

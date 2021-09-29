@@ -202,7 +202,7 @@ const uploadLocalToCloud = async (game) => {
         players_1.getPlayersList({ game }),
         teams_1.getTeamsList({ game }),
         fields_1.getCustomFieldsDb(game),
-        aco_1.getACOs(),
+        aco_1.getACOs()
         //getActiveGameMatches(),
         //getTournaments({ game })
     ]);
@@ -210,7 +210,7 @@ const uploadLocalToCloud = async (game) => {
         players: resources[0],
         teams: resources[1],
         customs: resources[2],
-        mapconfigs: resources[3],
+        mapconfigs: resources[3]
         //matches: resources[4],
         //tournaments: resources[5]
     };

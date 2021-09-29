@@ -19,6 +19,7 @@ const hudstatemanager_1 = require("./api/huds/hudstatemanager");
 require("./api/huds/devhud");
 const players_1 = require("./api/players");
 const arg_1 = require("./api/arg");
+const dota2_1 = require("./api/timeline/dota2");
 let lastUpdate = new Date().getTime();
 let lastSideCheck = new Date().getTime();
 exports.runtimeConfig = {
@@ -160,6 +161,7 @@ exports.ioPromise.then(io => {
         await matches_1.updateMatch(match);
         io.emit('match', true);
     });
+    dota2_1.dota2TimelineHandler(exports.Dota2GSI);
     const doesPlayerBelongToOtherTeam = (playerExtensions, otherTeam) => (player) => {
         const extension = playerExtensions.find(data => data.steamid === player.steamid);
         if (!extension)

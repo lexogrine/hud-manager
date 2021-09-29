@@ -5,7 +5,7 @@ exports.availableResources = [
     'teams',
     'players',
     'customs',
-    'mapconfigs',
+    'mapconfigs'
     //'matches',
     //'tournaments',
     //'arg'
