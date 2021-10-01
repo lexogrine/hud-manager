@@ -39,7 +39,7 @@ const createMainWindow = async (forceDev = false) => {
             nodeIntegration: true,
             backgroundThrottling: false,
             devTools: isDev || forceDev,
-            preload: path_1.default.join(__dirname, "preload.js")
+            preload: path_1.default.join(__dirname, 'preload.js')
         },
         minWidth: 740,
         minHeight: 440,
