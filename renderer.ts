@@ -37,7 +37,8 @@ export const createMainWindow = async (forceDev = false) => {
 		webPreferences: {
 			nodeIntegration: true,
 			backgroundThrottling: false,
-			devTools: isDev || forceDev
+			devTools: isDev || forceDev,
+			preload: path.join(__dirname, "preload.js")
 		},
 		minWidth: 740,
 		minHeight: 440,

@@ -13,12 +13,7 @@ import SyncModal from './SyncModal';
 import Changelog from './ChangelogModal';
 import { Component } from 'react';
 
-declare let window: any;
 const isElectron = config.isElectron;
-const fakeRequire = () => ({ ipcRenderer: null });
-if (!isElectron) {
-	window.require = fakeRequire;
-}
 
 interface IState {
 	data: IContextData;

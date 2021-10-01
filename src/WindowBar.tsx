@@ -1,25 +1,25 @@
-import config from './api/config';
 import ElectronOnly from './components/ElectronOnly';
-declare let window: any;
-const isElectron = config.isElectron;
-const fakeRequire = () => ({ ipcRenderer: null });
-if (!isElectron) {
-	window.require = fakeRequire;
+declare global {
+    interface Window {
+        ipcApi: {
+          send: (channel: string, ...arg: any) => void;
+          receive: (channel: string, func: (...arg: any) => void) => void;
+        }
+    }
 }
-const { ipcRenderer } = window.require('electron');
 
 const WindowBar = () => {
 	const minimize = () => {
-		if (!ipcRenderer) return;
-		ipcRenderer.send('min');
+		if (!window.ipcApi) return;
+		window.ipcApi.send('min')
 	};
 	const maximize = () => {
-		if (!ipcRenderer) return;
-		ipcRenderer.send('max');
+		if (!window.ipcApi) return;
+		window.ipcApi.send('max')
 	};
 	const close = () => {
-		if (!ipcRenderer) return;
-		ipcRenderer.send('close');
+		if (!window.ipcApi) return;
+		window.ipcApi.send('close')
 	};
 	return (
 		<ElectronOnly>

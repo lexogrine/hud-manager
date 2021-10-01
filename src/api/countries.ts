@@ -26,7 +26,7 @@ export const countries: any = {
 	BM: 'Bermuda',
 	BT: 'Bhutan',
 	BO: 'Bolivia',
-	BA: 'Bosnia And Herzegovina',
+	BA: 'Bosnia and Herzegovina',
 	BW: 'Botswana',
 	BV: 'Bouvet Island',
 	BR: 'Brazil',

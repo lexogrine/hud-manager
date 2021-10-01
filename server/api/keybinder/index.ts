@@ -1,18 +1,18 @@
-import { Accelerator, globalShortcut } from 'electron';
+import { globalShortcut } from 'electron';
 
 interface RegisteredKeybind {
 	owner?: string;
 	callback: () => void;
 }
 
-const registeredKeybinds: Map<Accelerator, RegisteredKeybind[]> = new Map();
+const registeredKeybinds: Map<string, RegisteredKeybind[]> = new Map();
 
-const handleKeybind = (accelerator: Accelerator) => () => {
+const handleKeybind = (accelerator: string) => () => {
 	const keybinds = registeredKeybinds.get(accelerator) || [];
 	keybinds.forEach(keybind => keybind.callback());
 };
 
-export const registerKeybind = (accelerator: Accelerator, callback: () => void, owner?: string) => {
+export const registerKeybind = (accelerator: string, callback: () => void, owner?: string) => {
 	const isRegistered = globalShortcut.isRegistered(accelerator);
 
 	if (!isRegistered) {
@@ -32,7 +32,7 @@ export const registerKeybind = (accelerator: Accelerator, callback: () => void, 
 	return true;
 };
 
-export const unregisterKeybind = (accelerator: Accelerator, owner?: string) => {
+export const unregisterKeybind = (accelerator: string, owner?: string) => {
 	const currentCallbacks = [...(registeredKeybinds.get(accelerator) || [])];
 
 	registeredKeybinds.set(
