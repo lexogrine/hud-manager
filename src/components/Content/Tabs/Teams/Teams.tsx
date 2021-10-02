@@ -205,7 +205,7 @@ const TeamsTab = ({ cxt }: IProps) => {
 	const visibleFields = cxt.fields.teams.filter(field => field.visible);
 	return (
 		<Form>
-			<div className="tab-title-container">
+			{/*<div className="tab-title-container">
 				<div>{t('common.teams')}</div>
 				<Input
 					type="text"
@@ -215,7 +215,7 @@ const TeamsTab = ({ cxt }: IProps) => {
 					onChange={searchHandler}
 					placeholder={t('common.search')}
 				/>
-			</div>
+	</div>*/}
 			<TeamEditModal
 				open={editModalState}
 				toggle={() => {

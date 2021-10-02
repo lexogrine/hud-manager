@@ -13,7 +13,6 @@ const Credits = () => {
 
 	return (
 		<>
-			<div className="tab-title-container">Credits</div>
 			<div className="tab-content-container full-scroll">
 				<Row>
 					<Col>

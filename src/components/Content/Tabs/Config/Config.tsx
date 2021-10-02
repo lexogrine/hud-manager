@@ -493,7 +493,6 @@ class Config extends Component<IProps, IState> {
 
 		return (
 			<Form>
-				<div className="tab-title-container">{t('settings.header')}</div>
 				<div className="tab-content-container no-padding">
 					<ImportModal
 						isOpen={importModalOpen}

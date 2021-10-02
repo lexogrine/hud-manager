@@ -252,7 +252,7 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 	const { t } = useTranslation();
 	return (
 		<Form>
-			<div className="tab-title-container">
+			{/*<div className="tab-title-container">
 				<div className="tab-title">
 					{t('common.players')}
 					<GameOnly game="csgo">
@@ -269,7 +269,7 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 					onChange={searchHandler}
 					placeholder={t('common.search')}
 				/>
-			</div>
+			</div>*/}
 			<PlayerEditModal
 				open={editModalState}
 				toggle={() => {

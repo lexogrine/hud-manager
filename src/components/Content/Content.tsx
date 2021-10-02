@@ -49,6 +49,7 @@ const Content = ({
 		<div className="main-container">
 			<Navbar activeTab={activeTab} toggle={toggle} files={gsi && configs} />
 			<Col>
+				<div className="tab-title-container">{activeTab}</div>
 				<Tabs activeTab={activeTab} data={data} toggle={toggle} gsiCheck={checkFiles} />
 			</Col>
 			<div className="top_buttons">

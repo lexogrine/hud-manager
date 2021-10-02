@@ -16,23 +16,27 @@ body {
 }
 .navbar-container li {
     width:100%;
-    height: calc(calc(100vh - 64px)/6);
-    max-height: 120px;
+    height: 43px;
 }
 .navbar-container li > a{
     width:100%;
-    height: calc(calc(100vh - 64px)/6 - 1px);
-    max-height: 120px;
-    background-color: #2b2e34; 
+    height: 100%;
     display: flex;
     align-items: center;
-    justify-content: center;
     color: #fff;
     text-transform: uppercase;
-    border-bottom: 1px solid #373a40 !important;
+    padding: 0;
+    padding-left: 30px;
+}
+.navbar-container li > a img {
+    margin-right: 12px;
+    width:23px;
 }
 .navbar-container li:nth-last-child(2) > a {
     border-bottom: none !important;
+}
+.navbar-container li > a:not(.active){
+    opacity: 0.6;
 }
 .navbar-container li > a.active{
     width:100%;
@@ -40,11 +44,9 @@ body {
     background-color: #6b1cff !important; 
     color: white !important;
     border:none;
-    border-bottom: 1px solid #2b2e34 !important;
 }
 .navbar-container li > a:hover{
     border-color: transparent !important;
-    border-bottom: 1px solid #373a40 !important;
 }
 .navbar-container li:nth-last-child(2) > a:hover{
     border-color: transparent !important;
@@ -60,14 +62,12 @@ body {
 }
 .tab-title-container {
     width: 100%;
-    height: 135px;
-    background-color: #202328;
+    height: 56px;
     display: flex;
-    align-items: center;
-    padding-left: 196px;
-    position: fixed;
-    font-weight: 100;
-    font-size: 32px;
+    padding-left: 30px;
+    font-weight: 300;
+    font-size: 30px;
+    text-transform: uppercase;
     z-index:1;
     top: 0;
 }
@@ -79,46 +79,59 @@ body {
     cursor: pointer;
 }
 .loaded {
-    background-color: #24272d;
+    background-color: #111111;
+    background-image: url('./assets/leftBottom.png'), url('./assets/rightTop.png');
+    background-repeat: no-repeat;
+    background-position: left bottom, right top;
 }
 .loaded.electron {
-    padding-top:64px;
-}
-.loaded.electron .tab-title-container {
-    top:64px;
+    padding-top:32px;
 }
 .loaded.electron #settings {
-    top:64px;
+    top:32px;
 }
 .tab-content-container {
     padding: 53px;
     padding-bottom: 0;
-    margin-left: 120px;
-    margin-top: 135px;
     position: relative;
     height: calc(100vh - 135px - 71px);
     overflow-y: scroll;
 }
+.lhm-logo-container {
+    width: 100%;
+    height: 64px;
+}
+.lhm-logo-main {
+    width: 193px;
+    height: 96px;
+    position: fixed;
+    top: 0;
+    z-index: 9999;
+    background:  rgba(33, 33, 33, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 30px;
+}
+.lhm-logo-name {
+    position: relative;
+}
+.lhm-version {
+    font-size: 10px;
+    font-weight: 600;
+    position: absolute;
+    bottom: -8px;
+    right: 0;
+}
 ::-webkit-scrollbar {
-    width: 16px;
+    width: 7px;
 }
  
-::-webkit-scrollbar-track {
-    background-color: #202328;
-}
  
 ::-webkit-scrollbar-thumb {
-    background-color: #2b2e34;
-    border-radius:5px;
-}
-.tab-content-container.full-scroll {
-    height: calc(100vh - 135px);
-}
-.loaded.electron .tab-content-container {
-    height: calc(100vh - 135px - 71px - 64px);
-}
-.loaded.electron .tab-content-container.full-scroll {
-    height: calc(100vh - 135px - 64px);
+    background-color: #464051;
+    border-radius:15px;
 }
 .tab-content-container.no-padding{
     padding:0;
@@ -132,9 +145,6 @@ body {
 .tab-content-container.list-padding {
     padding-top:0;
     margin-top: 188px;
-}
-.loaded.electron .tab-content-container.list-padding {
-    height: calc(100vh - 135px - 64px - 53px);
 }
 .event-container {
     display: flex;
@@ -195,20 +205,6 @@ body {
     flex: 1;
     padding-left: 15px;
 }
-#settings {
-    position: fixed;
-    top: 0;
-    z-index: 2;
-    width: 157px;
-    right: 0;
-    height: 135px;
-}
-#settings a {
-    border-bottom: none !important;
-    height: 135px;
-    max-height: unset;
-}
-
 .exec-code {
     color: white;
     border: 1px solid white;
@@ -270,20 +266,21 @@ input.form-control:focus, select.form-control:focus {
     background: linear-gradient(to bottom right, #78c1f6, #6b1fff);
 }
 .navbar-container {
-    width:125px;
+    width:193px;
     display: block !important;
     border:none;
-    position: fixed;
     z-index: 2;
-    background-color: #2b2e34;
+    background: linear-gradient(to bottom,  transparent 0, transparent 64px, rgba(33, 33, 33, 0.5) 64px, rgba(33, 33, 33, 0.5) 100%);
+    backdrop-filter: blur(100px);
     overflow: auto;
-    height: calc(100% - 64px);
+    height: calc(100%);
+    top: 0;
 }
 .navbar-container::-webkit-scrollbar-thumb {
     background-color: #1d1e21;
 }
 img.smallLogo {
-    max-height:64px;
+    max-height:32px;
 }
 .modal-content {
     color: white;
@@ -1120,16 +1117,9 @@ form .card > .card-body > button.btn {
 .nav-tabs .nav-link {
     user-select: none;
     border-radius: 0 !important;
-    
-    flex-direction: column;
+    border: 0;
     font-size: 11px;
     font-weight: 600;
-}
-.nav-tabs .nav-item {
-    margin-bottom: unset;
-}
-.nav-tabs .nav-link div {
-    margin-top: 17px;
 }
 .radar_support, .killfeed_support {
     z-index:5;
@@ -1290,7 +1280,7 @@ input:checked ~ .customCheckbox {
 #window-bar-area {
     z-index: 9999;
     width:100%;
-    height:64px;
+    height:32px;
     position:fixed;
 }
 .window-app {
@@ -1298,14 +1288,11 @@ input:checked ~ .customCheckbox {
 }
 .window-bar  {
     width:100%;
-    height:64px;
+    height:32px;
     position: fixed;
     top: 0;
     z-index: 999;
     display:flex;
-    background: url("./app_bar.png"), linear-gradient(to right, #79d1f5, #6c28fe);
-    background-repeat: no-repeat;
-    background-position: left center;
 }
 
 .loaded:not(.electron) .window-bar {
@@ -1313,7 +1300,7 @@ input:checked ~ .customCheckbox {
 }
 .window-bar .app-control {
     width:64px;
-    height:64px;
+    height:32px;
     display: flex;
     align-items:center;
     justify-content: center;
@@ -1344,7 +1331,7 @@ input:checked ~ .customCheckbox {
 .window-bar .window-drag-bar{
     flex:1;
     -webkit-app-region: drag;
-    height: 63px;
+    height: 31px;
     margin-top: 1px;
 }
 .window-bar .window-drag-bar .title-bar {
@@ -1527,7 +1514,7 @@ input:checked ~ .customCheckbox {
     display: flex;
     flex-wrap: wrap;
     height:unset !important;
-    max-height: calc(100vh - 135px - 64px);
+    max-height: calc(100vh - 135px - 32px);
     padding: 20px;
 }
 

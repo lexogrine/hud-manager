@@ -148,7 +148,7 @@ class Matches extends Component<
 		const { match, maps } = this.state;
 		return (
 			<>
-				{match ? (
+				{/*match ? (
 					<div className="tab-title-container">
 						<img
 							src={goBack}
@@ -160,7 +160,7 @@ class Matches extends Component<
 					</div>
 				) : (
 					<div className="tab-title-container">{t('match.matches')}</div>
-				)}
+				)*/}
 				<div className={`tab-content-container no-padding ${match ? 'full-scroll' : ''}`}>
 					{match ? (
 						<MatchEdit

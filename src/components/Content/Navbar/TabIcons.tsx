@@ -5,7 +5,8 @@ import Matches from './../../../styles/Tabs/normal/matches.png';
 import Live from './../../../styles/Tabs/normal/live.png';
 import Tournaments from './../../../styles/Tabs/normal/tournaments.png';
 import ACO from './../../../styles/Tabs/normal/aco.png';
-import AR from './../../../styles/Tabs/normal/vr.png';
+import AR from './../../../styles/Tabs/normal/ar.png';
 import ARG from './../../../styles/Tabs/normal/arg.png';
+import Settings from './../../../styles/Tabs/normal/settings.png';
 
-export { Players, Teams, HUDs, Matches, Live, Tournaments, ACO, AR, ARG };
+export { Players, Teams, HUDs, Matches, Live, Tournaments, ACO, AR, ARG, Settings };

@@ -284,7 +284,6 @@ class Tournaments extends Component<{ cxt: IContextData; t: any }, State> {
 		const { cxt, t } = this.props;
 		return (
 			<Form>
-				<div className="tab-title-container">{t('common.tournaments')}</div>
 				<div className="tab-content-container">
 					{tournament ? (
 						<BindModal

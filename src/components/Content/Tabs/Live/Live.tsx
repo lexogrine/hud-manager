@@ -87,7 +87,6 @@ const Live = ({ toggle, cxt }: { toggle: (tab: string, data?: any) => void; cxt:
 	if (!game)
 		return (
 			<>
-				<div className="tab-title-container">{t('live.header')}</div>
 				<div className="tab-content-container full-scroll">{t('live.noGame')}</div>
 			</>
 		);
@@ -102,7 +101,6 @@ const Live = ({ toggle, cxt }: { toggle: (tab: string, data?: any) => void; cxt:
 	if (!left || !right) {
 		return (
 			<>
-				<div className="tab-title-container">{t('live.header')}</div>
 				<div className="tab-content-container full-scroll">{t('live.noGame')}</div>
 			</>
 		);
@@ -110,7 +108,6 @@ const Live = ({ toggle, cxt }: { toggle: (tab: string, data?: any) => void; cxt:
 
 	return (
 		<>
-			<div className="tab-title-container">{t('live.header')}</div>
 			<div className="tab-content-container full-scroll">
 				<Row>
 					<Col md="12" className="config-container no-margin" style={{ flexDirection: 'column' }}>

@@ -214,10 +214,10 @@ class Huds extends Component<IProps, IState> {
 		if (active) {
 			return (
 				<>
-					<div className="tab-title-container">
+					{/*<div className="tab-title-container">
 						<img src={goBack} onClick={this.toggleConfig()} className="go-back-button" alt="Go back" />
 						HUD Settings
-					</div>
+					</div>*/}
 					<div className="tab-content-container full-scroll no-padding">
 						<Panel hud={active} cxt={this.props.cxt} />
 					</div>
@@ -230,7 +230,6 @@ class Huds extends Component<IProps, IState> {
 
 		return (
 			<>
-				<div className="tab-title-container">{t('huds.header')}</div>
 				<div className={`tab-content-container no-padding ${!isElectron ? 'full-scroll' : ''}`}>
 					<GameOnly game="csgo">
 						<Row className="config-container">

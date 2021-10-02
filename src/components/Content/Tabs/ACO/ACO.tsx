@@ -120,7 +120,6 @@ const ACO = () => {
 				areaPriority={newAreaPriority}
 			/>
 			<AddConfigModal close={() => setConfigOpen(false)} isOpen={isConfigOpened} save={saveConfig} />
-			<div className="tab-title-container">ACO</div>
 			<div className={`tab-content-container full-scroll`}>
 				<Row className="padded">
 					<div style={{ width: '512px', marginRight: '25px' }}>

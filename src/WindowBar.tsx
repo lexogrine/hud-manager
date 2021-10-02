@@ -25,11 +25,18 @@ const WindowBar = () => {
 		<ElectronOnly>
 			<div className="window-bar">
 				<div className="window-drag-bar">
-					<div className="title-bar">Lexogrine HUD Manager</div>
 				</div>
 				<div onClick={minimize} className="app-control minimize"></div>
 				<div onClick={maximize} className="app-control maximize"></div>
 				<div onClick={close} className="app-control close"></div>
+			</div>
+			<div className="lhm-logo-main">
+				<div className="lhm-logo-name">
+					LHM
+					<div className="lhm-version">
+						2.3.4
+					</div>
+				</div>
 			</div>
 		</ElectronOnly>
 	);

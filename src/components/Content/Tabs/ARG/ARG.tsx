@@ -101,13 +101,13 @@ const ARG = () => {
 
 	return (
 		<>
-			<div className="tab-title-container arg-title">
+			{/*<div className="tab-title-container arg-title">
 				ARG
 				<span className={isConnected ? 'connected' : 'disconnected'}>
 					<div className="status"></div>
 					{isConnected ? 'CONNECTED' : 'DISCONNECTED'}
 				</span>
-			</div>
+			</div>*/}
 			<div className={`tab-content-container no-padding arg`}>
 				<Row className="config-container">
 					<Col md="12">

@@ -61,10 +61,10 @@ const AR = ({ cxt, toggle }: IProps) => {
 	if (active) {
 		return (
 			<>
-				<div className="tab-title-container">
+				{/*<div className="tab-title-container">
 					<img src={goBack} onClick={() => setActive(null)} className="go-back-button" alt="Go back" />
 					AR
-				</div>
+				</div>*/}
 				<div className="tab-content-container full-scroll no-padding">
 					<ARSettings cxt={cxt} hud={active.dir} section={isAssetHUD(active) ? active.ar : active.panel} />
 				</div>
@@ -73,10 +73,10 @@ const AR = ({ cxt, toggle }: IProps) => {
 	}
 	return (
 		<>
-			<div className="tab-title-container">
+			{/*<div className="tab-title-container">
 				<img src={goBack} onClick={() => toggle('huds')} className="go-back-button" alt="Go back" />
 				AR
-			</div>
+			</div>*/}
 			<div className={`tab-content-container ${!isElectron ? 'full-scroll' : ''}`}>
 				<Row className="padded">
 					<Col>

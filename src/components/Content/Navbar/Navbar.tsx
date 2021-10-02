@@ -35,6 +35,19 @@ const Navbar = ({ activeTab, toggle, files }: IProps) => {
 	const onlyNonCGClass = !config || !config.cg ? '' : 'hide';
 	return (
 		<Nav tabs className="navbar-container">
+			<div className="lhm-logo-container">
+			</div>
+			<NavItem className="hover-pointer">
+				<NavLink
+					active={activeTab === 'huds'}
+					onClick={() => {
+						toggle('huds');
+					}}
+				>
+					<img src={Tabs.HUDs} alt="HUDs" />
+					<div>{t('navbar.huds')}</div>
+				</NavLink>
+			</NavItem>
 			<NavItem className={`hover-pointer ${config && config.cg ? '' : 'hide'}`}>
 				<NavLink
 					active={activeTab === 'cgpanel'}
@@ -88,17 +101,6 @@ const Navbar = ({ activeTab, toggle, files }: IProps) => {
 				>
 					<img src={Tabs.Tournaments} alt="Tournaments" />
 					<div>{t('common.tournaments')}</div>
-				</NavLink>
-			</NavItem>
-			<NavItem className="hover-pointer">
-				<NavLink
-					active={activeTab === 'huds'}
-					onClick={() => {
-						toggle('huds');
-					}}
-				>
-					<img src={Tabs.HUDs} alt="HUDs" />
-					<div>{t('navbar.huds')}</div>
 				</NavLink>
 			</NavItem>
 			<GameOnly game="csgo">
@@ -206,6 +208,7 @@ const Navbar = ({ activeTab, toggle, files }: IProps) => {
 						toggle('config');
 					}}
 				>
+					<img src={Tabs.Settings} alt="Settings" />
 					{t('settings.header')} {!files ? <i className="material-icons">warning</i> : null}
 				</NavLink>
 			</NavItem>
