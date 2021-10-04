@@ -15,7 +15,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GlobalKeyboardListener = void 0;
 const os_1 = __importDefault(require("os"));
-const MacKeyServer_1 = require("./ts/MacKeyServer");
 const WinKeyServer_1 = require("./ts/WinKeyServer");
 __exportStar(require("./ts/_types/IGlobalKeyListener"), exports);
 __exportStar(require("./ts/_types/IGlobalKeyEvent"), exports);
@@ -49,14 +48,11 @@ class GlobalKeyboardListener {
         this.isDown = {};
         this.config = config;
         switch (os_1.default.platform()) {
-            case "win32":
+            case 'win32':
                 this.keyServer = new WinKeyServer_1.WinKeyServer(this.baseListener, config.windows);
                 break;
-            case "darwin":
-                this.keyServer = new MacKeyServer_1.MacKeyServer(this.baseListener, config.mac);
-                break;
             default:
-                throw Error("This OS is not supported");
+                throw Error('This OS is not supported');
         }
     }
     /**
@@ -110,10 +106,10 @@ class GlobalKeyboardListener {
     baseListener = event => {
         if (event.name) {
             switch (event.state) {
-                case "DOWN":
+                case 'DOWN':
                     this.isDown[event.name] = true;
                     break;
-                case "UP":
+                case 'UP':
                     this.isDown[event.name] = false;
                     break;
             }

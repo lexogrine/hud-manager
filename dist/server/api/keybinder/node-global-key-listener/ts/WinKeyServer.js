@@ -8,9 +8,7 @@ const child_process_1 = require("child_process");
 const WinGlobalKeyLookup_1 = require("./_data/WinGlobalKeyLookup");
 const path_1 = __importDefault(require("path"));
 const isSpawnEventSupported_1 = require("./isSpawnEventSupported");
-const fs_1 = __importDefault(require("fs"));
-const sPath = path_1.default.join(__dirname, "./../../bin/WinKeyServer.exe");
-
+const sPath = path_1.default.join(__dirname, './../../bin/WinKeyServer.exe');
 /** Use this class to listen to key events on Windows OS */
 class WinKeyServer {
     listener;
@@ -30,20 +28,20 @@ class WinKeyServer {
     async start() {
         this.proc = child_process_1.execFile(sPath);
         if (this.config.onInfo)
-            this.proc?.stderr?.on("data", data => this.config.onInfo?.(data.toString()));
+            this.proc?.stderr?.on('data', data => this.config.onInfo?.(data.toString()));
         if (this.config.onError)
-            this.proc.on("close", this.config.onError);
-        this.proc?.stdout?.on("data", data => {
+            this.proc.on('close', this.config.onError);
+        this.proc?.stdout?.on('data', data => {
             const events = this._getEventData(data);
             for (const { event, eventId } of events) {
                 const stopPropagation = !!this.listener(event);
-                this.proc?.stdin?.write(`${stopPropagation ? "1" : "0"},${eventId}\n`);
+                this.proc?.stdin?.write(`${stopPropagation ? '1' : '0'},${eventId}\n`);
             }
         });
         return new Promise((res, err) => {
-            this.proc.on("error", err);
+            this.proc.on('error', err);
             if (isSpawnEventSupported_1.isSpawnEventSupported())
-                this.proc.on("spawn", res);
+                this.proc.on('spawn', res);
             // A timed fallback if the spawn event is not supported
             else
                 setTimeout(res, 200);
@@ -63,8 +61,8 @@ class WinKeyServer {
         const sData = data.toString();
         const lines = sData.trim().split(/\n/);
         return lines.map(line => {
-            const lineData = line.replace(/\s+/, "");
-            const arr = lineData.split(",");
+            const lineData = line.replace(/\s+/, '');
+            const arr = lineData.split(',');
             const vKey = parseInt(arr[0]);
             const key = WinGlobalKeyLookup_1.WinGlobalKeyLookup[vKey];
             const keyDown = /DOWN/.test(arr[1]);
@@ -75,11 +73,11 @@ class WinKeyServer {
                     vKey,
                     rawKey: key,
                     name: key?.standardName,
-                    state: keyDown ? "DOWN" : "UP",
+                    state: keyDown ? 'DOWN' : 'UP',
                     scanCode,
-                    _raw: sData,
+                    _raw: sData
                 },
-                eventId,
+                eventId
             };
         });
     }
