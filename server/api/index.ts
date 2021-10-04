@@ -195,7 +195,7 @@ export default async function () {
 
 	app.route('/api/bakkesmod/install/sos').get(bakkesmod.installSosPlugin);
 
-	registerKeybind('Left Alt+Left Shift+F', () => io.emit('refreshHUD'))
+	registerKeybind('Left Alt+Left Shift+F', () => io.emit('refreshHUD'));
 
 	registerKeybind('Left Alt+R', match.reverseSide);
 
