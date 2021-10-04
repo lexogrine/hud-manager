@@ -1,4 +1,6 @@
-import { GlobalKeyboardListener, IGlobalKey } from 'node-global-key-listener';
+import { existsSync } from 'fs';
+import path from 'path';
+import { GlobalKeyboardListener, IGlobalKey } from './node-global-key-listener';
 
 const listener = new GlobalKeyboardListener();
 interface RegisteredKeybind {

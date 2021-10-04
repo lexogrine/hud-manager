@@ -1,11 +1,11 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.unregisterAllKeybinds = exports.unregisterKeybind = exports.registerKeybind = void 0;
-const node_global_key_listener_1 = require("node-global-key-listener");
+const node_global_key_listener_1 = require("./node-global-key-listener");
 const listener = new node_global_key_listener_1.GlobalKeyboardListener();
 const keybinds = [];
 const parseKeybindInput = (keybindInput) => {
-    const keybind = typeof keybindInput === "string" ? keybindInput.split("+") : keybindInput;
+    const keybind = typeof keybindInput === 'string' ? keybindInput.split('+') : keybindInput;
     return keybind.map(key => key.toUpperCase());
 };
 const areKeybindsEqual = (keybindInput, toCompare) => {
@@ -23,7 +23,7 @@ const handleKeybind = (keybindEntry, pressed) => {
     }
 };
 listener.addListener((e, down) => {
-    if (e.state === "UP") {
+    if (e.state === 'UP') {
         keybinds.forEach(keybind => {
             keybind.active = false;
         });
@@ -50,7 +50,9 @@ const registerKeybind = (keybindInput, callback, owner) => {
 exports.registerKeybind = registerKeybind;
 const unregisterKeybind = (keybindInput, owner) => {
     const keybind = parseKeybindInput(keybindInput);
-    const currentEntries = [...(keybinds.filter(keybindEntry => areKeybindsEqual(keybindEntry.keybind, keybind)) || [])];
+    const currentEntries = [
+        ...(keybinds.filter(keybindEntry => areKeybindsEqual(keybindEntry.keybind, keybind)) || [])
+    ];
     currentEntries.forEach(keybindEntry => {
         keybindEntry.callbacks = keybindEntry.callbacks.filter(callback => !(callback.owner === owner || !owner));
     });
@@ -108,4 +110,4 @@ export const unregisterAllKeybinds = (owner: string) => {
         );
     }
 };
-*/ 
+*/
