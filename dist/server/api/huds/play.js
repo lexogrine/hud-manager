@@ -10,7 +10,7 @@ const socket_1 = require("../../socket");
 const testing_1 = require("../testing");
 const ws_1 = __importDefault(require("ws"));
 const aco_1 = require("../../aco");
-const electron_1 = require("electron");
+const keybinder_1 = require("../keybinder");
 const assertUser = (req, res, next) => {
     if (!__1.customer.customer) {
         return res.sendStatus(403);
@@ -41,7 +41,7 @@ const initGameConnection = async () => {
         });
         socket.on('toggleDirector', toggleDirector);
     });
-    electron_1.globalShortcut.register('Alt+K', toggleDirector);
+    keybinder_1.registerKeybind('Left Alt+K', toggleDirector);
     let testDataIndex = 0;
     const startSendingTestData = () => {
         if (exports.playTesting.intervalId)
