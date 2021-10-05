@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Button, Form, Input, Row, Col } from 'reactstrap';
+import { Button, Form, Row, Col } from 'reactstrap';
 import countries from './../../countries';
 import api from './../../../../api/api';
 import * as I from './../../../../api/interfaces';
@@ -9,8 +9,8 @@ import PlayerEditModal from './PlayerEditModal';
 import CustomFieldsModal from '../../../CustomFields/CustomFieldsModal';
 import { useTranslation } from 'react-i18next';
 import NamesFileModal from './NamesFileModal';
-import { GameOnly } from '../Config/Config';
-import downloadIcon from './../../../../styles/downloadHUDIcon.png';
+// import { GameOnly } from '../Config/Config';
+// import downloadIcon from './../../../../styles/downloadHUDIcon.png';
 
 interface IProps {
 	cxt: IContextData;
@@ -33,7 +33,7 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 		extra: {}
 	};
 	const [form, setForm] = useState(emptyPlayer);
-	const [search, setSearch] = useState('');
+	const [search] = useState('');
 
 	const [isFilesOpened, setFilesOpened] = useState(false);
 
@@ -124,9 +124,9 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 		};
 	};
 
-	const searchHandler = (event: any) => {
+	/*const searchHandler = (event: any) => {
 		setSearch(event.target.value);
-	};
+	};*/
 
 	const changeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
 		event.persist();

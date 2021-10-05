@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { IContextData } from './../../../../components/Context';
 import * as I from './../../../../api/interfaces';
-import goBack from './../../../../styles/goBack.png';
 import config from './../../../../api/config';
 import { Col, Row, Button } from 'reactstrap';
 import HudEntry from './ARSupportedEntry';
@@ -18,7 +17,7 @@ interface IProps {
 	toggle: (tab: string, data?: any) => void;
 }
 
-const AR = ({ cxt, toggle }: IProps) => {
+const AR = ({ cxt  }: IProps) => {
 	const [active, setActive] = useState<I.HUD | I.ARModule | null>(null);
 	const [huds, setHUDs] = useState<I.HUD[]>([]);
 	const [ars, setARs] = useState<I.ARModule[]>([]);

@@ -78,14 +78,14 @@ body {
     margin-left:20px;
     cursor: pointer;
 }
-.loaded {
+#root {
     background-color: #111111;
     background-image: url('./assets/leftBottom.png'), url('./assets/rightTop.png');
     background-repeat: no-repeat;
     background-position: left bottom, right top;
 }
 .loaded.electron {
-    padding-top:32px;
+    height: calc(100% - 32px);
 }
 .loaded.electron #settings {
     top:32px;
@@ -1289,7 +1289,6 @@ input:checked ~ .customCheckbox {
 .window-bar  {
     width:100%;
     height:32px;
-    position: fixed;
     top: 0;
     z-index: 999;
     display:flex;

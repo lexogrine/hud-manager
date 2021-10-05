@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button, Form, Input, Row, Col } from 'reactstrap';
+import { Button, Form, Row, Col } from 'reactstrap';
 import countries from './../../countries';
 import api from './../../../../api/api';
 import * as I from './../../../../api/interfaces';
@@ -26,7 +26,7 @@ const TeamsTab = ({ cxt }: IProps) => {
 		extra: {}
 	};
 	const [form, setForm] = useState(emptyTeam);
-	const [search, setSearch] = useState('');
+	const [search] = useState('');
 
 	const [editModalState, setEditState] = useState(false);
 	const [fieldsModalState, setFieldsState] = useState(false);
@@ -95,9 +95,9 @@ const TeamsTab = ({ cxt }: IProps) => {
 		};
 	};
 
-	const searchHandler = (event: any) => {
+	/*const searchHandler = (event: any) => {
 		setSearch(event.target.value);
-	};
+	};*/
 
 	const changeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
 		event.persist();

@@ -1,3 +1,5 @@
+import { useEffect, useState } from 'react';
+import api from './api/api';
 import ElectronOnly from './components/ElectronOnly';
 declare global {
 	interface Window {
@@ -9,6 +11,14 @@ declare global {
 }
 
 const WindowBar = () => {
+	const [ version, setVersion ] = useState('-');
+
+	useEffect(() => {
+		api.config.getVersion().then(response => {
+			setVersion(response.version);
+		}).catch(() => {});
+	}, []);
+
 	const minimize = () => {
 		if (!window.ipcApi) return;
 		window.ipcApi.send('min');
@@ -34,7 +44,7 @@ const WindowBar = () => {
 				<div className="lhm-logo-name">
 					LHM
 					<div className="lhm-version">
-						2.3.4
+						{version}
 					</div>
 				</div>
 			</div>

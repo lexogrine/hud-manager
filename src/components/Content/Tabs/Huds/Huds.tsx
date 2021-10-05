@@ -8,7 +8,7 @@ import Switch from './../../../../components/Switch/Switch';
 import ElectronOnly from './../../../../components/ElectronOnly';
 import DragInput from './../../../DragFileInput';
 import HudEntry from './HudEntry';
-import goBack from './../../../../styles/goBack.png';
+//import goBack from './../../../../styles/goBack.png';
 import config from './../../../../api/config';
 import { withTranslation } from 'react-i18next';
 import { GameOnly } from '../Config/Config';
@@ -326,6 +326,7 @@ class Huds extends Component<IProps, IState> {
 											</Button>
 										</ElectronOnly>
 									</div>
+									
 									<div className="warning">
 										<ElectronOnly>
 											{(killfeed || afx) && !config.hlaePath ? (

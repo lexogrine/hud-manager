@@ -12,6 +12,7 @@ import { AvailableGames, CloudSyncStatus } from '../../types/interfaces';
 import SyncModal from './SyncModal';
 import Changelog from './ChangelogModal';
 import { Component } from 'react';
+import WindowBar from '../WindowBar';
 
 const isElectron = config.isElectron;
 
@@ -221,12 +222,17 @@ export default class Layout extends Component<{}, IState> {
 		const available =
 			data.customer?.license?.type === 'professional' || data.customer?.license?.type === 'enterprise';
 		const active = Boolean(available && config?.sync);
+
+		const url = new URL(window.location.href);
+		const isHLAEGUI = url.searchParams.get('hlaegui');
+
 		return (
 			<Provider value={this.state.data}>
+				{ isHLAEGUI === null ? <WindowBar /> : null}
 				<div className={`loaded ${isElectron ? 'electron' : ''}`}>
 					{data.customer ? (
 						<div className={`license-status ${isElectron ? 'electron' : ''}`}>
-							{data.customer.license.type} {version}
+							{data.customer.license.type}
 							<ElectronOnly>
 								<div className="logout-button" onClick={this.logout}>
 									Logout

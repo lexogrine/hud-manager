@@ -9,7 +9,7 @@ import uuidv4 from 'uuid/v4';
 
 import { IContextData } from '../../../Context';
 
-import goBack from './../../../../styles/goBack.png';
+// import goBack from './../../../../styles/goBack.png';
 import { socket } from '../Live/Live';
 import moment from 'moment';
 import { withTranslation } from 'react-i18next';

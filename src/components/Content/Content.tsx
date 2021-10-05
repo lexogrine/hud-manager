@@ -28,7 +28,6 @@ const Content = ({
 
 	const checkFiles = async () => {
 		const responses = await Promise.all([api.gamestate.check(game as any), api.cfgs.check(game as any)]);
-		console.log(responses);
 		setGSI(responses[0].success);
 		setConfigs(responses[1].success);
 	};
@@ -49,26 +48,28 @@ const Content = ({
 		<div className="main-container">
 			<Navbar activeTab={activeTab} toggle={toggle} files={gsi && configs} />
 			<Col>
-				<div className="tab-title-container">{activeTab}</div>
+				<div className="tab-title-container">
+					{activeTab}
+					<div className="top_buttons">
+						<div className={`sync_button`} onClick={clearGame}>
+							{t('app.changeGame')}
+						</div>
+						<a
+							className={`sync_button ${active ? 'active' : ''}`}
+							onClick={() => {
+								if (!available) return;
+								toggleSync();
+							}}
+							href={!available ? 'https://lexogrine.com/manager/register' : undefined}
+							rel={'noopener noreferrer'}
+							target={!available ? '_blank' : undefined}
+						>
+							{active ? t('app.cloud.isActive') : t('app.cloud.isNotAcitve')}
+						</a>
+					</div>
+				</div>
 				<Tabs activeTab={activeTab} data={data} toggle={toggle} gsiCheck={checkFiles} />
 			</Col>
-			<div className="top_buttons">
-				<div className={`sync_button`} onClick={clearGame}>
-					{t('app.changeGame')}
-				</div>
-				<a
-					className={`sync_button ${active ? 'active' : ''}`}
-					onClick={() => {
-						if (!available) return;
-						toggleSync();
-					}}
-					href={!available ? 'https://lexogrine.com/manager/register' : undefined}
-					rel={'noopener noreferrer'}
-					target={!available ? '_blank' : undefined}
-				>
-					{active ? t('app.cloud.isActive') : t('app.cloud.isNotAcitve')}
-				</a>
-			</div>
 		</div>
 	);
 };
