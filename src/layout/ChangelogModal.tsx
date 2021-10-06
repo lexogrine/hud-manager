@@ -26,6 +26,8 @@ const Changelog = ({ version, customer }: IProps) => {
 				.then(res => res.json())
 				.catch(() => null)) as any[];
 
+			if(!allReleases) return;
+
 			const indexOfLastVersion = allReleases.findIndex((release: any) => release.tag_name === `v${res.version}`);
 
 			allReleases.splice(indexOfLastVersion);

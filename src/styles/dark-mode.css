@@ -61,12 +61,13 @@ button.btn-primary {
     background-color: #53bf53;
 }
 .top_buttons {
-        position: absolute;
-        top: 91px;
-        right: 220px;
-        z-index: 5;
-        display: flex;
-    
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    height: 26px;
+    align-self: flex-end;
+    position: relative;
+    bottom: 15px;
 }
 .loading-container.hide {
     opacity:0;

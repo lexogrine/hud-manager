@@ -300,7 +300,7 @@ class Huds extends Component<IProps, IState> {
 										<ElectronOnly>
 											<div className="config-description">{t('common.or').toUpperCase()}</div>
 											<Button
-												className="round-btn run-game"
+												className="button green strong"
 												disabled={
 													(killfeed && !config.hlaePath) ||
 													(afx && (!config.hlaePath || !config.afxCEFHudInteropPath))
@@ -310,7 +310,7 @@ class Huds extends Component<IProps, IState> {
 												{t('huds.config.runGame')}
 											</Button>
 											<Button
-												className="round-btn run-game"
+												className="button green strong empty"
 												// disabled={!this.state.enableTest}
 												onClick={api.game.runTest}
 											>
@@ -318,15 +318,9 @@ class Huds extends Component<IProps, IState> {
 													? t('huds.config.pauseTest')
 													: t('huds.config.runTest')}
 											</Button>
-											<Button
-												className="round-btn run-game"
-												onClick={() => this.props.toggle('ar')}
-											>
-												AR
-											</Button>
 										</ElectronOnly>
 									</div>
-									
+
 									<div className="warning">
 										<ElectronOnly>
 											{(killfeed || afx) && !config.hlaePath ? (

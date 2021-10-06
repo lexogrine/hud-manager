@@ -11,12 +11,15 @@ declare global {
 }
 
 const WindowBar = () => {
-	const [ version, setVersion ] = useState('-');
+	const [version, setVersion] = useState('-');
 
 	useEffect(() => {
-		api.config.getVersion().then(response => {
-			setVersion(response.version);
-		}).catch(() => {});
+		api.config
+			.getVersion()
+			.then(response => {
+				setVersion(response.version);
+			})
+			.catch(() => {});
 	}, []);
 
 	const minimize = () => {
@@ -34,8 +37,7 @@ const WindowBar = () => {
 	return (
 		<ElectronOnly>
 			<div className="window-bar">
-				<div className="window-drag-bar">
-				</div>
+				<div className="window-drag-bar"></div>
 				<div onClick={minimize} className="app-control minimize"></div>
 				<div onClick={maximize} className="app-control maximize"></div>
 				<div onClick={close} className="app-control close"></div>
@@ -43,9 +45,7 @@ const WindowBar = () => {
 			<div className="lhm-logo-main">
 				<div className="lhm-logo-name">
 					LHM
-					<div className="lhm-version">
-						{version}
-					</div>
+					<div className="lhm-version">{version}</div>
 				</div>
 			</div>
 		</ElectronOnly>

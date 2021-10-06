@@ -5,7 +5,7 @@ import * as I from './../api/interfaces';
 import config from './../api/config';
 import { socket } from './../components/Content/Tabs/Live/Live';
 import LoginRegisterModal from './LoginRegisterModal';
-import ElectronOnly from './../components/ElectronOnly';
+//import ElectronOnly from './../components/ElectronOnly';
 import { hash } from '../hash';
 import GamePicker from './GamePicker';
 import { AvailableGames, CloudSyncStatus } from '../../types/interfaces';
@@ -228,9 +228,9 @@ export default class Layout extends Component<{}, IState> {
 
 		return (
 			<Provider value={this.state.data}>
-				{ isHLAEGUI === null ? <WindowBar /> : null}
+				{isHLAEGUI === null ? <WindowBar /> : null}
 				<div className={`loaded ${isElectron ? 'electron' : ''}`}>
-					{data.customer ? (
+					{/*data.customer ? (
 						<div className={`license-status ${isElectron ? 'electron' : ''}`}>
 							{data.customer.license.type}
 							<ElectronOnly>
@@ -239,7 +239,7 @@ export default class Layout extends Component<{}, IState> {
 								</div>
 							</ElectronOnly>
 						</div>
-					) : null}
+					) : null*/}
 					{<div className={`loading-container ${loading || loadingGame ? '' : 'hide'}`}>Loading...</div>}
 					<LoginRegisterModal
 						isOpen={!data.customer}

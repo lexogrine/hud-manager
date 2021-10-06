@@ -35,8 +35,7 @@ const Navbar = ({ activeTab, toggle, files }: IProps) => {
 	const onlyNonCGClass = !config || !config.cg ? '' : 'hide';
 	return (
 		<Nav tabs className="navbar-container">
-			<div className="lhm-logo-container">
-			</div>
+			<div className="lhm-logo-container"></div>
 			<NavItem className="hover-pointer">
 				<NavLink
 					active={activeTab === 'huds'}

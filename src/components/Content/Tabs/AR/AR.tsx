@@ -17,7 +17,7 @@ interface IProps {
 	toggle: (tab: string, data?: any) => void;
 }
 
-const AR = ({ cxt  }: IProps) => {
+const AR = ({ cxt }: IProps) => {
 	const [active, setActive] = useState<I.HUD | I.ARModule | null>(null);
 	const [huds, setHUDs] = useState<I.HUD[]>([]);
 	const [ars, setARs] = useState<I.ARModule[]>([]);

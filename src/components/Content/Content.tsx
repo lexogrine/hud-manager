@@ -51,11 +51,11 @@ const Content = ({
 				<div className="tab-title-container">
 					{activeTab}
 					<div className="top_buttons">
-						<div className={`sync_button`} onClick={clearGame}>
+						<div className={`button strong`} onClick={clearGame}>
 							{t('app.changeGame')}
 						</div>
 						<a
-							className={`sync_button ${active ? 'active' : ''}`}
+							className={`button empty`}
 							onClick={() => {
 								if (!available) return;
 								toggleSync();
