@@ -9,7 +9,6 @@ declare global {
 }
 
 const WindowBar = () => {
-
 	const minimize = () => {
 		if (!window.ipcApi) return;
 		window.ipcApi.send('min');

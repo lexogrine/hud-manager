@@ -196,11 +196,13 @@ class Matches extends Component<
 						</>
 					)}
 				</div>
-				{ !match ? <div className="action-container">
-					<div className="button green strong big wide" onClick={this.add}>
-						{t('common.createNew')}
+				{!match ? (
+					<div className="action-container">
+						<div className="button green strong big wide" onClick={this.add}>
+							{t('common.createNew')}
+						</div>
 					</div>
-				</div> : null }
+				) : null}
 			</>
 		);
 	}

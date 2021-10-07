@@ -73,7 +73,7 @@ const HudEntry = ({
 			} else {
 				await api.huds.delete(hud.dir);
 			}
-		} catch { }
+		} catch {}
 		toggleModal();
 	};
 	const downloadHUD = (uuid: string) => {
@@ -148,8 +148,9 @@ const HudEntry = ({
 					<Col className="centered thumb">
 						{isLocal ? (
 							<img
-								src={`${Config.isDev ? Config.apiAddress : '/'}${hud.isDev ? 'dev/thumb.png' : `huds/${hud.dir}/thumbnail`
-									}`}
+								src={`${Config.isDev ? Config.apiAddress : '/'}${
+									hud.isDev ? 'dev/thumb.png' : `huds/${hud.dir}/thumbnail`
+								}`}
 								alt={`${hud.name}`}
 							/>
 						) : null}
@@ -167,105 +168,105 @@ const HudEntry = ({
 							<div className="hudAuthor">{hud.author}</div>
 							{isLocal ? (
 								<div className="hud-options">
-										{isLocal ? (
-											<Tip
-												id={`hud_link_button_${hashCode(hud.dir)}`}
-												label={
-													<img
-														src={HyperLink}
-														id={`hud_link_${hashCode(hud.dir)}`}
-														className="action"
-														alt="Local network HUD URL"
-													/>
-												}
-											>
-												{t('huds.actions.toggleUrl')}
-											</Tip>
-										) : null}
-										{hud.panel?.length ? (
-											<Tip
-												id={`hud_settings_button_${hashCode(hud.dir)}`}
-												label={
-													<img
-														src={Settings}
-														onClick={toggleConfig(hud)}
-														className="action"
-														alt="HUD panel"
-													/>
-												}
-											>
-												{t('huds.actions.settings')}
-											</Tip>
-										) : (
-											''
-										)}
-										<ElectronOnly>
-											<Tip
-												id={`hud_overlay_button_${hashCode(hud.dir)}`}
-												label={
-													<img
-														src={Display}
-														onClick={() => startHUD(hud.dir)}
-														className="action"
-														alt="Start HUD"
-													/>
-												}
-											>
-												{t('huds.actions.overlay')}
-											</Tip>
-											{isNotRemote && isCloudAvailable && !hud.isDev && hud.game !== 'all' ? (
-												!isLoading ? (
-													<Tip
-														id={`hud_upload_button_${hashCode(hud.dir)}`}
-														label={
-															<img
-																src={uploadIcon}
-																className="action"
-																onClick={() => {
-																	uploadHUD(hud.dir, hud.uuid);
-																}}
-															/>
-														}
-													>
-														{t('huds.actions.upload')}
-													</Tip>
-												) : (
-													t('huds.actions.uploading')
-												)
-											) : null}
-											<Tip
-												id={`hud_delete_button_${hashCode(hud.dir)}`}
-												label={
-													<img
-														src={trash}
-														onClick={toggleModal}
-														className="action"
-														alt="Delete HUD"
-													/>
-												}
-											>
-												{t('huds.actions.deleteLocally')}
-											</Tip>
-										</ElectronOnly>
-										<GameOnly game="csgo">
-											<ElectronOnly>
+									{isLocal ? (
+										<Tip
+											id={`hud_link_button_${hashCode(hud.dir)}`}
+											label={
+												<img
+													src={HyperLink}
+													id={`hud_link_${hashCode(hud.dir)}`}
+													className="action"
+													alt="Local network HUD URL"
+												/>
+											}
+										>
+											{t('huds.actions.toggleUrl')}
+										</Tip>
+									) : null}
+									{hud.panel?.length ? (
+										<Tip
+											id={`hud_settings_button_${hashCode(hud.dir)}`}
+											label={
+												<img
+													src={Settings}
+													onClick={toggleConfig(hud)}
+													className="action"
+													alt="HUD panel"
+												/>
+											}
+										>
+											{t('huds.actions.settings')}
+										</Tip>
+									) : (
+										''
+									)}
+									<ElectronOnly>
+										<Tip
+											id={`hud_overlay_button_${hashCode(hud.dir)}`}
+											label={
+												<img
+													src={Display}
+													onClick={() => startHUD(hud.dir)}
+													className="action"
+													alt="Start HUD"
+												/>
+											}
+										>
+											{t('huds.actions.overlay')}
+										</Tip>
+										{isNotRemote && isCloudAvailable && !hud.isDev && hud.game !== 'all' ? (
+											!isLoading ? (
 												<Tip
-													id={`hud_toggle_button_${hashCode(hud.dir)}`}
+													id={`hud_upload_button_${hashCode(hud.dir)}`}
 													label={
-														<div className="hud-toggle">
-															<Switch
-																id={`hud-switch-${hud.dir}`}
-																isOn={isActive}
-																disabled={isHUDOpened}
-																handleToggle={() => setHUD(hud.url, hud.dir, hud.isDev)}
-															/>
-														</div>
+														<img
+															src={uploadIcon}
+															className="action"
+															onClick={() => {
+																uploadHUD(hud.dir, hud.uuid);
+															}}
+														/>
 													}
 												>
-													{t('huds.actions.toggleHUD')}
+													{t('huds.actions.upload')}
 												</Tip>
-											</ElectronOnly>
-										</GameOnly>
+											) : (
+												t('huds.actions.uploading')
+											)
+										) : null}
+										<Tip
+											id={`hud_delete_button_${hashCode(hud.dir)}`}
+											label={
+												<img
+													src={trash}
+													onClick={toggleModal}
+													className="action"
+													alt="Delete HUD"
+												/>
+											}
+										>
+											{t('huds.actions.deleteLocally')}
+										</Tip>
+									</ElectronOnly>
+									<GameOnly game="csgo">
+										<ElectronOnly>
+											<Tip
+												id={`hud_toggle_button_${hashCode(hud.dir)}`}
+												label={
+													<div className="hud-toggle">
+														<Switch
+															id={`hud-switch-${hud.dir}`}
+															isOn={isActive}
+															disabled={isHUDOpened}
+															handleToggle={() => setHUD(hud.url, hud.dir, hud.isDev)}
+														/>
+													</div>
+												}
+											>
+												{t('huds.actions.toggleHUD')}
+											</Tip>
+										</ElectronOnly>
+									</GameOnly>
 								</div>
 							) : (
 								<div style={{ flex: 1 }} className="hud-options">
@@ -336,9 +337,7 @@ const HudEntry = ({
 									) : null}
 								</Col>
 							</Row>
-						) : (
-							null
-						)}
+						) : null}
 					</Col>
 				</Row>
 				{isLocal ? (

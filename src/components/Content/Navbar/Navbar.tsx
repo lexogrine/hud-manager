@@ -30,7 +30,7 @@ const Navbar = ({ activeTab, toggle, files }: IProps) => {
 	};
 	const toggleNav = () => {
 		setCollapse(!isCollapsed);
-	}
+	};
 	useEffect(() => {
 		socket.on('config', getConfig);
 		getConfig();
@@ -38,8 +38,10 @@ const Navbar = ({ activeTab, toggle, files }: IProps) => {
 
 	const onlyNonCGClass = !config || !config.cg ? '' : 'hide';
 	return (
-		<Nav tabs className={`navbar-container ${isCollapsed ? 'collapsed':''}`}>
-			<div className="collapse-button" onClick={toggleNav}>X</div>
+		<Nav tabs className={`navbar-container ${isCollapsed ? 'collapsed' : ''}`}>
+			<div className="collapse-button" onClick={toggleNav}>
+				X
+			</div>
 			<div className="lhm-logo-container">
 				<div className="lhm-logo-name">
 					LHM
@@ -118,8 +120,8 @@ const Navbar = ({ activeTab, toggle, files }: IProps) => {
 						{data => (
 							<>
 								{!data?.customer?.license?.type ||
-									data.customer?.license.type === 'free' ||
-									data.customer.license.type === 'personal' ? (
+								data.customer?.license.type === 'free' ||
+								data.customer.license.type === 'personal' ? (
 									<Tip
 										id="aco_nav"
 										label={
@@ -219,10 +221,11 @@ const Navbar = ({ activeTab, toggle, files }: IProps) => {
 						}}
 					>
 						<img src={Tabs.Settings} alt="Settings" />
-						<div>{t('settings.header')} {!files ? <i className="material-icons">warning</i> : null}</div>
+						<div>
+							{t('settings.header')} {!files ? <i className="material-icons">warning</i> : null}
+						</div>
 					</NavLink>
 				</NavItem>
-
 			</div>
 		</Nav>
 	);

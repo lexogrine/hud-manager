@@ -386,43 +386,45 @@ class Huds extends Component<IProps, IState> {
 					</GameOnly>
 
 					<div className="huds-container">
-						{!!false && isElectron ? <Col s={12}>
+						{!!false && isElectron ? (
+							<Col s={12}>
 								<DragInput
 									id={`hud_zip`}
 									onChange={this.handleZIPs}
 									label={t('huds.config.add')}
 									accept=".zip"
 								/>
-							</Col> : null}
-							{independentOrDevHUDs.map(hud => (
-								<HudEntry
-									key={hud.dir}
-									hud={hud}
-									toggleConfig={this.toggleConfig}
-									isActive={hud.url === this.state.currentHUD}
-									customFields={this.props.cxt.fields}
-									loadHUDs={this.loadHUDs}
-									setHUDLoading={this.setHUDLoading}
-									isLoading={!!hud.uuid && this.state.loadingHUDs.includes(hud.uuid)}
-									isCloudAvailable={available}
-									isHUDOpened={isHUDOpened}
-								/>
-							))}
-							{independentOrDevHUDs.length && gameHUDs.length ? <div className="huds-separator" /> : null}
-							{gameHUDs.map(hud => (
-								<HudEntry
-									key={hud.dir}
-									hud={hud}
-									toggleConfig={this.toggleConfig}
-									isActive={hud.url === this.state.currentHUD}
-									customFields={this.props.cxt.fields}
-									loadHUDs={this.loadHUDs}
-									setHUDLoading={this.setHUDLoading}
-									isLoading={!!hud.uuid && this.state.loadingHUDs.includes(hud.uuid)}
-									isCloudAvailable={available}
-									isHUDOpened={isHUDOpened}
-								/>
-							))}
+							</Col>
+						) : null}
+						{independentOrDevHUDs.map(hud => (
+							<HudEntry
+								key={hud.dir}
+								hud={hud}
+								toggleConfig={this.toggleConfig}
+								isActive={hud.url === this.state.currentHUD}
+								customFields={this.props.cxt.fields}
+								loadHUDs={this.loadHUDs}
+								setHUDLoading={this.setHUDLoading}
+								isLoading={!!hud.uuid && this.state.loadingHUDs.includes(hud.uuid)}
+								isCloudAvailable={available}
+								isHUDOpened={isHUDOpened}
+							/>
+						))}
+						{independentOrDevHUDs.length && gameHUDs.length ? <div className="huds-separator" /> : null}
+						{gameHUDs.map(hud => (
+							<HudEntry
+								key={hud.dir}
+								hud={hud}
+								toggleConfig={this.toggleConfig}
+								isActive={hud.url === this.state.currentHUD}
+								customFields={this.props.cxt.fields}
+								loadHUDs={this.loadHUDs}
+								setHUDLoading={this.setHUDLoading}
+								isLoading={!!hud.uuid && this.state.loadingHUDs.includes(hud.uuid)}
+								isCloudAvailable={available}
+								isHUDOpened={isHUDOpened}
+							/>
+						))}
 					</div>
 
 					{isElectron && !!false ? (
