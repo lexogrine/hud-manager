@@ -1,7 +1,6 @@
 import { Component } from 'react';
 import api from './../../../../api/api';
 import * as I from './../../../../api/interfaces';
-import { Row, Button, Col } from 'reactstrap';
 //import Match from './Match';
 import MatchEdit from './EditMatch';
 import MatchEntry from './MatchEntry';
@@ -194,16 +193,14 @@ class Matches extends Component<
 									cxt={this.props.cxt}
 								/>
 							))}
-							<Row>
-								<Col className="main-buttons-container">
-									<Button onClick={this.add} color="primary">
-										+{t('common.createNew')}
-									</Button>
-								</Col>
-							</Row>
 						</>
 					)}
 				</div>
+				{ !match ? <div className="action-container">
+					<div className="button green strong big wide" onClick={this.add}>
+						{t('common.createNew')}
+					</div>
+				</div> : null }
 			</>
 		);
 	}

@@ -385,16 +385,15 @@ class Huds extends Component<IProps, IState> {
 						</Row>
 					</GameOnly>
 
-					<Row className="padded">
-						<Col>
-							<Col s={12}>
+					<div className="huds-container">
+						{!!false && isElectron ? <Col s={12}>
 								<DragInput
 									id={`hud_zip`}
 									onChange={this.handleZIPs}
 									label={t('huds.config.add')}
 									accept=".zip"
 								/>
-							</Col>
+							</Col> : null}
 							{independentOrDevHUDs.map(hud => (
 								<HudEntry
 									key={hud.dir}
@@ -424,10 +423,9 @@ class Huds extends Component<IProps, IState> {
 									isHUDOpened={isHUDOpened}
 								/>
 							))}
-						</Col>
-					</Row>
+					</div>
 
-					{isElectron ? (
+					{isElectron && !!false ? (
 						<Row>
 							<Col className="main-buttons-container">
 								<Button onClick={api.huds.openDirectory} color="primary">

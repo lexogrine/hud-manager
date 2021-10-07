@@ -5,6 +5,7 @@ import Navbar from './Navbar/Navbar';
 import Tabs from './Tabs/Tabs';
 import { useTranslation } from 'react-i18next';
 import { AvailableGames } from '../../api/interfaces';
+import WindowBar from '../../WindowBar';
 
 export const isCGMode = false;
 
@@ -47,7 +48,8 @@ const Content = ({
 	return (
 		<div className="main-container">
 			<Navbar activeTab={activeTab} toggle={toggle} files={gsi && configs} />
-			<Col>
+			<Col style={{ display: 'flex', flexDirection: 'column' }}>
+				<WindowBar />
 				<div className="tab-title-container">
 					{activeTab}
 					<div className="top_buttons">
@@ -55,7 +57,7 @@ const Content = ({
 							{t('app.changeGame')}
 						</div>
 						<a
-							className={`button empty`}
+							className={`button strong ${active ? 'darkgreen' : 'empty'}`}
 							onClick={() => {
 								if (!available) return;
 								toggleSync();

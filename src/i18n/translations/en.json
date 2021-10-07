@@ -202,7 +202,7 @@
 			"header": "HUDs",
 			"config": {
 				"customRadar": "Radar",
-				"customKillfeedOrACO": "Killfeed or ACO",
+				"customKillfeedOrACO": "Killfeed / ACO",
 				"embeddedHUD": "Embedded HUD",
 				"autoexecute": "Auto-execute",
 				"console": "Console",
@@ -212,7 +212,7 @@
 				"runTest": "RUN TEST",
 				"openDirectory": "Open HUDs directory",
 				"playTestLoop": "Play test loop",
-				"ar": "AR (experimental)"
+				"ar": "AR"
 			},
 			"fields":{
 				"missing":"Missing fields",

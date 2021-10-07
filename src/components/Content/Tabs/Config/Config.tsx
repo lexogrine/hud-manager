@@ -1,4 +1,4 @@
-import { Form, FormGroup, Input, Row, Col, Button } from 'reactstrap';
+import { FormGroup, Input, Row, Col, Button } from 'reactstrap';
 import * as I from './../../../../api/interfaces';
 import api from './../../../../api/api';
 import config from './../../../../api/config';
@@ -492,7 +492,7 @@ class Config extends Component<IProps, IState> {
 		const didBuy = cxt.customer?.license?.type && cxt.customer.license.type !== 'free';
 
 		return (
-			<Form>
+			<>
 				<div className="tab-content-container no-padding">
 					<ImportModal
 						isOpen={importModalOpen}
@@ -718,14 +718,12 @@ class Config extends Component<IProps, IState> {
                         <ToastBody>It seems like you've changed GSI port - for all changes to be set in place you should now restart the Manager and update the GSI files</ToastBody>
                     </Toast>*/}
 				</div>
-				<Row>
-					<Col className="main-buttons-container">
-						<Button onClick={this.save} color="primary">
-							{t('common.save')}
-						</Button>
-					</Col>
-				</Row>
-			</Form>
+				<div className="action-container">
+					<div className="button green strong big wide" onClick={this.save}>
+						{t('common.save')}
+					</div>
+				</div>
+			</>
 		);
 	}
 }

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button, Form, Row, Col } from 'reactstrap';
+import { Button } from 'reactstrap';
 import countries from './../../countries';
 import api from './../../../../api/api';
 import * as I from './../../../../api/interfaces';
@@ -204,7 +204,7 @@ const TeamsTab = ({ cxt }: IProps) => {
 	};
 	const visibleFields = cxt.fields.teams.filter(field => field.visible);
 	return (
-		<Form>
+		<>
 			{/*<div className="tab-title-container">
 				<div>{t('common.teams')}</div>
 				<Input
@@ -272,15 +272,16 @@ const TeamsTab = ({ cxt }: IProps) => {
 						cxt={cxt}
 					/>
 				))}
-				<Row>
-					<Col className="main-buttons-container">
-						<Button color="primary" onClick={add}>
-							{t('teams.addTeam')}
-						</Button>
-					</Col>
-				</Row>
 			</div>
-		</Form>
+			<div className="action-container">
+				<div className="button green empty big wide" onClick={add}>
+					Import teams
+				</div>
+				<div className="button green strong big wide" onClick={add}>
+					{t('teams.addTeam')}
+				</div>
+			</div>
+		</>
 	);
 };
 

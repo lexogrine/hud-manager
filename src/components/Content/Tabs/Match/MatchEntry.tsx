@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import api from './../../../../api/api';
 import * as I from './../../../../api/interfaces';
 import { Button } from 'reactstrap';
@@ -16,7 +15,6 @@ interface Props {
 }
 
 const MatchEntry = ({ match, teams, cxt, edit, setCurrent }: Props) => {
-	const [isExpanded, setExpanded] = useState(false);
 	const { t } = useTranslation();
 
 	const deleteMatch = async () => {
@@ -37,7 +35,7 @@ const MatchEntry = ({ match, teams, cxt, edit, setCurrent }: Props) => {
 	const right = teams.filter(team => match.right && team._id === match.right.id)[0];
 	return (
 		<div className={`entry-container ${match.current ? 'live' : ''} match-entry`}>
-			<div className={`entry-main ${isExpanded ? 'expanded' : 'collapsed'}`}>
+			<div className={`entry-main collapsed`}>
 				<div className="match-name">
 					{(left && left.shortName) || t('common.teamOne')} {t('common.vs')}{' '}
 					{(right && right.shortName) || t('common.teamTwo')}
@@ -71,29 +69,23 @@ const MatchEntry = ({ match, teams, cxt, edit, setCurrent }: Props) => {
 				<div className="match-time force-no-break">
 					{match.startTime ? moment(match.startTime).format('LT') : '-'}
 				</div>
-				<div className={`side-menu-container ${isExpanded ? 'expanded' : 'collapsed'}`}>
+				<div className={`side-menu-container expanded`}>
 					<div className={`side-menu`}>
-						<div
-							className="toggler"
-							onClick={() => {
-								setExpanded(!isExpanded);
-							}}
-						></div>
 						<Button className="round-btn edit-veto " onClick={deleteMatch}>
-							{t('common.delete')}
+							D
 						</Button>
 						<Button
 							className="round-btn lightblue-btn edit-veto"
 							id={`match_id_${match.id}`}
 							onClick={() => edit(match)}
 						>
-							{t('common.edit')}
+							E
 						</Button>
 						<Button
 							className={`purple-btn round-btn edit-veto ${match.current ? 'current' : ''}`}
 							onClick={() => setCurrent()}
 						>
-							{t('match.toggleLive')}
+							L
 						</Button>
 					</div>
 				</div>
