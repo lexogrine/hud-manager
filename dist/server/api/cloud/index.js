@@ -87,7 +87,7 @@ const updateLastDateLocally = (game, resources) => {
     return lastUpdateLocal;
 };
 const addResource = async (game, resource, data) => {
-    const result = (await user_1.api(`storage/${resource}/${game}`, 'POST', data));
+    const result = (await (0, user_1.api)(`storage/${resource}/${game}`, 'POST', data));
     if (!result) {
         cloudErrorHandler();
         return null;
@@ -97,11 +97,11 @@ const addResource = async (game, resource, data) => {
 };
 exports.addResource = addResource;
 const updateResource = async (game, resource, data) => {
-    const status = await exports.checkCloudStatus(game);
+    const status = await (0, exports.checkCloudStatus)(game);
     if (status !== 'ALL_SYNCED') {
         return;
     }
-    const result = (await user_1.api(`storage/${resource}/${game}`, 'PATCH', data));
+    const result = (await (0, user_1.api)(`storage/${resource}/${game}`, 'PATCH', data));
     if (!result) {
         cloudErrorHandler();
         return null;
@@ -111,11 +111,11 @@ const updateResource = async (game, resource, data) => {
 };
 exports.updateResource = updateResource;
 const deleteResource = async (game, resource, id) => {
-    const status = await exports.checkCloudStatus(game);
+    const status = await (0, exports.checkCloudStatus)(game);
     if (status !== 'ALL_SYNCED') {
         return;
     }
-    const result = (await user_1.api(`storage/${resource}/${game}/${id}`, 'DELETE'));
+    const result = (await (0, user_1.api)(`storage/${resource}/${game}/${id}`, 'DELETE'));
     if (!result || !result.success) {
         cloudErrorHandler();
         return null;
@@ -129,7 +129,7 @@ const getResource = async (game, resource, fromDate) => {
     if (fromDate) {
         url += `?fromDate=${fromDate}`;
     }
-    const result = (await user_1.api(url));
+    const result = (await (0, user_1.api)(url));
     if (!result) {
         cloudErrorHandler();
         return null;
@@ -171,7 +171,7 @@ const downloadCloudData = async (game, resource, fromDate) => {
         }
     }
     try {
-        const resources = await exports.getResource(game, resource, fromDate);
+        const resources = await (0, exports.getResource)(game, resource, fromDate);
         if (!resources) {
             return false;
         }
@@ -186,7 +186,7 @@ const downloadCloudData = async (game, resource, fromDate) => {
 };
 const downloadCloudToLocal = async (game) => {
     try {
-        const result = (await user_1.api(`storage/${game}/status`));
+        const result = (await (0, user_1.api)(`storage/${game}/status`));
         await Promise.all(I.availableResources.map(resource => downloadCloudData(game, resource)));
         updateLastDateLocally(game, result);
         return true;
@@ -199,10 +199,10 @@ const downloadCloudToLocal = async (game) => {
 exports.downloadCloudToLocal = downloadCloudToLocal;
 const uploadLocalToCloud = async (game) => {
     const resources = await Promise.all([
-        players_1.getPlayersList({ game }),
-        teams_1.getTeamsList({ game }),
-        fields_1.getCustomFieldsDb(game),
-        aco_1.getACOs()
+        (0, players_1.getPlayersList)({ game }),
+        (0, teams_1.getTeamsList)({ game }),
+        (0, fields_1.getCustomFieldsDb)(game),
+        (0, aco_1.getACOs)()
         //getActiveGameMatches(),
         //getTournaments({ game })
     ]);
@@ -217,7 +217,7 @@ const uploadLocalToCloud = async (game) => {
     try {
         const result = [];
         for (const resource of I.availableResources) {
-            const response = await exports.addResource(game, resource, mappedResources[resource]);
+            const response = await (0, exports.addResource)(game, resource, mappedResources[resource]);
             if (!response)
                 return false;
             result.push(response);
@@ -234,15 +234,15 @@ const checkCloudStatus = async (game) => {
     if (__1.customer.customer?.license.type !== 'professional' && __1.customer.customer?.license.type !== 'enterprise') {
         return 'ALL_SYNCED';
     }
-    const cfg = await config_1.loadConfig();
+    const cfg = await (0, config_1.loadConfig)();
     if (cfg.sync === false)
         return 'ALL_SYNCED';
     if (!cfg.sync) {
         console.log('updating sync to true...');
-        await config_1.setConfig({ ...cfg, sync: true });
+        await (0, config_1.setConfig)({ ...cfg, sync: true });
     }
     try {
-        const result = (await user_1.api(`storage/${game}/status`));
+        const result = (await (0, user_1.api)(`storage/${game}/status`));
         if (result.every(status => !status.status)) {
             // No remote resources
             // Ask if to upload current db - rejection will result in cloud option turned off
@@ -254,10 +254,10 @@ const checkCloudStatus = async (game) => {
             lastUpdateStatusOnline[resourceStatus.resource] = resourceStatus.status;
         }
         const resources = await Promise.all([
-            players_1.getPlayersList({ game }),
-            teams_1.getTeamsList({ game }),
-            fields_1.getCustomFieldsDb(game),
-            aco_1.getACOs() /*, getMatches()*/
+            (0, players_1.getPlayersList)({ game }),
+            (0, teams_1.getTeamsList)({ game }),
+            (0, fields_1.getCustomFieldsDb)(game),
+            (0, aco_1.getACOs)() /*, getMatches()*/
         ]);
         if (resources.every(resource => !resource.length)) {
             // no local resources

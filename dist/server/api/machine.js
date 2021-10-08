@@ -19,20 +19,20 @@ const getMachineId = () => {
         .replace(/[^a-z]+/g, '')
         .substr(0, 15);
     if (fs_1.default.existsSync(machinePath)) {
-        id = fs_1.default.readFileSync(machinePath, 'UTF-8');
+        id = fs_1.default.readFileSync(machinePath, 'utf-8');
         return id;
     }
     if (fs_1.default.existsSync(machineOldPath)) {
-        id = fs_1.default.readFileSync(machineOldPath, 'UTF-8');
+        id = fs_1.default.readFileSync(machineOldPath, 'utf-8');
         fs_1.default.renameSync(machineOldPath, machinePath);
         return id;
     }
-    fs_1.default.writeFileSync(machinePath, id, { encoding: 'UTF-8' });
+    fs_1.default.writeFileSync(machinePath, id, { encoding: 'utf-8' });
     return id;
 };
 exports.getMachineId = getMachineId;
 const getMachineIdRoute = async (req, res) => {
-    return res.json({ id: exports.getMachineId() });
+    return res.json({ id: (0, exports.getMachineId)() });
 };
 exports.getMachineIdRoute = getMachineIdRoute;
 const getLastLaunchedVersion = async (req, res) => {

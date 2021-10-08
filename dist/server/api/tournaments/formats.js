@@ -6,7 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.createDEBracket = exports.createSEBracket = void 0;
 const v4_1 = __importDefault(require("uuid/v4"));
 const createMatchup = () => ({
-    _id: v4_1.default(),
+    _id: (0, v4_1.default)(),
     winner_to: null,
     loser_to: null,
     label: '',
@@ -38,7 +38,7 @@ exports.createSEBracket = createSEBracket;
 const createDEBracket = (teams) => {
     if (!Number.isInteger(Math.log2(teams)))
         return [];
-    const upperBracket = exports.createSEBracket(teams);
+    const upperBracket = (0, exports.createSEBracket)(teams);
     if (!upperBracket.length)
         return [];
     if (teams === 2) {

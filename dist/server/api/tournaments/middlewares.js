@@ -30,7 +30,7 @@ const __1 = require("..");
 const cloud_1 = require("../cloud");
 const tournamentsDb = database_1.default.tournaments;
 const getCurrentTournament = async (req, res) => {
-    const matches = await matches_1.getActiveGameMatches();
+    const matches = await (0, matches_1.getActiveGameMatches)();
     const current = matches.find(match => match.current);
     if (!current) {
         return res.json({ tournament: null });
@@ -46,8 +46,8 @@ const getTournaments = async (req, res) => {
 exports.getTournaments = getTournaments;
 const addTournament = async (req, res) => {
     let cloudStatus = false;
-    if (await __1.validateCloudAbility('tournaments')) {
-        cloudStatus = (await cloud_1.checkCloudStatus(__1.customer.game)) === 'ALL_SYNCED';
+    if (await (0, __1.validateCloudAbility)('tournaments')) {
+        cloudStatus = (await (0, cloud_1.checkCloudStatus)(__1.customer.game)) === 'ALL_SYNCED';
     }
     const { name, logo, teams, type } = req.body;
     const tournament = T.createTournament(type, teams);
@@ -57,7 +57,7 @@ const addTournament = async (req, res) => {
     delete tournament._id;
     const tournamentWithId = await T.addTournament(tournament);
     if (cloudStatus) {
-        await cloud_1.addResource(__1.customer.game, 'tournaments', tournamentWithId);
+        await (0, cloud_1.addResource)(__1.customer.game, 'tournaments', tournamentWithId);
     }
     if (!tournamentWithId)
         return res.sendStatus(500);
@@ -83,24 +83,24 @@ const updateTournament = async (req, res) => {
         tournament.logo = logo;
     }
     let cloudStatus = false;
-    if (await __1.validateCloudAbility('tournaments')) {
-        cloudStatus = (await cloud_1.checkCloudStatus(__1.customer.game)) === 'ALL_SYNCED';
+    if (await (0, __1.validateCloudAbility)('tournaments')) {
+        cloudStatus = (await (0, cloud_1.checkCloudStatus)(__1.customer.game)) === 'ALL_SYNCED';
     }
     const newTournament = await T.updateTournament(tournament);
     if (cloudStatus) {
-        await cloud_1.updateResource(__1.customer.game, 'teams', { ...newTournament, _id: req.params.id });
+        await (0, cloud_1.updateResource)(__1.customer.game, 'teams', { ...newTournament, _id: req.params.id });
     }
     return res.sendStatus(newTournament ? 200 : 500);
 };
 exports.updateTournament = updateTournament;
 const deleteTournament = async (req, res) => {
     let cloudStatus = false;
-    if (await __1.validateCloudAbility('tournaments')) {
-        cloudStatus = (await cloud_1.checkCloudStatus(__1.customer.game)) === 'ALL_SYNCED';
+    if (await (0, __1.validateCloudAbility)('tournaments')) {
+        cloudStatus = (await (0, cloud_1.checkCloudStatus)(__1.customer.game)) === 'ALL_SYNCED';
     }
     const del = await T.deleteTournament(req.params.id);
     if (cloudStatus) {
-        await cloud_1.deleteResource(__1.customer.game, 'teams', req.params.id);
+        await (0, cloud_1.deleteResource)(__1.customer.game, 'teams', req.params.id);
     }
     return res.sendStatus(del ? 200 : 500);
 };

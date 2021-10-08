@@ -30,7 +30,7 @@ const steam_game_path_1 = require("steam-game-path");
 const config_1 = require("./config");
 const electron_1 = require("electron");
 const csgogsi_generator_1 = __importDefault(require("csgogsi-generator"));
-const GSITemplateCSGO = csgogsi_generator_1.default('HUDMANAGERGSI', 'http://localhost:1349/').json;
+const GSITemplateCSGO = (0, csgogsi_generator_1.default)('HUDMANAGERGSI', 'http://localhost:1349/').json;
 exports.GSITemplateDota2 = {
     HUDMANAGERGSI: {
         uri: 'http://localhost:1349/dota2',
@@ -54,10 +54,10 @@ exports.GSITemplateDota2 = {
 const checkGSIFile = async (req, res) => {
     const game = req.query.game;
     const steamGameId = game === 'csgo' ? 730 : 570;
-    const config = await config_1.loadConfig();
+    const config = await (0, config_1.loadConfig)();
     let GamePath;
     try {
-        GamePath = steam_game_path_1.getGamePath(steamGameId);
+        GamePath = (0, steam_game_path_1.getGamePath)(steamGameId);
     }
     catch {
         return res.json({ success: false, message: "Game path couldn't be found", accessible: false });
@@ -73,7 +73,7 @@ const checkGSIFile = async (req, res) => {
         return res.json({ success: false, message: "File couldn't be found", accessible: true });
     }
     try {
-        const rawContent = fs_1.default.readFileSync(cfgPath, 'UTF-8');
+        const rawContent = fs_1.default.readFileSync(cfgPath, 'utf-8');
         const content = VDF.parse(rawContent)?.HUDMANAGERGSI;
         if (!content) {
             //Corrupted file
@@ -113,7 +113,7 @@ exports.checkGSIFile = checkGSIFile;
 const generateGSIFile = async (game) => {
     if (!game)
         return '';
-    const config = await config_1.loadConfig();
+    const config = await (0, config_1.loadConfig)();
     let address = `http://localhost:${config.port}/`;
     if (game === 'dota2') {
         address += 'dota2';
@@ -121,20 +121,20 @@ const generateGSIFile = async (game) => {
         gsi.HUDMANAGERGSI.uri = address;
         return VDF.stringify(gsi);
     }
-    const text = csgogsi_generator_1.default('HUDMANAGERGSI', address, config.token).vdf;
+    const text = (0, csgogsi_generator_1.default)('HUDMANAGERGSI', address, config.token).vdf;
     return text;
 };
 exports.generateGSIFile = generateGSIFile;
 const createGSIFile = async (req, res) => {
     const game = req.query.game;
     const steamGameId = game === 'csgo' ? 730 : 570;
-    const text = await exports.generateGSIFile(game);
+    const text = await (0, exports.generateGSIFile)(game);
     if (!text) {
         return res.sendStatus(422);
     }
     let GamePath;
     try {
-        GamePath = steam_game_path_1.getGamePath(steamGameId);
+        GamePath = (0, steam_game_path_1.getGamePath)(steamGameId);
     }
     catch {
         return res.json({});
@@ -155,7 +155,7 @@ const createGSIFile = async (req, res) => {
         if (fs_1.default.existsSync(cfgPath)) {
             fs_1.default.unlinkSync(cfgPath);
         }
-        fs_1.default.writeFileSync(cfgPath, text, 'UTF-8');
+        fs_1.default.writeFileSync(cfgPath, text, 'utf-8');
         return res.json({ success: true, message: 'Config file was successfully saved' });
     }
     catch {
@@ -168,7 +168,7 @@ const saveFile = (name, content, base64 = false) => async (_req, res) => {
     const result = await electron_1.dialog.showSaveDialog({ defaultPath: name });
     const text = typeof content === 'string' ? content : await content;
     if (result.filePath) {
-        fs_1.default.writeFileSync(result.filePath, text, { encoding: base64 ? 'base64' : 'UTF-8' });
+        fs_1.default.writeFileSync(result.filePath, text, { encoding: base64 ? 'base64' : 'utf-8' });
     }
 };
 exports.saveFile = saveFile;

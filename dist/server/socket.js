@@ -34,7 +34,7 @@ exports.runtimeConfig = {
 exports.HUDState = new hudstatemanager_1.HUDStateManager();
 exports.GSI = new csgogsi_socket_1.CSGOGSI();
 exports.Dota2GSI = new dotagsi_1.DOTA2GSI();
-exports.ioPromise = config_1.loadConfig().then(cfg => {
+exports.ioPromise = (0, config_1.loadConfig)().then(cfg => {
     const corsOrigins = [`http://${config_1.internalIP}:${cfg.port}`, `http://localhost:${cfg.port}`];
     if (config_1.publicIP) {
         corsOrigins.push(`http://${config_1.publicIP}:${cfg.port}`);
@@ -55,14 +55,14 @@ exports.ioPromise.then(io => {
     const onRoundEnd = async (score) => {
         const lastGSIEntry = exports.GSI.current;
         if (lastGSIEntry)
-            await matches_1.updateRound(lastGSIEntry);
+            await (0, matches_1.updateRound)(lastGSIEntry);
         if (score.loser && score.loser.logo) {
             score.loser.logo = '';
         }
         if (score.winner && score.winner.logo) {
             score.winner.logo = '';
         }
-        const matches = await matches_1.getActiveGameMatches();
+        const matches = await (0, matches_1.getActiveGameMatches)();
         const match = matches.filter(match => match.current)[0];
         if (!match || match.game !== 'csgo')
             return;
@@ -112,9 +112,9 @@ exports.ioPromise.then(io => {
             return veto;
         });
         match.vetos = vetos;
-        await matches_1.updateMatch(match);
+        await (0, matches_1.updateMatch)(match);
         if (score.mapEnd) {
-            await tournaments_1.createNextMatch(match.id);
+            await (0, tournaments_1.createNextMatch)(match.id);
         }
         io.emit('match', true);
     };
@@ -122,10 +122,10 @@ exports.ioPromise.then(io => {
     exports.GSI.on('data', csgo => {
         if (!exports.GSI.last)
             return;
-        arg_1.sendKillsToARG(exports.GSI.last, csgo);
+        (0, arg_1.sendKillsToARG)(exports.GSI.last, csgo);
     });
     exports.Dota2GSI.on('matchEnd', async (matchSummary) => {
-        const matches = await matches_1.getActiveGameMatches();
+        const matches = await (0, matches_1.getActiveGameMatches)();
         const match = matches.find(match => match.current && match.game === 'dota2');
         if (!match)
             return;
@@ -158,10 +158,10 @@ exports.ioPromise.then(io => {
         else {
             match[!isReversed ? 'right' : 'left'].wins += 1;
         }
-        await matches_1.updateMatch(match);
+        await (0, matches_1.updateMatch)(match);
         io.emit('match', true);
     });
-    dota2_1.dota2TimelineHandler(exports.Dota2GSI);
+    (0, dota2_1.dota2TimelineHandler)(exports.Dota2GSI);
     const doesPlayerBelongToOtherTeam = (playerExtensions, otherTeam) => (player) => {
         const extension = playerExtensions.find(data => data.steamid === player.steamid);
         if (!extension)
@@ -174,7 +174,7 @@ exports.ioPromise.then(io => {
             return;
         }
         lastSideCheck = now;
-        const cfg = await config_1.loadConfig();
+        const cfg = await (0, config_1.loadConfig)();
         if (!cfg.autoSwitch)
             return;
         const game = api_1.customer.game;
@@ -192,12 +192,12 @@ exports.ioPromise.then(io => {
             { game, steamid: { $in: steamids } },
             { game: { $exists: false }, steamid: { $in: steamids } }
         ];
-        const playersData = await players_1.getPlayersList({ $or });
+        const playersData = await (0, players_1.getPlayersList)({ $or });
         if (playersData.length !== data.players.length)
             return;
         if (ctPlayers.every(doesPlayerBelongToOtherTeam(playersData, data.map.team_t)) &&
             tPlayers.every(doesPlayerBelongToOtherTeam(playersData, data.map.team_ct))) {
-            matches_1.reverseSide();
+            (0, matches_1.reverseSide)();
         }
     });
     exports.GSI.on('data', data => {
@@ -217,7 +217,7 @@ exports.ioPromise.then(io => {
                 user: api_1.customer.customer.user.id
             };
             try {
-                node_fetch_1.default(`https://hmapi.lexogrine.com/users/payload`, {
+                (0, node_fetch_1.default)(`https://hmapi.lexogrine.com/users/payload`, {
                     method: 'POST',
                     headers: {
                         Accept: 'application/json',

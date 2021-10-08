@@ -46,31 +46,31 @@ const replaceLocalCustomFieldStores = (stores, game, existing) => new Promise(re
 });
 exports.replaceLocalCustomFieldStores = replaceLocalCustomFieldStores;
 const getCustomFieldsDb = async (game) => {
-    const customFields = await exports.initiateCustomFields(game, true);
+    const customFields = await (0, exports.initiateCustomFields)(game, true);
     if (!customFields)
         return [];
     return [customFields];
 };
 exports.getCustomFieldsDb = getCustomFieldsDb;
 const getFields = async (type, game) => {
-    const store = await exports.initiateCustomFields(game, true);
+    const store = await (0, exports.initiateCustomFields)(game, true);
     if (!store)
         return [];
     return store[type];
 };
 exports.getFields = getFields;
 const updateFields = async (fields, type, game) => {
-    const store = await exports.initiateCustomFields(game);
+    const store = await (0, exports.initiateCustomFields)(game);
     const deletedFields = store[type].filter(field => !fields.find(newField => newField.name === field.name));
     const createdFields = fields.filter(newField => !store[type].find(field => field.name === newField.name));
     let cloudStatus = false;
-    if (await __1.validateCloudAbility()) {
-        cloudStatus = (await cloud_1.checkCloudStatus(__1.customer.game)) === 'ALL_SYNCED';
+    if (await (0, __1.validateCloudAbility)()) {
+        cloudStatus = (await (0, cloud_1.checkCloudStatus)(__1.customer.game)) === 'ALL_SYNCED';
     }
     return new Promise(res => {
         custom.update({}, { $set: { [type]: fields } }, { multi: true }, async () => {
             if (!deletedFields.length && !createdFields.length) {
-                return res(await exports.initiateCustomFields(game));
+                return res(await (0, exports.initiateCustomFields)(game));
             }
             const updateQuery = {
                 $unset: {},
@@ -83,9 +83,9 @@ const updateFields = async (fields, type, game) => {
                 updateQuery.$set[`extra.${createdField.name}`] = '';
             }
             database_1.default[type].update({}, updateQuery, { multi: true }, async () => {
-                const result = await exports.initiateCustomFields(game);
+                const result = await (0, exports.initiateCustomFields)(game);
                 if (cloudStatus) {
-                    await cloud_1.updateResource(__1.customer.game, 'customs', result);
+                    await (0, cloud_1.updateResource)(__1.customer.game, 'customs', result);
                 }
                 res(result);
             });

@@ -59,13 +59,13 @@ class HUDStateManager {
                 let extraData;
                 switch (entry.type) {
                     case 'match':
-                        extraData = await matches_1.getMatchById(entry.id);
+                        extraData = await (0, matches_1.getMatchById)(entry.id);
                         break;
                     case 'player':
-                        extraData = await players_1.getPlayerById(entry.id);
+                        extraData = await (0, players_1.getPlayerById)(entry.id);
                         break;
                     case 'team':
-                        extraData = await teams_1.getTeamById(entry.id);
+                        extraData = await (0, teams_1.getTeamById)(entry.id);
                         break;
                     default:
                         continue;

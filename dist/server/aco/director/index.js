@@ -31,13 +31,13 @@ class Director {
             return;
         const rawMapName = data.map.name;
         const mapName = rawMapName.substr(rawMapName.lastIndexOf('/') + 1);
-        const activeAreas = observer_1.getActiveAreasSorted(mapName, data.players);
-        const area = observer_1.getBestArea(mapName, data.players);
+        const activeAreas = (0, observer_1.getActiveAreasSorted)(mapName, data.players);
+        const area = (0, observer_1.getBestArea)(mapName, data.players);
         const isCurrentAreaEmpty = Boolean(this.currentArea && !activeAreas.find(area => area.name === this.currentArea));
         if (isCurrentAreaEmpty) {
             this.lastSwitch = new Date().getTime() - AREA_INTERVAL + 750;
             this.currentArea = null;
-            queue_1.clearQueue();
+            (0, queue_1.clearQueue)();
         }
         if (!area) {
             return;
@@ -57,7 +57,7 @@ class Director {
     switchHLAE = (config, areaName) => {
         this.lastSwitch = new Date().getTime();
         this.currentArea = areaName;
-        queue_1.addToQueue(areaName, config);
+        (0, queue_1.addToQueue)(areaName, config);
         //const tableData = area.players.map(player => ({ name: player.name, position: player.position }));
         if (this.pgl) {
             this.pgl.execute(config);

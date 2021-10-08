@@ -24,7 +24,7 @@ class BufferReader {
     readBigUInt64LE = () => {
         const lo = this.readUInt32LE();
         const hi = this.readUInt32LE();
-        return big_integer_1.default(lo).or(big_integer_1.default(hi).shiftLeft(32));
+        return (0, big_integer_1.default)(lo).or((0, big_integer_1.default)(hi).shiftLeft(32));
     };
     readUInt32LE = () => {
         const result = this.buffer.readUInt32LE(this.index);

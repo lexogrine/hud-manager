@@ -25,7 +25,7 @@
 			"team1": "Team 1",
 			"team2": "Team 2",
 			"teamNumber": "TEAM #{{num}}",
-			"vetoNumber": "VETO {{num}}",
+			"vetoNumber": "Veto {{num}}",
 			"delete": "Delete",
 			"edit": "Edit",
 			"live": "Live",

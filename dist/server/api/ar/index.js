@@ -50,8 +50,8 @@ const getARModuleData = (directory) => {
         const configFile = fs_1.default.readFileSync(configFileDir, { encoding: 'utf8' });
         const config = JSON.parse(configFile);
         config.dir = directory;
-        config.keybinds = exports.getARKeyBinds(directory);
-        config.panel = exports.getARPanelSetting(directory);
+        config.keybinds = (0, exports.getARKeyBinds)(directory);
+        config.panel = (0, exports.getARPanelSetting)(directory);
         return config;
     }
     catch (e) {
@@ -74,32 +74,35 @@ const listARModules = () => {
         .filter(dirent => dirent.isDirectory())
         .filter(dirent => /^[0-9a-zA-Z-_]+$/g.test(dirent.name))
         .map(dirent => dirent.name);
-    const arModules = filtered.map(directory => exports.getARModuleData(directory)).filter(filterValidARModules);
+    const arModules = filtered.map(directory => (0, exports.getARModuleData)(directory)).filter(filterValidARModules);
     return arModules;
 };
 exports.listARModules = listARModules;
 async function loadAR(base64, name, existingUUID) {
-    huds_1.removeArchives();
+    (0, huds_1.removeArchives)();
     return new Promise(res => {
         let arDirName = name.replace(/[^a-zA-Z0-9-_]/g, '');
         let arPath = path_1.default.join(electron_1.app.getPath('userData'), 'ARs', arDirName);
         if (fs_1.default.existsSync(arPath)) {
-            arDirName = `${arDirName}-${huds_1.getRandomString()}`;
+            arDirName = `${arDirName}-${(0, huds_1.getRandomString)()}`;
             arPath = path_1.default.join(electron_1.app.getPath('userData'), 'ARs', arDirName);
         }
         try {
             const fileString = base64.split(';base64,').pop();
-            const tempArchiveName = `./ar_temp_archive_${huds_1.getRandomString()}.zip`;
+            if (!fileString) {
+                throw new Error();
+            }
+            const tempArchiveName = `./ar_temp_archive_${(0, huds_1.getRandomString)()}.zip`;
             fs_1.default.writeFileSync(tempArchiveName, fileString, { encoding: 'base64', mode: 777 });
             const tempUnzipper = new DecompressZip(tempArchiveName);
             tempUnzipper.on('extract', async () => {
                 if (fs_1.default.existsSync(path_1.default.join(arPath, 'ar.json'))) {
-                    const arData = await exports.getARModuleData(path_1.default.basename(arPath));
+                    const arData = await (0, exports.getARModuleData)(path_1.default.basename(arPath));
                     if (!arData || !arData.name) {
                         throw new Error();
                     }
-                    huds_1.removeArchives();
-                    fs_1.default.writeFileSync(path_1.default.join(arPath, 'uuid.lhm'), existingUUID || v4_1.default(), 'utf8');
+                    (0, huds_1.removeArchives)();
+                    fs_1.default.writeFileSync(path_1.default.join(arPath, 'uuid.lhm'), existingUUID || (0, v4_1.default)(), 'utf8');
                     res(arData);
                 }
                 else {
@@ -108,9 +111,9 @@ async function loadAR(base64, name, existingUUID) {
             });
             tempUnzipper.on('error', () => {
                 if (fs_1.default.existsSync(arPath)) {
-                    huds_1.remove(arPath);
+                    (0, huds_1.remove)(arPath);
                 }
-                huds_1.removeArchives();
+                (0, huds_1.removeArchives)();
                 res(null);
             });
             tempUnzipper.extract({
@@ -120,9 +123,9 @@ async function loadAR(base64, name, existingUUID) {
         }
         catch {
             if (fs_1.default.existsSync(arPath)) {
-                huds_1.remove(arPath);
+                (0, huds_1.remove)(arPath);
             }
-            huds_1.removeArchives();
+            (0, huds_1.removeArchives)();
             res(null);
         }
     });

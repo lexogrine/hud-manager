@@ -1,11 +1,12 @@
 import { useState } from 'react';
-import { Button } from 'reactstrap';
 import * as I from '../../../../api/interfaces';
 import VetoModal from './VetoModal';
 import EditScoreModal from './EditScoreModal';
-import { hash } from '../../../../hash';
 import { useTranslation } from 'react-i18next';
 import { GameOnly } from '../Config/Config';
+import editScoreIcon from './../../../../styles/setScore.png';
+import editIcon from './../../../../styles/edit.png';
+import resetScoreIcon from './../../../../styles/resetScore.png';
 
 interface Props {
 	map: number;
@@ -16,27 +17,23 @@ interface Props {
 	maps: string[];
 }
 
+export const WinIcon = ({ show }: { show: boolean }) => {
+	const { t } = useTranslation();
+	if (!show) return null;
+	return (
+		<div className={`win-icon active`}>
+			{t('match.wins')}
+		</div>
+	)
+}
 const VetoScore = ({ veto, left, right }: { veto: I.Veto; left: I.Team | null; right: I.Team | null }) => {
 	if (!left || !right || !veto.score) return null;
 	const { t } = useTranslation();
 	return (
 		<div className="map-score">
-			<div className={`win-icon ${veto.winner === left._id ? 'active' : ''}`}>{t('match.wins')}</div>
-
-			{left.logo ? (
-				<img src={`${left.logo}?hash=${hash()}`} alt={`${left.name} logo`} className="team-logo" />
-			) : (
-				''
-			)}
 			<div className="score">{veto.score[left._id] || 0}</div>
 			<div className="versus">{t('common.vs')}</div>
 			<div className="score">{veto.score[right._id] || 0}</div>
-			{right.logo ? (
-				<img src={`${right.logo}?hash=${hash()}`} alt={`${right.name} logo`} className="team-logo" />
-			) : (
-				''
-			)}
-			<div className={`win-icon ${veto.winner === right._id ? 'active' : ''}`}>WINS</div>
 		</div>
 	);
 };
@@ -50,10 +47,11 @@ function generateDescription(veto: I.CSGOVeto, t: any, team?: I.Team, secTeam?: 
 	if (!team || !team.name || !secTeam) {
 		return <strong>{t('match.wrongTeamSelected')}</strong>;
 	}
+	const mapNameCapitalized = veto.mapName.replace('de_', '').charAt(0).toUpperCase() + veto.mapName.replace('de_', '').slice(1);
 	let text: string | null = t('match.vetoDescription', {
 		teamName: team.name,
 		vetoType: veto.type,
-		mapName: veto.mapName.replace('de_', '')
+		mapName: mapNameCapitalized
 	});
 	let sidePick = '';
 	if (secTeam && secTeam.name && veto.side !== 'NO') {
@@ -64,20 +62,19 @@ function generateDescription(veto: I.CSGOVeto, t: any, team?: I.Team, secTeam?: 
 	}
 	if (veto.type === 'decider') {
 		text = null;
-		sidePick = t('match.vetoSidepick.decider', { mapName: veto.mapName });
+		sidePick = t('match.vetoSidepick.decider', { mapName: mapNameCapitalized });
 	}
 	return (
-		<div>
+		<strong>
 			{text}
 			{sidePick || null}
-		</div>
+		</strong>
 	);
 }
 
 const VetoEntry = ({ map, veto, vetoTeams, onSave, maps }: Props) => {
 	const [isVetoModalOpen, setVetoModal] = useState(false);
 	const [isScoreOpen, setScoreOpen] = useState(false);
-	const [isMenuExpanded, setMenuExpanded] = useState(false);
 
 	const resetScore = () => {
 		onSave('winner', map, undefined);
@@ -116,7 +113,7 @@ const VetoEntry = ({ map, veto, vetoTeams, onSave, maps }: Props) => {
 	return (
 		<GameOnly game={['csgo', 'dota2']}>
 			<div
-				className={`entry-container ${
+				className={`veto-entry-container ${
 					'teamId' in veto ? `${veto.teamId === '' ? 'empty' : ''} ${veto.teamId ? veto.type : ''}` : ''
 				}`}
 			>
@@ -126,14 +123,10 @@ const VetoEntry = ({ map, veto, vetoTeams, onSave, maps }: Props) => {
 					<>
 						<div className="entry-main">
 							<div
-								className={`veto-description force-no-break ${
-									isMenuExpanded && team && secTeam && veto.score ? 'hide' : ''
-								} `}
+								className={`veto-description`}
 							>
-								<div className={`veto-title`}>{t('common.vetoNumber', { num: map + 1 })}:</div>
-								<div className={`veto-summary`}>
-									{'mapName' in veto ? generateDescription(veto, t, team, secTeam) : null}
-								</div>
+								<span className={`veto-summary`}>{t('common.vetoNumber', { num: map + 1 })}:  {'mapName' in veto ? generateDescription(veto, t, team, secTeam) : null}
+								</span>
 							</div>
 							<VetoScore veto={veto} left={team} right={secTeam} />
 							{'mapName' in veto && veto.mapName ? (
@@ -144,26 +137,11 @@ const VetoEntry = ({ map, veto, vetoTeams, onSave, maps }: Props) => {
 									{veto.mapName.replace('de_', '')}
 								</div>
 							) : null}
-							<div className={`side-menu-container ${isMenuExpanded ? 'expanded' : 'collapsed'}`}>
+							<div className={`side-menu-container`}>
 								<div className={`side-menu`}>
-									<div className="toggler" onClick={() => setMenuExpanded(!isMenuExpanded)}></div>
-									<Button onClick={resetScore} className="edit-veto purple-btn">
-										{t('match.resetScore')}
-									</Button>
-									{!('mapName' in veto) || veto.mapName ? (
-										<Button
-											onClick={() => setScoreOpen(!isScoreOpen)}
-											className="edit-veto purple-btn"
-										>
-											{t('match.setScore')}
-										</Button>
-									) : null}
-									<Button
-										onClick={() => setVetoModal(!isVetoModalOpen)}
-										className="edit-veto purple-btn"
-									>
-										{t('common.edit')}
-									</Button>
+									<img src={resetScoreIcon} className="image-button" onClick={resetScore} />
+									{ !('mapName' in veto) || veto.mapName ? <img src={editScoreIcon} className="image-button" onClick={() => setScoreOpen(!isScoreOpen)} /> : null }
+									<img src={editIcon} className="image-button" onClick={() => setVetoModal(!isVetoModalOpen)} />
 								</div>
 							</div>
 						</div>

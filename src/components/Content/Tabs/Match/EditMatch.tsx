@@ -6,7 +6,7 @@ import TeamModal from './SetTeamModal';
 import { socket } from '../Live/Live';
 
 import { IContextData } from '../../../Context';
-import { Form, Row, Col, FormGroup, Input } from 'reactstrap';
+import { Input } from 'reactstrap';
 import moment from 'moment';
 import VetoEntry from './VetoEntry';
 import { useTranslation } from 'react-i18next';
@@ -140,9 +140,8 @@ const EditMatch = ({ cxt, match, teams, edit, maps }: IProps) => {
 	if (right) vetoTeams.push(right);
 
 	return (
-		<>
+		<div className="match-edit">
 			<div className={`match_row editing ${match.current ? 'live' : ''}`}>
-				<div className="live-indicator">{t('match.live')}</div>
 				<div className="main_data">
 					<TeamScore cxt={cxt} side="left" team={left} teamState={matchState.left} onSave={getData} t={t} />
 					<div className="versus">{t('common.vs')}</div>
@@ -155,45 +154,35 @@ const EditMatch = ({ cxt, match, teams, edit, maps }: IProps) => {
 						t={t}
 					/>
 				</div>
-				<div className="vetos"></div>
+				<div>
+					<Input
+						type="select"
+						id="matchType"
+						name="matchType"
+						onChange={changeMatchType}
+						value={matchState.matchType}
+					>
+						<option value="bo1">BO1</option>
+						<option value="bo2">BO2</option>
+						<option value="bo3">BO3</option>
+						<option value="bo5">BO5</option>
+						<option value="bo7">BO7</option>
+						<option value="bo9">BO9</option>
+					</Input>
+				</div>
+				<div>
+					<Input
+						type="datetime-local"
+						value={
+							matchState.startTime
+								? moment(matchState.startTime).format(moment.HTML5_FMT.DATETIME_LOCAL)
+								: ''
+						}
+						onChange={changeStartTime}
+					/>
+				</div>
 			</div>
-			<Form id="match_form">
-				<Row>
-					<Col md="12">
-						<FormGroup>
-							<Input
-								type="select"
-								id="matchType"
-								name="matchType"
-								onChange={changeMatchType}
-								value={matchState.matchType}
-							>
-								<option value="bo1">BO1</option>
-								<option value="bo2">BO2</option>
-								<option value="bo3">BO3</option>
-								<option value="bo5">BO5</option>
-								<option value="bo7">BO7</option>
-								<option value="bo9">BO9</option>
-							</Input>
-						</FormGroup>
-					</Col>
-				</Row>
-				<Row>
-					<Col md="12">
-						<FormGroup>
-							<Input
-								type="datetime-local"
-								value={
-									matchState.startTime
-										? moment(matchState.startTime).format(moment.HTML5_FMT.DATETIME_LOCAL)
-										: ''
-								}
-								onChange={changeStartTime}
-							/>
-						</FormGroup>
-					</Col>
-				</Row>
-				<Row>
+			<div className="veto-container">
 					{matchState.vetos.map((veto, i) => (
 						<VetoEntry
 							vetoTeams={vetoTeams}
@@ -205,9 +194,8 @@ const EditMatch = ({ cxt, match, teams, edit, maps }: IProps) => {
 							match={matchState}
 						/>
 					))}
-				</Row>
-			</Form>
-		</>
+			</div>
+		</div>
 	);
 };
 export default EditMatch;

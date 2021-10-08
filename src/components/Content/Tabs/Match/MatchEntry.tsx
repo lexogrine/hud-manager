@@ -1,10 +1,13 @@
 import api from './../../../../api/api';
 import * as I from './../../../../api/interfaces';
-import { Button } from 'reactstrap';
 import { IContextData } from '../../../Context';
 import { hash } from '../../../../hash';
 import moment from 'moment';
+import deleteIcon from './../../../../styles/delete.png';
+import editIcon from './../../../../styles/edit.png';
+import liveIcon from './../../../../styles/lives.png';
 import { useTranslation } from 'react-i18next';
+import { WinIcon } from './VetoEntry';
 
 interface Props {
 	match: I.Match;
@@ -13,6 +16,7 @@ interface Props {
 	edit: Function;
 	setCurrent: Function;
 }
+
 
 const MatchEntry = ({ match, teams, cxt, edit, setCurrent }: Props) => {
 	const { t } = useTranslation();
@@ -43,9 +47,7 @@ const MatchEntry = ({ match, teams, cxt, edit, setCurrent }: Props) => {
 				</div>
 
 				<div className="map-score">
-					<div className={`win-icon ${match.left?.wins === boToWinsMap[match.matchType] ? 'active' : ''}`}>
-						{t('match.wins')}
-					</div>
+					<WinIcon show={match.left?.wins === boToWinsMap[match.matchType]}/>
 					{left?.logo ? (
 						<img src={`${left.logo}?hash=${hash()}`} alt={`${left.name} logo`} className="team-logo" />
 					) : (
@@ -59,34 +61,19 @@ const MatchEntry = ({ match, teams, cxt, edit, setCurrent }: Props) => {
 					) : (
 						''
 					)}
-					<div className={`win-icon ${match.right?.wins === boToWinsMap[match.matchType] ? 'active' : ''}`}>
-						{t('match.wins')}
-					</div>
+					<WinIcon show={match.right?.wins === boToWinsMap[match.matchType]}/>
 				</div>
-				<div className="match-date force-no-break">
+				<div className="match-date">
 					{match.startTime ? moment(match.startTime).format(moment.HTML5_FMT.DATE) : '-'}
 				</div>
-				<div className="match-time force-no-break">
+				<div className="match-time">
 					{match.startTime ? moment(match.startTime).format('LT') : '-'}
 				</div>
 				<div className={`side-menu-container expanded`}>
 					<div className={`side-menu`}>
-						<Button className="round-btn edit-veto " onClick={deleteMatch}>
-							D
-						</Button>
-						<Button
-							className="round-btn lightblue-btn edit-veto"
-							id={`match_id_${match.id}`}
-							onClick={() => edit(match)}
-						>
-							E
-						</Button>
-						<Button
-							className={`purple-btn round-btn edit-veto ${match.current ? 'current' : ''}`}
-							onClick={() => setCurrent()}
-						>
-							L
-						</Button>
+						<img src={deleteIcon} onClick={deleteMatch} className="image-button" />
+						<img src={editIcon} onClick={() => edit(match)} className="image-button" />
+						<img src={liveIcon} onClick={() => setCurrent()} className="image-button" />
 					</div>
 				</div>
 			</div>

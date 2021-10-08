@@ -58,7 +58,7 @@ const createTournament = (type, teams) => {
 };
 exports.createTournament = createTournament;
 const getTournamentByMatchId = async (matchId) => {
-    const tournaments = await exports.getTournaments();
+    const tournaments = await (0, exports.getTournaments)();
     const tournament = tournaments.find(trnm => !!trnm.matchups.find(matchup => matchup.matchId === matchId));
     return tournament || null;
 };
@@ -88,14 +88,14 @@ const updateTournament = (tournament) => new Promise(res => {
 });
 exports.updateTournament = updateTournament;
 const bindMatch = async (matchId, matchupId, tournamentId) => {
-    const tournament = await exports.getTournament(tournamentId);
+    const tournament = await (0, exports.getTournament)(tournamentId);
     if (!tournament)
         return null;
     const matchup = tournament.matchups.find(matchup => matchup._id === matchupId);
     if (!matchup)
         return null;
     matchup.matchId = matchId;
-    return await exports.updateTournament(tournament);
+    return await (0, exports.updateTournament)(tournament);
 };
 exports.bindMatch = bindMatch;
 const fillNextMatch = (matchId, type) => new Promise(res => {
@@ -139,7 +139,7 @@ const fillNextMatch = (matchId, type) => new Promise(res => {
         const loserId = match.left.wins > match.right.wins ? match.right.id : match.left.id;
         if (!nextMatchup.matchId) {
             const newMatch = {
-                id: v4_1.default(),
+                id: (0, v4_1.default)(),
                 current: false,
                 left: { id: type === 'winner' ? winnerId : loserId, wins: 0 },
                 right: { id: null, wins: 0 },
@@ -162,7 +162,7 @@ const fillNextMatch = (matchId, type) => new Promise(res => {
             if (!resp)
                 return res(null);
             nextMatchup.matchId = newMatch.id;
-            await exports.updateTournament(tournament);
+            await (0, exports.updateTournament)(tournament);
         }
         const nextMatch = await M.getMatchById(nextMatchup.matchId);
         if (!nextMatch)
@@ -187,7 +187,7 @@ const fillNextMatch = (matchId, type) => new Promise(res => {
 exports.fillNextMatch = fillNextMatch;
 const createNextMatch = async (matchId) => {
     try {
-        await Promise.all([exports.fillNextMatch(matchId, 'winner'), exports.fillNextMatch(matchId, 'loser')]);
+        await Promise.all([(0, exports.fillNextMatch)(matchId, 'winner'), (0, exports.fillNextMatch)(matchId, 'loser')]);
     }
     catch {
         return;

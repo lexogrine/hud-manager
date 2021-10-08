@@ -160,7 +160,7 @@ class Matches extends Component<
 				) : (
 					<div className="tab-title-container">{t('match.matches')}</div>
 				)*/}
-				<div className={`tab-content-container no-padding ${match ? 'full-scroll' : ''}`}>
+				<div className={`tab-content-container no-padding ${match ? 'no-scroll' : ''}`}>
 					{match ? (
 						<MatchEdit
 							match={match}

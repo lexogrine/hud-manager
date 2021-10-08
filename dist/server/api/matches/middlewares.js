@@ -62,11 +62,11 @@ const addMatchRoute = async (req, res) => {
     req.body.game = __1.customer.game;
     const match = await M.addMatch(req.body);
     let cloudStatus = false;
-    if (await __1.validateCloudAbility('matches')) {
-        cloudStatus = (await cloud_1.checkCloudStatus(__1.customer.game)) === 'ALL_SYNCED';
+    if (await (0, __1.validateCloudAbility)('matches')) {
+        cloudStatus = (await (0, cloud_1.checkCloudStatus)(__1.customer.game)) === 'ALL_SYNCED';
     }
     if (match && cloudStatus) {
-        await cloud_1.addResource(__1.customer.game, 'matches', match);
+        await (0, cloud_1.addResource)(__1.customer.game, 'matches', match);
     }
     return res.sendStatus(match ? 200 : 500);
 };
@@ -81,12 +81,12 @@ const getCurrentMatchRoute = async (req, res) => {
 exports.getCurrentMatchRoute = getCurrentMatchRoute;
 const deleteMatchRoute = async (req, res) => {
     let cloudStatus = false;
-    if (await __1.validateCloudAbility('matches')) {
-        cloudStatus = (await cloud_1.checkCloudStatus(__1.customer.game)) === 'ALL_SYNCED';
+    if (await (0, __1.validateCloudAbility)('matches')) {
+        cloudStatus = (await (0, cloud_1.checkCloudStatus)(__1.customer.game)) === 'ALL_SYNCED';
     }
     const match = await M.deleteMatch(req.params.id);
     if (cloudStatus && match) {
-        await cloud_1.deleteResource(__1.customer.game, 'matches', req.params.id);
+        await (0, cloud_1.deleteResource)(__1.customer.game, 'matches', req.params.id);
     }
     return res.sendStatus(match ? 200 : 500);
 };
@@ -95,12 +95,12 @@ const updateMatchRoute = async (req, res) => {
     const io = await socket_1.ioPromise;
     req.body.game = __1.customer.game;
     let cloudStatus = false;
-    if (await __1.validateCloudAbility('matches')) {
-        cloudStatus = (await cloud_1.checkCloudStatus(__1.customer.game)) === 'ALL_SYNCED';
+    if (await (0, __1.validateCloudAbility)('matches')) {
+        cloudStatus = (await (0, cloud_1.checkCloudStatus)(__1.customer.game)) === 'ALL_SYNCED';
     }
     const match = await M.updateMatch(req.body);
     if (cloudStatus && match) {
-        await cloud_1.updateResource(__1.customer.game, 'teams', { ...req.body, _id: req.params.id });
+        await (0, cloud_1.updateResource)(__1.customer.game, 'teams', { ...req.body, _id: req.params.id });
     }
     io.emit('match');
     return res.sendStatus(match ? 200 : 500);

@@ -217,7 +217,8 @@ body {
 	padding-bottom: 0;
 	position: relative;
 	flex: 1;
-	overflow-y: scroll;
+	overflow-y: auto;
+
 }
 .lhm-logo-container {
 	width: 100%;
@@ -512,9 +513,6 @@ img.smallLogo {
 		font-weight: 600;
 		text-transform: uppercase;
 	}
-	&:nth-child(2n) {
-		background-color: #2f3238;
-	}
 	.entry-main {
 		display: flex;
 		font-size: 12px;
@@ -524,10 +522,6 @@ img.smallLogo {
 		width: 100%;
 		justify-content: space-between;
 		overflow: hidden;
-	}
-	.veto-title {
-		font-weight: 700;
-		padding-right: 5px;
 	}
 	.veto-desc {
 		display: flex;
@@ -572,6 +566,11 @@ img.smallLogo {
 .side-menu {
 	display: flex;
 	width: 94px;
+    justify-content: space-between;
+
+}
+.image-button {
+	cursor:pointer;
 }
 .match-entry {
 	border-bottom: 1px solid rgba(255,255,255,0.1);
@@ -595,9 +594,13 @@ img.smallLogo {
 		background-repeat: no-repeat;
 		background-position: center;
 		font-weight: 700;
-		text-shadow: 2px 2px black;
+		text-shadow: 0px 0px 5px black;
 		background-size: cover;
 		border: 2px solid #54f2f2;
+		font-size: 12px;
+		text-transform: uppercase;
+		margin-right: 30px;
+
 		cursor: pointer;
 		user-select: none;
 	}
@@ -687,16 +690,10 @@ img.smallLogo {
         font-weight: 700;
     }
 }
-.veto-summary {
-	width: 175px;
-}
-.veto-title {
-	width: 52px;
-}
 .veto-description {
-	width: 250px;
 	transition: width 0.1875s, opacity 0.125s;
 	display: flex;
+    margin-right: auto;
 	flex-direction: row;
 }
 .veto-description.hide {
@@ -724,13 +721,10 @@ img.smallLogo {
 		margin: 0 15px;
 	}
 	.versus {
-		margin: 0 14px;
+		margin: 0 7px;
 	}
 }
-.side-menu-container {
-	width: 29px;
-	transition: width 0.25s;
-}
+
 .item-list-entry.heading.matches {
 	.map-score {
 		flex: 1.5;
@@ -852,18 +846,49 @@ img.smallLogo {
 ::-webkit-calendar-picker-indicator {
 	filter: invert(1);
 }
-#match_form {
-	.row {
-		margin-left: 0;
-		margin-right: 0;
-	}
-	>.row {
-		&:not(:last-child) {
-			padding-left: 58px;
-			padding-right: 58px;
-			>div {
-				padding-left: 0;
-				padding-right: 0;
+.match-edit {
+	display: flex;
+	height: 100%;
+
+	.veto-container {
+		flex: 1;
+		padding: 0 30px;
+		overflow-y: auto;
+		margin: 30px 0;
+		.veto-entry-container {
+			color: white;
+			height: 76px;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			border-bottom: 1px solid rgba(255,255,255,0.1);
+			
+			.edit-veto {
+				&:first-of-type {
+					margin-left: 16px;
+				}
+				&:last-of-type {
+					margin-right: 0;
+				}
+				border-radius: 14px;
+				font-size: 10px;
+				border: none;
+				font-weight: 600;
+				text-transform: uppercase;
+			}
+			.entry-main {
+				display: flex;
+				font-size: 14px;
+				flex-direction: row;
+				align-items: center;
+				width: 100%;
+				justify-content: center;
+				overflow: hidden;
+				.map-score {
+					margin: 0 5px;
+					margin-right: 50px;
+				}
 			}
 		}
 	}
@@ -1047,10 +1072,12 @@ select#player_for_names.form-control {
 .match_row {
 	display: flex;
 	flex-direction: column;
-	width: 100%;
-	min-height: 219px;
-	background-color: #ffffff0d;
+	flex: 1;
+	max-width: 400px;
 	position: relative;
+	border-right: 1px solid rgba(255,255,255,0.1);
+    padding: 0 40px;
+	margin: 30px 0;
 	justify-content: center;
 	&:nth-child(2n) {
 		background-color: transparent;
@@ -1114,7 +1141,6 @@ select#player_for_names.form-control {
 			display: flex;
 			align-items: center;
 			justify-content: center;
-			background: url('./slash.png') no-repeat;
 			text-align: center;
 			font-size: 15px;
 			height: 46px;
@@ -1143,9 +1169,6 @@ select#player_for_names.form-control {
 			opacity: 0;
 		}
 	}
-}
-.match_row.editing {
-	background-color: #24272d;
 }
 a.nav-link.active {
 	&:not([href]) {
@@ -1761,7 +1784,6 @@ form {
 .item-list-entry.heading {
 	cursor: default;
 	background-color: rgba(0,0,0,0.3);
-	backdrop-filter: blur(10px);
 	top: 0;
 	position: sticky;
 	height: 54px;
@@ -1791,6 +1813,7 @@ form {
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		background-color: black;
 		font-size: 10px;
 		font-weight: 700;
 		text-transform: uppercase;
@@ -1839,10 +1862,6 @@ form {
 	width: 100px;
 	transition: width 0.1875s, opacity 0.125s;
 	flex: unset !important;
-}
-.force-no-break {
-	word-break: keep-all !important;
-	white-space: nowrap !important;
 }
 .entry-main.expanded {
 	.match-date {

@@ -55,7 +55,7 @@ export const checkGSIFile: express.RequestHandler = async (req, res) => {
 		return res.json({ success: false, message: "File couldn't be found", accessible: true });
 	}
 	try {
-		const rawContent = fs.readFileSync(cfgPath, 'UTF-8');
+		const rawContent = fs.readFileSync(cfgPath, 'utf-8');
 		const content = VDF.parse(rawContent)?.HUDMANAGERGSI as GSI;
 		if (!content) {
 			//Corrupted file
@@ -144,7 +144,7 @@ export const createGSIFile: express.RequestHandler = async (req, res) => {
 		if (fs.existsSync(cfgPath)) {
 			fs.unlinkSync(cfgPath);
 		}
-		fs.writeFileSync(cfgPath, text, 'UTF-8');
+		fs.writeFileSync(cfgPath, text, 'utf-8');
 		return res.json({ success: true, message: 'Config file was successfully saved' });
 	} catch {
 		return res.json({ success: false, message: 'Unexpected error occured' });
@@ -158,7 +158,7 @@ export const saveFile =
 		const result = await dialog.showSaveDialog({ defaultPath: name });
 		const text = typeof content === 'string' ? content : await content;
 		if (result.filePath) {
-			fs.writeFileSync(result.filePath, text, { encoding: base64 ? 'base64' : 'UTF-8' });
+			fs.writeFileSync(result.filePath, text, { encoding: base64 ? 'base64' : 'utf-8' });
 		}
 	};
 

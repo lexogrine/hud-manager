@@ -19,7 +19,7 @@ const socket_1 = require("../socket");
 const cloud_1 = require("./cloud");
 const cookiePath = path_1.default.join(electron_1.app.getPath('userData'), 'cookie.json');
 const cookieJar = new tough_cookie_1.CookieJar(new tough_cookie_file_store_1.FileCookieStore(cookiePath));
-exports.fetch = fetch_cookie_1.default(node_fetch_1.default, cookieJar);
+exports.fetch = (0, fetch_cookie_1.default)(node_fetch_1.default, cookieJar);
 exports.socket = null;
 const USE_LOCAL_BACKEND = false;
 const connectSocket = () => {
@@ -42,7 +42,7 @@ const connectSocket = () => {
         if (!api_1.customer.game)
             return;
         const io = await socket_1.ioPromise;
-        const result = await cloud_1.checkCloudStatus(api_1.customer.game);
+        const result = await (0, cloud_1.checkCloudStatus)(api_1.customer.game);
         if (result !== 'ALL_SYNCED') {
             // TODO: Handle that
             return;
@@ -73,16 +73,16 @@ const api = (url, method = 'GET', body, opts) => {
         options.body = JSON.stringify(body);
     }
     let data = null;
-    return exports.fetch(USE_LOCAL_BACKEND ? `http://192.168.50.40:5000/${url}` : `https://hmapi.lexogrine.com/${url}`, options).then(res => {
+    return (0, exports.fetch)(USE_LOCAL_BACKEND ? `http://192.168.50.40:5000/${url}` : `https://hmapi.lexogrine.com/${url}`, options).then(res => {
         data = res;
         return res.json().catch(() => data && data.status < 300);
     });
 };
 exports.api = api;
 const userHandlers = {
-    get: (machineId) => exports.api(`auth/${machineId}`),
-    login: (username, password, ver, code) => exports.api('auth', 'POST', { username, password, ver, code }),
-    logout: () => exports.api('auth', 'DELETE')
+    get: (machineId) => (0, exports.api)(`auth/${machineId}`),
+    login: (username, password, ver, code) => (0, exports.api)('auth', 'POST', { username, password, ver, code }),
+    logout: () => (0, exports.api)('auth', 'DELETE')
 };
 const verifyToken = (token) => {
     try {
@@ -97,7 +97,7 @@ const verifyToken = (token) => {
     }
 };
 const loadUser = async (loggedIn = false) => {
-    const machineId = machine_1.getMachineId();
+    const machineId = (0, machine_1.getMachineId)();
     const userToken = await userHandlers.get(machineId);
     if (!userToken) {
         return { success: false, message: loggedIn ? 'Your session has expired - try restarting the application' : '' };
