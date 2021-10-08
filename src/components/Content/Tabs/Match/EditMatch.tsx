@@ -183,17 +183,17 @@ const EditMatch = ({ cxt, match, teams, edit, maps }: IProps) => {
 				</div>
 			</div>
 			<div className="veto-container">
-					{matchState.vetos.map((veto, i) => (
-						<VetoEntry
-							vetoTeams={vetoTeams}
-							key={i}
-							map={i}
-							maps={maps}
-							onSave={vetoHandler}
-							veto={veto}
-							match={matchState}
-						/>
-					))}
+				{matchState.vetos.map((veto, i) => (
+					<VetoEntry
+						vetoTeams={vetoTeams}
+						key={i}
+						map={i}
+						maps={maps}
+						onSave={vetoHandler}
+						veto={veto}
+						match={matchState}
+					/>
+				))}
 			</div>
 		</div>
 	);

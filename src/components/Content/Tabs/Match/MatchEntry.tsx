@@ -17,7 +17,6 @@ interface Props {
 	setCurrent: Function;
 }
 
-
 const MatchEntry = ({ match, teams, cxt, edit, setCurrent }: Props) => {
 	const { t } = useTranslation();
 
@@ -47,7 +46,7 @@ const MatchEntry = ({ match, teams, cxt, edit, setCurrent }: Props) => {
 				</div>
 
 				<div className="map-score">
-					<WinIcon show={match.left?.wins === boToWinsMap[match.matchType]}/>
+					<WinIcon show={match.left?.wins === boToWinsMap[match.matchType]} />
 					{left?.logo ? (
 						<img src={`${left.logo}?hash=${hash()}`} alt={`${left.name} logo`} className="team-logo" />
 					) : (
@@ -61,14 +60,12 @@ const MatchEntry = ({ match, teams, cxt, edit, setCurrent }: Props) => {
 					) : (
 						''
 					)}
-					<WinIcon show={match.right?.wins === boToWinsMap[match.matchType]}/>
+					<WinIcon show={match.right?.wins === boToWinsMap[match.matchType]} />
 				</div>
 				<div className="match-date">
 					{match.startTime ? moment(match.startTime).format(moment.HTML5_FMT.DATE) : '-'}
 				</div>
-				<div className="match-time">
-					{match.startTime ? moment(match.startTime).format('LT') : '-'}
-				</div>
+				<div className="match-time">{match.startTime ? moment(match.startTime).format('LT') : '-'}</div>
 				<div className={`side-menu-container expanded`}>
 					<div className={`side-menu`}>
 						<img src={deleteIcon} onClick={deleteMatch} className="image-button" />

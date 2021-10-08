@@ -20,12 +20,8 @@ interface Props {
 export const WinIcon = ({ show }: { show: boolean }) => {
 	const { t } = useTranslation();
 	if (!show) return null;
-	return (
-		<div className={`win-icon active`}>
-			{t('match.wins')}
-		</div>
-	)
-}
+	return <div className={`win-icon active`}>{t('match.wins')}</div>;
+};
 const VetoScore = ({ veto, left, right }: { veto: I.Veto; left: I.Team | null; right: I.Team | null }) => {
 	if (!left || !right || !veto.score) return null;
 	const { t } = useTranslation();
@@ -47,7 +43,8 @@ function generateDescription(veto: I.CSGOVeto, t: any, team?: I.Team, secTeam?: 
 	if (!team || !team.name || !secTeam) {
 		return <strong>{t('match.wrongTeamSelected')}</strong>;
 	}
-	const mapNameCapitalized = veto.mapName.replace('de_', '').charAt(0).toUpperCase() + veto.mapName.replace('de_', '').slice(1);
+	const mapNameCapitalized =
+		veto.mapName.replace('de_', '').charAt(0).toUpperCase() + veto.mapName.replace('de_', '').slice(1);
 	let text: string | null = t('match.vetoDescription', {
 		teamName: team.name,
 		vetoType: veto.type,
@@ -122,10 +119,10 @@ const VetoEntry = ({ map, veto, vetoTeams, onSave, maps }: Props) => {
 				) : (
 					<>
 						<div className="entry-main">
-							<div
-								className={`veto-description`}
-							>
-								<span className={`veto-summary`}>{t('common.vetoNumber', { num: map + 1 })}:  {'mapName' in veto ? generateDescription(veto, t, team, secTeam) : null}
+							<div className={`veto-description`}>
+								<span className={`veto-summary`}>
+									{t('common.vetoNumber', { num: map + 1 })}:{' '}
+									{'mapName' in veto ? generateDescription(veto, t, team, secTeam) : null}
 								</span>
 							</div>
 							<VetoScore veto={veto} left={team} right={secTeam} />
@@ -140,8 +137,18 @@ const VetoEntry = ({ map, veto, vetoTeams, onSave, maps }: Props) => {
 							<div className={`side-menu-container`}>
 								<div className={`side-menu`}>
 									<img src={resetScoreIcon} className="image-button" onClick={resetScore} />
-									{ !('mapName' in veto) || veto.mapName ? <img src={editScoreIcon} className="image-button" onClick={() => setScoreOpen(!isScoreOpen)} /> : null }
-									<img src={editIcon} className="image-button" onClick={() => setVetoModal(!isVetoModalOpen)} />
+									{!('mapName' in veto) || veto.mapName ? (
+										<img
+											src={editScoreIcon}
+											className="image-button"
+											onClick={() => setScoreOpen(!isScoreOpen)}
+										/>
+									) : null}
+									<img
+										src={editIcon}
+										className="image-button"
+										onClick={() => setVetoModal(!isVetoModalOpen)}
+									/>
 								</div>
 							</div>
 						</div>

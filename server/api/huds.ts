@@ -549,7 +549,7 @@ async function loadHUD(base64: string, name: string, existingUUID?: string): Pro
 		try {
 			const fileString = base64.split(';base64,').pop();
 
-			if(!fileString){
+			if (!fileString) {
 				throw new Error();
 			}
 
