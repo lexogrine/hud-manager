@@ -10,7 +10,7 @@ interface Props {
 	teams: I.Team[];
 	matchId: string;
 	save: any;
-	team?: string
+	team?: string;
 }
 
 const BindModal = ({ matches, toggle, isOpen, matchId, onChange, save, teams, team }: Props) => {
@@ -26,15 +26,23 @@ const BindModal = ({ matches, toggle, isOpen, matchId, onChange, save, teams, te
 			<ModalHeader toggle={toggle}>{t('tournaments.bindMatch')}</ModalHeader>
 			<ModalBody>
 				<FormGroup>
-					<Input type="select" name="type" id="match_to_bracket" value={matchId} onChange={e => onChange(e.target.value)}>
+					<Input
+						type="select"
+						name="type"
+						id="match_to_bracket"
+						value={matchId}
+						onChange={e => onChange(e.target.value)}
+					>
 						<option value="" defaultChecked>
 							{t('common.match')}
 						</option>
-						{matches.filter(match => !team || match.left.id === team || match.right.id === team).map(match => (
-							<option value={match.id} key={match.id}>
-								{getMatchDescription(match)}
-							</option>
-						))}
+						{matches
+							.filter(match => !team || match.left.id === team || match.right.id === team)
+							.map(match => (
+								<option value={match.id} key={match.id}>
+									{getMatchDescription(match)}
+								</option>
+							))}
 					</Input>
 				</FormGroup>
 			</ModalBody>

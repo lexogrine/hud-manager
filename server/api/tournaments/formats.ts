@@ -12,15 +12,15 @@ const createMatchup = (stage: string | number | null = null): I.TournamentMatchu
 });
 
 export const createSSBracket = (teams: number, phases: number) => {
-	const amountOfMatchups = teams*phases;
+	const amountOfMatchups = teams * phases;
 
 	const matchups: I.TournamentMatchup[] = [];
 
-	for(let i = 0; i < amountOfMatchups; i++){
-		matchups.push(createMatchup(Math.floor(i/teams)));
+	for (let i = 0; i < amountOfMatchups; i++) {
+		matchups.push(createMatchup(Math.floor(i / teams)));
 	}
 	return matchups;
-}
+};
 
 export const createSEBracket = (teams: number) => {
 	if (!Number.isInteger(Math.log2(teams))) return [];

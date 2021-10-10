@@ -7,7 +7,10 @@ import BindModal from './BindModal';
 import { withTranslation } from 'react-i18next';
 import { Component } from 'react';
 
-const getMatchupsFromTournament = (tournament: I.Tournament) => [...tournament.playoffs.matchups, ...tournament.groups.map(group => group.matchups).flat()]
+const getMatchupsFromTournament = (tournament: I.Tournament) => [
+	...tournament.playoffs.matchups,
+	...tournament.groups.map(group => group.matchups).flat()
+];
 
 interface MatchData {
 	left: { name: string; score: string | number; logo: string };
@@ -21,9 +24,9 @@ interface State {
 	isAdding: boolean;
 	form: {
 		name: string;
-		type: 'se' | 'de'  | 'ss';
-		groupType: 'se' | 'de'  | 'ss';
-		groupTeams: number,
+		type: 'se' | 'de' | 'ss';
+		groupType: 'se' | 'de' | 'ss';
+		groupTeams: number;
 		teams: number;
 		logo: string;
 		_id: string;
@@ -77,12 +80,25 @@ class Tournaments extends Component<{ cxt: IContextData; t: any }, State> {
 		this.toggleAdding();
 		let { tournament } = this.state;
 		if (!tournament) {
-			return this.setState({ form: { name: '', teams: 2, groupTeams: 0, groupType:'ss', logo: '', type: 'se', _id: '' } });
+			return this.setState({
+				form: { name: '', teams: 2, groupTeams: 0, groupType: 'ss', logo: '', type: 'se', _id: '' }
+			});
 		}
 		tournament = this.props.cxt.tournaments.find(trnm => trnm._id === tournament?._id) || null;
-		if (!tournament) return this.setState({ form: { name: '', teams: 2, groupTeams: 0, groupType: 'ss', logo: '', type: 'se', _id: '' } });
+		if (!tournament)
+			return this.setState({
+				form: { name: '', teams: 2, groupTeams: 0, groupType: 'ss', logo: '', type: 'se', _id: '' }
+			});
 		return this.setState({
-			form: { name: tournament.name, groupTeams: 0, groupType: 'ss', teams: 2, logo: tournament.logo, type: 'se', _id: tournament._id }
+			form: {
+				name: tournament.name,
+				groupTeams: 0,
+				groupType: 'ss',
+				teams: 2,
+				logo: tournament.logo,
+				type: 'se',
+				_id: tournament._id
+			}
 		});
 	};
 
@@ -114,7 +130,9 @@ class Tournaments extends Component<{ cxt: IContextData; t: any }, State> {
 
 	copyMatchups = (): DepthTournamentMatchup[] => {
 		if (!this.state.tournament) return [];
-		const matchups = JSON.parse(JSON.stringify(getMatchupsFromTournament(this.state.tournament))) as DepthTournamentMatchup[];
+		const matchups = JSON.parse(
+			JSON.stringify(getMatchupsFromTournament(this.state.tournament))
+		) as DepthTournamentMatchup[];
 		return matchups;
 	};
 

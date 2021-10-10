@@ -6,9 +6,8 @@ import db from './../../../init/database';
 
 const { tournaments } = db;
 
-
 export const parseLegacyMatchups = (matchup: I.LegacyTournamentMatchup | I.TournamentMatchup) => {
-	if("stage" in matchup) return matchup;
+	if ('stage' in matchup) return matchup;
 
 	const newMatchup: I.TournamentMatchup = {
 		_id: matchup._id,
@@ -18,13 +17,13 @@ export const parseLegacyMatchups = (matchup: I.LegacyTournamentMatchup | I.Tourn
 		stage: null,
 		matchId: matchup.matchId,
 		parents: matchup.parents.map(parent => parseLegacyMatchups(parent))
-	}
+	};
 
 	return newMatchup;
-}
+};
 
 export const parseLegacyTournament = (tournament: I.LegacyTournament | I.Tournament) => {
-	if(!("matchups" in tournament)) return tournament;
+	if (!('matchups' in tournament)) return tournament;
 
 	const newTournament: I.Tournament = {
 		_id: tournament._id,
@@ -36,13 +35,13 @@ export const parseLegacyTournament = (tournament: I.LegacyTournament | I.Tournam
 			type: 'double',
 			participants: [],
 			phases: 0,
-			matchups: tournament.matchups.map(matchup => parseLegacyMatchups(matchup)),
+			matchups: tournament.matchups.map(matchup => parseLegacyMatchups(matchup))
 		},
 		autoCreate: tournament.autoCreate
-	}
+	};
 
 	return newTournament;
-}
+};
 export const getTournaments = (opts: any = {}): Promise<I.Tournament[]> =>
 	new Promise(res => {
 		tournaments.find(opts, (err: any, docs: I.Tournament[]) => {
@@ -51,7 +50,8 @@ export const getTournaments = (opts: any = {}): Promise<I.Tournament[]> =>
 		});
 	});
 
-export const createTournament = (type: I.TournamentTypes,
+export const createTournament = (
+	type: I.TournamentTypes,
 	teams: number,
 	groupType?: I.TournamentTypes,
 	groupTeams?: number,
@@ -92,8 +92,14 @@ export const createTournament = (type: I.TournamentTypes,
 			break;
 	}
 	const amountOfGroupTeams = groupTeams || groupParticipants?.length;
-	if(groupType && amountOfGroupTeams){
-		tournament.groups.push({ participants: [], type: 'single', matchups: [], teams: amountOfGroupTeams, phases: 0 });
+	if (groupType && amountOfGroupTeams) {
+		tournament.groups.push({
+			participants: [],
+			type: 'single',
+			matchups: [],
+			teams: amountOfGroupTeams,
+			phases: 0
+		});
 		switch (groupType) {
 			case 'single':
 				tournament.groups[0].matchups = Formats.createSEBracket(amountOfGroupTeams);
@@ -104,7 +110,10 @@ export const createTournament = (type: I.TournamentTypes,
 				break;
 			case 'swiss':
 				tournament.groups[0].type = 'swiss';
-				tournament.groups[0].matchups = Formats.createSSBracket(groupParticipants?.length || 8, groupPhases || 5);
+				tournament.groups[0].matchups = Formats.createSSBracket(
+					groupParticipants?.length || 8,
+					groupPhases || 5
+				);
 				tournament.groups[0].phases = groupPhases || 5;
 				tournament.groups[0].participants = groupParticipants || [];
 				break;
@@ -115,12 +124,17 @@ export const createTournament = (type: I.TournamentTypes,
 	return tournament;
 };
 
-const getMatchupsFromTournament = (tournament: I.Tournament) => [...tournament.playoffs.matchups, ...tournament.groups.map(group => group.matchups).flat()]
+const getMatchupsFromTournament = (tournament: I.Tournament) => [
+	...tournament.playoffs.matchups,
+	...tournament.groups.map(group => group.matchups).flat()
+];
 
 export const getTournamentByMatchId = async (matchId: string) => {
 	const tournaments = await getTournaments();
 
-	const tournament = tournaments.find(tournament => getMatchupsFromTournament(tournament).find(matchup => matchup.matchId === matchId));
+	const tournament = tournaments.find(tournament =>
+		getMatchupsFromTournament(tournament).find(matchup => matchup.matchId === matchId)
+	);
 
 	return tournament || null;
 };
@@ -194,14 +208,18 @@ export const fillNextMatches = async (matchId: string) => {
 
 	if (!currentMatchup) return null;
 
-	const losersNextMatchup = getMatchupsFromTournament(tournament).find(matchup => matchup._id === currentMatchup.loser_to);
-	const winnersNextMatchup = getMatchupsFromTournament(tournament).find(matchup => matchup._id === currentMatchup.winner_to);
+	const losersNextMatchup = getMatchupsFromTournament(tournament).find(
+		matchup => matchup._id === currentMatchup.loser_to
+	);
+	const winnersNextMatchup = getMatchupsFromTournament(tournament).find(
+		matchup => matchup._id === currentMatchup.winner_to
+	);
 
 	const winnerId = match.left.wins > match.right.wins ? match.left.id : match.right.id;
 	const loserId = match.left.wins > match.right.wins ? match.right.id : match.left.id;
 
 	if (losersNextMatchup) {
-		let nextMatch = losersNextMatchup.matchId ? (await M.getMatchById(losersNextMatchup.matchId)) || null : null
+		let nextMatch = losersNextMatchup.matchId ? (await M.getMatchById(losersNextMatchup.matchId)) || null : null;
 		if (!nextMatch) {
 			const newMatch: I.Match = {
 				id: uuidv4(),
@@ -226,16 +244,16 @@ export const fillNextMatches = async (matchId: string) => {
 			}
 
 			const response = await M.addMatch(newMatch);
-			if(!response) return null;
+			if (!response) return null;
 			losersNextMatchup.matchId = response.id;
 
 			nextMatch = response;
 		}
 
-		if(nextMatch.left.id !== loserId && nextMatch.right.id !== loserId){
-			if(!nextMatch.left.id){
+		if (nextMatch.left.id !== loserId && nextMatch.right.id !== loserId) {
+			if (!nextMatch.left.id) {
 				nextMatch.left.id = loserId;
-			} else if(!nextMatch.right.id){
+			} else if (!nextMatch.right.id) {
 				nextMatch.right.id = loserId;
 			} else {
 				return null;
@@ -244,10 +262,8 @@ export const fillNextMatches = async (matchId: string) => {
 		await M.updateMatch(nextMatch);
 	}
 
-
-
 	if (winnersNextMatchup) {
-		let nextMatch = winnersNextMatchup.matchId ? (await M.getMatchById(winnersNextMatchup.matchId)) || null : null
+		let nextMatch = winnersNextMatchup.matchId ? (await M.getMatchById(winnersNextMatchup.matchId)) || null : null;
 		if (!nextMatch) {
 			const newMatch: I.Match = {
 				id: uuidv4(),
@@ -272,15 +288,15 @@ export const fillNextMatches = async (matchId: string) => {
 			}
 
 			const response = await M.addMatch(newMatch);
-			if(!response) return null;
+			if (!response) return null;
 			winnersNextMatchup.matchId = response.id;
 
 			nextMatch = response;
 		}
-		if(nextMatch.left.id !== winnerId && nextMatch.right.id !== winnerId){
-			if(!nextMatch.left.id){
+		if (nextMatch.left.id !== winnerId && nextMatch.right.id !== winnerId) {
+			if (!nextMatch.left.id) {
 				nextMatch.left.id = winnerId;
-			} else if(!nextMatch.right.id){
+			} else if (!nextMatch.right.id) {
 				nextMatch.right.id = winnerId;
 			} else {
 				return null;
@@ -290,9 +306,7 @@ export const fillNextMatches = async (matchId: string) => {
 	}
 
 	await updateTournament(tournament);
-
-}
-
+};
 
 export const createNextMatch = async (matchId: string) => {
 	try {

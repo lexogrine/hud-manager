@@ -159,8 +159,16 @@ export default {
 	},
 	tournaments: {
 		get: async (): Promise<I.Tournament[]> => await apiV2('tournaments'),
-		add: (tournament: { name: string; logo: string; playoffTeams: number; playoffType: string, groupType?: string, groupTeams?: number, phases?: number, groupPhases?: number }): Promise<I.Tournament> =>
-			apiV2('tournaments', 'POST', tournament),
+		add: (tournament: {
+			name: string;
+			logo: string;
+			playoffTeams: number;
+			playoffType: string;
+			groupType?: string;
+			groupTeams?: number;
+			phases?: number;
+			groupPhases?: number;
+		}): Promise<I.Tournament> => apiV2('tournaments', 'POST', tournament),
 		bind: (tournamentId: string, matchId: string, matchupId: string) =>
 			apiV2(`tournaments/${tournamentId}`, 'POST', { matchId, matchupId }),
 		delete: (tournamentId: string) => apiV2(`tournaments/${tournamentId}`, 'DELETE'),

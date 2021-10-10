@@ -100,7 +100,7 @@ export type VetoType = 'ban' | 'pick' | 'decider';
 
 export type VetoScore = {
 	[key: string]: number;
-}
+};
 
 export interface CSGOVeto {
 	teamId: string;
@@ -192,8 +192,8 @@ export type TournamentStage = {
 	matchups: TournamentMatchup[];
 	teams: number;
 	phases: number;
-	participants: string[]
-}
+	participants: string[];
+};
 
 export interface Tournament {
 	_id: string;

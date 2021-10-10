@@ -15,7 +15,7 @@ interface Props {
 	show: () => void;
 }
 
-const TournamentListEntry = ({ team, show/*hash, fields, cxt*/ }: Props) => {
+const TournamentListEntry = ({ team, show /*hash, fields, cxt*/ }: Props) => {
 	const { t } = useTranslation();
 	return (
 		<div className="item-list-entry">
