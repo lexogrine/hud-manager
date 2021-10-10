@@ -368,33 +368,41 @@ body {
 	}
 }
 input.form-control {
-	color: #e1e1e2;
-	background-color: transparent;
-	border: 1px solid #505257;
-	border-radius: 10px;
+	color: white;
+	background-color: #0C0B0B;
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	border-radius: 0;
+	margin-bottom: 10px;
 	&:focus {
-		background-color: transparent;
+		background-color: #0C0B0B;
 		box-shadow: none;
 		border: 1px solid white;
-		color: #e1e1e2;
+		color: white;
 	}
 }
+select#groups_teams, select#playoffs_teams {
+	height: 200px !important;
+}
 select.form-control {
-	color: #e1e1e2;
-	background-color: transparent;
-	border: 1px solid #505257;
-	border-radius: 10px;
+	color: white;
+	background-color: #0C0B0B;
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	border-radius: 0;
 	font-size: 12px !important;
 	height: 44px !important;
+	margin-bottom: 10px;
 	option {
-		color: black;
+		color: white;
 		border-radius: 20px;
 	}
 	&:focus {
-		background-color: transparent;
+		background-color: #0C0B0B;
 		box-shadow: none;
-		border: 1px solid white;
-		color: #e1e1e2;
+		border: 1px solid rgba(255, 255, 255, 05);
+		color: white;
+	}
+	&:disabled {
+		background-color: rgba(255,255,255,0.3);
 	}
 }
 img.smallLogo {

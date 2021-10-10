@@ -30,8 +30,8 @@ export const addTournament: express.RequestHandler = async (req, res) => {
 	if (await validateCloudAbility('tournaments')) {
 		cloudStatus = (await checkCloudStatus(customer.game as AvailableGames)) === 'ALL_SYNCED';
 	}
-	const { name, logo, teams, type } = req.body;
-	const tournament = T.createTournament(type, teams);
+	const { name, logo, playoffTeams, playoffType, groupType, groupTeams, phases, groupPhases, participants, groupParticipants} = req.body;
+	const tournament = T.createTournament(playoffType, Number(playoffTeams), groupType, Number(groupTeams), Number(phases), Number(groupPhases), participants, groupParticipants);
 
 	tournament.name = name;
 	tournament.logo = logo;

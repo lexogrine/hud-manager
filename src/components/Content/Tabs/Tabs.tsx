@@ -3,7 +3,6 @@ import Teams from './Teams/Teams';
 import Players from './Players/Players';
 import Matches from './Match/Matches';
 import Huds from './Huds/Huds';
-import Tournaments from './Tournaments/Tournaments';
 import Config from './Config/Config';
 import AR from './AR/AR';
 import Credits from './Credits/Credits';
@@ -12,6 +11,7 @@ import { ContextData } from './../../Context';
 import ACO from './ACO/ACO';
 import CG from './CG/CG';
 import ARG from './ARG/ARG';
+import Tournamentss from './Tournaments/Tournamentss';
 
 interface IProps {
 	activeTab: string;
@@ -40,7 +40,7 @@ const Tabs = ({ activeTab, data, toggle, gsiCheck }: IProps) => (
 					<Huds cxt={cxt} toggle={toggle}></Huds>
 				</TabPane>
 				<TabPane tabId="tournaments">
-					<Tournaments cxt={cxt}></Tournaments>
+					<Tournamentss cxt={cxt}></Tournamentss>
 				</TabPane>
 				<TabPane tabId="arg">
 					<ARG></ARG>
