@@ -42,8 +42,8 @@ export const addMatchRoute: RequestHandler = async (req, res) => {
 	req.body.game = customer.game;
 	const { matchupId, tournamentId, ...data } = req.body;
 	const match = await M.addMatch(data);
-	
-	if(matchupId && tournamentId && match){
+
+	if (matchupId && tournamentId && match) {
 		await bindMatch(match.id, matchupId, tournamentId);
 	}
 

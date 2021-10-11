@@ -10,7 +10,7 @@ import goBack from './../../styles/goBack.png';
 
 export const isCGMode = false;
 
-const tabTitles: Record<string, { handler: null | (() => void), header: string | null }> = {};
+const tabTitles: Record<string, { handler: null | (() => void); header: string | null }> = {};
 
 const Content = ({
 	active,
@@ -27,7 +27,10 @@ const Content = ({
 }) => {
 	const [activeTab, setTab] = useState('huds');
 	const [data, setData] = useState(null);
-	const [ onBackClick, setOnBackClick ] = useState<{ handler: null | (() => void), header: string | null}>({ handler: null, header: null });
+	const [onBackClick, setOnBackClick] = useState<{ handler: null | (() => void); header: string | null }>({
+		handler: null,
+		header: null
+	});
 	const [gsi, setGSI] = useState(true);
 	const [configs, setConfigs] = useState(true);
 
@@ -41,13 +44,13 @@ const Content = ({
 		if (activeTab !== tab) {
 			setTab(tab);
 			setData(data);
-			setOnBackClick(tabTitles[tab]  || { handler: null, header: null });
+			setOnBackClick(tabTitles[tab] || { handler: null, header: null });
 		}
 	};
 	const setOnBackClick2 = (onBackClick: null | (() => void), header: string | null = null) => {
-		tabTitles[activeTab] = { handler: onBackClick, header }
+		tabTitles[activeTab] = { handler: onBackClick, header };
 		setOnBackClick(tabTitles[activeTab]);
-	}
+	};
 	useEffect(() => {
 		checkFiles();
 	}, [game]);
@@ -59,7 +62,10 @@ const Content = ({
 			<Col style={{ display: 'flex', flexDirection: 'column' }}>
 				<WindowBar />
 				<div className="tab-title-container">
-					<div className="header-title">{onBackClick.handler ? <img src={goBack} onClick={onBackClick.handler} /> : null } {onBackClick.header || activeTab}</div>
+					<div className="header-title">
+						{onBackClick.handler ? <img src={goBack} onClick={onBackClick.handler} /> : null}{' '}
+						{onBackClick.header || activeTab}
+					</div>
 					<div className="top_buttons">
 						<div className={`button strong`} onClick={clearGame}>
 							{t('app.changeGame')}
@@ -78,7 +84,13 @@ const Content = ({
 						</a>
 					</div>
 				</div>
-				<Tabs setOnBackClick={setOnBackClick2} activeTab={activeTab} data={data} toggle={toggle} gsiCheck={checkFiles} />
+				<Tabs
+					setOnBackClick={setOnBackClick2}
+					activeTab={activeTab}
+					data={data}
+					toggle={toggle}
+					gsiCheck={checkFiles}
+				/>
 			</Col>
 		</div>
 	);

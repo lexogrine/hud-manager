@@ -10,8 +10,8 @@ import TournamentEdit, { TournamentForm } from './TournamentEdit';
 import Tournament from './Tournament';
 
 interface IProps {
-	cxt: IContextData,
-	setOnBackClick: I.HeaderHandler
+	cxt: IContextData;
+	setOnBackClick: I.HeaderHandler;
 }
 const tournamentToForm = (tournament: I.Tournament): TournamentForm => ({
 	_id: tournament._id,
@@ -146,7 +146,7 @@ const Tournamentss = ({ cxt, setOnBackClick }: IProps) => {
 		setShowing(null);
 		setEditState(false);
 		setOnBackClick(null);
-	}
+	};
 
 	const add = () => {
 		loadEmpty();
@@ -155,9 +155,9 @@ const Tournamentss = ({ cxt, setOnBackClick }: IProps) => {
 	};
 
 	const show = (tournamentId: string) => {
-		setShowing(tournamentId)
+		setShowing(tournamentId);
 		setOnBackClick(close, 'Tournament page');
-	}
+	};
 
 	const content = () => {
 		const visibleFields = cxt.fields.teams.filter(field => field.visible);
@@ -176,7 +176,14 @@ const Tournamentss = ({ cxt, setOnBackClick }: IProps) => {
 		if (showing) {
 			const tournament = cxt.tournaments.find(tournament => tournament._id === showing);
 			if (!tournament) return null;
-			return <Tournament edit={() => edit(tournament)} cxt={cxt} tournament={tournament} close={() => setShowing(null)} />;
+			return (
+				<Tournament
+					edit={() => edit(tournament)}
+					cxt={cxt}
+					tournament={tournament}
+					close={() => setShowing(null)}
+				/>
+			);
 		}
 
 		return (

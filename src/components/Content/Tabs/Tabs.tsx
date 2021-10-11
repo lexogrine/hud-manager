@@ -19,7 +19,7 @@ interface IProps {
 	data: any;
 	toggle: (tab: string, data?: any) => void;
 	gsiCheck: Function;
-	setOnBackClick: HeaderHandler
+	setOnBackClick: HeaderHandler;
 }
 
 const Tabs = ({ activeTab, data, toggle, gsiCheck, setOnBackClick }: IProps) => (

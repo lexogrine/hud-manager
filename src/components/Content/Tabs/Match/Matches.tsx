@@ -14,11 +14,12 @@ import { withTranslation } from 'react-i18next';
 import { filterMatches } from '../../../../utils';
 
 interface IProps {
-	cxt: IContextData; t: any, setOnBackClick: I.HeaderHandler
+	cxt: IContextData;
+	t: any;
+	setOnBackClick: I.HeaderHandler;
 }
 
-class Matches extends Component<IProps,	{ match: I.Match | null; maps: string[]; activeTab: string }
-> {
+class Matches extends Component<IProps, { match: I.Match | null; maps: string[]; activeTab: string }> {
 	constructor(props: IProps) {
 		super(props);
 		this.state = {
@@ -77,7 +78,14 @@ class Matches extends Component<IProps,	{ match: I.Match | null; maps: string[];
 
 	startEdit = (match?: I.Match) => {
 		this.setState({ match: match || null }, () => {
-			this.props.setOnBackClick(match ? () => { this.startEdit() } : null, match ? 'Edit match' : null);
+			this.props.setOnBackClick(
+				match
+					? () => {
+							this.startEdit();
+					  }
+					: null,
+				match ? 'Edit match' : null
+			);
 		});
 	};
 
@@ -156,16 +164,18 @@ class Matches extends Component<IProps,	{ match: I.Match | null; maps: string[];
 								<div className="match-time">{t('match.columns.time')}</div>
 								<div className="options"></div>
 							</div>
-							{matches.filter(match => filterMatches(match, this.state.activeTab)).map(match => (
-								<MatchEntry
-									key={match.id}
-									edit={this.startEdit}
-									setCurrent={this.setCurrent(match.id)}
-									match={match}
-									teams={this.props.cxt.teams}
-									cxt={this.props.cxt}
-								/>
-							))}
+							{matches
+								.filter(match => filterMatches(match, this.state.activeTab))
+								.map(match => (
+									<MatchEntry
+										key={match.id}
+										edit={this.startEdit}
+										setCurrent={this.setCurrent(match.id)}
+										match={match}
+										teams={this.props.cxt.teams}
+										cxt={this.props.cxt}
+									/>
+								))}
 						</>
 					)}
 				</div>

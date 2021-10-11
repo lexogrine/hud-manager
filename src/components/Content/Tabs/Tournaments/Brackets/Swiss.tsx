@@ -5,7 +5,6 @@ import BindModal from '../BindModal';
 import uuidv4 from 'uuid/v4';
 import * as I from './../../../../../api/interfaces';
 
-
 interface Props {
 	tournament: I.Tournament;
 	stage: I.TournamentStage;
@@ -35,12 +34,16 @@ interface TeamInStage {
 }
 
 interface MatchDrop {
-	team: TeamInStage | null,
-	opponentId: string | null,
-	round: TeamsRound | null,
+	team: TeamInStage | null;
+	opponentId: string | null;
+	round: TeamsRound | null;
 }
 
-interface MatchDropOptions { team?: TeamInStage | null, opponentTarget?: HTMLElement | null, round?: TeamsRound | null }
+interface MatchDropOptions {
+	team?: TeamInStage | null;
+	opponentTarget?: HTMLElement | null;
+	round?: TeamsRound | null;
+}
 
 const getTeamEntry = (team: I.Team, teams: I.Team[], matchesForTeam: I.Match[], stage: I.TournamentStage) => {
 	const { matchups, phases } = stage;
@@ -125,7 +128,7 @@ const sortTeams = (teams: I.Team[], matches: I.Match[], stage: I.TournamentStage
 	entries.sort((teamA, teamB) => {
 		if (teamA.series.wins !== teamB.series.wins) return teamB.series.wins - teamA.series.wins;
 		if (teamA.series.losses !== teamB.series.losses) return teamA.series.losses - teamB.series.losses;
-		return (teamB.points.wins - teamB.points.losses) - (teamA.points.wins - teamA.points.losses);
+		return teamB.points.wins - teamB.points.losses - (teamA.points.wins - teamA.points.losses);
 	});
 
 	return entries;
@@ -140,7 +143,7 @@ const getFirstEmptySlotIndex = (team?: TeamInStage | null) => {
 		}
 	}
 	return -1;
-}
+};
 
 const RoundInfo = ({
 	round,
@@ -174,11 +177,23 @@ const RoundInfo = ({
 
 	const { match, opponent } = round;
 
-
 	if (!match) {
 		return showEdit ? (
-			<div className={`result edit ${showEdit && getFirstEmptySlotIndex(dropTarget.team) === index && dropTarget.team?.team._id !== team._id ? 'available' : 'not-available'}`} onClick={startBinding} data-teamId={team._id} onDragOver={e => { e.preventDefault(); updateDropTarget({ opponentTarget: e.target as any, round }); }} >
-			</div>
+			<div
+				className={`result edit ${
+					showEdit &&
+					getFirstEmptySlotIndex(dropTarget.team) === index &&
+					dropTarget.team?.team._id !== team._id
+						? 'available'
+						: 'not-available'
+				}`}
+				onClick={startBinding}
+				data-teamId={team._id}
+				onDragOver={e => {
+					e.preventDefault();
+					updateDropTarget({ opponentTarget: e.target as any, round });
+				}}
+			></div>
 		) : null;
 	}
 
@@ -191,7 +206,8 @@ const RoundInfo = ({
 		return (
 			<div className={`result ${winnerId === null ? 'ongoing' : winnerId === team._id ? 'win' : 'loss'}`}>
 				{opponent.logo ? <img src={opponent.logo} className="team-logo" /> : null}
-				{match.left.id === opponent._id ? match.right.wins : match.left.wins}:{match.left.id === opponent._id ? match.left.wins : match.right.wins}
+				{match.left.id === opponent._id ? match.right.wins : match.left.wins}:
+				{match.left.id === opponent._id ? match.left.wins : match.right.wins}
 			</div>
 		);
 	}
@@ -222,7 +238,7 @@ const SwissEntry = ({
 	setBindOpen: (state: boolean) => void;
 	index: number;
 	rounds: number;
-	tournament: I.Tournament,
+	tournament: I.Tournament;
 	matchups: I.TournamentMatchup[];
 	dropTarget: MatchDrop;
 	updateDropTarget: (info: MatchDropOptions) => void;
@@ -260,24 +276,24 @@ const SwissEntry = ({
 					updateDropTarget={updateDropTarget}
 				/>
 			</div>
-		)
+		);
 	});
 
 	const update = async () => {
 		const { opponentId, round, team } = dropTarget;
 		if (!opponentId || !round || !team) {
-			updateDropTarget({ opponentTarget: null, round: null, team: null })
+			updateDropTarget({ opponentTarget: null, round: null, team: null });
 			return;
 		}
-		if(opponentId === team.team._id) {
-			updateDropTarget({ opponentTarget: null, round: null, team: null })
+		if (opponentId === team.team._id) {
+			updateDropTarget({ opponentTarget: null, round: null, team: null });
 			return;
 		}
 		const indexForTeam = getFirstEmptySlotIndex(team);
 		const indexForOpponent = matchups.find(matchup => matchup._id === round.matchup._id)?.stage;
 
 		if (indexForTeam !== indexForOpponent) {
-			updateDropTarget({ opponentTarget: null, round: null, team: null })
+			updateDropTarget({ opponentTarget: null, round: null, team: null });
 			return;
 		}
 		const newMatch = {
@@ -291,7 +307,7 @@ const SwissEntry = ({
 			game: 'csgo',
 			matchupId: round.matchup._id,
 			tournamentId: tournament._id
-		} as I.Match
+		} as I.Match;
 
 		for (let i = 0; i < 9; i++) {
 			newMatch.vetos.push({ teamId: '', mapName: '', side: 'NO', type: 'pick', mapEnd: false });
@@ -301,20 +317,31 @@ const SwissEntry = ({
 		updateDropTarget({ opponentTarget: null, round: null, team: null });
 		cxt.reload();
 		return;
-	}
+	};
 
 	return (
 		<div className="item-list-entry swiss">
 			<div className="team-no">{index + 1}</div>
-			<div className="team-entry"
+			<div
+				className="team-entry"
 				draggable="true"
-				onDragStart={e => { e.stopPropagation(); updateDropTarget({ team: entry, round: null, opponentTarget: null }) }}
-				onDragEnd={e => { e.stopPropagation(); update(); }}
-			>{entry.team.name}</div>
+				onDragStart={e => {
+					e.stopPropagation();
+					updateDropTarget({ team: entry, round: null, opponentTarget: null });
+				}}
+				onDragEnd={e => {
+					e.stopPropagation();
+					update();
+				}}
+			>
+				{entry.team.name}
+			</div>
 			<div className="team-series">
 				{entry.series.wins} - {entry.series.losses}
 			</div>
-			<div className="team-rounds">{entry.points.wins} - {entry.points.losses}</div>
+			<div className="team-rounds">
+				{entry.points.wins} - {entry.points.losses}
+			</div>
 			<div className="team-rd">{entry.points.wins - entry.points.losses}</div>
 			{roundsLabels}
 			<div className="options"></div>
@@ -357,7 +384,7 @@ const Swiss = ({ stage, tournament, cxt }: Props) => {
 		}
 
 		setDropTarget(update);
-	}
+	};
 
 	const entries = sortTeams(cxt.teams, cxt.matches, stage);
 

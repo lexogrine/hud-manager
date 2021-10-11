@@ -4,7 +4,6 @@ import { TournamentTypes } from '../../../../../types/interfaces';
 import { IContextData } from '../../../Context';
 import LabeledInput from '../../../LabeledInput';
 
-
 interface IProps {
 	tournament: TournamentForm;
 	cxt: IContextData;
@@ -175,7 +174,6 @@ const TournamentEdit = ({ tournament, onChange, save, cxt }: IProps) => {
 						</LabeledInput>
 					)}
 				</div>
-
 			</div>
 			<div className="action-container">
 				<div className="button green strong big wide" onClick={save}>
