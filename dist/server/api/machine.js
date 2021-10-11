@@ -32,7 +32,7 @@ const getMachineId = () => {
 };
 exports.getMachineId = getMachineId;
 const getMachineIdRoute = async (req, res) => {
-    return res.json({ id: (0, exports.getMachineId)() });
+    return res.json({ id: exports.getMachineId() });
 };
 exports.getMachineIdRoute = getMachineIdRoute;
 const getLastLaunchedVersion = async (req, res) => {

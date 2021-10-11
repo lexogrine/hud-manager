@@ -95,12 +95,12 @@ const setActiveModules = async (dirs, arSettings) => {
     for (const dir of dirs) {
         const currentModule = getARModule(dir);
         if (!currentModule) {
-            await (0, exports.addARModule)(dir, arSettings);
+            await exports.addARModule(dir, arSettings);
         }
     }
     for (const mod of currentModules) {
         if (!dirs.includes(mod.id)) {
-            (0, exports.removeARModule)(mod.id, arSettings);
+            exports.removeARModule(mod.id, arSettings);
             currentModules = currentModules.filter(duplicate => duplicate !== getARModule(mod.id));
         }
     }

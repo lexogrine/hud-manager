@@ -10,14 +10,16 @@ import { IContextData } from '../../../Context';
 
 // import goBack from './../../../../styles/goBack.png';
 import { socket } from '../Live/Live';
-import moment from 'moment';
 import { withTranslation } from 'react-i18next';
+import { filterMatches } from '../../../../utils';
 
-class Matches extends Component<
-	{ cxt: IContextData; t: any },
-	{ match: I.Match | null; maps: string[]; activeTab: string }
+interface IProps {
+	cxt: IContextData; t: any, setOnBackClick: I.HeaderHandler
+}
+
+class Matches extends Component<IProps,	{ match: I.Match | null; maps: string[]; activeTab: string }
 > {
-	constructor(props: { cxt: IContextData; t: any }) {
+	constructor(props: IProps) {
 		super(props);
 		this.state = {
 			match: null,
@@ -74,7 +76,9 @@ class Matches extends Component<
 	};
 
 	startEdit = (match?: I.Match) => {
-		this.setState({ match: match || null });
+		this.setState({ match: match || null }, () => {
+			this.props.setOnBackClick(match ? () => { this.startEdit() } : null, match ? 'Edit match' : null);
+		});
 	};
 
 	setCurrent = (id: string) => async () => {
@@ -109,37 +113,6 @@ class Matches extends Component<
 			{(tab && this.props.t('match.tabs.' + tab)) || ''}
 		</div>
 	);
-
-	filterMatches = (match: I.Match) => {
-		const boToWinsMap = {
-			1: 1,
-			2: 2,
-			3: 2,
-			5: 3
-		};
-		const { activeTab } = this.state;
-		const picks = (match.vetos || []).filter(veto => match.game !== 'csgo' || (veto as I.CSGOVeto).type !== 'ban');
-		let isEnded = false;
-		const bo = parseInt((match.matchType || 'bo1').replace('bo', '')) as 1 | 2 | 3 | 5;
-
-		if (bo === 2) {
-			isEnded = picks.filter(pick => pick.mapEnd).length === 2 || match.left.wins + match.right.wins >= 2;
-		} else {
-			isEnded =
-				(match.left && match.left.wins === boToWinsMap[bo]) ||
-				(match.right && match.right.wins === boToWinsMap[bo]);
-		}
-		if (activeTab === 'ended') {
-			return isEnded;
-		}
-		if (isEnded) {
-			return false;
-		}
-
-		const isInFuture = Boolean(match.startTime && moment(match.startTime).isAfter(moment(), 'day'));
-
-		return isInFuture === (activeTab === 'future');
-	};
 
 	render() {
 		const { matches } = this.props.cxt;
@@ -183,7 +156,7 @@ class Matches extends Component<
 								<div className="match-time">{t('match.columns.time')}</div>
 								<div className="options"></div>
 							</div>
-							{matches.filter(this.filterMatches).map(match => (
+							{matches.filter(match => filterMatches(match, this.state.activeTab)).map(match => (
 								<MatchEntry
 									key={match.id}
 									edit={this.startEdit}
@@ -196,13 +169,11 @@ class Matches extends Component<
 						</>
 					)}
 				</div>
-				{!match ? (
-					<div className="action-container">
-						<div className="button green strong big wide" onClick={this.add}>
-							{t('common.createNew')}
-						</div>
+				<div className="action-container">
+					<div className="button green strong big wide" onClick={!match ? this.add : () => this.startEdit()}>
+						{t('common.createNew')}
 					</div>
-				) : null}
+				</div>
 			</>
 		);
 	}

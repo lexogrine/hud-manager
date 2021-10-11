@@ -92,6 +92,9 @@ body {
 		.nav-link > div {
 			opacity: 0;
 		}
+		.collapse-button img {
+			transform: scaleX(-1);
+		}
 	}
 	.collapse-button {
 		position: absolute;
@@ -105,6 +108,12 @@ body {
 		border-top-right-radius:  10px;
 		cursor: pointer;
 		border-bottom-right-radius:  10px;
+		display:flex;
+		align-items: center;
+
+		img {
+			margin-left: 6px;
+		}
 	}
 	.navbar-links-container {
 		flex: 1;
@@ -189,6 +198,14 @@ body {
 	top: 0;
     justify-content: space-between;
     border-bottom: 1px solid rgba(255,255,255,0.1);
+	.header-title {
+		display: flex;
+		align-items: center;
+		img {
+			margin-right: 30px;
+			cursor: pointer;
+		}
+	}
 
 }
 .tab-title {
@@ -594,7 +611,7 @@ img.smallLogo {
 }
 .entry-main {
 	.preview {
-		width: 90px;
+		min-width: 90px;
 		height: 50px;
 		display: flex;
 		align-items: center;
@@ -647,6 +664,7 @@ img.smallLogo {
     &:hover {
         color: unset;
     }
+	font-family: "Montserrat";
     margin: 0 10px;
     border: none;
     border-radius: 0;
@@ -853,6 +871,10 @@ img.smallLogo {
 }
 ::-webkit-calendar-picker-indicator {
 	filter: invert(1);
+}
+.tournament-form {
+	padding: 0 66px;
+	padding-top: 40px;
 }
 .match-edit {
 	display: flex;
@@ -1480,10 +1502,14 @@ form {
 	}
 }
 .modal-backdrop.show {
-	opacity: 0.82;
 }
 .modal-backdrop {
-	background-color: #6b1cff;
+	/*background-color: #111111;
+	background-image: url('./assets/leftBottom.png'), url('./assets/rightTop.png');
+	background-repeat: no-repeat;
+	background-position: left bottom, right top;*/
+	background: rgba(17, 17, 17, 0.5);
+	backdrop-filter: blur(100px);
 }
 .veto-list {
 	.form-check {
@@ -1726,10 +1752,93 @@ form {
 	padding-left: 0 !important;
 	padding-right: 0 !important;
 }
+.swiss-table {
+}
+.tournament-info-header {
+	height: 210px;
+	border-bottom: 1px solid rgba(255,255,255,0.1);
+	.tournament-details {
+		display: flex;
+		height: 100%;
+		flex-direction: column;
+		margin-left: 15px;
+		.tournament-phases {
+			font-family: 'Montserrat';
+			font-weight: 500;
+			font-size: 12px;
+			letter-spacing: 0.1em;
+			opacity: 0.6;
+			display: flex;
+		}
+		.tournament-teams {
+			padding-left: 30px;
+			background-repeat: no-repeat;
+			background-image: url('./groupsIcon.png');
+		}
+		.tournament-stages {
+			padding-left: 30px;
+			background-repeat: no-repeat;
+			background-image: url('./playoffsIcon.png');
+			margin-left: 35px;
+		}
+		.tournament-info {
+			flex: 1;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+		}
+		.tournament-name {
+			font-family: 'Rajdhani';
+			font-weight: 500;
+			font-size: 40px;
+			text-transform: uppercase;
+			display: flex;
+			.button {
+				margin-left: 35px;
+				align-self: center;
+			}
+		}
+	}
+	.tabs {
+		height: 30px;
+		text-transform: uppercase;
+		display: flex;
+		font-family: 'Rajdhani';
+		font-weight: 600;
+		font-size: 14px;
+		line-height: 18px;
+		letter-spacing: 0.1em;
+
+		.tournament-tab {
+			cursor: pointer;
+			margin: 0 15px;
+
+			&.active {
+				border-bottom: 2px solid #6B1CFF;
+			}
+		}
+	}
+}
+.tournament-content{
+    max-width: calc(100vw - 200px);
+    overflow: auto;
+    display: flex;
+}
 .item-list-entry {
 	display: flex;
 	height: 80px;
 	font-size: 12px;
+
+	&.heading {
+		> div {
+			&.team-round {
+				justify-content: center;
+			}
+		}
+	}
+	.team-round {
+		border-left: 1px solid rgba(255,255,255,0.1);
+	}
 	&:not(.heading){
 		margin: 0 30px;
 		border-bottom: 1px solid rgba(255,255,255,0.1);
@@ -1756,6 +1865,61 @@ form {
 		display: flex;
 		align-items: center;
 		flex: 1;
+
+		&.team-no {
+			flex: unset;
+			width: 40px;
+		}
+	}
+	&.swiss {
+		> div {
+			flex: unset;
+			min-width: 100px;
+
+			&.team-entry {
+				min-width: 175px;
+				max-width: 175px;
+				cursor: grab;
+			}
+
+			.result {
+				flex: 1;
+				display: flex;
+				height: 100%;
+				align-items: center;
+				justify-content: center;
+				flex-direction: column;
+				font-size: 12px;
+				font-weight: 600;
+				font-family: 'Montserrat';
+				&.available {
+					opacity: 1;
+					background-color: rgba(255,255,255,0.2);
+				}
+				&.not-available {
+					opacity: 0.25;
+				}
+				&.edit {
+					background-position: center;
+					background-repeat: no-repeat;
+					background-image: url('./edit.png');
+				}
+				img.team-logo {
+					max-width: 30px;
+					max-height: 30px;
+					margin-bottom: 5px;
+				}
+				&.win {
+					background-color: #49BF4D;
+				}
+				&.loss {
+					background-color: #FC1B51
+				}
+				&.ongoing {
+					background-color: #bfb449;
+				}
+			}
+		}
 	}
 	.custom-field {
 		flex: 0.65;

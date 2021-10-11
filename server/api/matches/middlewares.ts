@@ -7,6 +7,7 @@ import { ioPromise } from '../../socket';
 import { customer, validateCloudAbility } from '..';
 import { AvailableGames } from '../../../types/interfaces';
 import { addResource, checkCloudStatus, deleteResource, updateResource } from '../cloud';
+import { bindMatch } from '../tournaments';
 
 export const getMatchesRoute: express.RequestHandler = async (req, res) => {
 	const game = customer.game;
@@ -39,7 +40,13 @@ export const getMatchRoute: express.RequestHandler = async (req, res) => {
 
 export const addMatchRoute: RequestHandler = async (req, res) => {
 	req.body.game = customer.game;
-	const match = await M.addMatch(req.body);
+	const { matchupId, tournamentId, ...data } = req.body;
+	const match = await M.addMatch(data);
+	
+	if(matchupId && tournamentId && match){
+		await bindMatch(match.id, matchupId, tournamentId);
+	}
+
 	let cloudStatus = false;
 	if (await validateCloudAbility('matches')) {
 		cloudStatus = (await checkCloudStatus(customer.game as AvailableGames)) === 'ALL_SYNCED';

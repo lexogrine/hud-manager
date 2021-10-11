@@ -30,7 +30,7 @@ const getACOs = () => new Promise(res => {
 });
 exports.getACOs = getACOs;
 const loadNewConfigs = () => {
-    (0, exports.getACOs)().then(acos => {
+    exports.getACOs().then(acos => {
         areas_1.default.areas = acos;
     });
 };
@@ -38,8 +38,8 @@ exports.loadNewConfigs = loadNewConfigs;
 const updateACO = (config) => new Promise(res => {
     getACOByMapName(config.map).then(async (oldConfig) => {
         let cloudStatus = false;
-        if (await (0, __1.validateCloudAbility)()) {
-            cloudStatus = (await (0, cloud_1.checkCloudStatus)(__1.customer.game)) === 'ALL_SYNCED';
+        if (await __1.validateCloudAbility()) {
+            cloudStatus = (await cloud_1.checkCloudStatus(__1.customer.game)) === 'ALL_SYNCED';
         }
         if (!oldConfig) {
             aco.insert(config, async (err, newConfig) => {
@@ -47,7 +47,7 @@ const updateACO = (config) => new Promise(res => {
                     return res(null);
                 }
                 if (cloudStatus) {
-                    await (0, cloud_1.addResource)(__1.customer.game, 'mapconfigs', newConfig);
+                    await cloud_1.addResource(__1.customer.game, 'mapconfigs', newConfig);
                 }
                 return res(newConfig);
             });
@@ -60,9 +60,9 @@ const updateACO = (config) => new Promise(res => {
                 if (err) {
                     return res(null);
                 }
-                (0, exports.loadNewConfigs)();
+                exports.loadNewConfigs();
                 if (cloudStatus) {
-                    await (0, cloud_1.updateResource)(__1.customer.game, 'mapconfigs', {
+                    await cloud_1.updateResource(__1.customer.game, 'mapconfigs', {
                         ...config,
                         _id: config._id
                     });
@@ -86,10 +86,10 @@ const replaceLocalMapConfigs = (newMapConfigs, game, existing) => new Promise(re
             return res(false);
         }
         aco.insert(newMapConfigs, (err, docs) => {
-            (0, exports.loadNewConfigs)();
+            exports.loadNewConfigs();
             return res(!err);
         });
     });
 });
 exports.replaceLocalMapConfigs = replaceLocalMapConfigs;
-(0, exports.loadNewConfigs)();
+exports.loadNewConfigs();

@@ -41,6 +41,8 @@ export type {
 	ARModule
 } from './../../types/interfaces';
 
+export type HeaderHandler = (onBackClick: null | (() => void), header?: string | null) => void;
+
 export interface CFGGSIObject {
 	success: boolean;
 	accessible: boolean;

@@ -12,15 +12,17 @@ import ACO from './ACO/ACO';
 import CG from './CG/CG';
 import ARG from './ARG/ARG';
 import Tournamentss from './Tournaments/Tournamentss';
+import { HeaderHandler } from '../../../api/interfaces';
 
 interface IProps {
 	activeTab: string;
 	data: any;
 	toggle: (tab: string, data?: any) => void;
 	gsiCheck: Function;
+	setOnBackClick: HeaderHandler
 }
 
-const Tabs = ({ activeTab, data, toggle, gsiCheck }: IProps) => (
+const Tabs = ({ activeTab, data, toggle, gsiCheck, setOnBackClick }: IProps) => (
 	<ContextData.Consumer>
 		{cxt => (
 			<TabContent activeTab={activeTab}>
@@ -34,13 +36,13 @@ const Tabs = ({ activeTab, data, toggle, gsiCheck }: IProps) => (
 					<Players cxt={cxt} data={data}></Players>
 				</TabPane>
 				<TabPane tabId="create_match">
-					<Matches cxt={cxt}></Matches>
+					<Matches cxt={cxt} setOnBackClick={setOnBackClick}></Matches>
 				</TabPane>
 				<TabPane tabId="huds">
 					<Huds cxt={cxt} toggle={toggle}></Huds>
 				</TabPane>
 				<TabPane tabId="tournaments">
-					<Tournamentss cxt={cxt}></Tournamentss>
+					<Tournamentss cxt={cxt} setOnBackClick={setOnBackClick}></Tournamentss>
 				</TabPane>
 				<TabPane tabId="arg">
 					<ARG></ARG>

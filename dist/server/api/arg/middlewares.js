@@ -22,7 +22,7 @@ const connect = async (req, res) => {
     if (!id || typeof id !== 'string' || index_1.argSocket.socket) {
         return res.sendStatus(422);
     }
-    (0, index_1.connectToARG)(req.body.id);
+    index_1.connectToARG(req.body.id);
     return res.sendStatus(200);
 };
 exports.connect = connect;
@@ -35,7 +35,7 @@ const disconnect = async (req, res) => {
 };
 exports.disconnect = disconnect;
 const requestARGStatus = async (req, res) => {
-    await (0, index_1.sendARGStatus)();
+    await index_1.sendARGStatus();
     return res.sendStatus(200);
 };
 exports.requestARGStatus = requestARGStatus;
@@ -44,7 +44,7 @@ const saveDelay = async (req, res) => {
         return res.sendStatus(422);
     }
     index_1.argSocket.delay = req.body.delay;
-    await (0, index_1.sendARGStatus)();
+    await index_1.sendARGStatus();
     return res.sendStatus(200);
 };
 exports.saveDelay = saveDelay;

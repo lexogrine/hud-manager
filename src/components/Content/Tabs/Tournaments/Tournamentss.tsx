@@ -10,7 +10,8 @@ import TournamentEdit, { TournamentForm } from './TournamentEdit';
 import Tournament from './Tournament';
 
 interface IProps {
-	cxt: IContextData;
+	cxt: IContextData,
+	setOnBackClick: I.HeaderHandler
 }
 const tournamentToForm = (tournament: I.Tournament): TournamentForm => ({
 	_id: tournament._id,
@@ -26,7 +27,7 @@ const tournamentToForm = (tournament: I.Tournament): TournamentForm => ({
 	groupPhases: tournament.groups?.[0]?.phases || 0
 });
 
-const Tournamentss = ({ cxt }: IProps) => {
+const Tournamentss = ({ cxt, setOnBackClick }: IProps) => {
 	const emptyTournament: TournamentForm = {
 		_id: 'empty',
 		name: '',
@@ -116,9 +117,9 @@ const Tournamentss = ({ cxt }: IProps) => {
             }*/
 			response = await api.tournaments.update(form._id, { name: form.name, logo });
 		}
-		if (response && response._id) {
+		if (response) {
 			await loadTournaments();
-			setShowing(null);
+			close();
 		}
 	};
 
@@ -135,19 +136,31 @@ const Tournamentss = ({ cxt }: IProps) => {
 	const edit = (tournament: I.Tournament) => {
 		setForm(tournamentToForm(tournament));
 		setEditState(true);
+		setOnBackClick(close, 'Edit a tournament');
 		if (false as any) {
 			console.log(isEditing, save, changeHandler);
 		}
 	};
 
+	const close = () => {
+		setShowing(null);
+		setEditState(false);
+		setOnBackClick(null);
+	}
+
 	const add = () => {
 		loadEmpty();
 		setEditState(true);
+		setOnBackClick(close, 'Create new tournament');
 	};
+
+	const show = (tournamentId: string) => {
+		setShowing(tournamentId)
+		setOnBackClick(close, 'Tournament page');
+	}
 
 	const content = () => {
 		const visibleFields = cxt.fields.teams.filter(field => field.visible);
-
 		if (isEditing) {
 			return (
 				<TournamentEdit
@@ -163,7 +176,7 @@ const Tournamentss = ({ cxt }: IProps) => {
 		if (showing) {
 			const tournament = cxt.tournaments.find(tournament => tournament._id === showing);
 			if (!tournament) return null;
-			return <Tournament cxt={cxt} tournament={tournament} close={() => setShowing(null)} />;
+			return <Tournament edit={() => edit(tournament)} cxt={cxt} tournament={tournament} close={() => setShowing(null)} />;
 		}
 
 		return (
@@ -182,7 +195,7 @@ const Tournamentss = ({ cxt }: IProps) => {
 							key={team._id}
 							team={team}
 							edit={() => edit(team)}
-							show={() => setShowing(team._id)}
+							show={() => show(team._id)}
 							fields={visibleFields}
 							cxt={cxt}
 						/>

@@ -9,7 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { socket } from '../Tabs/Live/Live';
 import { Config } from '../../../api/interfaces';
 import api from '../../../api/api';
-
+import toggleIcon from './../../../styles/navbarToggle.png';
 interface IProps {
 	activeTab: string;
 	toggle: (tab: string, data?: any) => void;
@@ -40,7 +40,7 @@ const Navbar = ({ activeTab, toggle, files }: IProps) => {
 	return (
 		<Nav tabs className={`navbar-container ${isCollapsed ? 'collapsed' : ''}`}>
 			<div className="collapse-button" onClick={toggleNav}>
-				X
+				<img src={toggleIcon} />
 			</div>
 			<div className="lhm-logo-container">
 				<div className="lhm-logo-name">

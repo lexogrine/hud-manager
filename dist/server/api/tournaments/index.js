@@ -29,7 +29,7 @@ const v4_1 = __importDefault(require("uuid/v4"));
 const database_1 = __importDefault(require("./../../../init/database"));
 const { tournaments } = database_1.default;
 const parseLegacyMatchups = (matchup) => {
-    if ("stage" in matchup)
+    if ('stage' in matchup)
         return matchup;
     const newMatchup = {
         _id: matchup._id,
@@ -38,13 +38,13 @@ const parseLegacyMatchups = (matchup) => {
         label: matchup.label,
         stage: null,
         matchId: matchup.matchId,
-        parents: matchup.parents.map(parent => (0, exports.parseLegacyMatchups)(parent))
+        parents: matchup.parents.map(parent => exports.parseLegacyMatchups(parent))
     };
     return newMatchup;
 };
 exports.parseLegacyMatchups = parseLegacyMatchups;
 const parseLegacyTournament = (tournament) => {
-    if (!("matchups" in tournament))
+    if (!('matchups' in tournament))
         return tournament;
     const newTournament = {
         _id: tournament._id,
@@ -56,7 +56,7 @@ const parseLegacyTournament = (tournament) => {
             type: 'double',
             participants: [],
             phases: 0,
-            matchups: tournament.matchups.map(matchup => (0, exports.parseLegacyMatchups)(matchup)),
+            matchups: tournament.matchups.map(matchup => exports.parseLegacyMatchups(matchup))
         },
         autoCreate: tournament.autoCreate
     };
@@ -67,7 +67,7 @@ const getTournaments = (opts = {}) => new Promise(res => {
     tournaments.find(opts, (err, docs) => {
         if (err)
             return res([]);
-        return res(docs.map(doc => (0, exports.parseLegacyTournament)(doc)));
+        return res(docs.map(doc => exports.parseLegacyTournament(doc)));
     });
 });
 exports.getTournaments = getTournaments;
@@ -105,7 +105,13 @@ const createTournament = (type, teams, groupType, groupTeams, phases, groupPhase
     }
     const amountOfGroupTeams = groupTeams || groupParticipants?.length;
     if (groupType && amountOfGroupTeams) {
-        tournament.groups.push({ participants: [], type: 'single', matchups: [], teams: amountOfGroupTeams, phases: 0 });
+        tournament.groups.push({
+            participants: [],
+            type: 'single',
+            matchups: [],
+            teams: amountOfGroupTeams,
+            phases: 0
+        });
         switch (groupType) {
             case 'single':
                 tournament.groups[0].matchups = Formats.createSEBracket(amountOfGroupTeams);
@@ -127,9 +133,12 @@ const createTournament = (type, teams, groupType, groupTeams, phases, groupPhase
     return tournament;
 };
 exports.createTournament = createTournament;
-const getMatchupsFromTournament = (tournament) => [...tournament.playoffs.matchups, ...tournament.groups.map(group => group.matchups).flat()];
+const getMatchupsFromTournament = (tournament) => [
+    ...tournament.playoffs.matchups,
+    ...tournament.groups.map(group => group.matchups).flat()
+];
 const getTournamentByMatchId = async (matchId) => {
-    const tournaments = await (0, exports.getTournaments)();
+    const tournaments = await exports.getTournaments();
     const tournament = tournaments.find(tournament => getMatchupsFromTournament(tournament).find(matchup => matchup.matchId === matchId));
     return tournament || null;
 };
@@ -146,7 +155,7 @@ const getTournament = (tournamentId) => new Promise(res => {
     tournaments.findOne({ _id: tournamentId }, (err, tournament) => {
         if (err || !tournament)
             return res(null);
-        return res((0, exports.parseLegacyTournament)(tournament));
+        return res(exports.parseLegacyTournament(tournament));
     });
 });
 exports.getTournament = getTournament;
@@ -159,14 +168,14 @@ const updateTournament = (tournament) => new Promise(res => {
 });
 exports.updateTournament = updateTournament;
 const bindMatch = async (matchId, matchupId, tournamentId) => {
-    const tournament = await (0, exports.getTournament)(tournamentId);
+    const tournament = await exports.getTournament(tournamentId);
     if (!tournament)
         return null;
     const matchup = getMatchupsFromTournament(tournament).find(matchup => matchup._id === matchupId);
     if (!matchup)
         return null;
     matchup.matchId = matchId;
-    return await (0, exports.updateTournament)(tournament);
+    return await exports.updateTournament(tournament);
 };
 exports.bindMatch = bindMatch;
 const maxWins = (type) => {
@@ -187,7 +196,7 @@ const maxWins = (type) => {
 };
 const fillNextMatches = async (matchId) => {
     const match = await M.getMatchById(matchId);
-    const tournament = await (0, exports.getTournamentByMatchId)(matchId);
+    const tournament = await exports.getTournamentByMatchId(matchId);
     if (!tournament || !match)
         return null;
     const winsRequired = maxWins(match.matchType);
@@ -204,7 +213,7 @@ const fillNextMatches = async (matchId) => {
         let nextMatch = losersNextMatchup.matchId ? (await M.getMatchById(losersNextMatchup.matchId)) || null : null;
         if (!nextMatch) {
             const newMatch = {
-                id: (0, v4_1.default)(),
+                id: v4_1.default(),
                 current: false,
                 left: { id: null, wins: 0 },
                 right: { id: null, wins: 0 },
@@ -246,7 +255,7 @@ const fillNextMatches = async (matchId) => {
         let nextMatch = winnersNextMatchup.matchId ? (await M.getMatchById(winnersNextMatchup.matchId)) || null : null;
         if (!nextMatch) {
             const newMatch = {
-                id: (0, v4_1.default)(),
+                id: v4_1.default(),
                 current: false,
                 left: { id: null, wins: 0 },
                 right: { id: null, wins: 0 },
@@ -284,12 +293,12 @@ const fillNextMatches = async (matchId) => {
         }
         await M.updateMatch(nextMatch);
     }
-    await (0, exports.updateTournament)(tournament);
+    await exports.updateTournament(tournament);
 };
 exports.fillNextMatches = fillNextMatches;
 const createNextMatch = async (matchId) => {
     try {
-        await (0, exports.fillNextMatches)(matchId);
+        await exports.fillNextMatches(matchId);
         //await Promise.all([fillNextMatch(matchId, 'winner'), fillNextMatch(matchId, 'loser')]);
     }
     catch {

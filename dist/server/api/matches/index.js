@@ -27,7 +27,7 @@ const getActiveGameMatches = () => {
     if (game === 'csgo') {
         $or.push({ game: { $exists: false } });
     }
-    return (0, exports.getMatches)({ $or });
+    return exports.getMatches({ $or });
 };
 exports.getActiveGameMatches = getActiveGameMatches;
 async function getMatchById(id) {
@@ -63,8 +63,8 @@ const updateMatches = async (updateMatches) => {
         updateMatches = updateMatches.map(match => ({ ...match, current: false }));
     }
     if (currents.length) {
-        const left = await (0, teams_1.getTeamById)(currents[0].left.id || '');
-        const right = await (0, teams_1.getTeamById)(currents[0].right.id || '');
+        const left = await teams_1.getTeamById(currents[0].left.id || '');
+        const right = await teams_1.getTeamById(currents[0].right.id || '');
         if (left && left._id) {
             socket_1.GSI.teams.left = {
                 id: left._id,
@@ -89,15 +89,15 @@ const updateMatches = async (updateMatches) => {
     const matchesFixed = updateMatches.map(match => {
         if (match.id.length)
             return match;
-        match.id = (0, v4_1.default)();
+        match.id = v4_1.default();
         return match;
     });
-    await (0, exports.setMatches)(matchesFixed);
+    await exports.setMatches(matchesFixed);
 };
 exports.updateMatches = updateMatches;
 const addMatch = (match) => new Promise(res => {
     if (!match.id) {
-        match.id = (0, v4_1.default)();
+        match.id = v4_1.default();
     }
     match.current = false;
     matchesDb.insert(match, async (err, doc) => {
@@ -122,7 +122,7 @@ const deleteMatch = (id) => new Promise(res => {
 });
 exports.deleteMatch = deleteMatch;
 const getCurrent = async () => {
-    const activeGameMatches = await (0, exports.getActiveGameMatches)();
+    const activeGameMatches = await exports.getActiveGameMatches();
     return activeGameMatches.find(match => match.current);
 };
 exports.getCurrent = getCurrent;
@@ -153,8 +153,8 @@ const updateMatch = (match) => new Promise(res => {
                         (this.game === 'csgo' && !match.game)));
             }
         }, { $set: { current: false } }, { multi: true }, async (err) => {
-            const left = await (0, teams_1.getTeamById)(match.left.id || '');
-            const right = await (0, teams_1.getTeamById)(match.right.id || '');
+            const left = await teams_1.getTeamById(match.left.id || '');
+            const right = await teams_1.getTeamById(match.right.id || '');
             if (left && left._id) {
                 socket_1.GSI.teams.left = {
                     id: left._id,
@@ -187,7 +187,7 @@ const updateMatch = (match) => new Promise(res => {
 exports.updateMatch = updateMatch;
 const reverseSide = async () => {
     const io = await socket_1.ioPromise;
-    const matches = await (0, exports.getActiveGameMatches)();
+    const matches = await exports.getActiveGameMatches();
     const current = matches.find(match => match.current);
     if (!current)
         return;
@@ -197,7 +197,7 @@ const reverseSide = async () => {
     if (current.game === 'csgo') {
         if (current.vetos.filter(veto => veto.teamId).length === 0) {
             current.left = [current.right, (current.right = current.left)][0];
-            await (0, exports.updateMatch)(current);
+            await exports.updateMatch(current);
             return io.emit('match', true);
         }
         const currentVetoMap = current.vetos.find(veto => socket_1.GSI.last?.map.name.includes(veto.mapName));
@@ -216,7 +216,7 @@ const reverseSide = async () => {
             currentVetoMap.reverseSide = !currentVetoMap.reverseSide;
         }
     }
-    await (0, exports.updateMatch)(current);
+    await exports.updateMatch(current);
     io.emit('match', true);
 };
 exports.reverseSide = reverseSide;
@@ -238,7 +238,7 @@ const updateRound = async (game) => {
     };
     if (!game || !game.map || game.map.phase !== 'live')
         return;
-    const matches = await (0, exports.getActiveGameMatches)();
+    const matches = await exports.getActiveGameMatches();
     const match = matches.find(match => match.current);
     if (!match || match.game !== 'csgo')
         return;
@@ -286,7 +286,7 @@ const updateRound = async (game) => {
         veto.rounds = veto.rounds.splice(0, roundData.round);
         return veto;
     });
-    return (0, exports.updateMatch)(match);
+    return exports.updateMatch(match);
 };
 exports.updateRound = updateRound;
 const replaceLocalMatches = (newMatches, game, existing) => new Promise(res => {

@@ -17,6 +17,22 @@ function arrayBufferToBase64(buffer: any) {
 	return window.btoa(binary);
 }
 
+export const maxWins = (type: I.BOTypes) => {
+	switch (type) {
+		case 'bo1':
+			return 1;
+		case 'bo3':
+			return 2;
+		case 'bo5':
+			return 3;
+		case 'bo7':
+			return 4;
+		case 'bo9':
+			return 5;
+		default:
+			return 2;
+	}
+};
 const apiHandler: <T>(url: string, method?: string, body?: any, credentials?: boolean) => Promise<T> = (
 	url,
 	method = 'GET',

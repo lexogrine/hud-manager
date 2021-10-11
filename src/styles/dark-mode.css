@@ -192,7 +192,7 @@ button.btn-primary {
     position: absolute;
     right: 0;
     height: 50%;
-    background-color: #ffd70026;
+    background-color: rgba(255,255,255,0.1);
     width: 1px;
 }
 .bracket:first-child > .connector {
@@ -211,7 +211,7 @@ button.btn-primary {
     width: 100%;
     position: absolute;
     height: 1px;
-    background: #ffd70026;
+    background: rgba(255,255,255,0.1);
 }
 .match-connector.last-match {
     width: 220px;
@@ -230,22 +230,38 @@ button.btn-primary {
 .bracket-details .match-details{
     display: flex;
     flex-direction: column;
-    width: 200px;
+    width: 246px;
     margin: 10px 20px;
-    background: rgba(0,0,0,0.5);
-    border-radius: 2px;
     padding: 5px;
     z-index: 1;
     cursor: pointer;
 }
 .bracket-details .match-details .team-data {
     display: flex;
+    background: rgba(33, 33, 33, 0.5);
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(100px);
+    font-size: 10px;
+    height: 29px;
+    font-weight: 700;
+
 }
 .bracket-details .match-details .team-data .team-name {
     flex:1;
+    display: flex;
+    align-items: center;
 }
 .bracket-details .match-details .team-data .team-score {
-    width: 10px;
+    width: 29px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(255,255,255,0.2);
+    color: #111111;
+}
+.bracket-details .match-details .team-data .win.team-score {
+    background-color: #6B1CFF;
+    color: white;
 }
 .bracket-details .match-details .team-data .team-logo {
     width:30px;

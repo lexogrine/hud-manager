@@ -43,7 +43,7 @@ class DevHUDListener {
     }
 }
 const getJSONArray = url => {
-    return (0, node_fetch_1.default)(url)
+    return node_fetch_1.default(url)
         .then(res => res.json())
         .then(panel => {
         try {
@@ -68,7 +68,7 @@ portListener.onChange(async (status) => {
     }
     if (socket_1.HUDState.devHUD)
         return;
-    (0, node_fetch_1.default)('http://localhost:3500/dev/hud.json')
+    node_fetch_1.default('http://localhost:3500/dev/hud.json')
         .then(res => res.json())
         .then(async (hud) => {
         try {
@@ -78,7 +78,7 @@ portListener.onChange(async (status) => {
                 return;
             hud.keybinds = await getJSONArray('http://localhost:3500/dev/keybinds.json');
             hud.panel = await getJSONArray('http://localhost:3500/dev/panel.json');
-            hud.ar = (await (0, node_fetch_1.default)('http://localhost:3500/dev/ar.json')
+            hud.ar = (await node_fetch_1.default('http://localhost:3500/dev/ar.json')
                 .then(res => res.json())
                 .catch(() => undefined));
             hud.isDev = true;
@@ -86,7 +86,7 @@ portListener.onChange(async (status) => {
                 .toString(36)
                 .replace(/[^a-z]+/g, '')
                 .substr(0, 15);
-            const cfg = await (0, config_1.loadConfig)();
+            const cfg = await config_1.loadConfig();
             if (!cfg) {
                 return;
             }

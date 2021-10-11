@@ -65,25 +65,25 @@ const parsePayload = (config) => (req, res, next) => {
         next();
     }
 };
-exports.app = (0, express_1.default)();
+exports.app = express_1.default();
 exports.server = http_1.default.createServer(exports.app);
 exports.app.use(express_1.default.urlencoded({ extended: true }));
 exports.app.use(express_1.default.raw({ limit: '100Mb', type: 'application/json' }));
-exports.app.use((0, cors_1.default)({ origin: '*', credentials: true }));
+exports.app.use(cors_1.default({ origin: '*', credentials: true }));
 async function init() {
-    let config = await (0, config_1.loadConfig)();
-    let port = await (0, get_port_1.default)({ port: config.port });
+    let config = await config_1.loadConfig();
+    let port = await get_port_1.default({ port: config.port });
     if (port !== config.port) {
-        port = await (0, get_port_1.default)({ port: (0, get_port_1.makeRange)(1300, 50000) });
+        port = await get_port_1.default({ port: get_port_1.makeRange(1300, 50000) });
         console.log(`Port ${config.port} is not available, changing to ${port}`);
-        config = await (0, config_1.setConfig)({ ...config, port: port });
+        config = await config_1.setConfig({ ...config, port: port });
     }
     console.log(`Server listening on ${port}`);
     if (config.game) {
         api_1.customer.game = config.game;
     }
     exports.app.use(parsePayload(config));
-    await (0, api_1.default)();
+    await api_1.default();
     const io = await socket_1.ioPromise;
     fs_1.default.watch(path_1.default.join(electron_1.app.getPath('home'), 'HUDs'), () => {
         io.emit('reloadHUDs');

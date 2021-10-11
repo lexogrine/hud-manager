@@ -30,7 +30,7 @@ const steam_game_path_1 = require("steam-game-path");
 const config_1 = require("./config");
 const electron_1 = require("electron");
 const csgogsi_generator_1 = __importDefault(require("csgogsi-generator"));
-const GSITemplateCSGO = (0, csgogsi_generator_1.default)('HUDMANAGERGSI', 'http://localhost:1349/').json;
+const GSITemplateCSGO = csgogsi_generator_1.default('HUDMANAGERGSI', 'http://localhost:1349/').json;
 exports.GSITemplateDota2 = {
     HUDMANAGERGSI: {
         uri: 'http://localhost:1349/dota2',
@@ -54,10 +54,10 @@ exports.GSITemplateDota2 = {
 const checkGSIFile = async (req, res) => {
     const game = req.query.game;
     const steamGameId = game === 'csgo' ? 730 : 570;
-    const config = await (0, config_1.loadConfig)();
+    const config = await config_1.loadConfig();
     let GamePath;
     try {
-        GamePath = (0, steam_game_path_1.getGamePath)(steamGameId);
+        GamePath = steam_game_path_1.getGamePath(steamGameId);
     }
     catch {
         return res.json({ success: false, message: "Game path couldn't be found", accessible: false });
@@ -113,7 +113,7 @@ exports.checkGSIFile = checkGSIFile;
 const generateGSIFile = async (game) => {
     if (!game)
         return '';
-    const config = await (0, config_1.loadConfig)();
+    const config = await config_1.loadConfig();
     let address = `http://localhost:${config.port}/`;
     if (game === 'dota2') {
         address += 'dota2';
@@ -121,20 +121,20 @@ const generateGSIFile = async (game) => {
         gsi.HUDMANAGERGSI.uri = address;
         return VDF.stringify(gsi);
     }
-    const text = (0, csgogsi_generator_1.default)('HUDMANAGERGSI', address, config.token).vdf;
+    const text = csgogsi_generator_1.default('HUDMANAGERGSI', address, config.token).vdf;
     return text;
 };
 exports.generateGSIFile = generateGSIFile;
 const createGSIFile = async (req, res) => {
     const game = req.query.game;
     const steamGameId = game === 'csgo' ? 730 : 570;
-    const text = await (0, exports.generateGSIFile)(game);
+    const text = await exports.generateGSIFile(game);
     if (!text) {
         return res.sendStatus(422);
     }
     let GamePath;
     try {
-        GamePath = (0, steam_game_path_1.getGamePath)(steamGameId);
+        GamePath = steam_game_path_1.getGamePath(steamGameId);
     }
     catch {
         return res.json({});

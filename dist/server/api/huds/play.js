@@ -23,7 +23,7 @@ exports.playTesting = {
 };
 const initGameConnection = async () => {
     const io = await socket_1.ioPromise;
-    const director = (0, aco_1.createDirector)();
+    const director = aco_1.createDirector();
     director.pgl = socket_1.mirvPgl;
     const toggleDirector = () => {
         if (!__1.customer.customer ||
