@@ -610,7 +610,7 @@ img.smallLogo {
 	align-items: center;
 }
 .huds-container {
-	padding: 0 40px;
+	padding: 0 18px;
 	display: flex;
 	flex-wrap: wrap;
 }
@@ -624,7 +624,7 @@ img.smallLogo {
 	margin-bottom: 20px;
 	min-width: 500px;
 	flex:1;
-	margin: 10px;
+	margin: 10px 0;
 	.hud-toggle {
 		display: flex;
 		justify-content: flex-end;
@@ -888,6 +888,10 @@ img.smallLogo {
 		padding-right: 38px;
 	}
 
+	&.dotted {
+		border-style: dotted !important	;
+	}
+
     &.strong {
         font-weight: 700;
     }
@@ -895,6 +899,28 @@ img.smallLogo {
 	&.disabled {
 		opacity: 0.5;
 		cursor: unset;
+	}
+}
+.huds-options {
+	display: flex;
+	width:100%;
+	justify-content: space-between;
+	margin: 30px 0;
+	padding: 0 18px;
+
+	.huds-buttons {
+		display: flex;
+		label {
+			margin: 0;
+		}
+		input[type="file"]{
+			display: none;
+		}
+		.button {
+			&:last-child {
+				margin-right: 0;
+			}
+		}
 	}
 }
 .veto-description {

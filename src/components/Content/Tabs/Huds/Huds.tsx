@@ -387,7 +387,21 @@ class Huds extends Component<IProps, IState> {
 							</Col>
 						</Row>
 					</GameOnly>
-
+					<div className="huds-options">
+						<div className="hud-tabs"></div>
+						<div className="huds-buttons">
+							<input
+								type="file"
+								id={"hud-upload"}
+								accept={".zip"}
+								onChange={e => { e.target.files && this.handleZIPs(e.target.files)}}
+							/>
+							<label htmlFor="hud-upload">
+								<div className="button empty green dotted">Add new HUD</div>
+							</label>
+							<div className="button empty green" onClick={api.huds.openDirectory}>{t('huds.config.openDirectory')}</div>
+						</div>
+					</div>
 					<div className="huds-container">
 						{!!false && isElectron ? (
 							<Col s={12}>
