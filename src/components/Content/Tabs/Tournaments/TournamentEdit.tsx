@@ -41,7 +41,6 @@ const TournamentEdit = ({ tournament, onChange, save, cxt }: IProps) => {
 			<div className="tab-content-container no-padding">
 				<div className="edit-form">
 					<div className="main-form">
-
 						<LabeledInput
 							label={'Tournament name'}
 							type="text"
@@ -176,9 +175,7 @@ const TournamentEdit = ({ tournament, onChange, save, cxt }: IProps) => {
 							</LabeledInput>
 						)}
 					</div>
-					<div className="main-form">
-						
-					</div>
+					<div className="main-form"></div>
 				</div>
 			</div>
 			<div className="action-container">

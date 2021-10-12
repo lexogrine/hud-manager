@@ -15,7 +15,7 @@ interface IProps {
 	toggle: (tab: string, data?: any) => void;
 	files: boolean;
 	isCollapsed: boolean;
-	setCollapse: React.Dispatch<React.SetStateAction<boolean>>
+	setCollapse: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const Navbar = ({ activeTab, toggle, files, setCollapse, isCollapsed }: IProps) => {

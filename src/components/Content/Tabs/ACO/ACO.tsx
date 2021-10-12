@@ -161,7 +161,6 @@ const ACO = () => {
 							}
 							addingNew={!!newArea}
 						/>
-
 					</div>
 				</div>
 				{activeConfig ? (
@@ -169,7 +168,9 @@ const ACO = () => {
 						{activeConfig.configs.map((config, i) => (
 							<div key={config} className="aco_area_config">
 								<div style={{ display: 'flex' }}>
-									<div>Area {activeConfig.name}, #{i + 1}</div>
+									<div>
+										Area {activeConfig.name}, #{i + 1}
+									</div>
 									<div>Priority {activeConfig.priority}</div>
 								</div>
 								<img
@@ -181,16 +182,10 @@ const ACO = () => {
 							</div>
 						))}
 						<div className="button-container">
-							<div
-								className="button green strong big wide"
-								onClick={() => setConfigOpen(true)}
-							>
+							<div className="button green strong big wide" onClick={() => setConfigOpen(true)}>
 								Add config
 							</div>
-							<div
-								className="button green strong big wide empty"
-								onClick={removeCurrentArea}
-							>
+							<div className="button green strong big wide empty" onClick={removeCurrentArea}>
 								Remove area
 							</div>
 						</div>
@@ -198,36 +193,28 @@ const ACO = () => {
 				) : null}
 			</div>
 			<div className="action-container">
-				{
-					!newArea ? (
-						<>
-							<div
-								className="button green strong big wide"
-								onClick={() => {
-									setNewArea([]);
-									setActiveConfig(null);
-								}}
-							>
-								Add area
-							</div>
-						</>
-					) : (
-						<>
-							<div
-								className="button green strong big wide empty"
-								onClick={() => setNewArea(null)}
-							>
-								{t('common.cancel')}
-							</div>
-							<div
-								className="button green strong big wide"
-								onClick={addNewArea}
-							>
-								{t('common.save')}
-							</div>
-						</>
-					)
-				}
+				{!newArea ? (
+					<>
+						<div
+							className="button green strong big wide"
+							onClick={() => {
+								setNewArea([]);
+								setActiveConfig(null);
+							}}
+						>
+							Add area
+						</div>
+					</>
+				) : (
+					<>
+						<div className="button green strong big wide empty" onClick={() => setNewArea(null)}>
+							{t('common.cancel')}
+						</div>
+						<div className="button green strong big wide" onClick={addNewArea}>
+							{t('common.save')}
+						</div>
+					</>
+				)}
 			</div>
 		</>
 	);

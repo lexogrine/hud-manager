@@ -72,10 +72,18 @@ const LoginRegisterModal = ({ isOpen, loading, setLoading, loadUser, error }: IP
 					onChange={handleChange(setToken)}
 					onKeyDown={onEnter}
 				/>
-				<div onClick={loading ? undefined : login} className={`button big strong green wide ${loading ? 'disabled' : ''}`}>
+				<div
+					onClick={loading ? undefined : login}
+					className={`button big strong green wide ${loading ? 'disabled' : ''}`}
+				>
 					Login
 				</div>
-				<div className="register">Don’t have an account? <a target="_blank" rel="noopener noreferrer" href="https://lexogrine.com/manager/register">Register now!</a></div>
+				<div className="register">
+					Don’t have an account?{' '}
+					<a target="_blank" rel="noopener noreferrer" href="https://lexogrine.com/manager/register">
+						Register now!
+					</a>
+				</div>
 			</div>
 		</div>
 	);

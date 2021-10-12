@@ -2,7 +2,6 @@ import { Modal, ModalHeader, ModalBody, FormGroup, Input, ModalFooter } from 're
 import * as I from './../../../../api/interfaces';
 import { useTranslation } from 'react-i18next';
 
-
 interface Props {
 	matches: I.Match[];
 	isOpen: boolean;
@@ -48,8 +47,12 @@ const BindModal = ({ matches, toggle, isOpen, matchId, onChange, save, teams, te
 				</FormGroup>
 			</ModalBody>
 			<ModalFooter className="no-padding">
-				<div className="button wide green strong empty" onClick={save}>{t('common.cancel')}</div>
-				<div className="button wide green strong" onClick={save}>{t('common.save')}</div>
+				<div className="button wide green strong empty" onClick={save}>
+					{t('common.cancel')}
+				</div>
+				<div className="button wide green strong" onClick={save}>
+					{t('common.save')}
+				</div>
 			</ModalFooter>
 		</Modal>
 	);

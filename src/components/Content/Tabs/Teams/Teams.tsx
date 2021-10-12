@@ -220,7 +220,7 @@ const TeamsTab = ({ cxt }: IProps) => {
 				fields={cxt.fields.teams}
 				cxt={cxt}
 			/>
-		)
+		);
 	}
 
 	return (

@@ -9,7 +9,6 @@ import './arg.scss';
 import { Card } from './ARGEntry';
 import { Item } from '../../../../api/interfaces';
 
-
 const ARG = () => {
 	const [isConnected, setIsConnected] = useState(false);
 	const [delay, setDelay] = useState(7);
@@ -96,7 +95,7 @@ const ARG = () => {
 				.then(order => {
 					setCards(order);
 				})
-				.catch(() => { });
+				.catch(() => {});
 		}, 100);
 	}, []);
 
@@ -125,11 +124,19 @@ const ARG = () => {
 				</div>
 				<div className="arg-config-entry">
 					<div className="config-description">Computer ID</div>
-					<Input value={pcID} disabled={isConnected} placeholder="Computer ID" onChange={e => setPCID(e.target.value)} />
+					<Input
+						value={pcID}
+						disabled={isConnected}
+						placeholder="Computer ID"
+						onChange={e => setPCID(e.target.value)}
+					/>
 				</div>
 			</div>
 			<div className="action-container">
-				<div className={`button green strong big wide ${isConnected ? '' : 'empty'} ${!pcID ? 'disabled' : ''}`} onClick={isConnected ? api.arg.disconnect : connect}>
+				<div
+					className={`button green strong big wide ${isConnected ? '' : 'empty'} ${!pcID ? 'disabled' : ''}`}
+					onClick={isConnected ? api.arg.disconnect : connect}
+				>
 					{isConnected ? 'DISCONNECT' : 'CONNECT'}
 				</div>
 			</div>

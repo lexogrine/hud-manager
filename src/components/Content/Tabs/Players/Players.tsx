@@ -267,9 +267,9 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 				cxt={cxt}
 				teams={cxt.teams}
 			/>
-		)
+		);
 	}
-	
+
 	return (
 		<>
 			{/*<div className="tab-title-container">

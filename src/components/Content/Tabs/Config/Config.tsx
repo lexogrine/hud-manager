@@ -12,7 +12,6 @@ import { socket } from '../Live/Live';
 import { Component } from 'react';
 import LabeledInput from '../../../LabeledInput';
 
-
 const { isElectron } = config;
 
 interface ConfigStatus extends I.CFGGSIObject {
@@ -213,7 +212,7 @@ class Config extends Component<IProps, IState> {
 		if (!game || (game !== 'csgo' && game !== 'dota2')) return;
 
 		const { gsi } = this.state[game];
-		if(gsi?.loading || gsi?.success || !gsi?.accessible){
+		if (gsi?.loading || gsi?.success || !gsi?.accessible) {
 			return;
 		}
 		gsi.message = 'Loading GameState data...';
@@ -232,7 +231,7 @@ class Config extends Component<IProps, IState> {
 		if (!game || (game !== 'csgo' && game !== 'dota2')) return;
 
 		const { cfg } = this.state[game];
-		if(cfg?.loading || cfg?.success || !cfg?.accessible){
+		if (cfg?.loading || cfg?.success || !cfg?.accessible) {
 			return;
 		}
 		cfg.message = 'Loading GameState file data...';
@@ -486,7 +485,7 @@ class Config extends Component<IProps, IState> {
 		await api.config.update(config);
 		this.checkGSI();
 	};
-	
+
 	render() {
 		const { cxt, t } = this.props;
 		const { importModalOpen, conflict, data, ip, config, update } = this.state;
@@ -632,7 +631,9 @@ class Config extends Component<IProps, IState> {
 									GameState Integration: {gsi?.message || 'Loaded succesfully'}
 								</div>
 								<div
-									className={`button empty strong wide green ${gsi?.loading || gsi?.success || !gsi?.accessible ? 'disabled':''}`}
+									className={`button empty strong wide green ${
+										gsi?.loading || gsi?.success || !gsi?.accessible ? 'disabled' : ''
+									}`}
 									onClick={this.createGSI}
 								>
 									Add GSI file
@@ -644,7 +645,9 @@ class Config extends Component<IProps, IState> {
 										Configs: {cfg?.message || 'Loaded succesfully'}
 									</div>
 									<div
-										className={`button empty strong wide green ${cfg?.loading || cfg?.success || !cfg?.accessible ? 'disabled':''}`}
+										className={`button empty strong wide green ${
+											cfg?.loading || cfg?.success || !cfg?.accessible ? 'disabled' : ''
+										}`}
 										onClick={this.createCFG}
 									>
 										Add config files
@@ -661,14 +664,31 @@ class Config extends Component<IProps, IState> {
 								</div>
 								<div className="download-container">
 									<div
-										className={`button empty strong wide green ${this.state.bakkesModAutoconfBusy ? 'disabled':''}`}
-										onClick={!this.state.bakkesModAutoconfBusy ? () => this.loadBakkesModStatus() : undefined}
+										className={`button empty strong wide green ${
+											this.state.bakkesModAutoconfBusy ? 'disabled' : ''
+										}`}
+										onClick={
+											!this.state.bakkesModAutoconfBusy
+												? () => this.loadBakkesModStatus()
+												: undefined
+										}
 									>
 										Refresh
 									</div>
 									<div
-										className={`button empty strong wide green ${this.state.bakkesModAutoconfBusy || this.state.bakkesModStatus.sosConfigSet ? 'disabled':''}`}
-										onClick={ !(this.state.bakkesModAutoconfBusy || this.state.bakkesModStatus.sosConfigSet) ? this.installRLIntegration : undefined }
+										className={`button empty strong wide green ${
+											this.state.bakkesModAutoconfBusy || this.state.bakkesModStatus.sosConfigSet
+												? 'disabled'
+												: ''
+										}`}
+										onClick={
+											!(
+												this.state.bakkesModAutoconfBusy ||
+												this.state.bakkesModStatus.sosConfigSet
+											)
+												? this.installRLIntegration
+												: undefined
+										}
 									>
 										Install
 									</div>
@@ -677,7 +697,10 @@ class Config extends Component<IProps, IState> {
 						</GameOnly>
 						<Col md="12" className="config-entry">
 							<div className="config-description">Credits</div>
-							<div className="button empty strong wide green" onClick={() => this.props.toggle('credits')}>
+							<div
+								className="button empty strong wide green"
+								onClick={() => this.props.toggle('credits')}
+							>
 								See now
 							</div>
 						</Col>
@@ -686,13 +709,22 @@ class Config extends Component<IProps, IState> {
 								<Col md="12" className="config-entry">
 									<div className="config-description">Downloads</div>
 									<div className="download-container">
-										<div onClick={() => this.download('gsi')} className="button empty strong wide green">
+										<div
+											onClick={() => this.download('gsi')}
+											className="button empty strong wide green"
+										>
 											GSI config
 										</div>
-										<div onClick={() => this.download('cfgs')} className="button empty strong wide green">
+										<div
+											onClick={() => this.download('cfgs')}
+											className="button empty strong wide green"
+										>
 											HUD configs
 										</div>
-										<div onClick={() => this.download('db')} className="button empty strong wide green">
+										<div
+											onClick={() => this.download('db')}
+											className="button empty strong wide green"
+										>
 											Export DB
 										</div>
 									</div>

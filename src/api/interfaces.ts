@@ -60,21 +60,21 @@ export interface User {
 	password: string;
 	admin: boolean;
 	banned: boolean;
-	username: string,
-	token: string,
-	license: License
+	username: string;
+	token: string;
+	license: License;
 }
 export interface License {
 	id: number;
 	type: LicenseType;
 	owner: number;
-	status: string
-	valid: boolean,
-	endTime: number,
-	validFrom: number,
-	validUntil: Date,
-	nextUpdate: number,
-	startTime: number
+	status: string;
+	valid: boolean;
+	endTime: number;
+	validFrom: number;
+	validUntil: Date;
+	nextUpdate: number;
+	startTime: number;
 }
 
 export interface Customer {

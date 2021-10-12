@@ -23,16 +23,7 @@ interface IProps {
 	cxt: IContextData;
 }
 
-const TeamEditModal = ({
-	team,
-	onChange,
-	onFileChange,
-	save,
-	toggle,
-	onExtraChange,
-	fields,
-	cxt
-}: IProps) => {
+const TeamEditModal = ({ team, onChange, onFileChange, save, toggle, onExtraChange, fields, cxt }: IProps) => {
 	let logo = '';
 	if (team.logo) {
 		if (team.logo.includes('api/teams/logo')) {
@@ -104,8 +95,9 @@ const TeamEditModal = ({
 						label={`Field: ${field}`}
 						imgSrc={
 							value
-								? `data:image/${isSvg(Buffer.from(value, 'base64')) ? 'svg+xml' : 'png'
-								};base64,${value}`
+								? `data:image/${
+										isSvg(Buffer.from(value, 'base64')) ? 'svg+xml' : 'png'
+								  };base64,${value}`
 								: value
 						}
 					/>
@@ -149,7 +141,14 @@ const TeamEditModal = ({
 							onChange={onChange}
 							placeholder={t('common.shortName')}
 						/>
-						<LabeledInput label={t('common.country')} type="select" id="country" name="country" value={team.country} onChange={onChange}>
+						<LabeledInput
+							label={t('common.country')}
+							type="select"
+							id="country"
+							name="country"
+							value={team.country}
+							onChange={onChange}
+						>
 							<option value="">{t('common.country')}</option>
 							{countries.map(option => (
 								<option key={option.value} value={option.value}>
@@ -171,9 +170,11 @@ const TeamEditModal = ({
 				</div>
 			</div>
 			<div className="action-container">
-				{ team._id !== "empty" ? <div className="button green empty big wide" onClick={toggle}>
-					Delete
-				</div> : null }
+				{team._id !== 'empty' ? (
+					<div className="button green empty big wide" onClick={toggle}>
+						Delete
+					</div>
+				) : null}
 				<div className="button green empty big wide" onClick={toggle}>
 					Cancel
 				</div>

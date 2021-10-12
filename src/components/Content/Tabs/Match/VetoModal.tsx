@@ -51,34 +51,32 @@ const VetoModal = ({ onChange, map, isOpen, toggle, veto, teams, maps }: Props) 
 					<>
 						<FormGroup className="input-container">
 							<div className="input-label-container">Choose team</div>
-							{
-								teams.map(team => (
-									<div key={team._id} className="checkbox-container">
-										<div className={`checkbox-el ${team._id === veto.teamId ? 'active' : ''}`} onClick={() => onChange('teamId', map, team._id)}>
-											{team._id === veto.teamId ? `✓` : null}
-										</div>
-										<div className="checkbox-label">
-											{team.name}
-										</div>
+							{teams.map(team => (
+								<div key={team._id} className="checkbox-container">
+									<div
+										className={`checkbox-el ${team._id === veto.teamId ? 'active' : ''}`}
+										onClick={() => onChange('teamId', map, team._id)}
+									>
+										{team._id === veto.teamId ? `✓` : null}
 									</div>
-								))
-							}
+									<div className="checkbox-label">{team.name}</div>
+								</div>
+							))}
 						</FormGroup>
 						<FormGroup className="input-container side-pick-container">
 							<div className="input-label-container">Does the opponent pick a side?</div>
 							<div className="checkboxes">
-							{
-								(["CT", "T", "NO"] as VetoSides[]).map(side => (
+								{(['CT', 'T', 'NO'] as VetoSides[]).map(side => (
 									<div key={side} className="checkbox-container">
-										<div className={`checkbox-el ${side === veto.side ? 'active' : ''}`} onClick={() => onChange('side', map, side)}>
+										<div
+											className={`checkbox-el ${side === veto.side ? 'active' : ''}`}
+											onClick={() => onChange('side', map, side)}
+										>
 											{side === veto.side ? `✓` : null}
 										</div>
-										<div className="checkbox-label">
-											{side}
-										</div>
+										<div className="checkbox-label">{side}</div>
 									</div>
-								))
-							}
+								))}
 							</div>
 						</FormGroup>
 					</>

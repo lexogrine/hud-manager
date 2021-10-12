@@ -108,8 +108,9 @@ const PlayerEditModal = ({
 						label={`Field: ${field}`}
 						imgSrc={
 							value
-								? `data:image/${isSvg(Buffer.from(value, 'base64')) ? 'svg+xml' : 'png'
-								};base64,${value}`
+								? `data:image/${
+										isSvg(Buffer.from(value, 'base64')) ? 'svg+xml' : 'png'
+								  };base64,${value}`
 								: value
 						}
 					/>
@@ -159,7 +160,14 @@ const PlayerEditModal = ({
 							value={player.username}
 							placeholder={t('common.nickname')}
 						/>
-						<LabeledInput label={t('common.country')} type="select" id="country" name="country" value={player.country} onChange={onChange}>
+						<LabeledInput
+							label={t('common.country')}
+							type="select"
+							id="country"
+							name="country"
+							value={player.country}
+							onChange={onChange}
+						>
 							<option value="">{t('common.country')}</option>
 							{countries.map(option => (
 								<option key={option.value} value={option.value}>
@@ -175,7 +183,14 @@ const PlayerEditModal = ({
 							onChange={onChange}
 							placeholder={gameIdentifier}
 						/>
-						<LabeledInput label={t('common.team')} type="select" id="player_teams" name="team" value={player.team} onChange={onChange}>
+						<LabeledInput
+							label={t('common.team')}
+							type="select"
+							id="player_teams"
+							name="team"
+							value={player.team}
+							onChange={onChange}
+						>
 							<option value="">{t('common.team')}</option>
 							{teams
 								.concat()
@@ -200,9 +215,11 @@ const PlayerEditModal = ({
 				</div>
 			</div>
 			<div className="action-container">
-				{ player._id !== "empty" ? <div className="button green empty big wide" onClick={deletePlayer}>
-					Delete
-				</div> : null }
+				{player._id !== 'empty' ? (
+					<div className="button green empty big wide" onClick={deletePlayer}>
+						Delete
+					</div>
+				) : null}
 				<div className="button green empty big wide" onClick={toggle}>
 					Cancel
 				</div>
@@ -210,9 +227,7 @@ const PlayerEditModal = ({
 					{t('players.addPlayer')}
 				</div>
 			</div>
-
 		</>
-		
 	);
 };
 

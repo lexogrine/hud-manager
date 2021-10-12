@@ -67,11 +67,13 @@ const Content = ({
 		if (!customer) {
 			return null;
 		}
-		return <div className="greeting" onClick={() => setShowProfile(!isProfileShown)}>
-			Hi, {customer.user.username}!
-			<img src={toggleIcon} />
-		</div>;
-	}
+		return (
+			<div className="greeting" onClick={() => setShowProfile(!isProfileShown)}>
+				Hi, {customer.user.username}!
+				<img src={toggleIcon} />
+			</div>
+		);
+	};
 
 	useEffect(() => {
 		checkFiles();
@@ -80,7 +82,13 @@ const Content = ({
 	const { t } = useTranslation();
 	return (
 		<div className={`main-container ${isCollapsed ? 'collapsed' : ''}`}>
-			<Navbar activeTab={activeTab} toggle={toggle} files={gsi && configs} setCollapse={setCollapse} isCollapsed={isCollapsed} />
+			<Navbar
+				activeTab={activeTab}
+				toggle={toggle}
+				files={gsi && configs}
+				setCollapse={setCollapse}
+				isCollapsed={isCollapsed}
+			/>
 			<Col style={{ display: 'flex', flexDirection: 'column' }}>
 				<WindowBar />
 				<div className="tab-title-container">
@@ -115,12 +123,14 @@ const Content = ({
 					gsiCheck={checkFiles}
 				/>
 			</Col>
-			{ customer ? <ProfileTab
-				isOpen={isProfileShown}
-				close={() => setShowProfile(false)}
-				customer={customer}
-				logout={logout}
-			/> : null }
+			{customer ? (
+				<ProfileTab
+					isOpen={isProfileShown}
+					close={() => setShowProfile(false)}
+					customer={customer}
+					logout={logout}
+				/>
+			) : null}
 		</div>
 	);
 };
