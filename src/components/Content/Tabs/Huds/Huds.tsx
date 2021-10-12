@@ -392,14 +392,18 @@ class Huds extends Component<IProps, IState> {
 						<div className="huds-buttons">
 							<input
 								type="file"
-								id={"hud-upload"}
-								accept={".zip"}
-								onChange={e => { e.target.files && this.handleZIPs(e.target.files)}}
+								id={'hud-upload'}
+								accept={'.zip'}
+								onChange={e => {
+									e.target.files && this.handleZIPs(e.target.files);
+								}}
 							/>
 							<label htmlFor="hud-upload">
-								<div className="button empty green dotted">Add new HUD</div>
+								<div className="button empty green dashed">Add new HUD</div>
 							</label>
-							<div className="button empty green" onClick={api.huds.openDirectory}>{t('huds.config.openDirectory')}</div>
+							<div className="button empty green" onClick={api.huds.openDirectory}>
+								{t('huds.config.openDirectory')}
+							</div>
 						</div>
 					</div>
 					<div className="huds-container">

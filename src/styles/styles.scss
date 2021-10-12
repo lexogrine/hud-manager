@@ -610,7 +610,7 @@ img.smallLogo {
 	align-items: center;
 }
 .huds-container {
-	padding: 0 18px;
+	padding: 0;
 	display: flex;
 	flex-wrap: wrap;
 }
@@ -624,7 +624,7 @@ img.smallLogo {
 	margin-bottom: 20px;
 	min-width: 500px;
 	flex:1;
-	margin: 10px 0;
+	margin: 10px 18px;
 	.hud-toggle {
 		display: flex;
 		justify-content: flex-end;
@@ -888,8 +888,8 @@ img.smallLogo {
 		padding-right: 38px;
 	}
 
-	&.dotted {
-		border-style: dotted !important	;
+	&.dashed {
+		border-style: dashed !important	;
 	}
 
     &.strong {

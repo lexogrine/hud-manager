@@ -78,27 +78,28 @@ const Content = ({
 			</div>
 		);
 	};
-
-	const onDragOver = () => {
-		if (activeTab !== 'huds') return;
-		if (timeout) {
-			clearTimeout(timeout);
-			timeout = null;
-		}
-		timeout = setTimeout(() => {
-			setShow(false);
-		}, 100);
-
-		if (!show) {
-			setShow(true);
-		}
-	};
-
-	const allow = (e: React.DragEvent<HTMLDivElement>) => {
-		e.preventDefault();
-		e.stopPropagation();
-		onDragOver();
-	};
+	
+		const onDragOver = () => {
+			if (activeTab !== 'huds') return;
+			if (timeout) {
+				clearTimeout(timeout);
+				timeout = null;
+			}
+			timeout = setTimeout(() => {
+				setShow(false);
+			}, 100);
+	
+			if (!show) {
+				setShow(true);
+			}
+		};
+	
+		
+		const allow = (e: React.DragEvent<HTMLDivElement>) => {
+			e.preventDefault();
+			//e.stopPropagation();
+			onDragOver();
+		};
 
 	const handleZIPs = (files: FileList) => {
 		const file = files[0];
@@ -113,10 +114,9 @@ const Content = ({
 			api.huds.save(reader.result, name);
 		};
 	};
-
 	const drop = (evt: React.DragEvent<HTMLDivElement>) => {
 		evt.preventDefault();
-		if (evt.dataTransfer?.files) {
+		if (evt.dataTransfer?.files && evt.dataTransfer.files.length) {
 			handleZIPs(evt.dataTransfer.files);
 		}
 	};

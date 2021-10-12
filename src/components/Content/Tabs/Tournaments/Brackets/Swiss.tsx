@@ -180,13 +180,12 @@ const RoundInfo = ({
 	if (!match) {
 		return showEdit ? (
 			<div
-				className={`result edit ${
-					showEdit &&
-					getFirstEmptySlotIndex(dropTarget.team) === index &&
-					dropTarget.team?.team._id !== team._id
+				className={`result edit ${showEdit &&
+						getFirstEmptySlotIndex(dropTarget.team) === index &&
+						dropTarget.team?.team._id !== team._id
 						? 'available'
 						: 'not-available'
-				}`}
+					}`}
 				onClick={startBinding}
 				data-teamId={team._id}
 				onDragOver={e => {
@@ -296,6 +295,7 @@ const SwissEntry = ({
 			updateDropTarget({ opponentTarget: null, round: null, team: null });
 			return;
 		}
+		updateDropTarget({ opponentTarget: null, round: null, team: null });
 		const newMatch = {
 			id: uuidv4(),
 			current: false,
@@ -314,7 +314,6 @@ const SwissEntry = ({
 		}
 
 		await api.match.add(newMatch);
-		updateDropTarget({ opponentTarget: null, round: null, team: null });
 		cxt.reload();
 		return;
 	};
