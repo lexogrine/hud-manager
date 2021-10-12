@@ -9,12 +9,15 @@ import WindowBar from '../../WindowBar';
 import goBack from './../../styles/goBack.png';
 import toggleIcon from './../../styles/navbarToggle.png';
 import ProfileTab from './ProfileTab';
+import HUDDropArea from './HUDDropArea';
 
 export const isCGMode = false;
 
 type TabHandler = { handler: null | (() => void); header: string | null };
 
 const tabTitles: Record<string, TabHandler> = {};
+
+let timeout: NodeJS.Timeout | null = null;
 
 const Content = ({
 	active,
@@ -33,6 +36,7 @@ const Content = ({
 	game: AvailableGames;
 	customer?: Customer;
 }) => {
+    const [ show, setShow ] = useState(false);
 	const [activeTab, setTab] = useState('huds');
 	const [data, setData] = useState(null);
 	const [onBackClick, setOnBackClick] = useState<TabHandler>({
@@ -44,6 +48,7 @@ const Content = ({
 	const [isCollapsed, setCollapse] = useState(false);
 
 	const [isProfileShown, setShowProfile] = useState(false);
+
 
 	const checkFiles = async () => {
 		const responses = await Promise.all([api.gamestate.check(game as any), api.cfgs.check(game as any)]);
@@ -75,13 +80,58 @@ const Content = ({
 		);
 	};
 
+	const onDragOver = () => {
+		if(activeTab !== "huds") return;
+		if(timeout){
+			clearTimeout(timeout);
+			timeout = null;
+		}
+		timeout = setTimeout(() => {
+			setShow(false);
+		}, 100);
+
+		if(!show){
+			setShow(true);
+		}
+	}
+
+    const allow = (e: React.DragEvent<HTMLDivElement>) => {
+        e.preventDefault();
+        e.stopPropagation();
+		onDragOver()
+    }
+	
+    const handleZIPs = (files: FileList) => {
+		const file = files[0];
+		const reader: any = new FileReader();
+		reader.readAsDataURL(file);
+		reader.onload = () => {
+			const name = file.name.substr(0, file.name.lastIndexOf('.')).replace(/\W/g, '');
+			if (file.name.substr(-4) === '.rar' || !name) {
+				return;
+			}
+
+			api.huds.save(reader.result, name);
+		};
+	};
+
+    const drop = (evt: React.DragEvent<HTMLDivElement>) => {
+        evt.preventDefault();
+        if (evt.dataTransfer?.files) {
+            handleZIPs(evt.dataTransfer.files)
+        }
+    }
+
 	useEffect(() => {
 		checkFiles();
 	}, [game]);
 
 	const { t } = useTranslation();
 	return (
-		<div className={`main-container ${isCollapsed ? 'collapsed' : ''}`}>
+		<div className={`main-container ${isCollapsed ? 'collapsed' : ''}`}
+			onDragOver={allow}
+			onDrop={drop}
+		>
 			<Navbar
 				activeTab={activeTab}
 				toggle={toggle}
@@ -131,6 +181,7 @@ const Content = ({
 					logout={logout}
 				/>
 			) : null}
+			<HUDDropArea show={!!customer && show} />
 		</div>
 	);
 };

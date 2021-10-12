@@ -33,6 +33,7 @@ body {
 	font-family: 'Montserrat', 'Roboto', 'Open Sans';
     max-width: 100vw;
     overflow-x: hidden;
+	user-select: none;
 }
 #root {
 	height: 100%;
@@ -176,6 +177,38 @@ body {
 	}
 	&::-webkit-scrollbar-thumb {
 		background-color: #1d1e21;
+	}
+}
+.hud-drop-container {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	z-index: 10;
+	pointer-events: none;
+	opacity:0;
+	backdrop-filter: blur(20px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+	&.show {
+		pointer-events: all;
+		opacity:1;
+	}
+	.dropArea {
+		width: calc(100vw - 96px);
+		height: calc(100vh - 96px);
+		
+		font-weight: 600;
+		font-size: 12px;
+		font-family: "Montserrat";
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: #BDF2D5;
+		img {
+			margin-right: 22px;
+		}
 	}
 }
 .login-view {
@@ -500,6 +533,7 @@ body {
 	align-items: center;
 	text-align: center;
 	letter-spacing: 0.1em;
+	user-select: text;
 }
 .main-buttons-container {
 	width: calc(100% - 120px);
@@ -1602,6 +1636,7 @@ form {
 			font-weight: 200;
 			font-size: 32px;
 			margin: auto;
+			text-align: center;
 		}
 		button.close {
 			display: none;
