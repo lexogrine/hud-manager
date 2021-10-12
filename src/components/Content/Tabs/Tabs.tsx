@@ -39,7 +39,7 @@ const Tabs = ({ activeTab, data, toggle, gsiCheck, setOnBackClick }: IProps) => 
 					<Matches cxt={cxt} setOnBackClick={setOnBackClick}></Matches>
 				</TabPane>
 				<TabPane tabId="huds">
-					<Huds cxt={cxt} toggle={toggle}></Huds>
+					<Huds cxt={cxt} toggle={toggle} setOnBackClick={setOnBackClick}></Huds>
 				</TabPane>
 				<TabPane tabId="tournaments">
 					<Tournamentss cxt={cxt} setOnBackClick={setOnBackClick}></Tournamentss>

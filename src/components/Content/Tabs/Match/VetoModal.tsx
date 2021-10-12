@@ -1,5 +1,7 @@
 import { useTranslation } from 'react-i18next';
 import { Modal, ModalHeader, ModalBody, FormGroup, Label, Input } from 'reactstrap';
+import { VetoSides } from '../../../../../types/interfaces';
+import LabeledInput from '../../../LabeledInput';
 import * as I from './../../../../api/interfaces';
 
 interface Props {
@@ -47,44 +49,45 @@ const VetoModal = ({ onChange, map, isOpen, toggle, veto, teams, maps }: Props) 
 			<ModalBody>
 				{'type' in veto && veto.type !== 'decider' ? (
 					<>
-						<FormGroup>
-							<Input
-								type="select"
-								name="teams"
-								id="teams"
-								value={veto.teamId}
-								onChange={e => onChange('teamId', map, e.target.value)}
-							>
-								<option value="">{t('common.noTeam')}</option>
-								{teams.map(teams => (
-									<option key={teams._id} value={teams._id}>
-										{teams.name}
-									</option>
-								))}
-							</Input>
+						<FormGroup className="input-container">
+							<div className="input-label-container">Choose team</div>
+							{
+								teams.map(team => (
+									<div key={team._id} className="checkbox-container">
+										<div className={`checkbox-el ${team._id === veto.teamId ? 'active' : ''}`} onClick={() => onChange('teamId', map, team._id)}>
+											{team._id === veto.teamId ? `✓` : null}
+										</div>
+										<div className="checkbox-label">
+											{team.name}
+										</div>
+									</div>
+								))
+							}
 						</FormGroup>
-						<FormGroup>
-							<Input
-								type="select"
-								name="side"
-								id="side"
-								value={veto.side}
-								onChange={e => onChange('side', map, e.target.value)}
-							>
-								<option value={'NO'} disabled defaultChecked>
-									{t('match.questionOpponentPick')}
-								</option>
-								<option value={'NO'}>{t('common.no')}</option>
-								<option value={'CT'}>{t('common.ct')}</option>
-								<option value={'T'}>{t('common.t')}</option>
-							</Input>
+						<FormGroup className="input-container side-pick-container">
+							<div className="input-label-container">Does the opponent pick a side?</div>
+							<div className="checkboxes">
+							{
+								(["CT", "T", "NO"] as VetoSides[]).map(side => (
+									<div key={side} className="checkbox-container">
+										<div className={`checkbox-el ${side === veto.side ? 'active' : ''}`} onClick={() => onChange('side', map, side)}>
+											{side === veto.side ? `✓` : null}
+										</div>
+										<div className="checkbox-label">
+											{side}
+										</div>
+									</div>
+								))
+							}
+							</div>
 						</FormGroup>
 					</>
 				) : null}
 				{'mapName' in veto ? (
 					<FormGroup>
-						<Input
+						<LabeledInput
 							type="select"
+							label="Map"
 							name="type"
 							id="type"
 							value={veto.mapName}
@@ -99,7 +102,7 @@ const VetoModal = ({ onChange, map, isOpen, toggle, veto, teams, maps }: Props) 
 									{map.replace('de_', '').substr(1)}
 								</option>
 							))}
-						</Input>
+						</LabeledInput>
 					</FormGroup>
 				) : null}
 				<FormGroup check>

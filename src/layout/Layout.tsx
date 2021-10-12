@@ -262,6 +262,8 @@ export default class Layout extends Component<{}, IState> {
 						toggleSync={this.toggleSync}
 						clearGame={this.clearGame}
 						game={this.state.data.game}
+						customer={data.customer}
+						logout={this.logout}
 					/>
 				</div>
 			</Provider>

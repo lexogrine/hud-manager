@@ -203,19 +203,9 @@ const TeamsTab = ({ cxt }: IProps) => {
 		setFieldsState(false);
 	};
 	const visibleFields = cxt.fields.teams.filter(field => field.visible);
-	return (
-		<>
-			{/*<div className="tab-title-container">
-				<div>{t('common.teams')}</div>
-				<Input
-					type="text"
-					name="name"
-					id="team_search"
-					value={search}
-					onChange={searchHandler}
-					placeholder={t('common.search')}
-				/>
-	</div>*/}
+
+	if (editModalState) {
+		return (
 			<TeamEditModal
 				open={editModalState}
 				toggle={() => {
@@ -230,6 +220,22 @@ const TeamsTab = ({ cxt }: IProps) => {
 				fields={cxt.fields.teams}
 				cxt={cxt}
 			/>
+		)
+	}
+
+	return (
+		<>
+			{/*<div className="tab-title-container">
+				<div>{t('common.teams')}</div>
+				<Input
+					type="text"
+					name="name"
+					id="team_search"
+					value={search}
+					onChange={searchHandler}
+					placeholder={t('common.search')}
+				/>
+	</div>*/}
 			<CustomFieldsModal
 				fields={customFieldForm}
 				open={fieldsModalState}
@@ -274,7 +280,7 @@ const TeamsTab = ({ cxt }: IProps) => {
 				))}
 			</div>
 			<div className="action-container">
-				<div className="button green empty big wide" onClick={add}>
+				<div className="button green empty big wide" onClick={() => {}}>
 					Import teams
 				</div>
 				<div className="button green strong big wide" onClick={add}>

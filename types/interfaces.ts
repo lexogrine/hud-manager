@@ -101,11 +101,11 @@ export type VetoType = 'ban' | 'pick' | 'decider';
 export type VetoScore = {
 	[key: string]: number;
 };
-
+export type VetoSides = "CT" | "T" | "NO";
 export interface CSGOVeto {
 	teamId: string;
 	mapName: string;
-	side: 'CT' | 'T' | 'NO';
+	side: VetoSides;
 	type: VetoType;
 	score?: VetoScore;
 	rounds?: RoundData[];
@@ -347,14 +347,23 @@ export interface User {
 	password: string;
 	admin: boolean;
 	banned: boolean;
+	username: string,
+	token: string,
+	license: License
 }
 
 export type LicenseType = 'free' | 'professional' | 'personal' | 'enterprise';
 export interface License {
 	id: number;
 	type: LicenseType;
-	validUntil: Date;
 	owner: number;
+	status: string
+	valid: boolean,
+	validFrom: number,
+	validUntil: Date,
+	endTime: number,
+	nextUpdate: number,
+	startTime: number
 }
 
 export interface Customer {

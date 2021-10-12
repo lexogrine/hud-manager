@@ -250,6 +250,26 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 
 	const visibleFields = cxt.fields.players.filter(field => field.visible);
 	const { t } = useTranslation();
+	if (editModalState) {
+		return (
+			<PlayerEditModal
+				open={editModalState}
+				toggle={() => {
+					setEditState(!editModalState);
+				}}
+				player={form}
+				onChange={changeHandler}
+				onFileChange={fileHandler}
+				onExtraChange={extraChangeHandler as I.onExtraChangeFunction}
+				save={save}
+				deletePlayer={deletePlayer}
+				fields={cxt.fields.teams}
+				cxt={cxt}
+				teams={cxt.teams}
+			/>
+		)
+	}
+	
 	return (
 		<>
 			{/*<div className="tab-title-container">
@@ -270,21 +290,6 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 					placeholder={t('common.search')}
 				/>
 			</div>*/}
-			<PlayerEditModal
-				open={editModalState}
-				toggle={() => {
-					setEditState(!editModalState);
-				}}
-				player={form}
-				teams={cxt.teams}
-				onChange={changeHandler}
-				onExtraChange={extraChangeHandler as I.onExtraChangeFunction}
-				onFileChange={fileHandler}
-				save={save}
-				deletePlayer={deletePlayer}
-				fields={cxt.fields.players}
-				cxt={cxt}
-			/>
 			<NamesFileModal
 				isOpen={isFilesOpened}
 				toggle={() => setFilesOpened(!isFilesOpened)}
@@ -338,7 +343,7 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 				))}
 			</div>
 			<div className="action-container">
-				<div className="button green empty big wide" onClick={add}>
+				<div className="button green empty big wide" onClick={() => {}}>
 					Import players
 				</div>
 				<div className="button green strong big wide" onClick={add}>

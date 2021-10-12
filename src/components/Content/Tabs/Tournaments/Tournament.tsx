@@ -105,7 +105,9 @@ const Tournament = ({ tournament, cxt, edit }: IProps) => {
 					</div>
 				</div>
 				<div className="tournament-content">
-					<Content tab="overview" active={tab}>Overview</Content>
+					<Content tab="overview" active={tab}>
+						Overview
+					</Content>
 					<Content tab="group" active={tab}>
 						{group ? <Swiss cxt={cxt} tournament={tournament} stage={group} /> : null}
 					</Content>

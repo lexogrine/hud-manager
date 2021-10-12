@@ -1,4 +1,4 @@
-import { Modal, ModalHeader, ModalBody, Button, FormGroup, Input, ModalFooter, Row, Col, FormText } from 'reactstrap';
+import { FormGroup, Input, Row, Col, FormText } from 'reactstrap';
 import { hash } from '../../../../hash';
 import isSvg from '../../../../isSvg';
 import DragFileInput from '../../../DragFileInput';
@@ -8,6 +8,7 @@ import { IContextData } from './../../../../components/Context';
 import ColorPicker from '../../../ColorPicker/ColorPicker';
 import { getMatchName } from '../../../../utils';
 import { useTranslation } from 'react-i18next';
+import LabeledInput from '../../../LabeledInput';
 
 interface IProps {
 	open: boolean;
@@ -23,13 +24,11 @@ interface IProps {
 }
 
 const TeamEditModal = ({
-	open,
-	toggle,
 	team,
 	onChange,
 	onFileChange,
 	save,
-	deleteTeam,
+	toggle,
 	onExtraChange,
 	fields,
 	cxt
@@ -105,9 +104,8 @@ const TeamEditModal = ({
 						label={`Field: ${field}`}
 						imgSrc={
 							value
-								? `data:image/${
-										isSvg(Buffer.from(value, 'base64')) ? 'svg+xml' : 'png'
-								  };base64,${value}`
+								? `data:image/${isSvg(Buffer.from(value, 'base64')) ? 'svg+xml' : 'png'
+								};base64,${value}`
 								: value
 						}
 					/>
@@ -126,84 +124,64 @@ const TeamEditModal = ({
 			</Row>
 		));
 	return (
-		<Modal isOpen={open} toggle={toggle} className="veto_modal">
-			<ModalHeader toggle={toggle}>{t('teams.edit')}</ModalHeader>
-			<ModalBody>
-				<FormText color="muted">
-					{t('common.team')}: {team._id || '--- NONE ---'}
-				</FormText>
-				<Row>
-					<Col md="12">
-						<FormGroup>
-							<Input
-								type="text"
-								name="name"
-								id="team_name"
-								value={team.name}
-								onChange={onChange}
-								placeholder={t('common.teamName')}
-							/>
-						</FormGroup>
-					</Col>
-				</Row>
-				<Row>
-					<Col md="12">
-						<FormGroup>
-							<Input
-								type="text"
-								name="shortName"
-								id="short_name"
-								value={team.shortName || ''}
-								onChange={onChange}
-								placeholder={t('common.shortName')}
-							/>
-						</FormGroup>
-					</Col>
-				</Row>
-				<Row>
-					<Col md="12">
-						<FormGroup>
-							<Input type="select" id="country" name="country" value={team.country} onChange={onChange}>
-								<option value="">{t('common.country')}</option>
-								{countries.map(option => (
-									<option key={option.value} value={option.value}>
-										{option.label}
-									</option>
-								))}
-							</Input>
-						</FormGroup>
-					</Col>
-				</Row>
-				<Row>
-					<Col md="12">
-						<FormGroup>
-							<DragFileInput
-								image
-								onChange={onFileChange}
-								id="team_logo"
-								removable
-								label={t('teams.uploadLogo')}
-								imgSrc={logo || undefined}
-							/>
-							<FormText color="muted">{t('teams.logoInfo')}</FormText>
-						</FormGroup>
-					</Col>
-				</Row>
-				{extraForm()}
-				{team._id !== 'empty' ? (
-					<Row className="centered">
-						<Button className="purple-btn round-btn" onClick={deleteTeam}>
-							{t('common.delete')}
-						</Button>
-					</Row>
-				) : null}
-			</ModalBody>
-			<ModalFooter className="no-padding">
-				<Button color="primary" className="modal-save" onClick={save}>
-					{t('common.save')}
-				</Button>
-			</ModalFooter>
-		</Modal>
+		<>
+			<div className="tab-content-container no-padding">
+				<div className="edit-form">
+					<div className="main-form">
+						<FormText color="muted">
+							{t('common.team')}: {team._id || '--- NONE ---'}
+						</FormText>
+						<LabeledInput
+							type="text"
+							name="name"
+							label="Team Name"
+							id="team_name"
+							value={team.name}
+							onChange={onChange}
+							placeholder={t('common.teamName')}
+						/>
+						<LabeledInput
+							type="text"
+							name="shortName"
+							id="short_name"
+							label="Short name"
+							value={team.shortName || ''}
+							onChange={onChange}
+							placeholder={t('common.shortName')}
+						/>
+						<LabeledInput label={t('common.country')} type="select" id="country" name="country" value={team.country} onChange={onChange}>
+							<option value="">{t('common.country')}</option>
+							{countries.map(option => (
+								<option key={option.value} value={option.value}>
+									{option.label}
+								</option>
+							))}
+						</LabeledInput>
+						<DragFileInput
+							image
+							onChange={onFileChange}
+							id="team_logo"
+							removable
+							label={t('teams.uploadLogo')}
+							imgSrc={logo || undefined}
+						/>
+						<FormText color="muted">{t('teams.logoInfo')}</FormText>
+						{extraForm()}
+					</div>
+				</div>
+			</div>
+			<div className="action-container">
+				{ team._id !== "empty" ? <div className="button green empty big wide" onClick={toggle}>
+					Delete
+				</div> : null }
+				<div className="button green empty big wide" onClick={toggle}>
+					Cancel
+				</div>
+				<div className="button green strong big wide" onClick={save}>
+					{t('teams.addTeam')}
+				</div>
+			</div>
+		</>
 	);
 };
 

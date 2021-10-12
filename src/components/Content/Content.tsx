@@ -4,35 +4,46 @@ import api from '../../api/api';
 import Navbar from './Navbar/Navbar';
 import Tabs from './Tabs/Tabs';
 import { useTranslation } from 'react-i18next';
-import { AvailableGames } from '../../api/interfaces';
+import { AvailableGames, Customer } from '../../api/interfaces';
 import WindowBar from '../../WindowBar';
 import goBack from './../../styles/goBack.png';
+import toggleIcon from './../../styles/navbarToggle.png';
+import ProfileTab from './ProfileTab';
 
 export const isCGMode = false;
 
-const tabTitles: Record<string, { handler: null | (() => void); header: string | null }> = {};
+type TabHandler = { handler: null | (() => void); header: string | null };
+
+const tabTitles: Record<string, TabHandler> = {};
 
 const Content = ({
 	active,
 	available,
 	toggleSync,
 	clearGame,
-	game
+	game,
+	logout,
+	customer
 }: {
 	available: boolean;
 	active: boolean;
 	toggleSync: () => void;
 	clearGame: () => void;
+	logout: () => void;
 	game: AvailableGames;
+	customer?: Customer;
 }) => {
 	const [activeTab, setTab] = useState('huds');
 	const [data, setData] = useState(null);
-	const [onBackClick, setOnBackClick] = useState<{ handler: null | (() => void); header: string | null }>({
+	const [onBackClick, setOnBackClick] = useState<TabHandler>({
 		handler: null,
 		header: null
 	});
 	const [gsi, setGSI] = useState(true);
 	const [configs, setConfigs] = useState(true);
+	const [isCollapsed, setCollapse] = useState(false);
+
+	const [isProfileShown, setShowProfile] = useState(false);
 
 	const checkFiles = async () => {
 		const responses = await Promise.all([api.gamestate.check(game as any), api.cfgs.check(game as any)]);
@@ -51,14 +62,25 @@ const Content = ({
 		tabTitles[activeTab] = { handler: onBackClick, header };
 		setOnBackClick(tabTitles[activeTab]);
 	};
+
+	const Greeting = () => {
+		if (!customer) {
+			return null;
+		}
+		return <div className="greeting" onClick={() => setShowProfile(!isProfileShown)}>
+			Hi, {customer.user.username}!
+			<img src={toggleIcon} />
+		</div>;
+	}
+
 	useEffect(() => {
 		checkFiles();
 	}, [game]);
 
 	const { t } = useTranslation();
 	return (
-		<div className="main-container">
-			<Navbar activeTab={activeTab} toggle={toggle} files={gsi && configs} />
+		<div className={`main-container ${isCollapsed ? 'collapsed' : ''}`}>
+			<Navbar activeTab={activeTab} toggle={toggle} files={gsi && configs} setCollapse={setCollapse} isCollapsed={isCollapsed} />
 			<Col style={{ display: 'flex', flexDirection: 'column' }}>
 				<WindowBar />
 				<div className="tab-title-container">
@@ -82,6 +104,7 @@ const Content = ({
 						>
 							{active ? t('app.cloud.isActive') : t('app.cloud.isNotAcitve')}
 						</a>
+						<Greeting />
 					</div>
 				</div>
 				<Tabs
@@ -92,6 +115,12 @@ const Content = ({
 					gsiCheck={checkFiles}
 				/>
 			</Col>
+			{ customer ? <ProfileTab
+				isOpen={isProfileShown}
+				close={() => setShowProfile(false)}
+				customer={customer}
+				logout={logout}
+			/> : null }
 		</div>
 	);
 };

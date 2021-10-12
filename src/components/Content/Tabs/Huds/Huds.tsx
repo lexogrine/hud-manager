@@ -57,6 +57,7 @@ interface IProps {
 	cxt: IContextData;
 	t: any; // TODO: Add typings. Or don't because the functional version should use useTranslation instead of withTranslation anyway
 	toggle: (tab: string, data?: any) => void;
+	setOnBackClick: I.HeaderHandler;
 }
 
 interface IForm {
@@ -186,7 +187,9 @@ class Huds extends Component<IProps, IState> {
 		api.huds.start(dir);
 	}
 	toggleConfig = (hud?: I.HUD) => () => {
-		this.setState({ active: hud || null });
+		this.setState({ active: hud || null }, () => {
+			this.props.setOnBackClick(hud ? this.toggleConfig() : null);
+		});
 	};
 	forceBlock = (status: boolean, ...blockedToggles: (keyof IForm)[]) => {
 		this.setState((state: any) => {

@@ -34,6 +34,7 @@
 			"ct": "CT",
 			"t": "T",
 			"no": "No",
+			"cancel":"Cancel",
 			"tournaments":"Tournaments",
 			"firstName":"First Name",
 			"lastName":"Last Name",
@@ -195,7 +196,7 @@
 			}
 		},
 		"ar":{
-			"add":"Add AR module",
+			"add":"Upload AR module",
 			"toggle":"Toggle AR Module"
 		},
 		"huds": {

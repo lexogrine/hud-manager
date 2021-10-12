@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { IContextData } from './../../../../components/Context';
 import * as I from './../../../../api/interfaces';
 import config from './../../../../api/config';
-import { Col, Row, Button } from 'reactstrap';
+import { Col, Row } from 'reactstrap';
 import HudEntry from './ARSupportedEntry';
 import ARSettings from './Settings';
 import DragInput from './../../../DragFileInput';
@@ -102,16 +102,14 @@ const AR = ({ cxt }: IProps) => {
 							))}
 					</Col>
 				</Row>
-				<ElectronOnly>
-					<Row>
-						<Col className="main-buttons-container">
-							<Button onClick={api.huds.openDirectory} color="primary">
-								{t('huds.config.openDirectory')}
-							</Button>
-						</Col>
-					</Row>
-				</ElectronOnly>
 			</div>
+			<ElectronOnly>
+				<div className="action-container">
+					<div className="button green strong big wide" onClick={api.huds.openDirectory}>
+						{t('huds.config.openDirectory')}
+					</div>
+				</div>
+			</ElectronOnly>
 		</>
 	);
 };

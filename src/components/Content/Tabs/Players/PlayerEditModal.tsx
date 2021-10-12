@@ -1,4 +1,4 @@
-import { Modal, ModalHeader, ModalBody, Button, FormGroup, Input, ModalFooter, Row, Col, FormText } from 'reactstrap';
+import { FormGroup, Input, Row, Col, FormText } from 'reactstrap';
 import { hash } from '../../../../hash';
 import isSvg from '../../../../isSvg';
 import DragFileInput from '../../../DragFileInput';
@@ -8,6 +8,7 @@ import { IContextData } from './../../../../components/Context';
 import ColorPicker from '../../../ColorPicker/ColorPicker';
 import { getMatchName } from '../../../../utils';
 import { useTranslation } from 'react-i18next';
+import LabeledInput from '../../../LabeledInput';
 
 interface IProps {
 	open: boolean;
@@ -24,14 +25,13 @@ interface IProps {
 }
 
 const PlayerEditModal = ({
-	open,
 	toggle,
 	player,
 	teams,
+	deletePlayer,
 	onChange,
 	onFileChange,
 	save,
-	deletePlayer,
 	fields,
 	onExtraChange,
 	cxt
@@ -108,9 +108,8 @@ const PlayerEditModal = ({
 						label={`Field: ${field}`}
 						imgSrc={
 							value
-								? `data:image/${
-										isSvg(Buffer.from(value, 'base64')) ? 'svg+xml' : 'png'
-								  };base64,${value}`
+								? `data:image/${isSvg(Buffer.from(value, 'base64')) ? 'svg+xml' : 'png'
+								};base64,${value}`
 								: value
 						}
 					/>
@@ -128,67 +127,46 @@ const PlayerEditModal = ({
 				</Col>
 			</Row>
 		));
-	const playerForm = () => (
+	return (
 		<>
-			<Row>
-				<Col md="12">
-					<FormGroup>
-						<Input
+			<div className="tab-content-container no-padding">
+				<div className="edit-form">
+					<div className="main-form">
+						<LabeledInput
 							type="text"
 							name="firstName"
 							id="first_name"
 							onChange={onChange}
 							value={player.firstName}
+							label={t('common.firstName')}
 							placeholder={t('common.firstName')}
 						/>
-					</FormGroup>
-				</Col>
-			</Row>
-			<Row>
-				<Col md="12">
-					<FormGroup>
-						<Input
+						<LabeledInput
 							type="text"
 							name="lastName"
 							id="last_name"
+							label={t('common.lastName')}
 							onChange={onChange}
 							value={player.lastName}
 							placeholder={t('common.lastName')}
 						/>
-					</FormGroup>
-				</Col>
-			</Row>
-			<Row>
-				<Col md="12">
-					<FormGroup>
-						<Input
+						<LabeledInput
 							type="text"
 							name="username"
 							id="nick"
 							onChange={onChange}
+							label={t('common.nickname')}
 							value={player.username}
 							placeholder={t('common.nickname')}
 						/>
-					</FormGroup>
-				</Col>
-			</Row>
-			<Row>
-				<Col md="12">
-					<FormGroup>
-						<Input type="select" id="country" name="country" value={player.country} onChange={onChange}>
+						<LabeledInput label={t('common.country')} type="select" id="country" name="country" value={player.country} onChange={onChange}>
 							<option value="">{t('common.country')}</option>
 							{countries.map(option => (
 								<option key={option.value} value={option.value}>
 									{option.label}
 								</option>
 							))}
-						</Input>
-					</FormGroup>
-				</Col>
-			</Row>
-			<Row>
-				<Col md="12">
-					<FormGroup>
+						</LabeledInput>
 						<Input
 							id="steamid"
 							type="text"
@@ -197,13 +175,7 @@ const PlayerEditModal = ({
 							onChange={onChange}
 							placeholder={gameIdentifier}
 						/>
-					</FormGroup>
-				</Col>
-			</Row>
-			<Row>
-				<Col md="12">
-					<FormGroup>
-						<Input type="select" id="player_teams" name="team" value={player.team} onChange={onChange}>
+						<LabeledInput label={t('common.team')} type="select" id="player_teams" name="team" value={player.team} onChange={onChange}>
 							<option value="">{t('common.team')}</option>
 							{teams
 								.concat()
@@ -213,13 +185,7 @@ const PlayerEditModal = ({
 										{team.name}
 									</option>
 								))}
-						</Input>
-					</FormGroup>
-				</Col>
-			</Row>
-			<Row>
-				<Col md="12">
-					<FormGroup>
+						</LabeledInput>
 						<DragFileInput
 							image
 							onChange={onFileChange}
@@ -229,29 +195,24 @@ const PlayerEditModal = ({
 							removable
 						/>
 						<FormText color="muted">{t('players.avatarInfo')}</FormText>
-					</FormGroup>
-				</Col>
-			</Row>
-			{extraForm()}
-			<Row className="centered">
-				{player._id !== 'empty' ? (
-					<Button className="purple-btn round-btn" onClick={deletePlayer}>
-						{t('common.delete')}
-					</Button>
-				) : null}
-			</Row>
+						{extraForm()}
+					</div>
+				</div>
+			</div>
+			<div className="action-container">
+				{ player._id !== "empty" ? <div className="button green empty big wide" onClick={deletePlayer}>
+					Delete
+				</div> : null }
+				<div className="button green empty big wide" onClick={toggle}>
+					Cancel
+				</div>
+				<div className="button green strong big wide" onClick={save}>
+					{t('players.addPlayer')}
+				</div>
+			</div>
+
 		</>
-	);
-	return (
-		<Modal isOpen={open} toggle={toggle} className="veto_modal">
-			<ModalHeader toggle={toggle}>{t('players.edit')}</ModalHeader>
-			<ModalBody>{playerForm()}</ModalBody>
-			<ModalFooter className="no-padding">
-				<Button color="primary" className="modal-save" onClick={save}>
-					{t('common.save')}
-				</Button>
-			</ModalFooter>
-		</Modal>
+		
 	);
 };
 

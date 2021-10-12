@@ -1,4 +1,4 @@
-import { FormGroup, Input, Row, Col, Button } from 'reactstrap';
+import { FormGroup, Row, Col, Button } from 'reactstrap';
 import * as I from './../../../../api/interfaces';
 import api from './../../../../api/api';
 import config from './../../../../api/config';
@@ -10,6 +10,8 @@ import { withTranslation } from 'react-i18next';
 import Switch from '../../../Switch/Switch';
 import { socket } from '../Live/Live';
 import { Component } from 'react';
+import LabeledInput from '../../../LabeledInput';
+
 
 const { isElectron } = config;
 
@@ -211,6 +213,9 @@ class Config extends Component<IProps, IState> {
 		if (!game || (game !== 'csgo' && game !== 'dota2')) return;
 
 		const { gsi } = this.state[game];
+		if(gsi?.loading || gsi?.success || !gsi?.accessible){
+			return;
+		}
 		gsi.message = 'Loading GameState data...';
 		if (game === 'csgo') {
 			this.setState({ csgo: this.state[game] });
@@ -227,6 +232,9 @@ class Config extends Component<IProps, IState> {
 		if (!game || (game !== 'csgo' && game !== 'dota2')) return;
 
 		const { cfg } = this.state[game];
+		if(cfg?.loading || cfg?.success || !cfg?.accessible){
+			return;
+		}
 		cfg.message = 'Loading GameState file data...';
 
 		if (game === 'csgo') {
@@ -478,6 +486,7 @@ class Config extends Component<IProps, IState> {
 		await api.config.update(config);
 		this.checkGSI();
 	};
+	
 	render() {
 		const { cxt, t } = this.props;
 		const { importModalOpen, conflict, data, ip, config, update } = this.state;
@@ -489,7 +498,7 @@ class Config extends Component<IProps, IState> {
 			cxt.customer?.license?.type === 'professional' || cxt.customer?.license?.type === 'enterprise';
 		const active = Boolean(available && config.sync);
 
-		const didBuy = cxt.customer?.license?.type && cxt.customer.license.type !== 'free';
+		// const didBuy = cxt.customer?.license?.type && cxt.customer.license.type !== 'free';
 
 		return (
 			<>
@@ -504,10 +513,11 @@ class Config extends Component<IProps, IState> {
 					<Row className="padded base-config">
 						<Col md="4">
 							<FormGroup>
-								<Input
+								<LabeledInput
 									type="text"
 									name="steamApiKey"
 									id="steamApiKey"
+									label="Steam API Key"
 									onChange={this.changeHandler}
 									value={this.state.config.steamApiKey}
 									placeholder={t('settings.input.steamAPIKey')}
@@ -516,10 +526,11 @@ class Config extends Component<IProps, IState> {
 						</Col>
 						<Col md="4">
 							<FormGroup>
-								<Input
+								<LabeledInput
 									type="number"
 									name="port"
 									id="port"
+									label="GSI Port"
 									onChange={this.changeHandler}
 									value={this.state.config.port}
 									placeholder={t('settings.input.GSIPort')}
@@ -528,10 +539,11 @@ class Config extends Component<IProps, IState> {
 						</Col>
 						<Col md="4">
 							<FormGroup>
-								<Input
+								<LabeledInput
 									type="text"
 									name="token"
 									id="token"
+									label="GSI Token"
 									onChange={this.changeHandler}
 									value={this.state.config.token}
 									placeholder={t('settings.input.GSIToken')}
@@ -560,19 +572,6 @@ class Config extends Component<IProps, IState> {
 							<div className="config-description">Cloud Synchronization</div>
 							<Switch isOn={active} id="sync-toggle" handleToggle={this.toggleHandler} />
 						</Col>
-
-						<ElectronOnly>
-							<Col md="12" className="config-entry">
-								<div className="config-description">CG Mode (Beta):</div>
-								<Switch
-									isOn={this.state.config.cg}
-									id="cg-toggle"
-									handleToggle={this.cgToggleHandler}
-									disabled={!didBuy}
-								/>
-							</Col>
-						</ElectronOnly>
-
 						<GameOnly game="csgo">
 							<Col md="12" className="config-entry">
 								<div className="config-description">Auto switch:</div>
@@ -582,6 +581,21 @@ class Config extends Component<IProps, IState> {
 									handleToggle={this.autoSwitchToggleHandler}
 								/>
 							</Col>
+						</GameOnly>
+
+						{/*<ElectronOnly>
+							<Col md="12" className="config-entry">
+								<div className="config-description">CG Mode (Beta):</div>
+								<Switch
+									isOn={this.state.config.cg}
+									id="cg-toggle"
+									handleToggle={this.cgToggleHandler}
+									disabled={!didBuy}
+								/>
+							</Col>
+						</ElectronOnly>*/}
+
+						<GameOnly game="csgo">
 							<Col md="12" className="config-entry">
 								<div className="config-description">
 									HLAE Path: {this.state.config.hlaePath ? 'Loaded' : 'Not loaded'}
@@ -617,26 +631,24 @@ class Config extends Component<IProps, IState> {
 								<div className="config-description">
 									GameState Integration: {gsi?.message || 'Loaded succesfully'}
 								</div>
-								<Button
-									className="purple-btn round-btn"
-									disabled={gsi?.loading || gsi?.success || !gsi?.accessible}
+								<div
+									className={`button empty strong wide green ${gsi?.loading || gsi?.success || !gsi?.accessible ? 'disabled':''}`}
 									onClick={this.createGSI}
 								>
 									Add GSI file
-								</Button>
+								</div>
 							</Col>
 							<GameOnly game="csgo">
 								<Col md="12" className="config-entry">
 									<div className="config-description">
 										Configs: {cfg?.message || 'Loaded succesfully'}
 									</div>
-									<Button
-										className="purple-btn round-btn"
-										disabled={cfg?.loading || cfg?.success || !cfg?.accessible}
+									<div
+										className={`button empty strong wide green ${cfg?.loading || cfg?.success || !cfg?.accessible ? 'disabled':''}`}
 										onClick={this.createCFG}
 									>
 										Add config files
-									</Button>
+									</div>
 								</Col>
 							</GameOnly>
 						</GameOnly>
@@ -648,45 +660,41 @@ class Config extends Component<IProps, IState> {
 									{this.state.bakkesModAutoconfError && <p>[{this.state.bakkesModAutoconfError}]</p>}
 								</div>
 								<div className="download-container">
-									<Button
-										className="purple-btn round-btn"
-										disabled={this.state.bakkesModAutoconfBusy}
-										onClick={() => this.loadBakkesModStatus()}
+									<div
+										className={`button empty strong wide green ${this.state.bakkesModAutoconfBusy ? 'disabled':''}`}
+										onClick={!this.state.bakkesModAutoconfBusy ? () => this.loadBakkesModStatus() : undefined}
 									>
 										Refresh
-									</Button>
-									<Button
-										className="purple-btn round-btn"
-										disabled={
-											this.state.bakkesModAutoconfBusy || this.state.bakkesModStatus.sosConfigSet
-										}
-										onClick={this.installRLIntegration}
+									</div>
+									<div
+										className={`button empty strong wide green ${this.state.bakkesModAutoconfBusy || this.state.bakkesModStatus.sosConfigSet ? 'disabled':''}`}
+										onClick={ !(this.state.bakkesModAutoconfBusy || this.state.bakkesModStatus.sosConfigSet) ? this.installRLIntegration : undefined }
 									>
 										Install
-									</Button>
+									</div>
 								</div>
 							</Col>
 						</GameOnly>
 						<Col md="12" className="config-entry">
 							<div className="config-description">Credits</div>
-							<Button className="lightblue-btn round-btn" onClick={() => this.props.toggle('credits')}>
+							<div className="button empty strong wide green" onClick={() => this.props.toggle('credits')}>
 								See now
-							</Button>
+							</div>
 						</Col>
 						<ElectronOnly>
 							<GameOnly game="csgo">
 								<Col md="12" className="config-entry">
 									<div className="config-description">Downloads</div>
 									<div className="download-container">
-										<Button onClick={() => this.download('gsi')} className="purple-btn round-btn">
+										<div onClick={() => this.download('gsi')} className="button empty strong wide green">
 											GSI config
-										</Button>
-										<Button onClick={() => this.download('cfgs')} className="purple-btn round-btn">
+										</div>
+										<div onClick={() => this.download('cfgs')} className="button empty strong wide green">
 											HUD configs
-										</Button>
-										<Button onClick={() => this.download('db')} className="purple-btn round-btn">
+										</div>
+										<div onClick={() => this.download('db')} className="button empty strong wide green">
 											Export DB
-										</Button>
+										</div>
 									</div>
 								</Col>
 							</GameOnly>

@@ -31,6 +31,8 @@ body {
 	width: 100%;
 	height: 100%;
 	font-family: 'Montserrat', 'Roboto', 'Open Sans';
+    max-width: 100vw;
+    overflow-x: hidden;
 }
 #root {
 	height: 100%;
@@ -63,6 +65,14 @@ body {
 		height: 100%;
 		padding: 0;
 	}
+	.tab-content-container {
+		max-width: calc(100vw - 193px);
+	}
+	&.collapsed {
+		.tab-content-container {
+			max-width: calc(100vw - 84px);
+		}
+	}
 }
 .navbar-container {
 	height: 100%;
@@ -81,7 +91,6 @@ body {
 	letter-spacing: 1.5px;
 	display: flex;
 	flex-direction: column;
-	transition: width 0.5s;
 	overflow: visible;
 	&.collapsed {
 		width:84px;
@@ -149,7 +158,6 @@ body {
 			}
 			div {
 				opacity: 1;
-				transition: opacity 0.5s;
 			}
 		}
 		&:nth-last-child(2) {
@@ -166,14 +174,116 @@ body {
 			border: none;
 		}
 	}
-	li#settings {
-		>a.active {
-			background-color: #7ad9f5 !important;
-			color: #24272d !important;
-		}
-	}
 	&::-webkit-scrollbar-thumb {
 		background-color: #1d1e21;
+	}
+}
+.login-view {
+    position: absolute;
+    z-index: 9;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 100%;
+    background-color: #111111;
+    background-image: url('./assets/leftBottom.png'), url('./assets/rightTop.png');
+    background-repeat: no-repeat;
+    background-position: left bottom, right top;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	.container {
+		width: 400px;
+		max-width: 90vw;
+	}
+	.button{
+		margin: auto;
+		text-align: center;
+		width: 100%;
+	}
+	.logo {
+		font-weight: 800;
+		font-size: 40px;
+		margin-bottom: 60px;
+		font-family: 'Montserrat';
+	}
+	input.form-control {
+		margin-bottom: 30px;
+	}
+	.register {
+		font-size: 12px;
+		text-align: center;
+		margin-top: 30px;
+		a {
+			color: #BDF2D5;
+			font-weight: 700;
+		}
+	}
+}
+.profile-tab {
+	position: absolute;
+	right: -316px;
+	width: 316px;
+	height:100%;
+    backdrop-filter: blur(100px);
+    z-index: 5;
+	padding: 0 30px;
+	font-family: 'Rajdhani';
+	text-transform: uppercase;
+	display: flex;
+	flex-direction: column;
+	transition: right 0.5s;
+	padding-top: 50px;
+	&.show {
+		right: 0;
+	}
+	.logout {
+		background-repeat: no-repeat;
+		background-image: url('./logout.png');
+		background-position: left center;
+		padding-left: 31px;
+		margin-top: auto;
+		margin-bottom: 31px;
+		cursor: pointer;
+	}
+	.close-icon {
+		background-repeat: no-repeat;
+		background-image: url('./closeProfile.png');
+		background-position: center;
+		width:50px;
+		height:50px;
+		position: relative;
+		left:-12px;
+		cursor: pointer;
+		margin-bottom: 70px;
+	}
+	.profile-section {
+		display: flex;
+		margin-bottom: 30px;
+
+		&:nth-child(2) {
+			flex-direction: column;
+		}
+		&:nth-child(3) {
+			flex-wrap: wrap;
+		}
+	}
+	.profile-value {
+		letter-spacing: 0.1rem;
+	}
+	.profile-subsection {
+		width: 50%;
+	}
+	.profile-subtitle {
+		font-size: 14px;
+		letter-spacing: 0.1rem;
+	}
+	.plan {
+		font-size: 36px;
+		font-weight: 600;
+		letter-spacing: 0.1rem;
 	}
 }
 .centered {
@@ -235,6 +345,31 @@ body {
 	position: relative;
 	flex: 1;
 	overflow-y: auto;
+
+	&.aco {
+		display: flex;
+		flex-wrap: wrap;
+		.button-container {
+			display: flex;
+			margin: 30px;
+			> div {
+				flex: 1;
+				text-align: center;
+			}
+		}
+		.edit-form {
+			padding: 0 30px;
+			margin: 30px 0;
+			flex:1;
+
+			&:first-child {
+				border-right: 1px solid rgba(255,255,255,0.1);
+			}
+			&.area-editor {
+				flex-direction: column;
+			}
+		}
+	}
 
 }
 .lhm-logo-container {
@@ -357,7 +492,14 @@ body {
 	padding-right: 15px;
 	font-size: 12px;
 	margin-left: auto;
-	margin-right: 21px;
+	height:31px;
+	margin-right: 10px;
+	font-family: 'Courier Prime';
+	font-size: 12px;
+	display: flex;
+	align-items: center;
+	text-align: center;
+	letter-spacing: 0.1em;
 }
 .main-buttons-container {
 	width: calc(100% - 120px);
@@ -715,6 +857,11 @@ img.smallLogo {
     &.strong {
         font-weight: 700;
     }
+
+	&.disabled {
+		opacity: 0.5;
+		cursor: unset;
+	}
 }
 .veto-description {
 	transition: width 0.1875s, opacity 0.125s;
@@ -815,7 +962,12 @@ img.smallLogo {
 	padding-left: 57px;
 	padding-right: 65px;
 	font-size: 12px;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
+    border-bottom: 1px solid rgba(255,255,255,0.1); 
+	.button {
+		&:last-child {
+			margin-right: 0;
+		}
+	}
 	p {
 		text-transform: uppercase;
 		margin-bottom: 0;
@@ -1261,12 +1413,27 @@ form {
 	display: flex;
 	align-items: center;
 }
+.edit-form {
+	display: flex;
+	padding: 30px 66px;
+	.main-form {
+		flex:1;
+	}
+}
+.side-pick-container {
+	.checkboxes {
+		display: flex;
+		.checkbox-container {
+			margin-right: 50px;
+			margin-bottom: 0;
+		}
+	}
+}
 .dropArea {
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	border-radius: 10px;
-	border: 1px dashed #ffffff;
+	border: 1px dashed #BDF2D5;
 	height: 94px;
 	opacity: 0.6;
 	position: relative;
@@ -1304,9 +1471,13 @@ form {
 	}
 	label {
 		flex: 1;
-		font-size: 10px;
 		font-weight: 600;
+		font-size: 12px;
+		font-family: "Montserrat";
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
 		margin-bottom: 0;
+		color: #BDF2D5;
 		height: 100%;
 		img {
 			margin-right: 22px;
@@ -1420,8 +1591,8 @@ form {
 	}
 	.modal-content {
 		border-radius: 0;
-		background-color: #202328;
-		box-shadow: 0 0 121px 4px rgba(0, 8, 6, 0.5);
+		background-color: black;
+		box-shadow: 0px 0px 20px 10px rgba(0, 0, 0, 0.4);
 	}
 	.modal-header {
 		border-bottom: none;
@@ -1438,6 +1609,13 @@ form {
 	}
 	.modal-footer {
 		border-top: none;
+		justify-content: center;
+		padding: 0 31px !important;
+		margin-bottom: 40px;
+		.button {
+			flex:1;
+			text-align: center;
+		}
 	}
 	.modal-body {
 		padding: 31px;
@@ -1503,13 +1681,16 @@ form {
 }
 .modal-backdrop.show {
 }
+.modal.show {
+	backdrop-filter: blur(20px);
+	background: rgba(17, 17, 17, 0.5);
+}
 .modal-backdrop {
 	/*background-color: #111111;
 	background-image: url('./assets/leftBottom.png'), url('./assets/rightTop.png');
 	background-repeat: no-repeat;
 	background-position: left bottom, right top;*/
 	background: rgba(17, 17, 17, 0.5);
-	backdrop-filter: blur(100px);
 }
 .veto-list {
 	.form-check {
@@ -1737,6 +1918,7 @@ form {
 	}
 }
 .download-container {
+	display: flex;
 	.btn {
 		margin-left: 5px;
 	}
@@ -1819,8 +2001,17 @@ form {
 		}
 	}
 }
+.checkbox-container {
+	display: flex;
+	margin-bottom: 16px;
+	.checkbox-label {
+		font-size: 12px;
+		display: flex;
+		align-items: center;
+	}
+}
 .tournament-content{
-    max-width: calc(100vw - 200px);
+    max-width: calc(100vw - 193px);
     overflow: auto;
     display: flex;
 }

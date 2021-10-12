@@ -209,9 +209,6 @@ const Tournamentss = ({ cxt, setOnBackClick }: IProps) => {
 					))}
 				</div>
 				<div className="action-container">
-					<div className="button green empty big wide" onClick={add}>
-						Import teams
-					</div>
 					<div className="button green strong big wide" onClick={add}>
 						{t('tournaments.create')}
 					</div>

@@ -29,10 +29,11 @@ button.btn-primary {
     justify-content: center;
     position: absolute;
     width:100%;
-    height: calc(100% - 64px);
+    height: 100%;
     z-index:1060;
     transition: opacity 0.5s, transform 0s 0.5s;
-    background-color: rgba(107, 28, 255, 0.82);
+    background-color: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(20px);
 }
 .tooltip-inner {
     
@@ -68,6 +69,19 @@ button.btn-primary {
     align-self: flex-end;
     position: relative;
     bottom: 15px;
+}
+.top_buttons .greeting {
+    text-transform: none;
+    font-family: 'Montserrat';
+    font-weight: normal;
+    font-size: 12px;
+    display: flex;
+    cursor: pointer;
+    align-items: center;
+}
+.top_buttons .greeting img {
+    transform: scaleX(-1);
+    margin-left: 12px;
 }
 .loading-container.hide {
     opacity:0;
@@ -329,24 +343,21 @@ button.btn-primary {
     align-items: center;
 }
 .aco_area_config {
-    height: 82px;
     padding-left:23px;
     padding-right:23px;
     display: flex;
+    min-width: 400px;
+    height: 76px;
     align-items: center;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 .aco_area_config div {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
     margin-right: 30px;
+    padding: 29px 0;
+    font-weight: 700;
+    font-size: 14px;
 }
-.aco_area_config:nth-child(2n) {
-    background-color: #202328;
-}
-.aco_area_config:nth-child(2n+1) {
-    background-color: #2f3238;
-}
+
 .aco_area_config img {
     margin-left: auto;
     cursor: pointer;
@@ -356,7 +367,6 @@ button.btn-primary {
 }
 .btn.add_aco_config {
     margin: 0;
-    flex:1;
     margin-top:20px;
 }
 .aco_dot {

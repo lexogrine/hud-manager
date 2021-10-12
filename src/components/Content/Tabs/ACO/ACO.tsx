@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Row, FormGroup, Input } from 'reactstrap';
+import { FormGroup, Input } from 'reactstrap';
 import maps from './MapPointer';
 import trash from './../../../../styles/trash.svg';
 import MapPointer from './MapPointer/MapPointer';
@@ -9,6 +9,7 @@ import SaveAreaModal from './SaveAreaModal/SaveAreaModal';
 import AddConfigModal from './AddConfigModal/AddConfigModal';
 import { socket } from '../Live/Live';
 import Switch from '../../../Switch/Switch';
+import { useTranslation } from 'react-i18next';
 
 const ACO = () => {
 	const [acos, setACOs] = useState<MapConfig[]>([]);
@@ -22,6 +23,8 @@ const ACO = () => {
 
 	const [newAreaName, setNewAreaName] = useState('');
 	const [newAreaPriority, setNewAreaPriority] = useState(0);
+
+	const { t } = useTranslation();
 
 	const loadACOs = async () => {
 		const acos = await api.aco.get();
@@ -120,9 +123,9 @@ const ACO = () => {
 				areaPriority={newAreaPriority}
 			/>
 			<AddConfigModal close={() => setConfigOpen(false)} isOpen={isConfigOpened} save={saveConfig} />
-			<div className={`tab-content-container full-scroll`}>
-				<Row className="padded">
-					<div style={{ width: '512px', marginRight: '25px' }}>
+			<div className={`tab-content-container aco no-padding`}>
+				<div className="edit-form" style={{ maxWidth: '644px' }}>
+					<div className="main-form">
 						<div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
 							Director status:
 							<Switch
@@ -158,71 +161,73 @@ const ACO = () => {
 							}
 							addingNew={!!newArea}
 						/>
-						<div className="btn-container">
-							{!newArea ? (
-								<button
-									type="button"
-									className="round-btn run-game btn btn-secondary add_aco_config"
-									onClick={() => {
-										setNewArea([]);
-										setActiveConfig(null);
-									}}
-								>
-									Add area
-								</button>
-							) : (
-								<>
-									<button
-										type="button"
-										className="round-btn run-game btn btn-secondary add_aco_config"
-										onClick={addNewArea}
-									>
-										Save area
-									</button>
-									<button
-										type="button"
-										className="round-btn run-game btn btn-secondary add_aco_config"
-										onClick={() => setNewArea(null)}
-									>
-										Clear area
-									</button>
-								</>
-							)}
-						</div>
+
 					</div>
-					{activeConfig ? (
-						<div style={{ flex: 1, minWidth: '386px' }}>
-							<div className="aco_config_title">
-								AREA: {activeConfig.name} | PRIORITY: {activeConfig.priority}
-							</div>
-							{activeConfig.configs.map(config => (
-								<div key={config} className="aco_area_config">
-									<div>{config}</div>
-									<img
-										src={trash}
-										className="action"
-										alt="Delete Config"
-										onClick={() => removeConfigFromArea(config)}
-									/>
+				</div>
+				{activeConfig ? (
+					<div className="edit-form area-editor" style={{ flex: 1 }}>
+						{activeConfig.configs.map((config, i) => (
+							<div key={config} className="aco_area_config">
+								<div style={{ display: 'flex' }}>
+									<div>Area {activeConfig.name}, #{i + 1}</div>
+									<div>Priority {activeConfig.priority}</div>
 								</div>
-							))}
-							<button
-								type="button"
-								className="round-btn run-game btn btn-secondary add_aco_config"
+								<img
+									src={trash}
+									className="action"
+									alt="Delete Config"
+									onClick={() => removeConfigFromArea(config)}
+								/>
+							</div>
+						))}
+						<div className="button-container">
+							<div
+								className="button green strong big wide"
 								onClick={() => setConfigOpen(true)}
 							>
 								Add config
-							</button>
-							<button
-								type="button"
-								className="round-btn run-game btn btn-secondary add_aco_config"
+							</div>
+							<div
+								className="button green strong big wide empty"
 								onClick={removeCurrentArea}
 							>
 								Remove area
-							</button>
+							</div>
 						</div>
-					) : null}
-				</Row>
+					</div>
+				) : null}
+			</div>
+			<div className="action-container">
+				{
+					!newArea ? (
+						<>
+							<div
+								className="button green strong big wide"
+								onClick={() => {
+									setNewArea([]);
+									setActiveConfig(null);
+								}}
+							>
+								Add area
+							</div>
+						</>
+					) : (
+						<>
+							<div
+								className="button green strong big wide empty"
+								onClick={() => setNewArea(null)}
+							>
+								{t('common.cancel')}
+							</div>
+							<div
+								className="button green strong big wide"
+								onClick={addNewArea}
+							>
+								{t('common.save')}
+							</div>
+						</>
+					)
+				}
 			</div>
 		</>
 	);

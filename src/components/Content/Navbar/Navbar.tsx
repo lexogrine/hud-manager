@@ -14,11 +14,12 @@ interface IProps {
 	activeTab: string;
 	toggle: (tab: string, data?: any) => void;
 	files: boolean;
+	isCollapsed: boolean;
+	setCollapse: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-const Navbar = ({ activeTab, toggle, files }: IProps) => {
+const Navbar = ({ activeTab, toggle, files, setCollapse, isCollapsed }: IProps) => {
 	const [config, setConfig] = useState<Config | null>(null);
-	const [isCollapsed, setCollapse] = useState(false);
 	const { t } = useTranslation();
 
 	const getConfig = async () => {

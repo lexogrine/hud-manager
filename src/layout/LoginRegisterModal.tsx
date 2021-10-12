@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Modal, ModalHeader, ModalBody, FormGroup, Input, Button, ModalFooter } from 'reactstrap';
+import LabeledInput from '../components/LabeledInput';
 import api from './../api/api';
 interface IProps {
 	isOpen: boolean;
@@ -35,62 +35,49 @@ const LoginRegisterModal = ({ isOpen, loading, setLoading, loadUser, error }: IP
 		if (e.key === 'Enter') login();
 	};
 
+	if (!isOpen) return null;
+
 	return (
-		<Modal isOpen={isOpen} toggle={() => {}} className="veto_modal">
-			<ModalHeader>Login</ModalHeader>
-			<div className="veto_type">
-				<div className={`type active`}>Login</div>
-				<a
-					className={`type`}
-					href="https://lexogrine.com/manager/register"
-					rel="noopener noreferrer"
-					target="_blank"
-				>
-					Register
-				</a>
-			</div>
-			<ModalBody>
+		<div className="login-view">
+			<div className="logo">LHM</div>
+			<div className="container">
 				{error ? <p className="login-error">{error}</p> : null}
-				<FormGroup>
-					<Input
-						name="email"
-						type="email"
-						id="email"
-						placeholder="Email"
-						value={email}
-						onChange={handleChange(setEmail)}
-						onKeyDown={onEnter}
-					/>
-				</FormGroup>
-				<FormGroup>
-					<Input
-						name="password"
-						type="password"
-						id="password"
-						placeholder="Password"
-						value={password}
-						onChange={handleChange(setPassword)}
-						onKeyDown={onEnter}
-					/>
-				</FormGroup>
-				<FormGroup>
-					<Input
-						name="totp"
-						type="text"
-						id="totp"
-						placeholder="2FA Token"
-						value={token}
-						onChange={handleChange(setToken)}
-						onKeyDown={onEnter}
-					/>
-				</FormGroup>
-			</ModalBody>
-			<ModalFooter className="no-padding">
-				<Button color="primary" onClick={login} disabled={loading} className="modal-save">
+				<LabeledInput
+					name="email"
+					type="email"
+					label="Email"
+					id="email"
+					placeholder="Email"
+					value={email}
+					onChange={handleChange(setEmail)}
+					onKeyDown={onEnter}
+				/>
+				<LabeledInput
+					name="password"
+					type="password"
+					id="password"
+					label="Password"
+					placeholder="Password"
+					value={password}
+					onChange={handleChange(setPassword)}
+					onKeyDown={onEnter}
+				/>
+				<LabeledInput
+					name="totp"
+					type="text"
+					id="totp"
+					label="2FA Token"
+					placeholder="2FA Token"
+					value={token}
+					onChange={handleChange(setToken)}
+					onKeyDown={onEnter}
+				/>
+				<div onClick={loading ? undefined : login} className={`button big strong green wide ${loading ? 'disabled' : ''}`}>
 					Login
-				</Button>
-			</ModalFooter>
-		</Modal>
+				</div>
+				<div className="register">Don’t have an account? <a target="_blank" rel="noopener noreferrer" href="https://lexogrine.com/manager/register">Register now!</a></div>
+			</div>
+		</div>
 	);
 };
 
