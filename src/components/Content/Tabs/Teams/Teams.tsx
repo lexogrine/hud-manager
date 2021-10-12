@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Button } from 'reactstrap';
 import countries from './../../countries';
 import api from './../../../../api/api';
 import * as I from './../../../../api/interfaces';
@@ -8,6 +7,7 @@ import TeamEditModal from './TeamEditModal';
 import TeamListEntry from './Team';
 import CustomFieldsModal from '../../../CustomFields/CustomFieldsModal';
 import { useTranslation } from 'react-i18next';
+import editIcon from './../../../../styles/edit.png';
 
 interface IProps {
 	cxt: IContextData;
@@ -263,9 +263,7 @@ const TeamsTab = ({ cxt }: IProps) => {
 						</div>
 					))}
 					<div className="options">
-						<Button className="purple-btn round-btn" onClick={openCustomFields}>
-							{t('common.manage')}
-						</Button>
+						<img className="image-button" src={editIcon}  onClick={openCustomFields}/>
 					</div>
 				</div>
 				{sortTeams(cxt.teams.filter(filterTeams)).map(team => (

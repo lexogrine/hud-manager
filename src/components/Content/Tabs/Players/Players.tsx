@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { Button } from 'reactstrap';
 import countries from './../../countries';
 import api from './../../../../api/api';
 import * as I from './../../../../api/interfaces';
@@ -9,6 +8,7 @@ import PlayerEditModal from './PlayerEditModal';
 import CustomFieldsModal from '../../../CustomFields/CustomFieldsModal';
 import { useTranslation } from 'react-i18next';
 import NamesFileModal from './NamesFileModal';
+import editIcon from './../../../../styles/edit.png';
 // import { GameOnly } from '../Config/Config';
 // import downloadIcon from './../../../../styles/downloadHUDIcon.png';
 
@@ -325,9 +325,7 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 						</div>
 					))}
 					<div className="options">
-						<Button className="purple-btn round-btn" onClick={openCustomFields}>
-							{t('common.manage')}
-						</Button>
+						<img className="image-button" src={editIcon}  onClick={openCustomFields}/>
 					</div>
 				</div>
 				{sortPlayers(cxt.players.filter(filterPlayers)).map(player => (

@@ -1,10 +1,9 @@
-import { Button } from 'reactstrap';
 import * as I from './../../../../api/interfaces';
 import { countries } from './../../../../api/countries';
 import config from './../../../../api/config';
 import CustomFieldValue from '../../../CustomFields/CustomFieldValue';
 import { IContextData } from '../../../Context';
-import { useTranslation } from 'react-i18next';
+import editIcon from './../../../../styles/edit.png';
 
 interface Props {
 	team: I.Team;
@@ -16,7 +15,6 @@ interface Props {
 
 const TeamListEntry = ({ team, edit, hash, fields, cxt }: Props) => {
 	const country = !team.country ? null : countries[team.country] || null;
-	const { t } = useTranslation();
 	return (
 		<div className="item-list-entry">
 			<div className="picture">{team.logo ? <img src={`${team.logo}?hash=${hash}`} /> : null}</div>
@@ -38,9 +36,7 @@ const TeamListEntry = ({ team, edit, hash, fields, cxt }: Props) => {
 				</div>
 			))}
 			<div className="options">
-				<Button className="purple-btn round-btn" onClick={edit}>
-					{t('common.edit')}
-				</Button>
+				<img src={editIcon} className="image-button" onClick={edit} />
 			</div>
 		</div>
 	);
