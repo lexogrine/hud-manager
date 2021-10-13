@@ -36,18 +36,19 @@ export const customer: I.CustomerData = {
 };
 
 export interface CameraRoomPlayer {
-	steamid: string,
-	label: string,
+	steamid: string;
+	label: string;
 }
 
-const server = { socket: null } as { socket: SimpleWebSocket };
-let availablePlayers = [];
+const server = { socket: null } as { socket: SimpleWebSocket | null };
+let availablePlayers = [{ steamid: '1', label: 'Dupa'}] as CameraRoomPlayer[];
 
 export const registerRoomSetup = (socket: SimpleWebSocket) => {
 	server.socket = socket;
-
-	socket.send("registerRoomPlayers", availablePlayers);
-}
+	setTimeout(() => {
+		socket.send('registerRoomPlayers', user.generatedRoom, availablePlayers);
+	}, 1000);
+};
 
 export const validateCloudAbility = async (resource?: I.AvailableResources) => {
 	if (resource && !I.availableResources.includes(resource)) return false;
@@ -78,15 +79,19 @@ export default async function () {
 
 	app.route('/api/camera').get((_req, res) => {
 		res.json(availablePlayers);
-	});
-	
-	app.route('/api/camera').post((req, res) => {
-		if(!Array.isArray(req.body) || !req.body.every(x => typeof x === "object" && typeof x.steamid === "string" && typeof x.label === "string")) return res.sendStatus(422);
-		if(JSON.stringify(req.body).length > 1000) return res.sendStatus(422);
+	}).post((req, res) => {
+		if (
+			!Array.isArray(req.body) ||
+			!req.body.every(x => typeof x === 'object' && typeof x.steamid === 'string' && typeof x.label === 'string')
+		)
+			return res.sendStatus(422);
+		if (JSON.stringify(req.body).length > 1000) return res.sendStatus(422);
 
 		availablePlayers = req.body;
 
-		if(server.socket) server.socket.send("registerRoomPlayers", req.body);
+		setTimeout(() => {
+			if (server.socket) server.socket.send('registerRoomPlayers', user.generatedRoom, req.body);
+		}, 1000);
 	});
 
 	TournamentHandler();

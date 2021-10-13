@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.logout = exports.getCurrent = exports.loginHandler = exports.api = exports.verifyGame = exports.socket = exports.fetch = void 0;
+exports.logout = exports.getCurrent = exports.loginHandler = exports.api = exports.verifyGame = exports.generatedRoom = exports.socket = exports.fetch = void 0;
 const electron_1 = require("electron");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const node_fetch_1 = __importDefault(require("node-fetch"));
@@ -33,7 +33,7 @@ let cameraSupportInit = false;
 
     });
 }*/
-const generatedRoom = 'abc123' || (0, uuid_1.v4)();
+exports.generatedRoom = 'abc123' || (0, uuid_1.v4)();
 const socketMap = {};
 const connectSocket = () => {
     if (exports.socket)
@@ -43,8 +43,8 @@ const connectSocket = () => {
             Cookie: cookieJar.getCookieStringSync(USE_LOCAL_BACKEND ? `http://${domain}/` : `https://${domain}/`)
         }
     });
-    exports.socket.on("connection", () => {
-        exports.socket?.send("registerAsProxy", generatedRoom);
+    exports.socket.on('connection', () => {
+        exports.socket?.send('registerAsProxy', exports.generatedRoom);
     });
     exports.socket._socket.onerror = (err) => {
         console.log(err);
@@ -69,41 +69,40 @@ const connectSocket = () => {
         exports.socket = null;
         setTimeout(connectSocket, 2000);
     });
-    exports.socket.send("registerAsProxy", generatedRoom);
+    exports.socket.send('registerAsProxy', exports.generatedRoom);
+    (0, api_1.registerRoomSetup)(exports.socket);
     socket_1.ioPromise.then(io => {
-        exports.socket?.on("hudsOnline", (hudsUUID) => {
-            io.to("csgo").emit("hudsOnline", hudsUUID);
+        exports.socket?.on('hudsOnline', (hudsUUID) => {
+            io.to('csgo').emit('hudsOnline', hudsUUID);
         });
-        exports.socket?.on("offerFromPlayer", (room, data, steamid, uuid) => {
+        exports.socket?.on('offerFromPlayer', (room, data, steamid, uuid) => {
             const targetSocket = socketMap[uuid];
             if (!targetSocket)
                 return;
-            targetSocket.emit("offerFromPlayer", room, data, steamid);
+            targetSocket.emit('offerFromPlayer', room, data, steamid);
         });
         if (!cameraSupportInit) {
             cameraSupportInit = true;
-            io.on("offerFromHUD", (room, data, steamid, uuid) => {
-                exports.socket?.send("offerFromHUD", room, data, steamid, uuid);
+            io.on('offerFromHUD', (room, data, steamid, uuid) => {
+                exports.socket?.send('offerFromHUD', room, data, steamid, uuid);
             });
-            io.on("connection", (ioSocket) => {
-                ioSocket.on("registerAsHUD", (room) => {
+            io.on('connection', ioSocket => {
+                ioSocket.on('registerAsHUD', (room) => {
                     const sockets = Object.values(socketMap);
-                    console.log("trying");
                     if (sockets.includes(ioSocket))
                         return;
-                    console.log("wow");
                     const uuid = (0, uuid_1.v4)();
                     socketMap[uuid] = ioSocket;
-                    exports.socket?.send("registerAsHUD", room, uuid);
+                    exports.socket?.send('registerAsHUD', room, uuid);
                 });
-                ioSocket.on("offerFromHUD", (room, data, steamid) => {
+                ioSocket.on('offerFromHUD', (room, data, steamid) => {
                     const sockets = Object.entries(socketMap);
                     const targetSocket = sockets.find(entry => entry[1] === ioSocket);
                     if (!targetSocket)
                         return;
-                    exports.socket?.send("offerFromHUD", room, data, steamid, targetSocket[0]);
+                    exports.socket?.send('offerFromHUD', room, data, steamid, targetSocket[0]);
                 });
-                ioSocket.on("disconnect", () => {
+                ioSocket.on('disconnect', () => {
                     const sockets = Object.entries(socketMap);
                     const targetSocket = sockets.find(entry => entry[1] === ioSocket);
                     if (!targetSocket)

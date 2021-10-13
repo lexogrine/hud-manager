@@ -22,7 +22,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.validateCloudAbility = exports.customer = void 0;
+exports.validateCloudAbility = exports.registerRoomSetup = exports.customer = void 0;
 const express_1 = __importDefault(require("express"));
 const electron_1 = require("electron");
 const steam_game_path_1 = require("steam-game-path");
@@ -56,6 +56,15 @@ exports.customer = {
     customer: null,
     game: null
 };
+const server = { socket: null };
+let availablePlayers = [{ steamid: '1', label: 'Dupa' }];
+const registerRoomSetup = (socket) => {
+    server.socket = socket;
+    setTimeout(() => {
+        socket.send('registerRoomPlayers', user.generatedRoom, availablePlayers);
+    }, 1000);
+};
+exports.registerRoomSetup = registerRoomSetup;
 const validateCloudAbility = async (resource) => {
     if (resource && !I.availableResources.includes(resource))
         return false;
@@ -77,6 +86,20 @@ async function default_1() {
     __1.app.route('/api/config').get(config.getConfig).patch(config.updateConfig);
     __1.app.route('/api/version').get((req, res) => res.json({ version: electron_1.app.getVersion() }));
     __1.app.route('/api/version/last').get(machine.getLastLaunchedVersion).post(machine.saveLastLaunchedVersion);
+    __1.app.route('/api/camera').get((_req, res) => {
+        res.json(availablePlayers);
+    }).post((req, res) => {
+        if (!Array.isArray(req.body) ||
+            !req.body.every(x => typeof x === 'object' && typeof x.steamid === 'string' && typeof x.label === 'string'))
+            return res.sendStatus(422);
+        if (JSON.stringify(req.body).length > 1000)
+            return res.sendStatus(422);
+        availablePlayers = req.body;
+        setTimeout(() => {
+            if (server.socket)
+                server.socket.send('registerRoomPlayers', user.generatedRoom, req.body);
+        }, 1000);
+    });
     (0, routes_1.default)();
     (0, routes_2.default)();
     (0, routes_6.default)();
