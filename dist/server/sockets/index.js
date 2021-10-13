@@ -17,7 +17,7 @@ let activeModuleDirs = [];
 socket_1.ioPromise.then(io => {
     io.on('connection', socket => {
         const ref = socket.request?.headers?.referer || '';
-        config_1.verifyUrl(ref).then(status => {
+        (0, config_1.verifyUrl)(ref).then(status => {
             if (status) {
                 socket.join('game');
             }
@@ -83,19 +83,19 @@ socket_1.ioPromise.then(io => {
                 socket_1.runtimeConfig.currentHUD.url = null;
                 socket_1.runtimeConfig.currentHUD.isDev = false;
                 socket_1.runtimeConfig.currentHUD.dir = '';
-                keybinder_1.unregisterAllKeybinds(dir);
+                (0, keybinder_1.unregisterAllKeybinds)(dir);
             }
             else {
                 if (hudUrl) {
-                    const keybinds = huds_1.getHUDKeyBinds(dir) || [];
+                    const keybinds = (0, huds_1.getHUDKeyBinds)(dir) || [];
                     for (const bind of keybinds) {
-                        keybinder_1.registerKeybind(bind.bind, () => {
+                        (0, keybinder_1.registerKeybind)(bind.bind, () => {
                             io.to(dir).emit('keybindAction', bind.action);
                         }, dir);
                     }
                 }
                 else if (socket_1.runtimeConfig.currentHUD.dir) {
-                    keybinder_1.unregisterAllKeybinds(socket_1.runtimeConfig.currentHUD.dir);
+                    (0, keybinder_1.unregisterAllKeybinds)(socket_1.runtimeConfig.currentHUD.dir);
                 }
                 socket_1.runtimeConfig.currentHUD.url = hudUrl;
                 socket_1.runtimeConfig.currentHUD.isDev = isDev;
@@ -116,15 +116,15 @@ socket_1.ioPromise.then(io => {
         socket.on('toggle_module', async (moduleDir) => {
             if (activeModuleDirs.includes(moduleDir)) {
                 activeModuleDirs = activeModuleDirs.filter(dir => dir !== moduleDir);
-                keybinder_1.unregisterAllKeybinds(moduleDir);
+                (0, keybinder_1.unregisterAllKeybinds)(moduleDir);
             }
             else {
-                const ar = await ar_1.getARModuleData(moduleDir);
+                const ar = await (0, ar_1.getARModuleData)(moduleDir);
                 if (!ar) {
                     return;
                 }
                 for (const bind of ar.keybinds) {
-                    keybinder_1.registerKeybind(bind.bind, () => {
+                    (0, keybinder_1.registerKeybind)(bind.bind, () => {
                         io.emit('keybindAction', bind.action);
                     }, moduleDir);
                 }

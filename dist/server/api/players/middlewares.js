@@ -45,8 +45,8 @@ const getPlayers = async (req, res) => {
             $orVariant.steamid = steamidOr;
         }
     }
-    const players = await index_1.getPlayersList({ $or });
-    const config = await config_1.loadConfig();
+    const players = await (0, index_1.getPlayersList)({ $or });
+    const config = await (0, config_1.loadConfig)();
     return res.json(players.map(player => ({
         ...player,
         avatar: player.avatar && player.avatar.length
@@ -59,7 +59,7 @@ const getPlayer = async (req, res) => {
     if (!req.params.id) {
         return res.sendStatus(422);
     }
-    const player = await index_1.getPlayerById(req.params.id);
+    const player = await (0, index_1.getPlayerById)(req.params.id);
     if (!player) {
         return res.sendStatus(404);
     }
@@ -70,7 +70,7 @@ const updatePlayer = async (req, res) => {
     if (!req.params.id) {
         return res.sendStatus(422);
     }
-    const player = await index_1.getPlayerById(req.params.id, true);
+    const player = await (0, index_1.getPlayerById)(req.params.id, true);
     if (!player) {
         return res.sendStatus(404);
     }
@@ -89,25 +89,25 @@ const updatePlayer = async (req, res) => {
         updated.avatar = player.avatar;
     }
     let cloudStatus = false;
-    if (await __1.validateCloudAbility()) {
-        cloudStatus = (await cloud_1.checkCloudStatus(__1.customer.game)) === 'ALL_SYNCED';
+    if (await (0, __1.validateCloudAbility)()) {
+        cloudStatus = (await (0, cloud_1.checkCloudStatus)(__1.customer.game)) === 'ALL_SYNCED';
     }
     players.update({ _id: req.params.id }, { $set: updated }, {}, async (err) => {
         if (err) {
             return res.sendStatus(500);
         }
         if (cloudStatus) {
-            await cloud_1.updateResource(__1.customer.game, 'players', { ...updated, _id: req.params.id });
+            await (0, cloud_1.updateResource)(__1.customer.game, 'players', { ...updated, _id: req.params.id });
         }
-        const player = await index_1.getPlayerById(req.params.id);
+        const player = await (0, index_1.getPlayerById)(req.params.id);
         return res.json(player);
     });
 };
 exports.updatePlayer = updatePlayer;
 const addPlayer = async (req, res) => {
     let cloudStatus = false;
-    if (await __1.validateCloudAbility()) {
-        cloudStatus = (await cloud_1.checkCloudStatus(__1.customer.game)) === 'ALL_SYNCED';
+    if (await (0, __1.validateCloudAbility)()) {
+        cloudStatus = (await (0, cloud_1.checkCloudStatus)(__1.customer.game)) === 'ALL_SYNCED';
     }
     const newPlayer = {
         firstName: req.body.firstName,
@@ -125,7 +125,7 @@ const addPlayer = async (req, res) => {
             return res.sendStatus(500);
         }
         if (cloudStatus) {
-            await cloud_1.addResource(__1.customer.game, 'players', player);
+            await (0, cloud_1.addResource)(__1.customer.game, 'players', player);
         }
         return res.json(player);
     });
@@ -135,20 +135,20 @@ const deletePlayer = async (req, res) => {
     if (!req.params.id) {
         return res.sendStatus(422);
     }
-    const player = await index_1.getPlayerById(req.params.id);
+    const player = await (0, index_1.getPlayerById)(req.params.id);
     if (!player) {
         return res.sendStatus(404);
     }
     let cloudStatus = false;
-    if (await __1.validateCloudAbility()) {
-        cloudStatus = (await cloud_1.checkCloudStatus(__1.customer.game)) === 'ALL_SYNCED';
+    if (await (0, __1.validateCloudAbility)()) {
+        cloudStatus = (await (0, cloud_1.checkCloudStatus)(__1.customer.game)) === 'ALL_SYNCED';
     }
     players.remove({ _id: req.params.id }, async (err, n) => {
         if (err) {
             return res.sendStatus(500);
         }
         if (cloudStatus) {
-            await cloud_1.deleteResource(__1.customer.game, 'players', req.params.id);
+            await (0, cloud_1.deleteResource)(__1.customer.game, 'players', req.params.id);
         }
         return res.sendStatus(n ? 200 : 404);
     });
@@ -158,13 +158,13 @@ const getAvatarFile = async (req, res) => {
     if (!req.params.id) {
         return res.sendStatus(422);
     }
-    const team = await index_1.getPlayerById(req.params.id, true);
+    const team = await (0, index_1.getPlayerById)(req.params.id, true);
     if (!team || !team.avatar || !team.avatar.length) {
         return res.sendStatus(404);
     }
     const imgBuffer = Buffer.from(team.avatar, 'base64');
     res.writeHead(200, {
-        'Content-Type': isSvg_1.default(imgBuffer) ? 'image/svg+xml' : 'image/png',
+        'Content-Type': (0, isSvg_1.default)(imgBuffer) ? 'image/svg+xml' : 'image/png',
         'Content-Length': imgBuffer.length
     });
     res.end(imgBuffer);
@@ -174,12 +174,12 @@ const getAvatarURLBySteamID = async (req, res) => {
     if (!req.params.steamid) {
         return res.sendStatus(422);
     }
-    const config = await config_1.loadConfig();
+    const config = await (0, config_1.loadConfig)();
     const response = {
         custom: '',
         steam: ''
     };
-    const player = await index_1.getPlayerBySteamId(req.params.steamid, true);
+    const player = await (0, index_1.getPlayerBySteamId)(req.params.steamid, true);
     if (player && player.avatar && player.avatar.length && player._id) {
         response.custom = `http://${config_1.internalIP}:${config.port}/api/players/avatar/${player._id}`;
     }
@@ -187,7 +187,7 @@ const getAvatarURLBySteamID = async (req, res) => {
         if (config.steamApiKey.length === 0) {
             return res.json(response);
         }
-        const re = await node_fetch_1.default(`http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${config.steamApiKey}&steamids=${req.params.steamid}`, {}).then(res => res.json());
+        const re = await (0, node_fetch_1.default)(`http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${config.steamApiKey}&steamids=${req.params.steamid}`, {}).then(res => res.json());
         if (re.response && re.response.players && re.response.players[0] && re.response.players[0].avatarfull) {
             response.steam = re.response.players[0].avatarfull;
         }

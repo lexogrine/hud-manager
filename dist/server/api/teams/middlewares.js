@@ -38,8 +38,8 @@ const getTeams = async (req, res) => {
     if (game === 'csgo') {
         $or.push({ game: { $exists: false } });
     }
-    const teams = await index_1.getTeamsList({ $or });
-    const config = await config_1.loadConfig();
+    const teams = await (0, index_1.getTeamsList)({ $or });
+    const config = await (0, config_1.loadConfig)();
     return res.json(teams.map(team => ({
         ...team,
         logo: team.logo && team.logo.length ? `http://${config_1.internalIP}:${config.port}/api/teams/logo/${team._id}` : null
@@ -50,11 +50,11 @@ const getTeam = async (req, res) => {
     if (!req.params.id) {
         return res.sendStatus(422);
     }
-    const team = await index_1.getTeamById(req.params.id, true);
+    const team = await (0, index_1.getTeamById)(req.params.id, true);
     if (!team) {
         return res.sendStatus(404);
     }
-    const config = await config_1.loadConfig();
+    const config = await (0, config_1.loadConfig)();
     return res.json({
         ...team,
         logo: team.logo && team.logo.length ? `http://${config_1.internalIP}:${config.port}/api/teams/logo/${team._id}` : null
@@ -63,8 +63,8 @@ const getTeam = async (req, res) => {
 exports.getTeam = getTeam;
 const addTeam = async (req, res) => {
     let cloudStatus = false;
-    if (await __1.validateCloudAbility()) {
-        cloudStatus = (await cloud_1.checkCloudStatus(__1.customer.game)) === 'ALL_SYNCED';
+    if (await (0, __1.validateCloudAbility)()) {
+        cloudStatus = (await (0, cloud_1.checkCloudStatus)(__1.customer.game)) === 'ALL_SYNCED';
     }
     const newTeam = {
         name: req.body.name,
@@ -79,7 +79,7 @@ const addTeam = async (req, res) => {
             return res.sendStatus(500);
         }
         if (cloudStatus) {
-            await cloud_1.addResource(__1.customer.game, 'teams', team);
+            await (0, cloud_1.addResource)(__1.customer.game, 'teams', team);
         }
         return res.json(team);
     });
@@ -89,13 +89,13 @@ const updateTeam = async (req, res) => {
     if (!req.params.id) {
         return res.sendStatus(422);
     }
-    const team = await index_1.getTeamById(req.params.id, true);
+    const team = await (0, index_1.getTeamById)(req.params.id, true);
     if (!team) {
         return res.sendStatus(404);
     }
     let cloudStatus = false;
-    if (await __1.validateCloudAbility()) {
-        cloudStatus = (await cloud_1.checkCloudStatus(__1.customer.game)) === 'ALL_SYNCED';
+    if (await (0, __1.validateCloudAbility)()) {
+        cloudStatus = (await (0, cloud_1.checkCloudStatus)(__1.customer.game)) === 'ALL_SYNCED';
     }
     const updated = {
         name: req.body.name,
@@ -113,9 +113,9 @@ const updateTeam = async (req, res) => {
             return res.sendStatus(500);
         }
         if (cloudStatus) {
-            await cloud_1.updateResource(__1.customer.game, 'teams', { ...updated, _id: req.params.id });
+            await (0, cloud_1.updateResource)(__1.customer.game, 'teams', { ...updated, _id: req.params.id });
         }
-        const team = await index_1.getTeamById(req.params.id);
+        const team = await (0, index_1.getTeamById)(req.params.id);
         return res.json(team);
     });
 };
@@ -124,13 +124,13 @@ const deleteTeam = async (req, res) => {
     if (!req.params.id) {
         return res.sendStatus(422);
     }
-    const team = await index_1.getTeamById(req.params.id);
+    const team = await (0, index_1.getTeamById)(req.params.id);
     if (!team) {
         return res.sendStatus(404);
     }
     let cloudStatus = false;
-    if (await __1.validateCloudAbility()) {
-        cloudStatus = (await cloud_1.checkCloudStatus(__1.customer.game)) === 'ALL_SYNCED';
+    if (await (0, __1.validateCloudAbility)()) {
+        cloudStatus = (await (0, cloud_1.checkCloudStatus)(__1.customer.game)) === 'ALL_SYNCED';
     }
     //players.update({team:})
     teams.remove({ _id: req.params.id }, async (err, n) => {
@@ -138,7 +138,7 @@ const deleteTeam = async (req, res) => {
             return res.sendStatus(500);
         }
         if (cloudStatus) {
-            await cloud_1.deleteResource(__1.customer.game, 'teams', req.params.id);
+            await (0, cloud_1.deleteResource)(__1.customer.game, 'teams', req.params.id);
         }
         return res.sendStatus(n ? 200 : 404);
     });
@@ -148,13 +148,13 @@ const getLogoFile = async (req, res) => {
     if (!req.params.id) {
         return res.sendStatus(422);
     }
-    const team = await index_1.getTeamById(req.params.id, true);
+    const team = await (0, index_1.getTeamById)(req.params.id, true);
     if (!team || !team.logo || !team.logo.length) {
         return res.sendStatus(404);
     }
     const imgBuffer = Buffer.from(team.logo, 'base64');
     res.writeHead(200, {
-        'Content-Type': isSvg_1.default(imgBuffer) ? 'image/svg+xml' : 'image/png',
+        'Content-Type': (0, isSvg_1.default)(imgBuffer) ? 'image/svg+xml' : 'image/png',
         'Content-Length': imgBuffer.length
     });
     res.end(imgBuffer);

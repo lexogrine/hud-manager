@@ -39,7 +39,7 @@ class HUD {
         const io = await socket_1.ioPromise;
         if (this.current !== null || this.hud !== null)
             return null;
-        const hud = await huds_1.getHUDData(dirName);
+        const hud = await (0, huds_1.getHUDData)(dirName);
         if (hud === null)
             return null;
         const hudWindow = new electron_1.BrowserWindow({
@@ -82,10 +82,10 @@ class HUD {
             if (this.hud && this.hud.keybinds) {
                 for (const keybind of this.hud.keybinds) {
                     //globalShortcut.unregister(keybind.bind);
-                    keybinder_1.unregisterKeybind(keybind.bind, hud.dir);
+                    (0, keybinder_1.unregisterKeybind)(keybind.bind, hud.dir);
                 }
             }
-            keybinder_1.unregisterKeybind('Alt+F');
+            (0, keybinder_1.unregisterKeybind)('Alt+F');
             // globalShortcut.unregister('Alt+F');
             this.hud = null;
             this.current = null;
@@ -105,14 +105,14 @@ class HUD {
             if (!this.current || !hud || !hud.url) return;
             this.current.loadURL(hud.url);
         });*/
-        keybinder_1.registerKeybind('Alt+F', () => {
+        (0, keybinder_1.registerKeybind)('Alt+F', () => {
             if (!this.current || !hud || !hud.url)
                 return;
             this.current.loadURL(hud.url);
         });
         if (hud.keybinds) {
             for (const bind of hud.keybinds) {
-                keybinder_1.registerKeybind(bind.bind, () => {
+                (0, keybinder_1.registerKeybind)(bind.bind, () => {
                     io.to(hud.dir).emit('keybindAction', bind.action);
                 }, hud.dir);
                 /*globalShortcut.register(bind.bind, () => {

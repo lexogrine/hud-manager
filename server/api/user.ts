@@ -4,15 +4,17 @@ import jwt from 'jsonwebtoken';
 import nodeFetch, { RequestInit } from 'node-fetch';
 import { publicKey } from './publickey';
 import * as I from '../../types/interfaces';
-import { customer } from './../api';
+import { customer, registerRoomSetup } from './../api';
 import { CookieJar } from 'tough-cookie';
 import path from 'path';
+import { Socket } from 'socket.io';
 import { FileCookieStore } from 'tough-cookie-file-store';
 import fetchHandler from 'fetch-cookie';
 import { getMachineId } from './machine';
 import { SimpleWebSocket } from 'simple-websockets';
 import { ioPromise } from '../socket';
 import { checkCloudStatus } from './cloud';
+import { v4 as uuidv4 } from 'uuid';
 
 const cookiePath = path.join(app.getPath('userData'), 'cookie.json');
 const cookieJar = new CookieJar(new FileCookieStore(cookiePath));
@@ -21,17 +23,38 @@ export const fetch = fetchHandler(nodeFetch, cookieJar);
 
 export let socket: SimpleWebSocket | null = null;
 
-const USE_LOCAL_BACKEND = false;
+const USE_LOCAL_BACKEND = true;
+
+const domain = USE_LOCAL_BACKEND ? '192.168.50.40:5000' : 'hmapi.lexogrine.com';
+
+let cameraSupportInit = false;
+
+/*const initCameras = () => {
+	if(cameraSupportInit) return;
+	cameraSupportInit = true;
+
+	ioPromise.then(io => {
+
+	});
+}*/
+
+const generatedRoom = 'abc123' || uuidv4();
+
+const socketMap: Record<string, Socket> = {};
 
 const connectSocket = () => {
 	if (socket) return;
-	socket = new SimpleWebSocket(USE_LOCAL_BACKEND ? 'ws://192.168.50.40:5000' : 'wss://hmapi.lexogrine.com/', {
+	socket = new SimpleWebSocket(USE_LOCAL_BACKEND ? `ws://${domain}` : `wss://${domain}/`, {
 		headers: {
 			Cookie: cookieJar.getCookieStringSync(
-				USE_LOCAL_BACKEND ? 'http://192.168.50.40:5000/' : 'https://hmapi.lexogrine.com/'
+				USE_LOCAL_BACKEND ? `http://${domain}/` : `https://${domain}/`
 			)
 		}
 	});
+
+	socket.on("connection", () => {
+		socket?.send("registerAsProxy", generatedRoom);
+	})
 
 	socket._socket.onerror = (err: any) => {
 		console.log(err);
@@ -55,6 +78,66 @@ const connectSocket = () => {
 	socket.on('disconnect', () => {
 		socket = null;
 		setTimeout(connectSocket, 2000);
+	});
+
+	socket.send("registerAsProxy", generatedRoom);
+
+	registerRoomSetup(socket);
+
+	ioPromise.then(io => {
+		socket?.on("hudsOnline", (hudsUUID: string[]) => {
+			io.to("csgo").emit("hudsOnline", hudsUUID);
+		});
+		socket?.on("offerFromPlayer", (room: string, data: any, steamid: string, uuid: string) => {
+			const targetSocket = socketMap[uuid];
+
+			if (!targetSocket) return;
+
+			targetSocket.emit("offerFromPlayer", room, data, steamid);
+		});
+
+		if (!cameraSupportInit) {
+			cameraSupportInit = true;
+
+			io.on("offerFromHUD", (room: string, data: any, steamid: string, uuid: string) => {
+				socket?.send("offerFromHUD", room, data, steamid, uuid);
+			});
+
+			io.on("connection", (ioSocket) => {
+				ioSocket.on("registerAsHUD", (room: string) => {
+					const sockets = Object.values(socketMap);
+
+					if (sockets.includes(ioSocket)) return;
+
+					const uuid = uuidv4();
+
+					socketMap[uuid] = ioSocket;
+
+					socket?.send("registerAsHUD", room, uuid);
+				});
+
+
+				ioSocket.on("offerFromHUD", (room: string, data: any, steamid: string) => {
+					const sockets = Object.entries(socketMap);
+
+					const targetSocket = sockets.find(entry => entry[1] === ioSocket);
+
+					if (!targetSocket) return;
+
+					socket?.send("offerFromHUD", room, data, steamid, targetSocket[0]);
+				});
+
+				ioSocket.on("disconnect", () => {
+					const sockets = Object.entries(socketMap);
+
+					const targetSocket = sockets.find(entry => entry[1] === ioSocket);
+
+					if (!targetSocket) return;
+
+					delete socketMap[targetSocket[0]];
+				});
+			})
+		}
 	});
 };
 export const verifyGame: RequestHandler = (req, res, next) => {

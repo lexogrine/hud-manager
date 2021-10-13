@@ -263,7 +263,7 @@ const TeamsTab = ({ cxt }: IProps) => {
 						</div>
 					))}
 					<div className="options">
-						<img className="image-button" src={editIcon}  onClick={openCustomFields}/>
+						<img className="image-button" src={editIcon} onClick={openCustomFields} />
 					</div>
 				</div>
 				{sortTeams(cxt.teams.filter(filterTeams)).map(team => (

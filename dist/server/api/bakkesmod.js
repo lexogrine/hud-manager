@@ -113,7 +113,7 @@ const checkStatus = async (req, res) => {
 };
 exports.checkStatus = checkStatus;
 const downloadBakkesMod = async (req, res) => {
-    request_1.default(bakkesModDownloadUrl)
+    (0, request_1.default)(bakkesModDownloadUrl)
         .on('error', () => {
         return res.json({ success: false });
     })
@@ -124,7 +124,7 @@ const downloadBakkesMod = async (req, res) => {
 };
 exports.downloadBakkesMod = downloadBakkesMod;
 const downloadBakkesModData = async (req, res) => {
-    request_1.default(bakkesModDataDownloadUrl)
+    (0, request_1.default)(bakkesModDataDownloadUrl)
         .on('error', () => {
         return res.json({ success: false });
     })
@@ -135,13 +135,13 @@ const downloadBakkesModData = async (req, res) => {
 };
 exports.downloadBakkesModData = downloadBakkesModData;
 const downloadSosPlugin = async (req, res) => {
-    request_1.default(sosPluginDownloadAPIPath, (error, _response, body) => {
+    (0, request_1.default)(sosPluginDownloadAPIPath, (error, _response, body) => {
         if (error)
             return res.json({ success: false });
         const results = JSON.parse(body);
         const partialUrl = results[0].description.match(/\/uploads\/.+?\.zip/);
         const url = sosPluginDownloadUrlPrefix + partialUrl;
-        request_1.default(url)
+        (0, request_1.default)(url)
             .on('error', () => {
             return res.json({ success: false });
         })
@@ -156,12 +156,12 @@ const runBakkesMod = async (req, res) => {
     if (!fs_1.default.existsSync(bakkesModExePath))
         return res.json({ success: false, message: 'BakkesMod needs to be downloaded first' });
     //execFile(bakkesModExePath);
-    child_process_1.spawn(bakkesModExePath, { detached: true, stdio: 'ignore' });
+    (0, child_process_1.spawn)(bakkesModExePath, { detached: true, stdio: 'ignore' });
     // Try Steam first
     let useSteam = true;
     let gamePath = null;
     try {
-        gamePath = steam_game_path_1.getGamePath(252950);
+        gamePath = (0, steam_game_path_1.getGamePath)(252950);
     }
     catch (e) {
         Sentry.captureException(e);
@@ -173,12 +173,12 @@ const runBakkesMod = async (req, res) => {
     const exePath = gamePath?.steam?.path && path_1.default.join(gamePath.steam.path, 'Steam.exe');
     if (useSteam && gamePath && exePath) {
         // const gameExePath = path.join(gamePath.game.path, 'Binaries/Win64/RocketLeague.exe');
-        const steam = child_process_1.spawn(`"${exePath}"`, ['-applaunch 252950'], { detached: true, shell: true, stdio: 'ignore' });
+        const steam = (0, child_process_1.spawn)(`"${exePath}"`, ['-applaunch 252950'], { detached: true, shell: true, stdio: 'ignore' });
         steam.unref();
     }
     else {
         const startCommand = process.platform === 'win32' ? 'start' : 'xdg-open';
-        child_process_1.spawn(startCommand + ' ' + rocketLeagueUrl, { detached: true, stdio: 'ignore', shell: true });
+        (0, child_process_1.spawn)(startCommand + ' ' + rocketLeagueUrl, { detached: true, stdio: 'ignore', shell: true });
     }
 };
 exports.runBakkesMod = runBakkesMod;
@@ -204,8 +204,8 @@ const installSosPlugin = async (req, res) => {
     if (!fs_1.default.existsSync(sosPluginDownloadFilePath))
         return res.json({ success: false, message: 'SOS plugin needs to be downloaded first' });
     if (fs_1.default.existsSync(sosPluginExtractPath)) {
-        await del_1.default(sosPluginExtractPath, { force: true, expandDirectories: true });
-        await del_1.default(sosPluginExtractPath, { force: true });
+        await (0, del_1.default)(sosPluginExtractPath, { force: true, expandDirectories: true });
+        await (0, del_1.default)(sosPluginExtractPath, { force: true });
     }
     fs_1.default.mkdirSync(sosPluginExtractPath);
     const unzipper = new DecompressZip(sosPluginDownloadFilePath);
@@ -215,8 +215,8 @@ const installSosPlugin = async (req, res) => {
             if (!verifyPluginList()) {
                 fs_1.default.appendFileSync(bakkesModConfigPath, '\n' + sosPluginConfig + '\n');
             }
-            await del_1.default(sosPluginExtractPath, { force: true, expandDirectories: true });
-            await del_1.default(sosPluginExtractPath, { force: true });
+            await (0, del_1.default)(sosPluginExtractPath, { force: true, expandDirectories: true });
+            await (0, del_1.default)(sosPluginExtractPath, { force: true });
             return res.json({ success: true });
         }
         catch (e) {

@@ -26,6 +26,7 @@ import { ioPromise } from '../socket';
 import { app } from '..';
 import { checkCloudStatus, uploadLocalToCloud, downloadCloudToLocal } from './cloud';
 import { getRadarConfigs } from './huds/radar';
+import { SimpleWebSocket } from 'simple-websockets';
 
 let init = true;
 
@@ -33,6 +34,20 @@ export const customer: I.CustomerData = {
 	customer: null,
 	game: null
 };
+
+export interface CameraRoomPlayer {
+	steamid: string,
+	label: string,
+}
+
+const server = { socket: null } as { socket: SimpleWebSocket };
+let availablePlayers = [];
+
+export const registerRoomSetup = (socket: SimpleWebSocket) => {
+	server.socket = socket;
+
+	socket.send("registerRoomPlayers", availablePlayers);
+}
 
 export const validateCloudAbility = async (resource?: I.AvailableResources) => {
 	if (resource && !I.availableResources.includes(resource)) return false;
@@ -60,6 +75,19 @@ export default async function () {
 	app.route('/api/version').get((req, res) => res.json({ version: Application.getVersion() }));
 
 	app.route('/api/version/last').get(machine.getLastLaunchedVersion).post(machine.saveLastLaunchedVersion);
+
+	app.route('/api/camera').get((_req, res) => {
+		res.json(availablePlayers);
+	});
+	
+	app.route('/api/camera').post((req, res) => {
+		if(!Array.isArray(req.body) || !req.body.every(x => typeof x === "object" && typeof x.steamid === "string" && typeof x.label === "string")) return res.sendStatus(422);
+		if(JSON.stringify(req.body).length > 1000) return res.sendStatus(422);
+
+		availablePlayers = req.body;
+
+		if(server.socket) server.socket.send("registerRoomPlayers", req.body);
+	});
 
 	TournamentHandler();
 

@@ -52,7 +52,7 @@ function exists(file) {
 }
 function isCorrect(cfg) {
     try {
-        const GamePath = steam_game_path_1.getGamePath(730);
+        const GamePath = (0, steam_game_path_1.getGamePath)(730);
         if (!GamePath || !GamePath.game || !GamePath.game.path) {
             return false;
         }
@@ -67,8 +67,8 @@ function isCorrect(cfg) {
 const checkCFGs = async (req, res) => {
     const game = req.query.game;
     const steamGameId = game === 'csgo' ? 730 : 570;
-    const config = await config_1.loadConfig();
-    const SteamGamePath = steam_game_path_1.getGamePath(steamGameId);
+    const config = await (0, config_1.loadConfig)();
+    const SteamGamePath = (0, steam_game_path_1.getGamePath)(steamGameId);
     const gamePath = SteamGamePath?.game?.path;
     if (!config || !gamePath) {
         return res.json({ success: false, message: "Game path couldn't be found", accessible: false });
@@ -108,10 +108,10 @@ const createCFGs = async (req, res) => {
     if (game === 'dota2') {
         return res.json({ success: true, message: 'Configs were successfully saved' });
     }
-    const config = await config_1.loadConfig();
+    const config = await (0, config_1.loadConfig)();
     let GamePath;
     try {
-        GamePath = steam_game_path_1.getGamePath(steamGameId);
+        GamePath = (0, steam_game_path_1.getGamePath)(steamGameId);
     }
     catch {
         return res.json({ success: false, message: 'Unexpected error occured' });
@@ -157,7 +157,7 @@ const getLatestData = async (_req, res) => {
 exports.getLatestData = getLatestData;
 const getSteamPath = async (_req, res) => {
     try {
-        const GamePath = steam_game_path_1.getGamePath(730);
+        const GamePath = (0, steam_game_path_1.getGamePath)(730);
         if (!GamePath || !GamePath.steam || !GamePath.steam.path) {
             return res.status(404).json({ success: false });
         }
@@ -169,7 +169,7 @@ const getSteamPath = async (_req, res) => {
 };
 exports.getSteamPath = getSteamPath;
 const run = async (req, res) => {
-    const config = await config_1.loadConfig();
+    const config = await (0, config_1.loadConfig)();
     if (!config) {
         return res.sendStatus(422);
     }
@@ -178,7 +178,7 @@ const run = async (req, res) => {
     const exec = cfg.file ? `+exec ${cfg.file}` : '';
     let GamePath;
     try {
-        GamePath = steam_game_path_1.getGamePath(730);
+        GamePath = (0, steam_game_path_1.getGamePath)(730);
     }
     catch {
         return res.sendStatus(404);
@@ -217,10 +217,10 @@ const run = async (req, res) => {
         }
     }
     try {
-        const steam = child_process_1.spawn(`"${exePath}"`, args, { detached: true, shell: true, stdio: 'ignore' });
+        const steam = (0, child_process_1.spawn)(`"${exePath}"`, args, { detached: true, shell: true, stdio: 'ignore' });
         steam.unref();
         if (cfgData.afx && !electron_1.AFXInterop.process) {
-            const process = child_process_1.spawn(`${config.afxCEFHudInteropPath}`, [`--url=${afxURL}`, '--enable-experimental-web-platform-features', '--afx-no-window'], { stdio: 'ignore' });
+            const process = (0, child_process_1.spawn)(`${config.afxCEFHudInteropPath}`, [`--url=${afxURL}`, '--enable-experimental-web-platform-features', '--afx-no-window'], { stdio: 'ignore' });
             electron_1.AFXInterop.process = process;
         }
     }

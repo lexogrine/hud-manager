@@ -31,7 +31,7 @@ const getActiveAreasSorted = (mapName, players) => {
     const areasWithPlayers = config.areas
         .map(area => {
         const cornersWithFirstAtEnd = [...area.polygonCorners, area.polygonCorners[0]];
-        const playersInside = alivePlayers.filter(player => polygon_1.isInPolygon(player.position, [cornersWithFirstAtEnd]));
+        const playersInside = alivePlayers.filter(player => (0, polygon_1.isInPolygon)(player.position, [cornersWithFirstAtEnd]));
         return {
             ...area,
             players: playersInside
@@ -43,7 +43,7 @@ const getActiveAreasSorted = (mapName, players) => {
 };
 exports.getActiveAreasSorted = getActiveAreasSorted;
 const getBestArea = (mapName, players) => {
-    const activeAreas = exports.getActiveAreasSorted(mapName, players);
+    const activeAreas = (0, exports.getActiveAreasSorted)(mapName, players);
     const activeAreasConfigs = [];
     for (const activeArea of activeAreas) {
         for (const config of activeArea.configs) {
@@ -56,7 +56,7 @@ const getBestArea = (mapName, players) => {
     }
     if (!activeAreasConfigs.length)
         return null;
-    const unique = activeAreasConfigs.filter(config => queue_1.isConfigAvailableForUsage(config.areaName, config.config));
+    const unique = activeAreasConfigs.filter(config => (0, queue_1.isConfigAvailableForUsage)(config.areaName, config.config));
     if (!unique.length) {
         const maxStrength = Math.max(...activeAreasConfigs.map(config => config.strength));
         return getRandomElement(activeAreasConfigs.filter(config => config.strength === maxStrength));
