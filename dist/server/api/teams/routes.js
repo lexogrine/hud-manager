@@ -24,6 +24,7 @@ const T = __importStar(require("./middlewares"));
 const user_1 = require("../user");
 const initRoute = () => {
     __1.app.route('/api/teams').get(user_1.verifyGame, T.getTeams).post(user_1.verifyGame, T.addTeam);
+    __1.app.route('/api/teams/import').post(user_1.verifyGame, T.addTeamsWithExcel);
     __1.app.route('/api/teams/fields').get(T.getFields).patch(T.updateFields);
     __1.app.route('/api/teams/:id').get(T.getTeam).patch(T.updateTeam).delete(T.deleteTeam);
     __1.app.route('/api/teams/logo/:id').get(T.getLogoFile);

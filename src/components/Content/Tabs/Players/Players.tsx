@@ -9,6 +9,7 @@ import CustomFieldsModal from '../../../CustomFields/CustomFieldsModal';
 import { useTranslation } from 'react-i18next';
 import NamesFileModal from './NamesFileModal';
 import editIcon from './../../../../styles/edit.png';
+import ImportPlayerModal from './ImportPlayersModal';
 // import { GameOnly } from '../Config/Config';
 // import downloadIcon from './../../../../styles/downloadHUDIcon.png';
 
@@ -42,6 +43,7 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 
 	const [editModalState, setEditState] = useState(false);
 	const [fieldsModalState, setFieldsState] = useState(false);
+	const [importModalState, setImportState] = useState(false);
 
 	const [customFieldForm, setCustomFieldForm] = useState<I.CustomFieldEntry[]>(quickClone(cxt.fields.players));
 
@@ -161,7 +163,7 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 			response = await api.players.update(form._id, { ...form, avatar });
 		}
 		if (response && response._id) {
-			loadPlayers(response._id);
+			setEditState(false);
 		}
 	};
 
@@ -290,6 +292,10 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 					placeholder={t('common.search')}
 				/>
 			</div>*/}
+			<ImportPlayerModal
+				open={importModalState}
+				toggle={() => { setImportState(!importModalState) }}
+			/>
 			<NamesFileModal
 				isOpen={isFilesOpened}
 				toggle={() => setFilesOpened(!isFilesOpened)}
@@ -341,7 +347,7 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 				))}
 			</div>
 			<div className="action-container">
-				<div className="button green empty big wide" onClick={() => {}}>
+				<div className="button green empty big wide" onClick={() => setImportState(true)}>
 					Import players
 				</div>
 				<div className="button green strong big wide" onClick={add}>

@@ -87,6 +87,7 @@ export default {
 		getAvatar: async (id: string) => {
 			fetch(`${apiUrl}api/players/avatar/${id}`);
 		},
+		import: (data: string) => apiV2("players/import", "POST", { data }),
 		fields: {
 			get: () => apiV2<CustomFieldEntry[]>('players/fields'),
 			update: (fields: CustomFieldEntry[]) => apiV2<CustomFieldEntry[]>('players/fields', 'PATCH', fields)
@@ -98,6 +99,7 @@ export default {
 		add: async (team: any) => await apiV2('teams', 'POST', team),
 		update: async (id: string, team: any) => await apiV2(`teams/${id}`, 'PATCH', team),
 		delete: async (id: string) => await apiV2(`teams/${id}`, 'DELETE'),
+		import: (data: string) => apiV2("teams/import", "POST", { data }),
 		getLogo: async (id: string) => {
 			const response = await fetch(`${apiUrl}api/teams/logo/${id}`);
 			return response;
@@ -128,6 +130,10 @@ export default {
 		getLastVersion: (): Promise<LastLaunchedVersion> => apiV2('version/last'),
 		setLastVersion: (version: string, releaseDate: string) =>
 			apiV2('version/last', 'POST', { version, releaseDate })
+	},
+	cameras: {
+		get: (): Promise<{ availablePlayers: I.CameraRoomPlayer[]}> => apiV2('camera'),
+		update: (players: I.CameraRoomPlayer[]) => apiV2('camera', 'POST', players)
 	},
 	cfgs: {
 		check: async (game: 'csgo' | 'dota2'): Promise<I.CFGGSIObject> => await apiV2(`cfg?game=${game}`),

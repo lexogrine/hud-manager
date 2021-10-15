@@ -21,6 +21,7 @@
     "dnd-core": "^14.0.1",
     "dotagsi": "^1.1.4",
     "electron-updater": "^4.3.5",
+    "exceljs": "^4.3.0",
     "express": "^4.17.1",
     "fetch-cookie": "^0.11.0",
     "get-port": "^5.1.1",

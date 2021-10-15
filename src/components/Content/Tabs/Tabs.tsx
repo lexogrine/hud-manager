@@ -13,6 +13,7 @@ import CG from './CG/CG';
 import ARG from './ARG/ARG';
 import Tournamentss from './Tournaments/Tournamentss';
 import { HeaderHandler } from '../../../api/interfaces';
+import Cameras from './Cameras';
 
 interface IProps {
 	activeTab: string;
@@ -58,6 +59,9 @@ const Tabs = ({ activeTab, data, toggle, gsiCheck, setOnBackClick }: IProps) => 
 				</TabPane>
 				<TabPane tabId="aco">
 					<ACO></ACO>
+				</TabPane>
+				<TabPane tabId="cameras">
+					<Cameras cxt={cxt} />
 				</TabPane>
 				<TabPane tabId="credits">
 					<Credits></Credits>

@@ -42,6 +42,7 @@
 			"nickname":"Nickname",
 			"country":"Country",
 			"manage":"Manage",
+			"import": "Import",
 			"teamName":"Team Name",
 			"shortName":"Short Name",
 			"search":"Search..."

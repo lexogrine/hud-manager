@@ -1,12 +1,13 @@
 import express from 'express';
 import db from './../../../init/database';
-import { Team, AvailableGames } from '../../../types/interfaces';
+import { Team, AvailableGames, availableGames } from '../../../types/interfaces';
 import { loadConfig, internalIP } from './../config';
 import isSvg from './../../../src/isSvg';
-import { getTeamsList, getTeamById } from './index';
+import { getTeamsList, getTeamById, addTeams } from './index';
 import * as F from './../fields';
 import { validateCloudAbility, customer } from '..';
 import { addResource, updateResource, deleteResource, checkCloudStatus } from '../cloud';
+import { Workbook } from 'exceljs';
 
 const teams = db.teams;
 const players = db.players;
@@ -59,16 +60,77 @@ export const addTeam: express.RequestHandler = async (req, res) => {
 		game: customer.game,
 		extra: req.body.extra
 	} as Team;
-	teams.insert(newTeam, async (err, team) => {
-		if (err) {
-			return res.sendStatus(500);
-		}
-		if (cloudStatus) {
-			await addResource(customer.game as AvailableGames, 'teams', team);
-		}
-		return res.json(team);
-	});
+
+	const result = await addTeams([newTeam]);
+
+	if (!result || !result.length) {
+		return res.sendStatus(500);
+	}
+
+	if (cloudStatus) {
+		await addResource(customer.game as AvailableGames, 'teams', result[0]);
+	}
+
+	return res.json(result[0]);
 };
+
+export const addTeamsWithExcel: express.RequestHandler = async (req, res) => {
+	const fileBase64 = req.body.data as string;
+	const game = customer.game as AvailableGames;
+
+	if (!availableGames.includes(game)) return res.sendStatus(422);
+
+	let cloudStatus = false;
+	if (await validateCloudAbility()) {
+		cloudStatus = (await checkCloudStatus(customer.game as AvailableGames)) === 'ALL_SYNCED';
+	}
+
+	const file = Buffer.from(fileBase64, 'base64');
+	try {
+		const workbook = new Workbook();
+		await workbook.xlsx.load(file);
+
+		const worksheet = workbook.worksheets[0];
+
+		if (!worksheet) return res.sendStatus(422);
+
+		const teams: Team[] = [];
+
+		worksheet.eachRow(row => {
+			const name = row.getCell('A').value?.toString?.();
+
+			if (!name || name === 'Team name') {
+				return;
+			}
+
+			const shortName = row.getCell('B').value?.toString?.();
+			const country = row.getCell('C').value?.toString?.();
+
+			teams.push({
+				name,
+				shortName,
+				country,
+				logo: '',
+				extra: {},
+			} as Team);
+		});
+
+		const result = await addTeams(teams);
+
+		if (!result) {
+			return res.sendStatus(503);
+		}
+
+		if (cloudStatus) {
+			await addResource(customer.game as AvailableGames, 'teams', result);
+		}
+
+		return res.json({ message: `Added ${result.length} teams` });
+	} catch {
+		return res.sendStatus(500);
+	}
+}
+
 export const updateTeam: express.RequestHandler = async (req, res) => {
 	if (!req.params.id) {
 		return res.sendStatus(422);

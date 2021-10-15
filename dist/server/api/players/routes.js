@@ -24,6 +24,7 @@ const P = __importStar(require("./middlewares"));
 const user_1 = require("../user");
 const initRoute = () => {
     __1.app.route('/api/players').get(user_1.verifyGame, P.getPlayers).post(user_1.verifyGame, P.addPlayer);
+    __1.app.route('/api/players/import').post(user_1.verifyGame, P.addPlayersWithExcel);
     __1.app.route('/api/players/fields').get(P.getFields).patch(P.updateFields);
     __1.app.route('/api/players/:id').get(P.getPlayers).patch(P.updatePlayer).delete(P.deletePlayer);
     __1.app.route('/api/players/avatar/:id').get(P.getAvatarFile);

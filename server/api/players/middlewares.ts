@@ -1,13 +1,15 @@
 import express from 'express';
 import db from './../../../init/database';
-import { Player, AvailableGames } from '../../../types/interfaces';
+import { Player, AvailableGames, availableGames } from '../../../types/interfaces';
 import { loadConfig, internalIP } from './../config';
 import fetch from 'node-fetch';
 import isSvg from './../../../src/isSvg';
-import { getPlayersList, getPlayerById, getPlayerBySteamId } from './index';
+import { getPlayersList, getPlayerById, getPlayerBySteamId, addPlayers } from './index';
 import * as F from './../fields';
 import { validateCloudAbility, customer } from '..';
 import { addResource, updateResource, deleteResource, checkCloudStatus } from '../cloud';
+import { Workbook } from 'exceljs';
+import { getTeamsList } from '../teams';
 
 const players = db.players;
 
@@ -107,16 +109,88 @@ export const addPlayer: express.RequestHandler = async (req, res) => {
 		extra: req.body.extra,
 		game: customer.game
 	} as Player;
-	players.insert(newPlayer, async (err, player) => {
-		if (err) {
-			return res.sendStatus(500);
-		}
-		if (cloudStatus) {
-			await addResource(customer.game as AvailableGames, 'players', player);
-		}
-		return res.json(player);
-	});
+
+	const result = await addPlayers([newPlayer]);
+	if (!result || !result.length) {
+		return res.sendStatus(500);
+	}
+
+	if (cloudStatus) {
+		await addResource(customer.game as AvailableGames, 'players', result[0]);
+	}
+
+	return res.json(result[0]);
 };
+
+export const addPlayersWithExcel: express.RequestHandler = async (req, res) => {
+	const fileBase64 = req.body.data as string;
+	const game = customer.game as AvailableGames;
+
+	if (!availableGames.includes(game)) return res.sendStatus(422);
+
+	let cloudStatus = false;
+	if (await validateCloudAbility()) {
+		cloudStatus = (await checkCloudStatus(customer.game as AvailableGames)) === 'ALL_SYNCED';
+	}
+
+	const file = Buffer.from(fileBase64, 'base64');
+	try {
+		const workbook = new Workbook();
+		await workbook.xlsx.load(file);
+
+		const worksheet = workbook.worksheets[0];
+
+		if (!worksheet) return res.sendStatus(422);
+
+		const players: Player[] = [];
+
+		const teams = await getTeamsList({ game });
+
+		worksheet.eachRow(row => {
+			const username = row.getCell('A').value?.toString?.() || '';
+			const steamid = row.getCell('B').value?.toString?.() || '';
+
+			if (!username || username === 'Username' || !steamid) {
+				return;
+			}
+
+			const firstName = row.getCell('C').value?.toString?.() || '';
+			const lastName = row.getCell('D').value?.toString?.() || '';
+			const country = row.getCell('E').value?.toString?.() || '';
+			const teamName = row.getCell('F').value?.toString?.() || '';
+
+			const team = teams.find(team => team.name === teamName && (team.game === game || (game === 'csgo' && !team.game)));
+
+			const teamId = team?._id || '';
+
+			players.push({
+				username,
+				steamid,
+				firstName,
+				lastName,
+				country,
+				team: teamId,
+				extra: {},
+				avatar: ''
+			} as Player);
+		});
+
+		const result = await addPlayers(players);
+
+		if (!result) {
+			return res.sendStatus(503);
+		}
+
+		if (cloudStatus) {
+			await addResource(customer.game as AvailableGames, 'players', result);
+		}
+
+		return res.json({ message: `Added ${result.length} players` });
+	} catch {
+		return res.sendStatus(500);
+	}
+}
+
 export const deletePlayer: express.RequestHandler = async (req, res) => {
 	if (!req.params.id) {
 		return res.sendStatus(422);
@@ -183,7 +257,7 @@ export const getAvatarURLBySteamID: express.RequestHandler = async (req, res) =>
 		if (re.response && re.response.players && re.response.players[0] && re.response.players[0].avatarfull) {
 			response.steam = re.response.players[0].avatarfull;
 		}
-	} catch {}
+	} catch { }
 	return res.json(response);
 };
 

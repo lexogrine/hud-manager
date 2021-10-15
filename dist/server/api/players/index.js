@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.replaceLocalPlayers = exports.getPlayersList = exports.getPlayerBySteamId = exports.getPlayerById = void 0;
+exports.replaceLocalPlayers = exports.addPlayers = exports.getPlayersList = exports.getPlayerBySteamId = exports.getPlayerById = void 0;
 const database_1 = __importDefault(require("./../../../init/database"));
 const { players } = database_1.default;
 async function getPlayerById(id, avatar = false) {
@@ -41,6 +41,16 @@ const getPlayersList = (query) => new Promise(res => {
     });
 });
 exports.getPlayersList = getPlayersList;
+const addPlayers = (newPlayers) => {
+    return new Promise((res) => {
+        players.insert(newPlayers, (err, docs) => {
+            if (err)
+                return res(null);
+            return res(docs);
+        });
+    });
+};
+exports.addPlayers = addPlayers;
 const replaceLocalPlayers = (newPlayers, game, existing) => new Promise(res => {
     const or = [
         { game, _id: { $nin: existing } },
@@ -53,7 +63,6 @@ const replaceLocalPlayers = (newPlayers, game, existing) => new Promise(res => {
         if (err) {
             return res(false);
         }
-        console.log('removed', n, 'players');
         players.insert(newPlayers, (err, docs) => {
             return res(!err);
         });

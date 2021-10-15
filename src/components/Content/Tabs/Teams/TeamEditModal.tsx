@@ -179,7 +179,7 @@ const TeamEditModal = ({ team, onChange, onFileChange, save, toggle, onExtraChan
 					Cancel
 				</div>
 				<div className="button green strong big wide" onClick={save}>
-					{t('teams.addTeam')}
+					{t(team._id !== 'empty' ? 'common.save' : 'teams.addTeam')}
 				</div>
 			</div>
 		</>

@@ -224,7 +224,7 @@ const PlayerEditModal = ({
 					Cancel
 				</div>
 				<div className="button green strong big wide" onClick={save}>
-					{t('players.addPlayer')}
+					{t(player._id !== 'empty' ? 'common.save' : 'players.addPlayer')}
 				</div>
 			</div>
 		</>

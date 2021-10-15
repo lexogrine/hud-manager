@@ -5,6 +5,8 @@ import { verifyGame } from '../user';
 const initRoute = () => {
 	app.route('/api/players').get(verifyGame, P.getPlayers).post(verifyGame, P.addPlayer);
 
+	app.route('/api/players/import').post(verifyGame, P.addPlayersWithExcel);
+
 	app.route('/api/players/fields').get(P.getFields).patch(P.updateFields);
 
 	app.route('/api/players/:id').get(P.getPlayers).patch(P.updatePlayer).delete(P.deletePlayer);

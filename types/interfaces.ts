@@ -10,6 +10,11 @@ export interface Item {
 	active: boolean;
 }
 
+export interface CameraRoomPlayer {
+	steamid: string;
+	label: string;
+}
+
 export const availableResources: AvailableResources[] = [
 	'teams',
 	'players',

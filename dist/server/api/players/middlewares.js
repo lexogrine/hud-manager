@@ -22,8 +22,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateFields = exports.getFields = exports.getAvatarURLBySteamID = exports.getAvatarFile = exports.deletePlayer = exports.addPlayer = exports.updatePlayer = exports.getPlayer = exports.getPlayers = void 0;
+exports.updateFields = exports.getFields = exports.getAvatarURLBySteamID = exports.getAvatarFile = exports.deletePlayer = exports.addPlayersWithExcel = exports.addPlayer = exports.updatePlayer = exports.getPlayer = exports.getPlayers = void 0;
 const database_1 = __importDefault(require("./../../../init/database"));
+const interfaces_1 = require("../../../types/interfaces");
 const config_1 = require("./../config");
 const node_fetch_1 = __importDefault(require("node-fetch"));
 const isSvg_1 = __importDefault(require("./../../../src/isSvg"));
@@ -31,6 +32,8 @@ const index_1 = require("./index");
 const F = __importStar(require("./../fields"));
 const __1 = require("..");
 const cloud_1 = require("../cloud");
+const exceljs_1 = require("exceljs");
+const teams_1 = require("../teams");
 const players = database_1.default.players;
 const getPlayers = async (req, res) => {
     const game = __1.customer.game;
@@ -120,17 +123,71 @@ const addPlayer = async (req, res) => {
         extra: req.body.extra,
         game: __1.customer.game
     };
-    players.insert(newPlayer, async (err, player) => {
-        if (err) {
-            return res.sendStatus(500);
-        }
-        if (cloudStatus) {
-            await (0, cloud_1.addResource)(__1.customer.game, 'players', player);
-        }
-        return res.json(player);
-    });
+    const result = await (0, index_1.addPlayers)([newPlayer]);
+    if (!result || !result.length) {
+        return res.sendStatus(500);
+    }
+    if (cloudStatus) {
+        await (0, cloud_1.addResource)(__1.customer.game, 'players', result[0]);
+    }
+    return res.json(result[0]);
 };
 exports.addPlayer = addPlayer;
+const addPlayersWithExcel = async (req, res) => {
+    const fileBase64 = req.body.data;
+    const game = __1.customer.game;
+    if (!interfaces_1.availableGames.includes(game))
+        return res.sendStatus(422);
+    let cloudStatus = false;
+    if (await (0, __1.validateCloudAbility)()) {
+        cloudStatus = (await (0, cloud_1.checkCloudStatus)(__1.customer.game)) === 'ALL_SYNCED';
+    }
+    const file = Buffer.from(fileBase64, 'base64');
+    try {
+        const workbook = new exceljs_1.Workbook();
+        await workbook.xlsx.load(file);
+        const worksheet = workbook.worksheets[0];
+        if (!worksheet)
+            return res.sendStatus(422);
+        const players = [];
+        const teams = await (0, teams_1.getTeamsList)({ game });
+        worksheet.eachRow(row => {
+            const username = row.getCell('A').value?.toString?.() || '';
+            const steamid = row.getCell('B').value?.toString?.() || '';
+            if (!username || username === 'Username' || !steamid) {
+                return;
+            }
+            const firstName = row.getCell('C').value?.toString?.() || '';
+            const lastName = row.getCell('D').value?.toString?.() || '';
+            const country = row.getCell('E').value?.toString?.() || '';
+            const teamName = row.getCell('F').value?.toString?.() || '';
+            const team = teams.find(team => team.name === teamName && (team.game === game || (game === 'csgo' && !team.game)));
+            const teamId = team?._id || '';
+            players.push({
+                username,
+                steamid,
+                firstName,
+                lastName,
+                country,
+                team: teamId,
+                extra: {},
+                avatar: ''
+            });
+        });
+        const result = await (0, index_1.addPlayers)(players);
+        if (!result) {
+            return res.sendStatus(503);
+        }
+        if (cloudStatus) {
+            await (0, cloud_1.addResource)(__1.customer.game, 'players', result);
+        }
+        return res.json({ message: `Added ${result.length} players` });
+    }
+    catch {
+        return res.sendStatus(500);
+    }
+};
+exports.addPlayersWithExcel = addPlayersWithExcel;
 const deletePlayer = async (req, res) => {
     if (!req.params.id) {
         return res.sendStatus(422);

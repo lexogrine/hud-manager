@@ -8,6 +8,7 @@ import TeamListEntry from './Team';
 import CustomFieldsModal from '../../../CustomFields/CustomFieldsModal';
 import { useTranslation } from 'react-i18next';
 import editIcon from './../../../../styles/edit.png';
+import ImportTeamsModal from './ImportTeamsModal';
 
 interface IProps {
 	cxt: IContextData;
@@ -30,6 +31,7 @@ const TeamsTab = ({ cxt }: IProps) => {
 
 	const [editModalState, setEditState] = useState(false);
 	const [fieldsModalState, setFieldsState] = useState(false);
+	const [importModalState, setImportState] = useState(false);
 
 	const [sortBy, setSortBy] = useState<keyof I.Team>('name');
 	const [sortByType, setSortByType] = useState<'DESC' | 'ASC'>('ASC');
@@ -157,7 +159,7 @@ const TeamsTab = ({ cxt }: IProps) => {
 			response = await api.teams.update(form._id, { ...form, logo });
 		}
 		if (response && response._id) {
-			loadTeams(response._id);
+			setEditState(false);
 		}
 	};
 
@@ -236,6 +238,10 @@ const TeamsTab = ({ cxt }: IProps) => {
 					placeholder={t('common.search')}
 				/>
 	</div>*/}
+			<ImportTeamsModal
+				open={importModalState}
+				toggle={() => { setImportState(!importModalState) }}
+			/>
 			<CustomFieldsModal
 				fields={customFieldForm}
 				open={fieldsModalState}
@@ -278,7 +284,7 @@ const TeamsTab = ({ cxt }: IProps) => {
 				))}
 			</div>
 			<div className="action-container">
-				<div className="button green empty big wide" onClick={() => {}}>
+				<div className="button green empty big wide" onClick={() => setImportState(true)}>
 					Import teams
 				</div>
 				<div className="button green strong big wide" onClick={add}>

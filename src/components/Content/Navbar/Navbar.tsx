@@ -213,6 +213,17 @@ const Navbar = ({ activeTab, toggle, files, setCollapse, isCollapsed }: IProps) 
 							<div>{t('navbar.live')}</div>
 						</NavLink>
 					</NavItem>
+					<NavItem className="hover-pointer">
+						<NavLink
+							active={activeTab === 'cameras'}
+							onClick={() => {
+								toggle('cameras');
+							}}
+						>
+							<img src={Tabs.Live} alt="Live" />
+							<div>Cameras</div>
+						</NavLink>
+					</NavItem>
 				</GameOnly>
 				<NavItem className="hover-pointer" id="settings">
 					<NavLink

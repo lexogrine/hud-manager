@@ -51,15 +51,14 @@ const socket_1 = require("../socket");
 const __1 = require("..");
 const cloud_1 = require("./cloud");
 const radar_1 = require("./huds/radar");
+const user_1 = require("./user");
 let init = true;
 exports.customer = {
     customer: null,
     game: null
 };
-const server = { socket: null };
 let availablePlayers = [{ steamid: '1', label: 'Dupa' }];
 const registerRoomSetup = (socket) => {
-    server.socket = socket;
     setTimeout(() => {
         socket.send('registerRoomPlayers', user.generatedRoom, availablePlayers);
     }, 1000);
@@ -86,9 +85,11 @@ async function default_1() {
     __1.app.route('/api/config').get(config.getConfig).patch(config.updateConfig);
     __1.app.route('/api/version').get((req, res) => res.json({ version: electron_1.app.getVersion() }));
     __1.app.route('/api/version/last').get(machine.getLastLaunchedVersion).post(machine.saveLastLaunchedVersion);
-    __1.app.route('/api/camera').get((_req, res) => {
-        res.json(availablePlayers);
-    }).post((req, res) => {
+    __1.app.route('/api/camera')
+        .get((_req, res) => {
+        res.json({ availablePlayers, uuid: user.generatedRoom });
+    })
+        .post((req, res) => {
         if (!Array.isArray(req.body) ||
             !req.body.every(x => typeof x === 'object' && typeof x.steamid === 'string' && typeof x.label === 'string'))
             return res.sendStatus(422);
@@ -96,9 +97,10 @@ async function default_1() {
             return res.sendStatus(422);
         availablePlayers = req.body;
         setTimeout(() => {
-            if (server.socket)
-                server.socket.send('registerRoomPlayers', user.generatedRoom, req.body);
+            if (user_1.socket)
+                user_1.socket.send('registerRoomPlayers', user.generatedRoom, req.body);
         }, 1000);
+        return res.sendStatus(200);
     });
     (0, routes_1.default)();
     (0, routes_2.default)();

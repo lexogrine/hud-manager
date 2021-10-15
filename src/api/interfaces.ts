@@ -12,6 +12,7 @@ export type {
 	TournamentTypes,
 	VetoScore,
 	PanelTemplate,
+	CameraRoomPlayer,
 	HUD,
 	Player,
 	Match,

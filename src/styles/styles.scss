@@ -378,6 +378,9 @@ body {
 	position: relative;
 	flex: 1;
 	overflow-y: auto;
+	&.cameras {
+		padding: 30px !important; 
+	}
 
 	&.aco {
 		display: flex;

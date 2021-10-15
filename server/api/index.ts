@@ -27,6 +27,7 @@ import { app } from '..';
 import { checkCloudStatus, uploadLocalToCloud, downloadCloudToLocal } from './cloud';
 import { getRadarConfigs } from './huds/radar';
 import { SimpleWebSocket } from 'simple-websockets';
+import { socket } from './user';
 
 let init = true;
 
@@ -35,16 +36,9 @@ export const customer: I.CustomerData = {
 	game: null
 };
 
-export interface CameraRoomPlayer {
-	steamid: string;
-	label: string;
-}
-
-const server = { socket: null } as { socket: SimpleWebSocket | null };
-let availablePlayers = [{ steamid: '1', label: 'Dupa'}] as CameraRoomPlayer[];
+let availablePlayers = [{ steamid: '1', label: 'Dupa' }] as I.CameraRoomPlayer[];
 
 export const registerRoomSetup = (socket: SimpleWebSocket) => {
-	server.socket = socket;
 	setTimeout(() => {
 		socket.send('registerRoomPlayers', user.generatedRoom, availablePlayers);
 	}, 1000);
@@ -77,22 +71,27 @@ export default async function () {
 
 	app.route('/api/version/last').get(machine.getLastLaunchedVersion).post(machine.saveLastLaunchedVersion);
 
-	app.route('/api/camera').get((_req, res) => {
-		res.json(availablePlayers);
-	}).post((req, res) => {
-		if (
-			!Array.isArray(req.body) ||
-			!req.body.every(x => typeof x === 'object' && typeof x.steamid === 'string' && typeof x.label === 'string')
-		)
-			return res.sendStatus(422);
-		if (JSON.stringify(req.body).length > 1000) return res.sendStatus(422);
+	app.route('/api/camera')
+		.get((_req, res) => {
+			res.json({ availablePlayers, uuid: user.generatedRoom });
+		})
+		.post((req, res) => {
+			if (
+				!Array.isArray(req.body) ||
+				!req.body.every(
+					x => typeof x === 'object' && typeof x.steamid === 'string' && typeof x.label === 'string'
+				)
+			)
+				return res.sendStatus(422);
+			if (JSON.stringify(req.body).length > 1000) return res.sendStatus(422);
 
-		availablePlayers = req.body;
+			availablePlayers = req.body;
 
-		setTimeout(() => {
-			if (server.socket) server.socket.send('registerRoomPlayers', user.generatedRoom, req.body);
-		}, 1000);
-	});
+			setTimeout(() => {
+				if (socket) socket.send('registerRoomPlayers', user.generatedRoom, req.body);
+			}, 1000);
+			return res.sendStatus(200);
+		});
 
 	TournamentHandler();
 
