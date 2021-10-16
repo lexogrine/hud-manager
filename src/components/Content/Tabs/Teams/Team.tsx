@@ -39,10 +39,12 @@ const TeamListEntry = ({ team, edit, hash, fields, cxt, isChecked, toggleTeam }:
 				</div>
 			))}
 			<div className="options">
-				<EditIcon className="image-button transparent" onClick={edit} style={{marginLeft:18}} />
+				<EditIcon className="image-button transparent" onClick={edit} style={{ marginLeft: 18 }} />
 				<Checkbox
 					checked={isChecked}
-					onChange={() => { toggleTeam(team._id) }}
+					onChange={() => {
+						toggleTeam(team._id);
+					}}
 				/>
 			</div>
 		</div>

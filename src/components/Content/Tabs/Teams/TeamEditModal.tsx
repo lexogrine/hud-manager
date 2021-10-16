@@ -23,7 +23,17 @@ interface IProps {
 	cxt: IContextData;
 }
 
-const TeamEditModal = ({ team, onChange, onFileChange, save, toggle, onExtraChange, fields, cxt, deleteTeam }: IProps) => {
+const TeamEditModal = ({
+	team,
+	onChange,
+	onFileChange,
+	save,
+	toggle,
+	onExtraChange,
+	fields,
+	cxt,
+	deleteTeam
+}: IProps) => {
 	let logo = '';
 	if (team.logo) {
 		if (team.logo.includes('api/teams/logo')) {

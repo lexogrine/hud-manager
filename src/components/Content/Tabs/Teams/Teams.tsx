@@ -29,7 +29,7 @@ const TeamsTab = ({ cxt }: IProps) => {
 		extra: {}
 	};
 
-	const [ selectedTeams, setSelectedTeams ] = useState<string[]>([]);
+	const [selectedTeams, setSelectedTeams] = useState<string[]>([]);
 	const [form, setForm] = useState(emptyTeam);
 	const [search] = useState('');
 
@@ -120,8 +120,10 @@ const TeamsTab = ({ cxt }: IProps) => {
 	};
 
 	const toggleTeam = (id: string) => {
-		setSelectedTeams(selectedTeams.includes(id) ? selectedTeams.filter(teamId => teamId !== id) : [...selectedTeams, id]);
-	}
+		setSelectedTeams(
+			selectedTeams.includes(id) ? selectedTeams.filter(teamId => teamId !== id) : [...selectedTeams, id]
+		);
+	};
 
 	const extraChangeHandler = (field: string, type: Exclude<I.PanelInputType, 'select' | 'action' | 'checkbox'>) => {
 		const fileHandler = (files: FileList) => {
@@ -214,21 +216,20 @@ const TeamsTab = ({ cxt }: IProps) => {
 	};
 
 	const deleteTeams = async () => {
-		if(!selectedTeams.length) return;
+		if (!selectedTeams.length) return;
 		await api.teams.delete(selectedTeams);
 		setSelectedTeams([]);
 		cxt.reload();
-
-	}
+	};
 
 	const toggleTeams = () => {
-		if(selectedTeams.length > 0){
+		if (selectedTeams.length > 0) {
 			setSelectedTeams([]);
 			return;
 		}
 
 		setSelectedTeams(cxt.teams.map(player => player._id));
-	}
+	};
 
 	const visibleFields = cxt.fields.teams.filter(field => field.visible);
 
@@ -297,8 +298,12 @@ const TeamsTab = ({ cxt }: IProps) => {
 						</div>
 					))}
 					<div className="options">
-						<EditIcon className="image-button transparent"  onClick={openCustomFields} />
-						<DeleteIcon onClick={deleteTeams}  className="image-button transparent" style={{marginLeft:18}} />
+						<EditIcon className="image-button transparent" onClick={openCustomFields} />
+						<DeleteIcon
+							onClick={deleteTeams}
+							className="image-button transparent"
+							style={{ marginLeft: 18 }}
+						/>
 						<Checkbox checked={selectedTeams.length > 0} onChange={toggleTeams} />
 					</div>
 				</div>

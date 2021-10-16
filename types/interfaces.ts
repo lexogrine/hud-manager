@@ -21,7 +21,7 @@ export const availableResources: AvailableResources[] = [
 	'customs',
 	'mapconfigs',
 	'matches',
-	'tournaments',
+	'tournaments'
 	//'arg'
 ];
 

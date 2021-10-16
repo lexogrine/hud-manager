@@ -291,8 +291,8 @@ const updateRound = async (game) => {
 exports.updateRound = updateRound;
 const replaceLocalMatches = (newMatches, game, existing) => new Promise(res => {
     const or = [
-        { game, _id: { $nin: existing } },
-        { game, _id: { $in: newMatches.map(match => match.id) } }
+        { game, id: { $nin: existing } },
+        { game, id: { $in: newMatches.map(match => match.id) } }
     ];
     if (game === 'csgo') {
         or.push({ game: { $exists: false }, id: { $nin: existing } }, { game: { $exists: false }, id: { $in: newMatches.map(team => team.id) } });

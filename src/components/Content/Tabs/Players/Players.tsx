@@ -35,7 +35,7 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 		team: '',
 		extra: {}
 	};
-	const [ selectedPlayers, setSelectedPlayers ] = useState<string[]>([]);
+	const [selectedPlayers, setSelectedPlayers] = useState<string[]>([]);
 	const [form, setForm] = useState(emptyPlayer);
 	const [search] = useState('');
 
@@ -56,16 +56,19 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 	};
 
 	const togglePlayer = (id: string) => {
-		setSelectedPlayers(selectedPlayers.includes(id) ? selectedPlayers.filter(playerId => playerId !== id) : [...selectedPlayers, id]);
-	}
+		setSelectedPlayers(
+			selectedPlayers.includes(id)
+				? selectedPlayers.filter(playerId => playerId !== id)
+				: [...selectedPlayers, id]
+		);
+	};
 
 	const deletePlayers = async () => {
-		if(!selectedPlayers.length) return;
+		if (!selectedPlayers.length) return;
 		await api.players.delete(selectedPlayers);
 		setSelectedPlayers([]);
 		cxt.reload();
-
-	}
+	};
 
 	const sortPlayers = (players: I.Player[]) => {
 		const sortType = (result: -1 | 1) => {
@@ -185,7 +188,7 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 	const deletePlayer = async () => {
 		if (form._id === 'empty') return;
 		const response = await api.players.delete(form._id);
-		console.log(response)
+		console.log(response);
 		if (response) {
 			setEditState(false);
 			await loadPlayers();
@@ -267,13 +270,13 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 	}, [data]);
 
 	const togglePlayers = () => {
-		if(selectedPlayers.length > 0){
+		if (selectedPlayers.length > 0) {
 			setSelectedPlayers([]);
 			return;
 		}
 
 		setSelectedPlayers(cxt.players.map(player => player._id));
-	}
+	};
 
 	const visibleFields = cxt.fields.players.filter(field => field.visible);
 	const { t } = useTranslation();
@@ -358,8 +361,12 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 						</div>
 					))}
 					<div className="options">
-						<EditIcon className="image-button transparent"  onClick={openCustomFields} />
-						<DeleteIcon onClick={deletePlayers}  className="image-button transparent" style={{marginLeft:18}} />
+						<EditIcon className="image-button transparent" onClick={openCustomFields} />
+						<DeleteIcon
+							onClick={deletePlayers}
+							className="image-button transparent"
+							style={{ marginLeft: 18 }}
+						/>
 						<Checkbox checked={selectedPlayers.length > 0} onChange={togglePlayers} />
 					</div>
 				</div>

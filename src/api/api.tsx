@@ -83,7 +83,8 @@ export default {
 		get: () => apiV2<I.Player[]>('players'),
 		add: async (player: any) => await apiV2('players', 'POST', player),
 		update: async (id: string, player: any) => await apiV2(`players/${id}`, 'PATCH', player),
-		delete: async (id: string | string[]) => await apiV2(`players/${typeof id === "string" ? id : id.join(";")}`, 'DELETE'),
+		delete: async (id: string | string[]) =>
+			await apiV2(`players/${typeof id === 'string' ? id : id.join(';')}`, 'DELETE'),
 		getAvatar: async (id: string) => {
 			fetch(`${apiUrl}api/players/avatar/${id}`);
 		},
@@ -98,7 +99,8 @@ export default {
 		get: async () => apiV2<I.Team[]>('teams'),
 		add: async (team: any) => await apiV2('teams', 'POST', team),
 		update: async (id: string, team: any) => await apiV2(`teams/${id}`, 'PATCH', team),
-		delete: async (id: string | string[]) => await apiV2(`teams/${typeof id === "string" ? id : id.join(";")}`, 'DELETE'),
+		delete: async (id: string | string[]) =>
+			await apiV2(`teams/${typeof id === 'string' ? id : id.join(';')}`, 'DELETE'),
 		import: (data: string) => apiV2('teams/import', 'POST', { data }),
 		getLogo: async (id: string) => {
 			const response = await fetch(`${apiUrl}api/teams/logo/${id}`);

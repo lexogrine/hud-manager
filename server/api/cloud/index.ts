@@ -26,7 +26,7 @@ const getResources = (game: I.AvailableGames) => {
 		getActiveGameMatches(),
 		getTournaments({ game })
 	]);
-}
+};
 
 const getLastUpdateDateLocally = () => {
 	const userData = app.getPath('userData');
@@ -120,7 +120,7 @@ export const deleteResource = async (game: I.AvailableGames, resource: I.Availab
 		return;
 	}
 
-	const ids = typeof id === "string" ? id : id.join(";");
+	const ids = typeof id === 'string' ? id : id.join(';');
 
 	const result = (await api(`storage/${resource}/${game}/${ids}`, 'DELETE')) as {
 		success: boolean;
@@ -243,16 +243,16 @@ export const uploadLocalToCloud = async (game: I.AvailableGames) => {
 };
 
 export const checkCloudStatus = async (game: I.AvailableGames) => {
-	console.log("CHECKING CLOUD...")
+	console.log('CHECKING CLOUD...');
 	if (customer.customer?.license.type !== 'professional' && customer.customer?.license.type !== 'enterprise') {
-		console.log("Fallback")
+		console.log('Fallback');
 		return 'ALL_SYNCED';
 	}
 	const cfg = await loadConfig();
 
 	if (cfg.sync === false) return 'ALL_SYNCED';
 
-	console.log("cfg sync", cfg.sync)
+	console.log('cfg sync', cfg.sync);
 	if (!cfg.sync) {
 		console.log('updating sync to true...');
 		await setConfig({ ...cfg, sync: true });
@@ -298,6 +298,7 @@ export const checkCloudStatus = async (game: I.AvailableGames) => {
 			// resources exist both locally and remotely, but local db wasnt ever synced
 			// show options: download cloud, no sync
 			console.log('SYNC CONFLICT, WHAT DO? #1', syncConflicted);
+			console.log(lastUpdateStatusOnline['matches'])
 			return 'NO_SYNC_LOCAL';
 		}
 

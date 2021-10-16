@@ -182,7 +182,7 @@ export const deleteTeam: express.RequestHandler = async (req, res) => {
 	}
 	*/
 
-	const ids = req.params.id.split(";");
+	const ids = req.params.id.split(';');
 
 	let cloudStatus = false;
 	if (await validateCloudAbility()) {

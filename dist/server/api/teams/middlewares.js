@@ -177,7 +177,7 @@ const deleteTeam = async (req, res) => {
         return res.sendStatus(404);
     }
     */
-    const ids = req.params.id.split(";");
+    const ids = req.params.id.split(';');
     let cloudStatus = false;
     if (await (0, __1.validateCloudAbility)()) {
         cloudStatus = (await (0, cloud_1.checkCloudStatus)(__1.customer.game)) === 'ALL_SYNCED';

@@ -70,7 +70,10 @@ const MatchEntry = ({ match, teams, cxt, edit, setCurrent }: Props) => {
 					<div className={`side-menu`}>
 						<DeleteIcon onClick={deleteMatch} className="image-button  transparent" />
 						<EditIcon onClick={() => edit(match)} className="image-button transparent" />
-						<LiveIcon onClick={() => setCurrent()} className={`image-button ${match.current ? '' : 'transparent'}`} />
+						<LiveIcon
+							onClick={() => setCurrent()}
+							className={`image-button ${match.current ? '' : 'transparent'}`}
+						/>
 					</div>
 				</div>
 			</div>

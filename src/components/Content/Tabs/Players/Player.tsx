@@ -46,10 +46,12 @@ const PlayerListEntry = ({ player, team, edit, hash, cxt, fields, isChecked, tog
 				</div>
 			))}
 			<div className="options">
-				<EditIcon className="image-button transparent" onClick={edit} style={{marginLeft:18}} />
+				<EditIcon className="image-button transparent" onClick={edit} style={{ marginLeft: 18 }} />
 				<Checkbox
 					checked={isChecked}
-					onChange={() => { togglePlayer(player._id) }}
+					onChange={() => {
+						togglePlayer(player._id);
+					}}
 				/>
 			</div>
 		</div>
