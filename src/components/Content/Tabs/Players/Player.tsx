@@ -3,7 +3,8 @@ import { countries } from './../../../../api/countries';
 import config from './../../../../api/config';
 import CustomFieldValue from '../../../CustomFields/CustomFieldValue';
 import { IContextData } from '../../../Context';
-import editIcon from './../../../../styles/edit.png';
+import { ReactComponent as EditIcon } from './../../../../styles/icons/pencil.svg';
+import Checkbox from '../../../Checkbox';
 
 interface Props {
 	player: I.Player;
@@ -11,10 +12,12 @@ interface Props {
 	edit: () => void;
 	hash: string;
 	fields: I.CustomFieldEntry[];
+	togglePlayer: (id: string) => void;
+	isChecked: boolean;
 	cxt: IContextData;
 }
 
-const PlayerListEntry = ({ player, team, edit, hash, cxt, fields }: Props) => {
+const PlayerListEntry = ({ player, team, edit, hash, cxt, fields, isChecked, togglePlayer }: Props) => {
 	const country = !player.country ? null : countries[player.country] || null;
 	return (
 		<div className="item-list-entry">
@@ -43,7 +46,11 @@ const PlayerListEntry = ({ player, team, edit, hash, cxt, fields }: Props) => {
 				</div>
 			))}
 			<div className="options">
-				<img src={editIcon} className="image-button" onClick={edit} />
+				<EditIcon className="image-button transparent" onClick={edit} style={{marginLeft:18}} />
+				<Checkbox
+					checked={isChecked}
+					onChange={() => { togglePlayer(player._id) }}
+				/>
 			</div>
 		</div>
 	);

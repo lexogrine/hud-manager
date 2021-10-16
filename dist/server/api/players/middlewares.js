@@ -192,20 +192,23 @@ const deletePlayer = async (req, res) => {
     if (!req.params.id) {
         return res.sendStatus(422);
     }
-    const player = await (0, index_1.getPlayerById)(req.params.id);
+    /*
+    const player = await getPlayerById(req.params.id);
     if (!player) {
         return res.sendStatus(404);
     }
+    */
+    const ids = req.params.id.split(";");
     let cloudStatus = false;
     if (await (0, __1.validateCloudAbility)()) {
         cloudStatus = (await (0, cloud_1.checkCloudStatus)(__1.customer.game)) === 'ALL_SYNCED';
     }
-    players.remove({ _id: req.params.id }, async (err, n) => {
+    players.remove({ _id: { $in: ids } }, { multi: true }, async (err, n) => {
         if (err) {
             return res.sendStatus(500);
         }
         if (cloudStatus) {
-            await (0, cloud_1.deleteResource)(__1.customer.game, 'players', req.params.id);
+            await (0, cloud_1.deleteResource)(__1.customer.game, 'players', ids);
         }
         return res.sendStatus(n ? 200 : 404);
     });

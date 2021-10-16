@@ -6,9 +6,11 @@ import { IContextData } from './../../../../components/Context';
 import TeamEditModal from './TeamEditModal';
 import TeamListEntry from './Team';
 import CustomFieldsModal from '../../../CustomFields/CustomFieldsModal';
+import { ReactComponent as DeleteIcon } from './../../../../styles/icons/bin.svg';
+import { ReactComponent as EditIcon } from './../../../../styles/icons/pencil.svg';
 import { useTranslation } from 'react-i18next';
-import editIcon from './../../../../styles/edit.png';
 import ImportTeamsModal from './ImportTeamsModal';
+import Checkbox from '../../../Checkbox';
 
 interface IProps {
 	cxt: IContextData;
@@ -26,6 +28,8 @@ const TeamsTab = ({ cxt }: IProps) => {
 		game: cxt.game,
 		extra: {}
 	};
+
+	const [ selectedTeams, setSelectedTeams ] = useState<string[]>([]);
 	const [form, setForm] = useState(emptyTeam);
 	const [search] = useState('');
 
@@ -114,6 +118,10 @@ const TeamsTab = ({ cxt }: IProps) => {
 
 		return fileHandler(event.target.files);
 	};
+
+	const toggleTeam = (id: string) => {
+		setSelectedTeams(selectedTeams.includes(id) ? selectedTeams.filter(teamId => teamId !== id) : [...selectedTeams, id]);
+	}
 
 	const extraChangeHandler = (field: string, type: Exclude<I.PanelInputType, 'select' | 'action' | 'checkbox'>) => {
 		const fileHandler = (files: FileList) => {
@@ -204,6 +212,24 @@ const TeamsTab = ({ cxt }: IProps) => {
 		cxt.reload();
 		setFieldsState(false);
 	};
+
+	const deleteTeams = async () => {
+		if(!selectedTeams.length) return;
+		await api.teams.delete(selectedTeams);
+		setSelectedTeams([]);
+		cxt.reload();
+
+	}
+
+	const toggleTeams = () => {
+		if(selectedTeams.length > 0){
+			setSelectedTeams([]);
+			return;
+		}
+
+		setSelectedTeams(cxt.teams.map(player => player._id));
+	}
+
 	const visibleFields = cxt.fields.teams.filter(field => field.visible);
 
 	if (editModalState) {
@@ -240,7 +266,9 @@ const TeamsTab = ({ cxt }: IProps) => {
 	</div>*/}
 			<ImportTeamsModal
 				open={importModalState}
-				toggle={() => { setImportState(!importModalState) }}
+				toggle={() => {
+					setImportState(!importModalState);
+				}}
 			/>
 			<CustomFieldsModal
 				fields={customFieldForm}
@@ -269,7 +297,9 @@ const TeamsTab = ({ cxt }: IProps) => {
 						</div>
 					))}
 					<div className="options">
-						<img className="image-button" src={editIcon} onClick={openCustomFields} />
+						<EditIcon className="image-button transparent"  onClick={openCustomFields} />
+						<DeleteIcon onClick={deleteTeams}  className="image-button transparent" style={{marginLeft:18}} />
+						<Checkbox checked={selectedTeams.length > 0} onChange={toggleTeams} />
 					</div>
 				</div>
 				{sortTeams(cxt.teams.filter(filterTeams)).map(team => (
@@ -279,7 +309,9 @@ const TeamsTab = ({ cxt }: IProps) => {
 						team={team}
 						edit={() => edit(team)}
 						fields={visibleFields}
+						isChecked={selectedTeams.includes(team._id)}
 						cxt={cxt}
+						toggleTeam={toggleTeam}
 					/>
 				))}
 			</div>

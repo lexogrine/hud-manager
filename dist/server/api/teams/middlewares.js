@@ -115,7 +115,7 @@ const addTeamsWithExcel = async (req, res) => {
                 shortName,
                 country,
                 logo: '',
-                extra: {},
+                extra: {}
             });
         });
         const result = await (0, index_1.addTeams)(teams);
@@ -171,21 +171,24 @@ const deleteTeam = async (req, res) => {
     if (!req.params.id) {
         return res.sendStatus(422);
     }
-    const team = await (0, index_1.getTeamById)(req.params.id);
+    /*
+    const team = await getTeamById(req.params.id);
     if (!team) {
         return res.sendStatus(404);
     }
+    */
+    const ids = req.params.id.split(";");
     let cloudStatus = false;
     if (await (0, __1.validateCloudAbility)()) {
         cloudStatus = (await (0, cloud_1.checkCloudStatus)(__1.customer.game)) === 'ALL_SYNCED';
     }
     //players.update({team:})
-    teams.remove({ _id: req.params.id }, async (err, n) => {
+    teams.remove({ _id: { $in: ids } }, { multi: true }, async (err, n) => {
         if (err) {
             return res.sendStatus(500);
         }
         if (cloudStatus) {
-            await (0, cloud_1.deleteResource)(__1.customer.game, 'teams', req.params.id);
+            await (0, cloud_1.deleteResource)(__1.customer.game, 'teams', ids);
         }
         return res.sendStatus(n ? 200 : 404);
     });

@@ -42,7 +42,7 @@ const getPlayersList = (query) => new Promise(res => {
 });
 exports.getPlayersList = getPlayersList;
 const addPlayers = (newPlayers) => {
-    return new Promise((res) => {
+    return new Promise(res => {
         players.insert(newPlayers, (err, docs) => {
             if (err)
                 return res(null);

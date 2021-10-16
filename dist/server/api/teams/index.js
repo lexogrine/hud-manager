@@ -29,7 +29,7 @@ const getTeamsList = (query) => new Promise(res => {
 });
 exports.getTeamsList = getTeamsList;
 const addTeams = (newTeams) => {
-    return new Promise((res) => {
+    return new Promise(res => {
         teams.insert(newTeams, (err, docs) => {
             if (err)
                 return res(null);

@@ -65,11 +65,18 @@ const addTournament = async (req, res) => {
 };
 exports.addTournament = addTournament;
 const bindMatchToMatchup = async (req, res) => {
+    let cloudStatus = false;
+    if (await (0, __1.validateCloudAbility)('tournaments')) {
+        cloudStatus = (await (0, cloud_1.checkCloudStatus)(__1.customer.game)) === 'ALL_SYNCED';
+    }
     const tournamentId = req.params.id;
     const { matchId, matchupId } = req.body;
     const tournament = await T.bindMatch(matchId, matchupId, tournamentId);
     if (!tournament)
         return res.sendStatus(500);
+    if (cloudStatus) {
+        await (0, cloud_1.addResource)(__1.customer.game, 'tournaments', tournament);
+    }
     return res.sendStatus(200);
 };
 exports.bindMatchToMatchup = bindMatchToMatchup;

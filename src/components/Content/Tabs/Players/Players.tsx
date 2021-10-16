@@ -8,8 +8,10 @@ import PlayerEditModal from './PlayerEditModal';
 import CustomFieldsModal from '../../../CustomFields/CustomFieldsModal';
 import { useTranslation } from 'react-i18next';
 import NamesFileModal from './NamesFileModal';
-import editIcon from './../../../../styles/edit.png';
+import { ReactComponent as DeleteIcon } from './../../../../styles/icons/bin.svg';
+import { ReactComponent as EditIcon } from './../../../../styles/icons/pencil.svg';
 import ImportPlayerModal from './ImportPlayersModal';
+import Checkbox from '../../../Checkbox';
 // import { GameOnly } from '../Config/Config';
 // import downloadIcon from './../../../../styles/downloadHUDIcon.png';
 
@@ -33,6 +35,7 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 		team: '',
 		extra: {}
 	};
+	const [ selectedPlayers, setSelectedPlayers ] = useState<string[]>([]);
 	const [form, setForm] = useState(emptyPlayer);
 	const [search] = useState('');
 
@@ -51,6 +54,18 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 		setCustomFieldForm(quickClone(cxt.fields.players));
 		setFieldsState(true);
 	};
+
+	const togglePlayer = (id: string) => {
+		setSelectedPlayers(selectedPlayers.includes(id) ? selectedPlayers.filter(playerId => playerId !== id) : [...selectedPlayers, id]);
+	}
+
+	const deletePlayers = async () => {
+		if(!selectedPlayers.length) return;
+		await api.players.delete(selectedPlayers);
+		setSelectedPlayers([]);
+		cxt.reload();
+
+	}
 
 	const sortPlayers = (players: I.Player[]) => {
 		const sortType = (result: -1 | 1) => {
@@ -170,6 +185,7 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 	const deletePlayer = async () => {
 		if (form._id === 'empty') return;
 		const response = await api.players.delete(form._id);
+		console.log(response)
 		if (response) {
 			setEditState(false);
 			await loadPlayers();
@@ -250,6 +266,15 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 		setEditState(true);
 	}, [data]);
 
+	const togglePlayers = () => {
+		if(selectedPlayers.length > 0){
+			setSelectedPlayers([]);
+			return;
+		}
+
+		setSelectedPlayers(cxt.players.map(player => player._id));
+	}
+
 	const visibleFields = cxt.fields.players.filter(field => field.visible);
 	const { t } = useTranslation();
 	if (editModalState) {
@@ -294,7 +319,9 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 			</div>*/}
 			<ImportPlayerModal
 				open={importModalState}
-				toggle={() => { setImportState(!importModalState) }}
+				toggle={() => {
+					setImportState(!importModalState);
+				}}
 			/>
 			<NamesFileModal
 				isOpen={isFilesOpened}
@@ -331,7 +358,9 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 						</div>
 					))}
 					<div className="options">
-						<img className="image-button" src={editIcon} onClick={openCustomFields} />
+						<EditIcon className="image-button transparent"  onClick={openCustomFields} />
+						<DeleteIcon onClick={deletePlayers}  className="image-button transparent" style={{marginLeft:18}} />
+						<Checkbox checked={selectedPlayers.length > 0} onChange={togglePlayers} />
 					</div>
 				</div>
 				{sortPlayers(cxt.players.filter(filterPlayers)).map(player => (
@@ -342,7 +371,9 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 						edit={() => edit(player)}
 						team={cxt.teams.find(team => team._id === player.team)}
 						cxt={cxt}
+						isChecked={selectedPlayers.includes(player._id)}
 						fields={visibleFields}
+						togglePlayer={togglePlayer}
 					/>
 				))}
 			</div>

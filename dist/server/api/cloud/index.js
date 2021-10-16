@@ -38,6 +38,16 @@ const fields_1 = require("../fields");
 const Sentry = __importStar(require("@sentry/node"));
 const middlewares_1 = require("../tournaments/middlewares");
 const cloudErrorHandler = () => { };
+const getResources = (game) => {
+    return Promise.all([
+        (0, players_1.getPlayersList)({ game }),
+        (0, teams_1.getTeamsList)({ game }),
+        (0, fields_1.getCustomFieldsDb)(game),
+        (0, aco_1.getACOs)()
+        //getActiveGameMatches(),
+        //getTournaments({ game })
+    ]);
+};
 const getLastUpdateDateLocally = () => {
     const userData = electron_1.app.getPath('userData');
     const database = path_1.default.join(userData, 'databases', 'lastUpdated.lhm');
@@ -115,7 +125,8 @@ const deleteResource = async (game, resource, id) => {
     if (status !== 'ALL_SYNCED') {
         return;
     }
-    const result = (await (0, user_1.api)(`storage/${resource}/${game}/${id}`, 'DELETE'));
+    const ids = typeof id === "string" ? id : id.join(";");
+    const result = (await (0, user_1.api)(`storage/${resource}/${game}/${ids}`, 'DELETE'));
     if (!result || !result.success) {
         cloudErrorHandler();
         return null;
@@ -198,14 +209,7 @@ const downloadCloudToLocal = async (game) => {
 };
 exports.downloadCloudToLocal = downloadCloudToLocal;
 const uploadLocalToCloud = async (game) => {
-    const resources = await Promise.all([
-        (0, players_1.getPlayersList)({ game }),
-        (0, teams_1.getTeamsList)({ game }),
-        (0, fields_1.getCustomFieldsDb)(game),
-        (0, aco_1.getACOs)()
-        //getActiveGameMatches(),
-        //getTournaments({ game })
-    ]);
+    const resources = await getResources(game);
     const mappedResources = {
         players: resources[0],
         teams: resources[1],
@@ -231,12 +235,15 @@ const uploadLocalToCloud = async (game) => {
 };
 exports.uploadLocalToCloud = uploadLocalToCloud;
 const checkCloudStatus = async (game) => {
+    console.log("CHECKING CLOUD...");
     if (__1.customer.customer?.license.type !== 'professional' && __1.customer.customer?.license.type !== 'enterprise') {
+        console.log("Fallback");
         return 'ALL_SYNCED';
     }
     const cfg = await (0, config_1.loadConfig)();
     if (cfg.sync === false)
         return 'ALL_SYNCED';
+    console.log("cfg sync", cfg.sync);
     if (!cfg.sync) {
         console.log('updating sync to true...');
         await (0, config_1.setConfig)({ ...cfg, sync: true });
@@ -253,12 +260,7 @@ const checkCloudStatus = async (game) => {
         for (const resourceStatus of result) {
             lastUpdateStatusOnline[resourceStatus.resource] = resourceStatus.status;
         }
-        const resources = await Promise.all([
-            (0, players_1.getPlayersList)({ game }),
-            (0, teams_1.getTeamsList)({ game }),
-            (0, fields_1.getCustomFieldsDb)(game),
-            (0, aco_1.getACOs)() /*, getMatches()*/
-        ]);
+        const resources = await getResources(game);
         if (resources.every(resource => !resource.length)) {
             // no local resources
             // download db

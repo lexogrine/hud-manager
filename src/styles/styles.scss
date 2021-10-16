@@ -59,6 +59,23 @@ body {
 		}
 	}
 }
+.delete-checkbox {
+	border: 1.5px solid rgba(255, 255, 255, 0.6);
+	width: 18px;
+	height: 18px;
+	border-radius: 2px;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+    font-weight: 400;
+    font-family: 'MONTSERRAT';
+    font-size: 12px;
+	&.active {
+		border: 1.5px solid #6B1CFF;
+		background-color: #6B1CFF;
+	}
+}
 .main-container {
 	height: 100%;
 	display: flex;
@@ -78,6 +95,7 @@ body {
 .navbar-container {
 	height: 100%;
 	width: 193px;
+	min-width: 193px;
 	display: flex !important;
 	border: none;
 	z-index: 2;
@@ -93,9 +111,17 @@ body {
 	display: flex;
 	flex-direction: column;
 	overflow: visible;
+	.separator {
+		height: 1px;
+		background-color: rgba(255,255,255,0.1);
+		margin: 0 30px;
+	}
 	&.collapsed {
 		width:84px;
-
+		min-width: 84px;
+		.separator {
+			margin: 0 18px;
+		}
 		.lhm-logo-name {
 			font-size: 20px;
 		}
@@ -147,9 +173,10 @@ body {
 			text-transform: uppercase;
 			padding: 0;
 			padding-left: 30px;
-			img {
+			img, svg {
 				margin-right: 12px;
 				width: 23px;
+				min-width: 23px;
 			}
 			&:not(.active) {
 				opacity: 0.6;
@@ -275,7 +302,7 @@ body {
 	.logout {
 		background-repeat: no-repeat;
 		background-image: url('./logout.png');
-		background-position: left center;
+		background-position: left 1px;
 		padding-left: 31px;
 		margin-top: auto;
 		margin-bottom: 31px;
@@ -775,6 +802,10 @@ img.smallLogo {
 }
 .image-button {
 	cursor:pointer;
+	height: 18px;
+	&.transparent {
+		opacity: 0.6;
+	}
 }
 .match-entry {
 	border-bottom: 1px solid rgba(255,255,255,0.1);
@@ -2115,6 +2146,9 @@ form {
 		justify-content: flex-end;
 		flex: unset;
 		width: 96px;
+		.delete-checkbox {
+			margin-left: 18px;
+		}
 	}
 	>div {
 		display: flex;

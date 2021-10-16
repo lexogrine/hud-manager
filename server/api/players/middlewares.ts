@@ -159,7 +159,9 @@ export const addPlayersWithExcel: express.RequestHandler = async (req, res) => {
 			const country = row.getCell('E').value?.toString?.() || '';
 			const teamName = row.getCell('F').value?.toString?.() || '';
 
-			const team = teams.find(team => team.name === teamName && (team.game === game || (game === 'csgo' && !team.game)));
+			const team = teams.find(
+				team => team.name === teamName && (team.game === game || (game === 'csgo' && !team.game))
+			);
 
 			const teamId = team?._id || '';
 
@@ -189,28 +191,33 @@ export const addPlayersWithExcel: express.RequestHandler = async (req, res) => {
 	} catch {
 		return res.sendStatus(500);
 	}
-}
+};
 
 export const deletePlayer: express.RequestHandler = async (req, res) => {
 	if (!req.params.id) {
 		return res.sendStatus(422);
 	}
+
+	/*
 	const player = await getPlayerById(req.params.id);
 	if (!player) {
 		return res.sendStatus(404);
 	}
+	*/
+
+	const ids = req.params.id.split(";");
 
 	let cloudStatus = false;
 	if (await validateCloudAbility()) {
 		cloudStatus = (await checkCloudStatus(customer.game as AvailableGames)) === 'ALL_SYNCED';
 	}
 
-	players.remove({ _id: req.params.id }, async (err, n) => {
+	players.remove({ _id: { $in: ids } }, { multi: true }, async (err, n) => {
 		if (err) {
 			return res.sendStatus(500);
 		}
 		if (cloudStatus) {
-			await deleteResource(customer.game as AvailableGames, 'players', req.params.id);
+			await deleteResource(customer.game as AvailableGames, 'players', ids);
 		}
 		return res.sendStatus(n ? 200 : 404);
 	});
@@ -257,7 +264,7 @@ export const getAvatarURLBySteamID: express.RequestHandler = async (req, res) =>
 		if (re.response && re.response.players && re.response.players[0] && re.response.players[0].avatarfull) {
 			response.steam = re.response.players[0].avatarfull;
 		}
-	} catch { }
+	} catch {}
 	return res.json(response);
 };
 

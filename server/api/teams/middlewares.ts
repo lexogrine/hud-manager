@@ -111,7 +111,7 @@ export const addTeamsWithExcel: express.RequestHandler = async (req, res) => {
 				shortName,
 				country,
 				logo: '',
-				extra: {},
+				extra: {}
 			} as Team);
 		});
 
@@ -129,7 +129,7 @@ export const addTeamsWithExcel: express.RequestHandler = async (req, res) => {
 	} catch {
 		return res.sendStatus(500);
 	}
-}
+};
 
 export const updateTeam: express.RequestHandler = async (req, res) => {
 	if (!req.params.id) {
@@ -174,22 +174,27 @@ export const deleteTeam: express.RequestHandler = async (req, res) => {
 	if (!req.params.id) {
 		return res.sendStatus(422);
 	}
+
+	/*
 	const team = await getTeamById(req.params.id);
 	if (!team) {
 		return res.sendStatus(404);
 	}
+	*/
+
+	const ids = req.params.id.split(";");
 
 	let cloudStatus = false;
 	if (await validateCloudAbility()) {
 		cloudStatus = (await checkCloudStatus(customer.game as AvailableGames)) === 'ALL_SYNCED';
 	}
 	//players.update({team:})
-	teams.remove({ _id: req.params.id }, async (err, n) => {
+	teams.remove({ _id: { $in: ids } }, { multi: true }, async (err, n) => {
 		if (err) {
 			return res.sendStatus(500);
 		}
 		if (cloudStatus) {
-			await deleteResource(customer.game as AvailableGames, 'teams', req.params.id);
+			await deleteResource(customer.game as AvailableGames, 'teams', ids);
 		}
 		return res.sendStatus(n ? 200 : 404);
 	});

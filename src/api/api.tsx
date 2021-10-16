@@ -83,11 +83,11 @@ export default {
 		get: () => apiV2<I.Player[]>('players'),
 		add: async (player: any) => await apiV2('players', 'POST', player),
 		update: async (id: string, player: any) => await apiV2(`players/${id}`, 'PATCH', player),
-		delete: async (id: string) => await apiV2(`players/${id}`, 'DELETE'),
+		delete: async (id: string | string[]) => await apiV2(`players/${typeof id === "string" ? id : id.join(";")}`, 'DELETE'),
 		getAvatar: async (id: string) => {
 			fetch(`${apiUrl}api/players/avatar/${id}`);
 		},
-		import: (data: string) => apiV2("players/import", "POST", { data }),
+		import: (data: string) => apiV2('players/import', 'POST', { data }),
 		fields: {
 			get: () => apiV2<CustomFieldEntry[]>('players/fields'),
 			update: (fields: CustomFieldEntry[]) => apiV2<CustomFieldEntry[]>('players/fields', 'PATCH', fields)
@@ -98,8 +98,8 @@ export default {
 		get: async () => apiV2<I.Team[]>('teams'),
 		add: async (team: any) => await apiV2('teams', 'POST', team),
 		update: async (id: string, team: any) => await apiV2(`teams/${id}`, 'PATCH', team),
-		delete: async (id: string) => await apiV2(`teams/${id}`, 'DELETE'),
-		import: (data: string) => apiV2("teams/import", "POST", { data }),
+		delete: async (id: string | string[]) => await apiV2(`teams/${typeof id === "string" ? id : id.join(";")}`, 'DELETE'),
+		import: (data: string) => apiV2('teams/import', 'POST', { data }),
 		getLogo: async (id: string) => {
 			const response = await fetch(`${apiUrl}api/teams/logo/${id}`);
 			return response;
@@ -132,7 +132,7 @@ export default {
 			apiV2('version/last', 'POST', { version, releaseDate })
 	},
 	cameras: {
-		get: (): Promise<{ availablePlayers: I.CameraRoomPlayer[]}> => apiV2('camera'),
+		get: (): Promise<{ availablePlayers: I.CameraRoomPlayer[] }> => apiV2('camera'),
 		update: (players: I.CameraRoomPlayer[]) => apiV2('camera', 'POST', players)
 	},
 	cfgs: {

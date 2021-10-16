@@ -3,9 +3,9 @@ import * as I from './../../../../api/interfaces';
 import { IContextData } from '../../../Context';
 import { hash } from '../../../../hash';
 import moment from 'moment';
-import deleteIcon from './../../../../styles/delete.png';
-import editIcon from './../../../../styles/edit.png';
-import liveIcon from './../../../../styles/lives.png';
+import { ReactComponent as DeleteIcon } from './../../../../styles/icons/bin.svg';
+import { ReactComponent as EditIcon } from './../../../../styles/icons/pencil.svg';
+import { ReactComponent as LiveIcon } from './../../../../styles/icons/live.svg';
 import { useTranslation } from 'react-i18next';
 import { WinIcon } from './VetoEntry';
 
@@ -68,9 +68,9 @@ const MatchEntry = ({ match, teams, cxt, edit, setCurrent }: Props) => {
 				<div className="match-time">{match.startTime ? moment(match.startTime).format('LT') : '-'}</div>
 				<div className={`side-menu-container expanded`}>
 					<div className={`side-menu`}>
-						<img src={deleteIcon} onClick={deleteMatch} className="image-button" />
-						<img src={editIcon} onClick={() => edit(match)} className="image-button" />
-						<img src={liveIcon} onClick={() => setCurrent()} className="image-button" />
+						<DeleteIcon onClick={deleteMatch} className="image-button  transparent" />
+						<EditIcon onClick={() => edit(match)} className="image-button transparent" />
+						<LiveIcon onClick={() => setCurrent()} className={`image-button ${match.current ? '' : 'transparent'}`} />
 					</div>
 				</div>
 			</div>

@@ -68,10 +68,20 @@ export const addTournament: express.RequestHandler = async (req, res) => {
 };
 
 export const bindMatchToMatchup: express.RequestHandler = async (req, res) => {
+	let cloudStatus = false;
+	if (await validateCloudAbility('tournaments')) {
+		cloudStatus = (await checkCloudStatus(customer.game as AvailableGames)) === 'ALL_SYNCED';
+	}
+
 	const tournamentId = req.params.id;
 	const { matchId, matchupId } = req.body;
 	const tournament = await T.bindMatch(matchId, matchupId, tournamentId);
 	if (!tournament) return res.sendStatus(500);
+
+	if (cloudStatus) {
+		await addResource(customer.game as AvailableGames, 'tournaments', tournament);
+	}
+
 	return res.sendStatus(200);
 };
 

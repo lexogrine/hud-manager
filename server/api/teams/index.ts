@@ -26,14 +26,14 @@ export const getTeamsList = (query: any) =>
 	});
 
 export const addTeams = (newTeams: Team[]) => {
-	return new Promise<Team[] | null>((res) => {
+	return new Promise<Team[] | null>(res => {
 		teams.insert(newTeams, (err, docs) => {
 			if (err) return res(null);
 
 			return res(docs);
 		});
 	});
-}
+};
 export const replaceLocalTeams = (newTeams: Team[], game: AvailableGames, existing: string[]) =>
 	new Promise<boolean>(res => {
 		const or: any[] = [

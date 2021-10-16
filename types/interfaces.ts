@@ -2,7 +2,7 @@ import { CSGO } from 'csgogsi-socket';
 
 export type AvailableGames = 'csgo' | 'rocketleague' | 'dota2';
 
-export type AvailableResources = 'teams' | 'players' | 'customs' | 'mapconfigs' | 'matches' | 'tournaments' | 'arg';
+export type AvailableResources = 'teams' | 'players' | 'customs' | 'mapconfigs' | 'matches' | 'tournaments';
 
 export interface Item {
 	id: string;
@@ -19,9 +19,9 @@ export const availableResources: AvailableResources[] = [
 	'teams',
 	'players',
 	'customs',
-	'mapconfigs'
-	//'matches',
-	//'tournaments',
+	'mapconfigs',
+	'matches',
+	'tournaments',
 	//'arg'
 ];
 

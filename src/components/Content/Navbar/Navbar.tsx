@@ -32,6 +32,11 @@ const Navbar = ({ activeTab, toggle, files, setCollapse, isCollapsed }: IProps) 
 	const toggleNav = () => {
 		setCollapse(!isCollapsed);
 	};
+
+	const toggleHandler = (tab: string) => () => {
+		toggle(tab);
+	}
+
 	useEffect(() => {
 		socket.on('config', getConfig);
 		getConfig();
@@ -50,72 +55,61 @@ const Navbar = ({ activeTab, toggle, files, setCollapse, isCollapsed }: IProps) 
 				</div>
 			</div>
 			<div className="navbar-links-container">
-				<NavItem className="hover-pointer">
+				<NavItem className="hover-pointer"
+						onClick={toggleHandler('huds')}>
 					<NavLink
 						active={activeTab === 'huds'}
-						onClick={() => {
-							toggle('huds');
-						}}
 					>
-						<img src={Tabs.HUDs} alt="HUDs" />
+						<Tabs.HUDs/>
 						<div>{t('navbar.huds')}</div>
 					</NavLink>
 				</NavItem>
-				<NavItem className={`hover-pointer ${config && config.cg ? '' : 'hide'}`}>
+				<NavItem className={`hover-pointer ${config && config.cg ? '' : 'hide'}`} onClick={toggleHandler('cgpanel')}>
 					<NavLink
 						active={activeTab === 'cgpanel'}
-						onClick={() => {
-							toggle('cgpanel');
-						}}
+						
 					>
-						<img src={Tabs.Teams} alt="Panel" />
+						<Tabs.Teams />
 						<div>{t('common.panel')}</div>
 					</NavLink>
 				</NavItem>
-				<NavItem className={`hover-pointer ${onlyNonCGClass}`}>
+				<NavItem className={`hover-pointer ${onlyNonCGClass}`} onClick={toggleHandler('teams')}>
 					<NavLink
 						active={activeTab === 'teams'}
-						onClick={() => {
-							toggle('teams');
-						}}
+						
 					>
-						<img src={Tabs.Teams} alt="Teams" />
+						<Tabs.Teams/>
 						<div>{t('common.teams')}</div>
 					</NavLink>
 				</NavItem>
-				<NavItem className={`hover-pointer ${onlyNonCGClass}`}>
+				<NavItem className={`hover-pointer ${onlyNonCGClass}`} onClick={toggleHandler('players')}>
 					<NavLink
 						active={activeTab === 'players'}
-						onClick={() => {
-							toggle('players');
-						}}
+						
 					>
-						<img src={Tabs.Players} alt="Players" />
+						<Tabs.Players />
 						<div>{t('common.players')}</div>
 					</NavLink>
 				</NavItem>
-				<NavItem className={`hover-pointer ${onlyNonCGClass}`}>
+				<NavItem className={`hover-pointer ${onlyNonCGClass}`} onClick={toggleHandler('create_match')}>
 					<NavLink
 						active={activeTab === 'create_match'}
-						onClick={() => {
-							toggle('create_match');
-						}}
+						
 					>
-						<img src={Tabs.Matches} alt="Matches" />
+						<Tabs.Matches />
 						<div>{t('match.matches')}</div>
 					</NavLink>
 				</NavItem>
-				<NavItem className={`hover-pointer ${onlyNonCGClass}`}>
+				<NavItem className={`hover-pointer ${onlyNonCGClass}`} onClick={toggleHandler('tournaments')}>
 					<NavLink
 						active={activeTab === 'tournaments'}
-						onClick={() => {
-							toggle('tournaments');
-						}}
+						
 					>
-						<img src={Tabs.Tournaments} alt="Tournaments" />
+						<Tabs.Tournaments/>
 						<div>{t('common.tournaments')}</div>
 					</NavLink>
 				</NavItem>
+				<div className="separator" />
 				<GameOnly game="csgo">
 					<ContextData.Consumer>
 						{data => (
@@ -130,11 +124,8 @@ const Navbar = ({ activeTab, toggle, files, setCollapse, isCollapsed }: IProps) 
 												<NavLink
 													active={activeTab === 'aco'}
 													disabled
-													onClick={() => {
-														toggle('aco');
-													}}
 												>
-													<img src={Tabs.ACO} alt="ACO" />
+													<Tabs.ACO />
 													<div>{t('navbar.aco')}</div>
 												</NavLink>
 											</NavItem>
@@ -143,14 +134,12 @@ const Navbar = ({ activeTab, toggle, files, setCollapse, isCollapsed }: IProps) 
 										{t('navbar.professionalOnly')}
 									</Tip>
 								) : (
-									<NavItem className="hover-pointer">
+									<NavItem className="hover-pointer" onClick={toggleHandler('aco')}>
 										<NavLink
 											active={activeTab === 'aco'}
-											onClick={() => {
-												toggle('aco');
-											}}
+											
 										>
-											<img src={Tabs.ACO} alt="ACO" />
+											<Tabs.ACO />
 											<div>{t('navbar.aco')}</div>
 										</NavLink>
 									</NavItem>
@@ -159,15 +148,13 @@ const Navbar = ({ activeTab, toggle, files, setCollapse, isCollapsed }: IProps) 
 									<Tip
 										id="arg_nav"
 										label={
-											<NavItem className="hover-pointer">
+											<NavItem className="hover-pointer" >
 												<NavLink
 													active={activeTab === 'arg'}
 													disabled
-													onClick={() => {
-														toggle('arg');
-													}}
+													
 												>
-													<img src={Tabs.ARG} alt="ARG" />
+													<Tabs.ARG />
 													<div>ARG</div>
 												</NavLink>
 											</NavItem>
@@ -176,14 +163,12 @@ const Navbar = ({ activeTab, toggle, files, setCollapse, isCollapsed }: IProps) 
 										{t('navbar.nonFreeOnly')}
 									</Tip>
 								) : (
-									<NavItem className="hover-pointer">
+									<NavItem className="hover-pointer" onClick={toggleHandler('arg')}>
 										<NavLink
 											active={activeTab === 'arg'}
-											onClick={() => {
-												toggle('arg');
-											}}
+											
 										>
-											<img src={Tabs.ARG} alt="ARG" />
+											<Tabs.ARG />
 											<div>ARG</div>
 										</NavLink>
 									</NavItem>
@@ -191,48 +176,39 @@ const Navbar = ({ activeTab, toggle, files, setCollapse, isCollapsed }: IProps) 
 							</>
 						)}
 					</ContextData.Consumer>
-					<NavItem className="hover-pointer">
+					<NavItem className="hover-pointer" onClick={toggleHandler('ar')}>
 						<NavLink
 							active={activeTab === 'ar'}
-							onClick={() => {
-								toggle('ar');
-							}}
+							
 						>
-							<img src={Tabs.AR} alt="AR" />
+							<Tabs.AR />
 							<div>{t('navbar.ar')}</div>
 						</NavLink>
 					</NavItem>
-					<NavItem className="hover-pointer">
+					<NavItem className="hover-pointer" onClick={toggleHandler('live')}>
 						<NavLink
 							active={activeTab === 'live'}
-							onClick={() => {
-								toggle('live');
-							}}
-						>
-							<img src={Tabs.Live} alt="Live" />
+							
+						>	
+							<Tabs.Live />
 							<div>{t('navbar.live')}</div>
 						</NavLink>
 					</NavItem>
-					<NavItem className="hover-pointer">
+					<NavItem className="hover-pointer" onClick={toggleHandler('cameras')}>
 						<NavLink
 							active={activeTab === 'cameras'}
-							onClick={() => {
-								toggle('cameras');
-							}}
+							
 						>
-							<img src={Tabs.Live} alt="Live" />
+							<Tabs.Cameras />
 							<div>Cameras</div>
 						</NavLink>
 					</NavItem>
 				</GameOnly>
-				<NavItem className="hover-pointer" id="settings">
+				<NavItem className="hover-pointer" id="settings" onClick={toggleHandler('config')}>
 					<NavLink
 						active={activeTab === 'config'}
-						onClick={() => {
-							toggle('config');
-						}}
 					>
-						<img src={Tabs.Settings} alt="Settings" />
+						<Tabs.Settings />
 						<div>
 							{t('settings.header')} {!files ? <i className="material-icons">warning</i> : null}
 						</div>

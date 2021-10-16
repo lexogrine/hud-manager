@@ -37,16 +37,15 @@ export const getPlayersList = (query: any) =>
 		});
 	});
 
-
 export const addPlayers = (newPlayers: Player[]) => {
-	return new Promise<Player[] | null>((res) => {
+	return new Promise<Player[] | null>(res => {
 		players.insert(newPlayers, (err, docs) => {
-			if(err) return res(null);
+			if (err) return res(null);
 
 			return res(docs);
 		});
 	});
-}
+};
 
 export const replaceLocalPlayers = (newPlayers: Player[], game: AvailableGames, existing: string[]) =>
 	new Promise<boolean>(res => {

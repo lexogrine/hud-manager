@@ -64,6 +64,7 @@ export default class Layout extends Component<{}, IState> {
 	}
 	async componentDidMount() {
 		//const socket = io.connect(`${config.isDev ? config.apiAddress : '/'}`);
+		await this.loadUser();
 		api.games.getCurrent().then(result => {
 			const { data } = this.state;
 			data.game = result.game;
@@ -81,7 +82,6 @@ export default class Layout extends Component<{}, IState> {
 			);
 		});
 		await this.getVersion();
-		this.loadUser();
 		socket.on('match', (fromVeto?: boolean) => {
 			if (fromVeto) this.loadMatch();
 		});
