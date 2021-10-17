@@ -89,7 +89,7 @@ export const updateMatchRoute: RequestHandler = async (req, res) => {
 	}
 	const match = await M.updateMatch(req.body);
 	if (cloudStatus && match) {
-		await updateResource(customer.game as AvailableGames, 'teams', { ...req.body, _id: req.params.id });
+		await updateResource(customer.game as AvailableGames, 'matches', { ...req.body });
 	}
 	io.emit('match');
 	return res.sendStatus(match ? 200 : 500);

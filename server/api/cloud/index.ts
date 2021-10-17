@@ -298,7 +298,7 @@ export const checkCloudStatus = async (game: I.AvailableGames) => {
 			// resources exist both locally and remotely, but local db wasnt ever synced
 			// show options: download cloud, no sync
 			console.log('SYNC CONFLICT, WHAT DO? #1', syncConflicted);
-			console.log(lastUpdateStatusOnline['matches'])
+			console.log(lastUpdateStatusOnline['matches']);
 			return 'NO_SYNC_LOCAL';
 		}
 
