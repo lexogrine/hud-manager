@@ -105,7 +105,7 @@ const updateMatchRoute = async (req, res) => {
     }
     const match = await M.updateMatch(req.body);
     if (cloudStatus && match) {
-        await (0, cloud_1.updateResource)(__1.customer.game, 'teams', { ...req.body, _id: req.params.id });
+        await (0, cloud_1.updateResource)(__1.customer.game, 'matches', { ...req.body });
     }
     io.emit('match');
     return res.sendStatus(match ? 200 : 500);

@@ -75,7 +75,7 @@ const bindMatchToMatchup = async (req, res) => {
     if (!tournament)
         return res.sendStatus(500);
     if (cloudStatus) {
-        await (0, cloud_1.addResource)(__1.customer.game, 'tournaments', tournament);
+        await (0, cloud_1.updateResource)(__1.customer.game, 'tournaments', tournament);
     }
     return res.sendStatus(200);
 };
