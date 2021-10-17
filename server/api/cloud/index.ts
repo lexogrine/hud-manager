@@ -245,16 +245,13 @@ export const uploadLocalToCloud = async (game: I.AvailableGames) => {
 export const checkCloudStatus = async (game: I.AvailableGames) => {
 	console.log('CHECKING CLOUD...');
 	if (customer.customer?.license.type !== 'professional' && customer.customer?.license.type !== 'enterprise') {
-		console.log('Fallback');
 		return 'ALL_SYNCED';
 	}
 	const cfg = await loadConfig();
 
 	if (cfg.sync === false) return 'ALL_SYNCED';
 
-	console.log('cfg sync', cfg.sync);
 	if (!cfg.sync) {
-		console.log('updating sync to true...');
 		await setConfig({ ...cfg, sync: true });
 	}
 
@@ -287,18 +284,26 @@ export const checkCloudStatus = async (game: I.AvailableGames) => {
 			return 'ALL_SYNCED';
 		}
 
+		const mappedResources = {
+			players: resources[0],
+			teams: resources[1],
+			customs: resources[2],
+			mapconfigs: resources[3],
+			matches: resources[4],
+			tournaments: resources[5]
+		} as { [resource in I.AvailableResources]: any[] };
+
 		const lastUpdateStatusLocal = getLastUpdateDateLocally();
 
 		const syncConflicted = I.availableResources.filter(
 			availableResource =>
-				!lastUpdateStatusLocal[game][availableResource] && lastUpdateStatusOnline[availableResource]
+				!lastUpdateStatusLocal[game][availableResource] && lastUpdateStatusOnline[availableResource] && mappedResources[availableResource].length
 		);
 
 		if (syncConflicted.length) {
 			// resources exist both locally and remotely, but local db wasnt ever synced
 			// show options: download cloud, no sync
 			console.log('SYNC CONFLICT, WHAT DO? #1', syncConflicted);
-			console.log(lastUpdateStatusOnline['matches']);
 			return 'NO_SYNC_LOCAL';
 		}
 
@@ -338,7 +343,6 @@ export const checkCloudStatus = async (game: I.AvailableGames) => {
 			result.filter(resource => nonSyncedResources.includes(resource.resource))
 		);
 
-		console.log('NICE');
 
 		return 'ALL_SYNCED';
 	} catch (e) {

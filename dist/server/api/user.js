@@ -138,7 +138,7 @@ const api = (url, method = 'GET', body, opts) => {
         options.body = JSON.stringify(body);
     }
     let data = null;
-    return (0, exports.fetch)(USE_LOCAL_BACKEND ? `http://192.168.50.40:5000/${url}` : `https://hmapi.lexogrine.com/${url}`, options).then(res => {
+    return (0, exports.fetch)(USE_LOCAL_BACKEND ? `http://${domain}/${url}` : `https://${domain}/${url}`, options).then(res => {
         data = res;
         return res.json().catch(() => data && data.status < 300);
     });

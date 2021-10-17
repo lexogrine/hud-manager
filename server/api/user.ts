@@ -23,9 +23,9 @@ export const fetch = fetchHandler(nodeFetch, cookieJar);
 
 export let socket: SimpleWebSocket | null = null;
 
-const USE_LOCAL_BACKEND = true;
+const USE_LOCAL_BACKEND = false;
 
-const domain = USE_LOCAL_BACKEND ? '192.168.50.40:5000' : 'hmapi.lexogrine.com';
+const domain = USE_LOCAL_BACKEND ? '192.168.50.40:5000' : 'hmapi-dev.lexogrine.pl';
 
 let cameraSupportInit = false;
 
@@ -38,13 +38,16 @@ let cameraSupportInit = false;
 	});
 }*/
 
-export const generatedRoom = uuidv4();
+export const room: { uuid: string | null } = { uuid: null };
 
-console.log('CAMERA ROOM:', generatedRoom);
 
 const socketMap: Record<string, Socket> = {};
 
 const connectSocket = () => {
+	if(!room.uuid){
+		room.uuid = uuidv4();
+		console.log('CAMERA ROOM:', room.uuid);
+	}
 	if (socket) return;
 	socket = new SimpleWebSocket(USE_LOCAL_BACKEND ? `ws://${domain}` : `wss://${domain}/`, {
 		headers: {
@@ -53,8 +56,7 @@ const connectSocket = () => {
 	});
 
 	socket.on('connection', () => {
-		console.log('aaa');
-		socket?.send('registerAsProxy', generatedRoom);
+		if(room.uuid) socket?.send('registerAsProxy', room.uuid);
 	});
 
 	socket._socket.onerror = (err: any) => {
@@ -67,17 +69,13 @@ const connectSocket = () => {
 		});
 	});
 	socket.on('db_update', async () => {
-		console.log('a?');
 		if (!customer.game) return;
-		console.log('a!');
 		const io = await ioPromise;
 		const result = await checkCloudStatus(customer.game);
 		if (result !== 'ALL_SYNCED') {
-			console.log('a-');
 			// TODO: Handle that
 			return;
 		}
-		console.log('a+');
 		io.emit('db_update');
 	});
 	socket.on('disconnect', () => {
@@ -85,7 +83,7 @@ const connectSocket = () => {
 		setTimeout(connectSocket, 2000);
 	});
 
-	socket.send('registerAsProxy', generatedRoom);
+	if(room.uuid) socket.send('registerAsProxy', room.uuid);
 
 	registerRoomSetup(socket);
 
@@ -163,11 +161,8 @@ export const api = (url: string, method = 'GET', body?: any, opts?: RequestInit)
 		options.body = JSON.stringify(body);
 	}
 	let data: any = null;
-	
-	return fetch(
-		USE_LOCAL_BACKEND ? `http://${domain}/${url}` : `https://${domain}/${url}`,
-		options
-	).then(res => {
+
+	return fetch(USE_LOCAL_BACKEND ? `http://${domain}/${url}` : `https://${domain}/${url}`, options).then(res => {
 		data = res;
 		return res.json().catch(() => data && data.status < 300);
 	});

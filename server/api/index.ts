@@ -40,7 +40,7 @@ let availablePlayers = [{ steamid: '1', label: 'Dupa' }] as I.CameraRoomPlayer[]
 
 export const registerRoomSetup = (socket: SimpleWebSocket) => {
 	setTimeout(() => {
-		socket.send('registerRoomPlayers', user.generatedRoom, availablePlayers);
+		if(user.room.uuid) socket.send('registerRoomPlayers', user.room.uuid, availablePlayers);
 	}, 1000);
 };
 
@@ -73,7 +73,7 @@ export default async function () {
 
 	app.route('/api/camera')
 		.get((_req, res) => {
-			res.json({ availablePlayers, uuid: user.generatedRoom });
+			res.json({ availablePlayers, uuid: user.room.uuid });
 		})
 		.post((req, res) => {
 			if (
@@ -88,7 +88,7 @@ export default async function () {
 			availablePlayers = req.body;
 
 			setTimeout(() => {
-				if (socket) socket.send('registerRoomPlayers', user.generatedRoom, req.body);
+				if (socket) socket.send('registerRoomPlayers', user.room.uuid, req.body);
 			}, 1000);
 			return res.sendStatus(200);
 		});
