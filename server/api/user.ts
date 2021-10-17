@@ -53,7 +53,7 @@ const connectSocket = () => {
 	});
 
 	socket.on('connection', () => {
-		console.log('aaa')
+		console.log('aaa');
 		socket?.send('registerAsProxy', generatedRoom);
 	});
 
@@ -67,17 +67,17 @@ const connectSocket = () => {
 		});
 	});
 	socket.on('db_update', async () => {
-		console.log('a?')
+		console.log('a?');
 		if (!customer.game) return;
-		console.log('a!')
+		console.log('a!');
 		const io = await ioPromise;
 		const result = await checkCloudStatus(customer.game);
 		if (result !== 'ALL_SYNCED') {
-			console.log('a-')
+			console.log('a-');
 			// TODO: Handle that
 			return;
 		}
-		console.log('a+')
+		console.log('a+');
 		io.emit('db_update');
 	});
 	socket.on('disconnect', () => {
@@ -163,8 +163,9 @@ export const api = (url: string, method = 'GET', body?: any, opts?: RequestInit)
 		options.body = JSON.stringify(body);
 	}
 	let data: any = null;
+	
 	return fetch(
-		USE_LOCAL_BACKEND ? `http://192.168.50.40:5000/${url}` : `https://hmapi.lexogrine.com/${url}`,
+		USE_LOCAL_BACKEND ? `http://${domain}/${url}` : `https://${domain}/${url}`,
 		options
 	).then(res => {
 		data = res;
