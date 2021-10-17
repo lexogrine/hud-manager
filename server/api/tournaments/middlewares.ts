@@ -79,7 +79,7 @@ export const bindMatchToMatchup: express.RequestHandler = async (req, res) => {
 	if (!tournament) return res.sendStatus(500);
 
 	if (cloudStatus) {
-		await addResource(customer.game as AvailableGames, 'tournaments', tournament);
+		await updateResource(customer.game as AvailableGames, 'tournaments', tournament);
 	}
 
 	return res.sendStatus(200);
