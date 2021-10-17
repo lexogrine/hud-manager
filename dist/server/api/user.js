@@ -22,8 +22,8 @@ const cookiePath = path_1.default.join(electron_1.app.getPath('userData'), 'cook
 const cookieJar = new tough_cookie_1.CookieJar(new tough_cookie_file_store_1.FileCookieStore(cookiePath));
 exports.fetch = (0, fetch_cookie_1.default)(node_fetch_1.default, cookieJar);
 exports.socket = null;
-const USE_LOCAL_BACKEND = true;
-const domain = USE_LOCAL_BACKEND ? '192.168.50.40:5000' : 'hmapi.lexogrine.com';
+const USE_LOCAL_BACKEND = false;
+const domain = USE_LOCAL_BACKEND ? '192.168.50.40:5000' : 'hmapi-dev.lexogrine.pl';
 let cameraSupportInit = false;
 /*const initCameras = () => {
     if(cameraSupportInit) return;
@@ -33,7 +33,8 @@ let cameraSupportInit = false;
 
     });
 }*/
-exports.generatedRoom = 'abc123' || (0, uuid_1.v4)();
+exports.generatedRoom = (0, uuid_1.v4)();
+console.log('CAMERA ROOM:', exports.generatedRoom);
 const socketMap = {};
 const connectSocket = () => {
     if (exports.socket)
@@ -44,6 +45,7 @@ const connectSocket = () => {
         }
     });
     exports.socket.on('connection', () => {
+        console.log('aaa');
         exports.socket?.send('registerAsProxy', exports.generatedRoom);
     });
     exports.socket._socket.onerror = (err) => {
@@ -55,14 +57,18 @@ const connectSocket = () => {
         });
     });
     exports.socket.on('db_update', async () => {
+        console.log('a?');
         if (!api_1.customer.game)
             return;
+        console.log('a!');
         const io = await socket_1.ioPromise;
         const result = await (0, cloud_1.checkCloudStatus)(api_1.customer.game);
         if (result !== 'ALL_SYNCED') {
+            console.log('a-');
             // TODO: Handle that
             return;
         }
+        console.log('a+');
         io.emit('db_update');
     });
     exports.socket.on('disconnect', () => {

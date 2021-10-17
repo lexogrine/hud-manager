@@ -170,6 +170,7 @@ const TeamsTab = ({ cxt }: IProps) => {
 		}
 		if (response && response._id) {
 			setEditState(false);
+			cxt.reload();
 		}
 	};
 

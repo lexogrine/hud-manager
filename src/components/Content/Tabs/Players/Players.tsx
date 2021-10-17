@@ -182,6 +182,7 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 		}
 		if (response && response._id) {
 			setEditState(false);
+			cxt.reload();
 		}
 	};
 

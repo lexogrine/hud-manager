@@ -63,12 +63,15 @@ const addMatchRoute = async (req, res) => {
     req.body.game = __1.customer.game;
     const { matchupId, tournamentId, ...data } = req.body;
     const match = await M.addMatch(data);
-    if (matchupId && tournamentId && match) {
-        await (0, tournaments_1.bindMatch)(match.id, matchupId, tournamentId);
-    }
     let cloudStatus = false;
     if (await (0, __1.validateCloudAbility)('matches')) {
         cloudStatus = (await (0, cloud_1.checkCloudStatus)(__1.customer.game)) === 'ALL_SYNCED';
+    }
+    if (matchupId && tournamentId && match) {
+        const tournament = await (0, tournaments_1.bindMatch)(match.id, matchupId, tournamentId);
+        if (tournament && cloudStatus) {
+            await (0, cloud_1.updateResource)(__1.customer.game, 'tournaments', tournament);
+        }
     }
     if (match && cloudStatus) {
         await (0, cloud_1.addResource)(__1.customer.game, 'matches', match);
