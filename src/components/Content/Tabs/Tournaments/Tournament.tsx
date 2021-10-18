@@ -16,6 +16,7 @@ interface IProps {
 	close: () => void;
 	edit: () => void;
 	cxt: IContextData;
+	remove: () => void;
 }
 
 type Tabs = 'overview' | 'group' | 'playoffs' | 'matches';
@@ -38,8 +39,8 @@ const systemDescription = (system: I.TournamentTypes) => {
 	return `${system.charAt(0).toUpperCase()}${system.slice(1)} Elimination`;
 };
 
-const Tournament = ({ tournament, cxt, edit }: IProps) => {
-	const [tab, setTab] = useState<Tabs>('overview');
+const Tournament = ({ tournament, cxt, edit, remove }: IProps) => {
+	const [tab, setTab] = useState<Tabs>('playoffs');
 	const [matchTab, setMatchTab] = useState('current');
 
 	const { t } = useTranslation();
@@ -79,7 +80,7 @@ const Tournament = ({ tournament, cxt, edit }: IProps) => {
 			tournament.groups[0].type
 		)} (${amountOfTeamsInGroups} teams) then ${tournamentSystem}`;
 	}
-	
+
 	let logo = '';
 	if (tournament.logo) {
 		if (tournament.logo.includes('api/players/avatar')) {
@@ -95,15 +96,16 @@ const Tournament = ({ tournament, cxt, edit }: IProps) => {
 		<>
 			<div className="tab-content-container no-padding">
 				<div className="tournament-info-header">
-					<div className="tournament-logo">
-						{ logo ? <img src={logo} /> : null }
-					</div>
+					<div className="tournament-logo">{logo ? <img src={logo} /> : null}</div>
 					<div className="tournament-details">
 						<div className="tournament-info">
 							<div className="tournament-name">
 								{tournament.name}
 								<div className="button green strong big" onClick={edit}>
 									Edit
+								</div>
+								<div className="button green strong big empty" onClick={remove}>
+									Delete
 								</div>
 							</div>
 							<div className="tournament-phases">
@@ -112,7 +114,6 @@ const Tournament = ({ tournament, cxt, edit }: IProps) => {
 							</div>
 						</div>
 						<div className="tabs">
-							<Tab tab="overview" active={tab} setTab={setTab} />
 							<Tab tab="group" active={tab} setTab={setTab} />
 							<Tab tab="playoffs" active={tab} setTab={setTab} />
 							<Tab tab="matches" active={tab} setTab={setTab} />
@@ -120,9 +121,6 @@ const Tournament = ({ tournament, cxt, edit }: IProps) => {
 					</div>
 				</div>
 				<div className="tournament-content">
-					<Content tab="overview" active={tab}>
-						Overview
-					</Content>
 					<Content tab="group" active={tab}>
 						{group ? <Swiss cxt={cxt} tournament={tournament} stage={group} /> : null}
 					</Content>

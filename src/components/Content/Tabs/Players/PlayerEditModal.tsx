@@ -9,6 +9,7 @@ import ColorPicker from '../../../ColorPicker/ColorPicker';
 import { getMatchName } from '../../../../utils';
 import { useTranslation } from 'react-i18next';
 import LabeledInput from '../../../LabeledInput';
+import LoadingButton from '../../../LoadingButton';
 
 interface IProps {
 	open: boolean;
@@ -216,16 +217,16 @@ const PlayerEditModal = ({
 			</div>
 			<div className="action-container">
 				{player._id !== 'empty' ? (
-					<div className="button green empty big wide" onClick={deletePlayer}>
+					<LoadingButton className="button green empty big wide" onClick={deletePlayer}>
 						Delete
-					</div>
+					</LoadingButton>
 				) : null}
 				<div className="button green empty big wide" onClick={toggle}>
 					Cancel
 				</div>
-				<div className="button green strong big wide" onClick={save}>
+				<LoadingButton className="button green strong big wide" onClick={save}>
 					{t(player._id !== 'empty' ? 'common.save' : 'players.addPlayer')}
-				</div>
+				</LoadingButton>
 			</div>
 		</>
 	);

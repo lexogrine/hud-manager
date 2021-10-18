@@ -30,7 +30,7 @@ export interface TournamentForm {
 	groupParticipants: string[];
 }
 
-const TournamentEdit = ({ tournament, onChange, save, cxt, fileHandler }: IProps) => {
+const TournamentEdit = ({ tournament, onChange, save, cxt, fileHandler, close }: IProps) => {
 	const { t } = useTranslation();
 
 	const onChangeSelect = (e: any) => {
@@ -45,9 +45,8 @@ const TournamentEdit = ({ tournament, onChange, save, cxt, fileHandler }: IProps
 		if (tournament.logo.includes('api/players/avatar')) {
 			logo = `${tournament.logo}?hash=${hash()}`;
 		} else {
-			logo = `data:image/${isSvg(Buffer.from(tournament.logo, 'base64')) ? 'svg+xml' : 'png'};base64,${
-				tournament.logo
-			}`;
+			logo = `data:image/${isSvg(Buffer.from(tournament.logo, 'base64')) ? 'svg+xml' : 'png'};base64,${tournament.logo
+				}`;
 		}
 	}
 	return (
@@ -73,7 +72,7 @@ const TournamentEdit = ({ tournament, onChange, save, cxt, fileHandler }: IProps
 							imgSrc={logo}
 						/>
 						<LabeledInput
-							label="Brackets"
+							label="Playoff Type"
 							type="select"
 							name="playoffType"
 							id="tournament_playoff_type"
@@ -135,7 +134,7 @@ const TournamentEdit = ({ tournament, onChange, save, cxt, fileHandler }: IProps
 						)}
 						<LabeledInput
 							type="select"
-							label="Brackets"
+							label="Group type"
 							name="groupType"
 							id="tournament_group_type"
 							onChange={onChange}
@@ -169,7 +168,6 @@ const TournamentEdit = ({ tournament, onChange, save, cxt, fileHandler }: IProps
 									value={tournament.groupParticipants}
 									style={{ height: '200px !important' }}
 								>
-									<option value="">{t('common.teams')}</option>
 									{cxt.teams.concat().map(team => (
 										<option key={team._id} value={team._id}>
 											{team.name}
@@ -201,6 +199,9 @@ const TournamentEdit = ({ tournament, onChange, save, cxt, fileHandler }: IProps
 				</div>
 			</div>
 			<div className="action-container">
+				<div className="button green empty big wide" onClick={close}>
+					Cancel
+				</div>
 				<div className="button green strong big wide" onClick={save}>
 					{t('common.save')}
 				</div>

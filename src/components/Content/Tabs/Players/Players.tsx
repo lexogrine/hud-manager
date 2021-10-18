@@ -67,7 +67,7 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 		if (!selectedPlayers.length) return;
 		await api.players.delete(selectedPlayers);
 		setSelectedPlayers([]);
-		cxt.reload();
+		await cxt.reload();
 	};
 
 	const sortPlayers = (players: I.Player[]) => {
@@ -182,7 +182,7 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 		}
 		if (response && response._id) {
 			setEditState(false);
-			cxt.reload();
+			await cxt.reload();
 		}
 	};
 
@@ -193,7 +193,7 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 		if (response) {
 			setEditState(false);
 			await loadPlayers();
-			return loadEmpty();
+			loadEmpty();
 		}
 	};
 
@@ -323,6 +323,7 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 			</div>*/}
 			<ImportPlayerModal
 				open={importModalState}
+				cxt={cxt}
 				toggle={() => {
 					setImportState(!importModalState);
 				}}
@@ -368,7 +369,11 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 							className="image-button transparent"
 							style={{ marginLeft: 18 }}
 						/>
-						<Checkbox checked={selectedPlayers.length > 0} onChange={togglePlayers} semiChecked={!!(selectedPlayers.length && selectedPlayers.length < cxt.players.length)} />
+						<Checkbox
+							checked={selectedPlayers.length > 0}
+							onChange={togglePlayers}
+							semiChecked={!!(selectedPlayers.length && selectedPlayers.length < cxt.players.length)}
+						/>
 					</div>
 				</div>
 				{sortPlayers(cxt.players.filter(filterPlayers)).map(player => (

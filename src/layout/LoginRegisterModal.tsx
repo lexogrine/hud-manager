@@ -62,6 +62,11 @@ const LoginRegisterModal = ({ isOpen, loading, setLoading, loadUser, error }: IP
 					onChange={handleChange(setPassword)}
 					onKeyDown={onEnter}
 				/>
+				<div className="forget_password">
+					<a target="_blank" rel="noopener noreferrer" href="https://lexogrine.com/manager/remember">
+					Forgot Password?
+					</a>
+				</div>
 				<LabeledInput
 					name="totp"
 					type="text"

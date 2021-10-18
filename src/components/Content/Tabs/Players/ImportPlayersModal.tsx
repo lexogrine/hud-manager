@@ -1,17 +1,22 @@
 import { useTranslation } from 'react-i18next';
 import api from './../../../../api/api';
 import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { IContextData } from '../../../Context';
+import playerExample from './../../../../styles/playersExample.jpg';
 
 interface Props {
 	open: boolean;
+	cxt: IContextData;
 	toggle: () => void;
 }
 
-const ImportPlayerModal = ({ open, toggle }: Props) => {
+const ImportPlayerModal = ({ open, toggle, cxt }: Props) => {
 	const importSheet = (sheet: string) => {
 		try {
 			api.players.import(sheet).then((res: any) => {
 				if (res.message) {
+					cxt.reload();
+					
 					toggle();
 				}
 			});
@@ -43,8 +48,11 @@ const ImportPlayerModal = ({ open, toggle }: Props) => {
 			<ModalHeader toggle={toggle}>Import Players</ModalHeader>
 			<ModalBody>
 				<div className="import-instruction">
-					Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore
-					et dolore magna aliqua.
+					Use our pre-prepared Excel sheet to easily import many players at once.
+				</div>
+				<div className="import-instruction-example">
+					Example:
+					<img src={playerExample} />
 				</div>
 			</ModalBody>
 			<ModalFooter className="no-padding">

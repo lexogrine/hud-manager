@@ -46,6 +46,7 @@ const routes_6 = __importDefault(require("./timeline/routes"));
 const routes_7 = __importDefault(require("./arg/routes"));
 const match = __importStar(require("./matches"));
 const routes_8 = __importDefault(require("./teams/routes"));
+const routes_9 = __importDefault(require("./cloud/routes"));
 const http_proxy_middleware_1 = require("http-proxy-middleware");
 const socket_1 = require("../socket");
 const __1 = require("..");
@@ -111,6 +112,7 @@ async function default_1() {
     (0, routes_4.default)();
     (0, routes_5.default)();
     (0, routes_7.default)();
+    (0, routes_9.default)();
     __1.app.route('/api/games/start/:game').get(async (req, res) => {
         const cfg = await config.loadConfig();
         const game = req.params.game;

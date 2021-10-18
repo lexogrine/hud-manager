@@ -21,6 +21,7 @@ import TimelineHandler from './timeline/routes';
 import ARGHandler from './arg/routes';
 import * as match from './matches';
 import TeamHandler from './teams/routes';
+import CloudHandler from './cloud/routes';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import { ioPromise } from '../socket';
 import { app } from '..';
@@ -108,6 +109,8 @@ export default async function () {
 	ARHandler();
 
 	ARGHandler();
+
+	CloudHandler();
 
 	app.route('/api/games/start/:game').get(async (req, res) => {
 		const cfg = await config.loadConfig();

@@ -10,6 +10,7 @@ export interface IContextData {
 	customer?: I.Customer;
 	fields: I.CustomFieldStore;
 	hash: string;
+	spaceUsed: number;
 	game: I.AvailableGames;
 }
 
@@ -17,6 +18,7 @@ const defaultContext: IContextData = {
 	teams: [],
 	tournaments: [],
 	players: [],
+	spaceUsed: 0,
 	reload: () => {},
 	matches: [],
 	fields: { players: [], teams: [] },

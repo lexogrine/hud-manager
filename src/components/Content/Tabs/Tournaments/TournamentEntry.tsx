@@ -17,7 +17,6 @@ interface Props {
 }
 
 const TournamentListEntry = ({ tournament, show, index /*hash, fields, cxt*/ }: Props) => {
-
 	let logo = '';
 	if (tournament.logo) {
 		if (tournament.logo.includes('api/players/avatar')) {
@@ -36,19 +35,15 @@ const TournamentListEntry = ({ tournament, show, index /*hash, fields, cxt*/ }: 
 	}
 	return (
 		<div className="tournament-entry" onClick={show}>
-			<div className={`logo-container bg-${index%8}`}>
+			<div className={`logo-container bg-${index % 8}`}>
 				<div className="overlay">
 					<img src={logo} />
 				</div>
 			</div>
 			<div className="tournament-separator"></div>
 			<div className="tournament-info">
-				<div className="tournament-name">
-					{tournament.name}
-				</div>
-				<div className="tournament-groups">
-					{tournamentTeams}
-				</div>
+				<div className="tournament-name">{tournament.name}</div>
+				<div className="tournament-groups">{tournamentTeams}</div>
 			</div>
 		</div>
 	);

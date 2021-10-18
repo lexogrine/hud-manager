@@ -18,6 +18,7 @@ interface IProps {
 
 const quickClone: <T>(obj: T) => T = obj => JSON.parse(JSON.stringify(obj));
 
+
 const TeamsTab = ({ cxt }: IProps) => {
 	const emptyTeam: I.Team = {
 		_id: 'empty',
@@ -170,7 +171,7 @@ const TeamsTab = ({ cxt }: IProps) => {
 		}
 		if (response && response._id) {
 			setEditState(false);
-			cxt.reload();
+			await cxt.reload();
 		}
 	};
 
@@ -267,6 +268,7 @@ const TeamsTab = ({ cxt }: IProps) => {
 				/>
 	</div>*/}
 			<ImportTeamsModal
+				cxt={cxt}
 				open={importModalState}
 				toggle={() => {
 					setImportState(!importModalState);
@@ -305,7 +307,11 @@ const TeamsTab = ({ cxt }: IProps) => {
 							className="image-button transparent"
 							style={{ marginLeft: 18 }}
 						/>
-						<Checkbox checked={selectedTeams.length > 0} onChange={toggleTeams}  semiChecked={!!(selectedTeams.length && selectedTeams.length < cxt.teams.length)} />
+						<Checkbox
+							checked={selectedTeams.length > 0}
+							onChange={toggleTeams}
+							semiChecked={!!(selectedTeams.length && selectedTeams.length < cxt.teams.length)}
+						/>
 					</div>
 				</div>
 				{sortTeams(cxt.teams.filter(filterTeams)).map(team => (

@@ -180,15 +180,19 @@ const RoundInfo = ({
 	if (!match) {
 		return showEdit ? (
 			<div
-				className={`result edit ${
+				className={`result edit ${dropTarget.opponentId === team._id ? 'active':''} ${
 					showEdit &&
 					getFirstEmptySlotIndex(dropTarget.team) === index &&
-					dropTarget.team?.team._id !== team._id
+					dropTarget.team && dropTarget.team?.team._id !== team._id
 						? 'available'
 						: 'not-available'
 				}`}
 				onClick={startBinding}
 				data-teamId={team._id}
+				onDragLeave={e => {
+					e.preventDefault();
+					//setTimeout(() => updateDropTarget({ opponentTarget: null, round: null }), 51);
+				}}
 				onDragOver={e => {
 					e.preventDefault();
 					updateDropTarget({ opponentTarget: e.target as any, round });
@@ -249,7 +253,7 @@ const SwissEntry = ({
 			<div key={`round-${i}-${index}`} className="team-round"></div>
 		));
 		return (
-			<div className="item-list-entry">
+			<div className="item-list-entry swiss">
 				<div className="team-no">{index + 1}</div>
 				<div className="team-entry"></div>
 				<div className="team-series">0 - 0</div>

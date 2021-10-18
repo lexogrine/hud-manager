@@ -42,8 +42,14 @@ const AR = ({ cxt, setOnBackClick }: IProps) => {
 
 	const setARAsActive = (ar: I.HUD | I.ARModule | null) => {
 		setActive(ar);
-		setOnBackClick(ar ? () => { setARAsActive(null) } : null);
-	}
+		setOnBackClick(
+			ar
+				? () => {
+						setARAsActive(null);
+				  }
+				: null
+		);
+	};
 
 	const handleZIPs = (files: FileList) => {
 		const file = files[0];

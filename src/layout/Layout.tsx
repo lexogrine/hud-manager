@@ -36,6 +36,7 @@ export default class Layout extends Component<{}, IState> {
 				teams: [],
 				players: [],
 				matches: [],
+				spaceUsed: 0,
 				tournaments: [],
 				reload: () => {
 					return Promise.all([
@@ -44,7 +45,8 @@ export default class Layout extends Component<{}, IState> {
 						this.loadMatch(),
 						this.loadTournaments(),
 						this.getCustomFields(),
-						this.loadConfig()
+						this.loadConfig(),
+						this.getSpaceUsed()
 					]).then(this.rehash);
 				},
 				fields: { players: [], teams: [] },
@@ -61,6 +63,14 @@ export default class Layout extends Component<{}, IState> {
 			isSyncModalOpen: false,
 			config: null
 		};
+	}
+	getSpaceUsed = async () => {
+		
+		const response = await api.cloud.size();
+		if (!response) return;
+		const { data } = this.state;
+		data.spaceUsed = response.size;
+		this.setState({ data });
 	}
 	async componentDidMount() {
 		//const socket = io.connect(`${config.isDev ? config.apiAddress : '/'}`);

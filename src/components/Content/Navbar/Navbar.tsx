@@ -80,8 +80,8 @@ const Navbar = ({ activeTab, toggle, files, setCollapse, isCollapsed }: IProps) 
 						<div>{t('common.players')}</div>
 					</NavLink>
 				</NavItem>
-				<NavItem className={`hover-pointer ${onlyNonCGClass}`} onClick={toggleHandler('create_match')}>
-					<NavLink active={activeTab === 'create_match'}>
+				<NavItem className={`hover-pointer ${onlyNonCGClass}`} onClick={toggleHandler('matches')}>
+					<NavLink active={activeTab === 'matches'}>
 						<Tabs.Matches />
 						<div>{t('match.matches')}</div>
 					</NavLink>

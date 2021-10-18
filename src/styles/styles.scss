@@ -89,6 +89,48 @@ body {
 		background-color: #BDF2D5;
 	}
 }
+.space-left-container {
+	display: flex;
+	padding: 0 30px;
+	margin-top: 16px;
+	.space-info {
+		display: flex;
+		flex-direction: column;
+		flex: 1.75;
+		padding-right: 30px;
+		text-transform: uppercase;
+		font-size: 14px;
+		letter-spacing: 0.1rem;
+		font-weight: 600;
+		justify-content: center;
+	}
+	.space-label {
+		margin-bottom: 16px;
+	}
+	.space-bar {
+		height: 24px;
+		border: 1px solid rgba(255,255,255,0.1);
+		background-color: #0C0B0B;
+		.filling {
+			height: 100%;
+			background-color: #7AD9F5;
+		}
+	}
+	.space-amount {
+		display: flex;
+		font-weight: 600;
+		align-items: flex-end;
+		justify-content: flex-end;
+		.space-left {
+			font-size: 60px;
+			position: relative;
+			top: 12px;
+		}
+		.space-max {
+			font-size: 30px;
+		}
+	}
+}
 .main-container {
 	height: 100%;
 	display: flex;
@@ -284,11 +326,24 @@ body {
 	}
 	input.form-control {
 		margin-bottom: 30px;
+
+		&#password {
+			margin-bottom:5px;
+		}
 	}
 	.register {
 		font-size: 12px;
 		text-align: center;
 		margin-top: 30px;
+		a {
+			color: #BDF2D5;
+			font-weight: 600;
+		}
+	}
+	.forget_password {
+		font-size: 12px;
+		text-align: right;
+		margin-top: 0px;
 		a {
 			color: #BDF2D5;
 			font-weight: 700;
@@ -815,6 +870,7 @@ img.smallLogo {
 .tournament-entry {
 	min-width:327px;
 	flex:1;
+    max-width: calc(50% - 20px);
 	height: 156px;
 	border: 1px solid rgba(255,255,255,0.1);
 	display: flex;
@@ -1171,6 +1227,8 @@ img.smallLogo {
 		font-family: 'Rajdhani';
 		letter-spacing: 1.5px;
 		font-size: 14px;
+		display: flex;
+		align-items: center;
 	}
 	.config-area {
 		height: 41px;
@@ -1816,6 +1874,19 @@ form {
 			flex:1;
 			text-align: center;
 		}
+
+		> .button {
+			padding: 5px 0;
+		}
+
+		label {
+			margin: 0 10px;
+			padding: 5px 0;
+			flex: 1;
+			.button {
+				margin: 0;
+			}
+		}
 	}
 	.modal-body {
 		padding: 31px;
@@ -2247,6 +2318,16 @@ form {
     overflow: auto;
     display: flex;
 }
+.import-instruction-example {
+	font-weight: 600;
+	font-size:12px;
+	margin-top: 30px;
+	text-transform: uppercase;
+	img {
+		margin-top: 15px;
+		max-width: 100%;
+	}
+}
 .item-list-entry {
 	display: flex;
 	height: 80px;
@@ -2261,10 +2342,24 @@ form {
 	}
 	.team-round {
 		border-left: 1px solid rgba(255,255,255,0.1);
+		height: 100%;
 	}
 	&:not(.heading){
 		margin: 0 30px;
 		border-bottom: 1px solid rgba(255,255,255,0.1);
+		align-items: center;
+		
+		.team-entry {
+			padding: 0 15px;
+			height: 50px;
+			backdrop-filter: blur(100px);
+			border: 1px solid rgba(255,255,255,0.06);
+			
+			cursor: move !important; /* fallback: no `url()` support or images disabled */
+			cursor: -webkit-grabbing !important; /* Chrome 1-21, Safari 4+ */
+			cursor:    -moz-grabbing !important; /* Firefox 1.5-26 */
+			cursor:         grabbing !important; /* W3C standards syntax, should come least */
+		}
 	}
 	.position {
 		width: 96px;
@@ -2303,9 +2398,9 @@ form {
 			min-width: 100px;
 
 			&.team-entry {
-				min-width: 175px;
-				max-width: 175px;
-				cursor: grab;
+				min-width: 165px;
+				max-width: 165px;
+				margin-right: 10px;
 			}
 
 			.result {
@@ -2320,7 +2415,12 @@ form {
 				font-family: 'Montserrat';
 				&.available {
 					opacity: 1;
-					background-color: rgba(255,255,255,0.2);
+					border: 1px dashed rgb(80, 190, 130);
+
+					&.active {
+						
+						background-color: rgba(255,255,255,0.2);
+					}
 				}
 				&.not-available {
 					opacity: 0.25;

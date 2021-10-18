@@ -15,7 +15,6 @@ ioPromise.then(io => {
 	io.on('connection', socket => {
 		const ref = socket.request?.headers?.referer || '';
 		verifyUrl(ref).then(status => {
-			console.log(ref, status)
 			if (status) {
 				socket.join('game');
 			}

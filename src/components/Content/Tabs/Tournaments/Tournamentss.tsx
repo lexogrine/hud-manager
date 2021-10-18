@@ -122,15 +122,16 @@ const Tournamentss = ({ cxt, setOnBackClick }: IProps) => {
 		}
 	};
 
-	/*const deleteTournament = async () => {
-        if (form._id === 'empty') return;
-        const response = await api.tournaments.delete(form._id);
+	const deleteTournament = async () => {
+        if (!showing) return;
+        const response = await api.tournaments.delete(showing);
         if (response) {
+			setShowing(null);
             setEditState(false);
-            await loadTournaments();
-            return loadEmpty();
+			setOnBackClick(null);
+            loadTournaments();
         }
-    };*/
+    };
 
 	const edit = (tournament: I.Tournament) => {
 		setForm(tournamentToForm(tournament));
@@ -182,6 +183,7 @@ const Tournamentss = ({ cxt, setOnBackClick }: IProps) => {
 					cxt={cxt}
 					tournament={tournament}
 					close={() => setShowing(null)}
+					remove={deleteTournament}
 				/>
 			);
 		}

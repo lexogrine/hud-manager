@@ -18,30 +18,30 @@ interface Props {
 
 const mapPlayer =
 	(cxt: IContextData) =>
-		(player: Player): PlayerExtension => {
-			const { players } = cxt;
-			const data = players.filter(origin => origin.steamid === player.steamid)[0];
-			if (!data) {
-				return {
-					id: player.steamid,
-					name: player.name,
-					steamid: player.steamid,
-					realName: null,
-					country: null,
-					avatar: null,
-					extra: {}
-				};
-			}
+	(player: Player): PlayerExtension => {
+		const { players } = cxt;
+		const data = players.filter(origin => origin.steamid === player.steamid)[0];
+		if (!data) {
 			return {
-				id: data._id,
-				name: data.username || player.name,
-				steamid: data.steamid,
-				realName: data.firstName + ' ' + data.lastName,
-				country: data.country,
-				avatar: data.avatar,
+				id: player.steamid,
+				name: player.name,
+				steamid: player.steamid,
+				realName: null,
+				country: null,
+				avatar: null,
 				extra: {}
 			};
+		}
+		return {
+			id: data._id,
+			name: data.username || player.name,
+			steamid: data.steamid,
+			realName: data.firstName + ' ' + data.lastName,
+			country: data.country,
+			avatar: data.avatar,
+			extra: {}
 		};
+	};
 const Teamboard = ({ players, team, toggle, cxt }: Props) => {
 	return (
 		<Col s={12} md={6}>
@@ -61,9 +61,7 @@ const Teamboard = ({ players, team, toggle, cxt }: Props) => {
 						onClick={() => toggle('players', { steamid: player.steamid })}
 					>
 						<div>
-							<div className="name">
-								{player.name}
-							</div>
+							<div className="name">{player.name}</div>
 							<div className="steamid">{player.steamid}</div>
 						</div>
 						<EditIcon />
@@ -109,7 +107,11 @@ const Live = ({ toggle, cxt }: { toggle: (tab: string, data?: any) => void; cxt:
 		<>
 			<div className="tab-content-container full-scroll">
 				<Row>
-					<Col md="12" className="config-container no-margin" style={{ flexDirection: 'column', fontSize: '12px', marginBottom: '50px' }}>
+					<Col
+						md="12"
+						className="config-container no-margin"
+						style={{ flexDirection: 'column', fontSize: '12px', marginBottom: '50px' }}
+					>
 						<div>{t('live.tip')}</div>
 					</Col>
 				</Row>

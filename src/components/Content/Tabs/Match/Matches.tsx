@@ -12,6 +12,7 @@ import { IContextData } from '../../../Context';
 import { socket } from '../Live/Live';
 import { withTranslation } from 'react-i18next';
 import { filterMatches } from '../../../../utils';
+import LoadingButton from '../../../LoadingButton';
 
 interface IProps {
 	cxt: IContextData;
@@ -63,7 +64,7 @@ class Matches extends Component<IProps, { match: I.Match | null; maps: string[];
 		}
 		await api.match.add(newMatch);
 		//await api.match.set(matches);
-		this.props.cxt.reload();
+		await this.props.cxt.reload();
 		this.setState({ activeTab: 'current' });
 	};
 
@@ -180,9 +181,9 @@ class Matches extends Component<IProps, { match: I.Match | null; maps: string[];
 					)}
 				</div>
 				<div className="action-container">
-					<div className="button green strong big wide" onClick={!match ? this.add : () => this.startEdit()}>
+					<LoadingButton className="button green strong big wide" onClick={!match ? this.add : () => this.startEdit()}>
 						{t('common.createNew')}
-					</div>
+					</LoadingButton>
 				</div>
 			</>
 		);

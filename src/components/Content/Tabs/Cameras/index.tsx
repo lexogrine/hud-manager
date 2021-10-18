@@ -42,9 +42,11 @@ const Cameras = ({ cxt }: IProps) => {
 	return (
 		<>
 			<div className="tab-content-container cameras no-padding">
-				{ room ? <div className="infobox">
-					Send this to your players: https://lexogrine.com/manager/cameras/?&room={room}
-				</div> : null}
+				{room ? (
+					<div className="infobox">
+						Send this to your players: https://lexogrine.com/manager/cameras/?&room={room}
+					</div>
+				) : null}
 				{[...Array(10)]
 					.map((_, i) => i)
 					.map(index => (

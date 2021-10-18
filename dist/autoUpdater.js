@@ -5,8 +5,9 @@ const electron_1 = require("electron");
 electron_updater_1.autoUpdater.autoDownload = false;
 electron_updater_1.autoUpdater.autoInstallOnAppQuit = false;
 exports.default = (window) => {
+    const version = electron_1.app.getVersion();
     electron_updater_1.autoUpdater.on('update-available', () => {
-        window.webContents.send('updateStatus', true);
+        window.webContents.send('updateStatus', true, version);
         const notification = new electron_1.Notification({
             title: 'Update available',
             body: `You can install the newest Lexogrine HUD Manager update in the Settings tab`
@@ -14,7 +15,7 @@ exports.default = (window) => {
         notification.show();
     });
     electron_updater_1.autoUpdater.on('update-not-available', () => {
-        window.webContents.send('updateStatus', false);
+        window.webContents.send('updateStatus', false, version);
     });
     electron_updater_1.autoUpdater.on('update-downloaded', () => electron_updater_1.autoUpdater.quitAndInstall(true, true));
     electron_1.ipcMain.on('updateApp', () => {

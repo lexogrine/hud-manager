@@ -37,7 +37,7 @@ const Tabs = ({ activeTab, data, toggle, gsiCheck, setOnBackClick }: IProps) => 
 				<TabPane tabId="players">
 					<Players cxt={cxt} data={data}></Players>
 				</TabPane>
-				<TabPane tabId="create_match">
+				<TabPane tabId="matches">
 					<Matches cxt={cxt} setOnBackClick={setOnBackClick}></Matches>
 				</TabPane>
 				<TabPane tabId="huds">
@@ -47,7 +47,9 @@ const Tabs = ({ activeTab, data, toggle, gsiCheck, setOnBackClick }: IProps) => 
 					<Tournamentss cxt={cxt} setOnBackClick={setOnBackClick}></Tournamentss>
 				</TabPane>
 				<TabPane tabId="arg">
-					<ForPlansOnly required="personal"><ARG></ARG></ForPlansOnly>
+					<ForPlansOnly required="personal">
+						<ARG></ARG>
+					</ForPlansOnly>
 				</TabPane>
 				<TabPane tabId="live">
 					<Live toggle={toggle} cxt={cxt}></Live>
@@ -59,10 +61,14 @@ const Tabs = ({ activeTab, data, toggle, gsiCheck, setOnBackClick }: IProps) => 
 					<AR cxt={cxt} toggle={toggle} setOnBackClick={setOnBackClick}></AR>
 				</TabPane>
 				<TabPane tabId="aco">
-					<ForPlansOnly required="professional"><ACO></ACO></ForPlansOnly>
+					<ForPlansOnly required="professional">
+						<ACO></ACO>
+					</ForPlansOnly>
 				</TabPane>
 				<TabPane tabId="cameras">
-					<ForPlansOnly required="personal"><Cameras cxt={cxt} /></ForPlansOnly>
+					<ForPlansOnly required="personal">
+						<Cameras cxt={cxt} />
+					</ForPlansOnly>
 				</TabPane>
 				<TabPane tabId="credits">
 					<Credits></Credits>

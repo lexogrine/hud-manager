@@ -134,7 +134,7 @@ export default {
 			apiV2('version/last', 'POST', { version, releaseDate })
 	},
 	cameras: {
-		get: (): Promise<{ availablePlayers: I.CameraRoomPlayer[], uuid: string }> => apiV2('camera'),
+		get: (): Promise<{ availablePlayers: I.CameraRoomPlayer[]; uuid: string }> => apiV2('camera'),
 		update: (players: I.CameraRoomPlayer[]) => apiV2('camera', 'POST', players)
 	},
 	cfgs: {
@@ -157,7 +157,8 @@ export default {
 	},
 	cloud: {
 		upload: () => apiV2('cloud/upload', 'POST'),
-		download: () => apiV2('cloud/download', 'POST')
+		download: () => apiV2('cloud/download', 'POST'),
+		size: (): Promise<{size: number}> => apiV2('cloud/size')
 	},
 	huds: {
 		get: async (): Promise<I.HUD[]> => await apiV2('huds'),
