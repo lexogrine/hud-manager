@@ -9,12 +9,12 @@ const getAmountOfBytesOfDatabases = () => {
 
 	let bytes = 0;
 
-	for(const file of files){
+	for (const file of files) {
 		bytes += fs.statSync(path.join(directory, file)).size;
 	}
 
 	return bytes;
-}
+};
 
 export const getCloudSize: express.RequestHandler = async (req, res) => {
 	return res.json({ size: getAmountOfBytesOfDatabases() });

@@ -4,7 +4,8 @@ import * as I from './../api/interfaces';
 const Blocker = ({ children, plan }: { children: any; plan: I.LicenseType }) => (
 	<div className="blocker">
 		<div className="info">
-			Upgrade your LHM to {plan === "personal" ? `Personal or Professional plans` : "Professional plan"} to get full access to this section.
+			Upgrade your LHM to {plan === 'personal' ? `Personal or Professional plans` : 'Professional plan'} to get
+			full access to this section.
 			<a
 				className="button green big wide strong"
 				href={'https://lexogrine.com/manager/pricing?license=professional'}

@@ -4,7 +4,6 @@ import * as I from './../../../../api/interfaces';
 import { useTranslation } from 'react-i18next';
 import LabeledInput from '../../../LabeledInput';
 
-
 interface TeamData {
 	id: string;
 	wins: number;
@@ -45,7 +44,14 @@ const SetTeamModal = ({ isOpen, toggle, side, teams, team, onSave }: Props) => {
 			<ModalHeader toggle={toggle}>{t('common.teamNumber', { num: side === 'left' ? 1 : 2 })}</ModalHeader>
 			<ModalBody>
 				<FormGroup>
-					<LabeledInput label="Team" type="select" name="teams" id="teams" value={form.id} onChange={changeHandler('id')}>
+					<LabeledInput
+						label="Team"
+						type="select"
+						name="teams"
+						id="teams"
+						value={form.id}
+						onChange={changeHandler('id')}
+					>
 						<option value={'empty'}>{t('match.emptyTeam')}</option>
 						{teams.map(teams => (
 							<option key={teams._id} value={teams._id}>
@@ -55,7 +61,14 @@ const SetTeamModal = ({ isOpen, toggle, side, teams, team, onSave }: Props) => {
 					</LabeledInput>
 				</FormGroup>
 				<FormGroup>
-					<LabeledInput label="Series wins" type="select" name="wins" id="wins" value={form.wins} onChange={changeHandler('wins')}>
+					<LabeledInput
+						label="Series wins"
+						type="select"
+						name="wins"
+						id="wins"
+						value={form.wins}
+						onChange={changeHandler('wins')}
+					>
 						<option value={0}>0</option>
 						<option value={1}>1</option>
 						<option value={2}>2</option>

@@ -180,10 +180,11 @@ const RoundInfo = ({
 	if (!match) {
 		return showEdit ? (
 			<div
-				className={`result edit ${dropTarget.opponentId === team._id ? 'active':''} ${
+				className={`result edit ${dropTarget.opponentId === team._id ? 'active' : ''} ${
 					showEdit &&
 					getFirstEmptySlotIndex(dropTarget.team) === index &&
-					dropTarget.team && dropTarget.team?.team._id !== team._id
+					dropTarget.team &&
+					dropTarget.team?.team._id !== team._id
 						? 'available'
 						: 'not-available'
 				}`}

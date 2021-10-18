@@ -181,7 +181,10 @@ class Matches extends Component<IProps, { match: I.Match | null; maps: string[];
 					)}
 				</div>
 				<div className="action-container">
-					<LoadingButton className="button green strong big wide" onClick={!match ? this.add : () => this.startEdit()}>
+					<LoadingButton
+						className="button green strong big wide"
+						onClick={!match ? this.add : () => this.startEdit()}
+					>
 						{t('common.createNew')}
 					</LoadingButton>
 				</div>

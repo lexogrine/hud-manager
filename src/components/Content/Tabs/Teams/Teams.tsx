@@ -18,7 +18,6 @@ interface IProps {
 
 const quickClone: <T>(obj: T) => T = obj => JSON.parse(JSON.stringify(obj));
 
-
 const TeamsTab = ({ cxt }: IProps) => {
 	const emptyTeam: I.Team = {
 		_id: 'empty',

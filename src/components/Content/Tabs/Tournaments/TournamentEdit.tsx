@@ -45,8 +45,9 @@ const TournamentEdit = ({ tournament, onChange, save, cxt, fileHandler, close }:
 		if (tournament.logo.includes('api/players/avatar')) {
 			logo = `${tournament.logo}?hash=${hash()}`;
 		} else {
-			logo = `data:image/${isSvg(Buffer.from(tournament.logo, 'base64')) ? 'svg+xml' : 'png'};base64,${tournament.logo
-				}`;
+			logo = `data:image/${isSvg(Buffer.from(tournament.logo, 'base64')) ? 'svg+xml' : 'png'};base64,${
+				tournament.logo
+			}`;
 		}
 	}
 	return (

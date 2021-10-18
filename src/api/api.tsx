@@ -158,7 +158,7 @@ export default {
 	cloud: {
 		upload: () => apiV2('cloud/upload', 'POST'),
 		download: () => apiV2('cloud/download', 'POST'),
-		size: (): Promise<{size: number}> => apiV2('cloud/size')
+		size: (): Promise<{ size: number }> => apiV2('cloud/size')
 	},
 	huds: {
 		get: async (): Promise<I.HUD[]> => await apiV2('huds'),

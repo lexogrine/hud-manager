@@ -16,7 +16,7 @@ const ImportPlayerModal = ({ open, toggle, cxt }: Props) => {
 			api.players.import(sheet).then((res: any) => {
 				if (res.message) {
 					cxt.reload();
-					
+
 					toggle();
 				}
 			});

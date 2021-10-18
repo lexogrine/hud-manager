@@ -16,7 +16,7 @@ const ImportTeamsModal = ({ open, toggle, cxt }: Props) => {
 			api.teams.import(sheet).then((res: any) => {
 				if (res.message) {
 					cxt.reload();
-					
+
 					toggle();
 				}
 			});

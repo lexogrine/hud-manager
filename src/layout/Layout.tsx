@@ -65,13 +65,12 @@ export default class Layout extends Component<{}, IState> {
 		};
 	}
 	getSpaceUsed = async () => {
-		
 		const response = await api.cloud.size();
 		if (!response) return;
 		const { data } = this.state;
 		data.spaceUsed = response.size;
 		this.setState({ data });
-	}
+	};
 	async componentDidMount() {
 		//const socket = io.connect(`${config.isDev ? config.apiAddress : '/'}`);
 		await this.loadUser();

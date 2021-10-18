@@ -64,7 +64,7 @@ const LoginRegisterModal = ({ isOpen, loading, setLoading, loadUser, error }: IP
 				/>
 				<div className="forget_password">
 					<a target="_blank" rel="noopener noreferrer" href="https://lexogrine.com/manager/remember">
-					Forgot Password?
+						Forgot Password?
 					</a>
 				</div>
 				<LabeledInput

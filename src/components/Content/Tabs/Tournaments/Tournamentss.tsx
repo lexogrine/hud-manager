@@ -123,15 +123,15 @@ const Tournamentss = ({ cxt, setOnBackClick }: IProps) => {
 	};
 
 	const deleteTournament = async () => {
-        if (!showing) return;
-        const response = await api.tournaments.delete(showing);
-        if (response) {
+		if (!showing) return;
+		const response = await api.tournaments.delete(showing);
+		if (response) {
 			setShowing(null);
-            setEditState(false);
+			setEditState(false);
 			setOnBackClick(null);
-            loadTournaments();
-        }
-    };
+			loadTournaments();
+		}
+	};
 
 	const edit = (tournament: I.Tournament) => {
 		setForm(tournamentToForm(tournament));

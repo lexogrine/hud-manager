@@ -50,7 +50,7 @@ const formatBytes = (bytes: number, decimals = 2) => {
 	}
 
 	return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
-}
+};
 
 let latestGame: I.AvailableGames = 'csgo';
 
@@ -70,15 +70,13 @@ export const GameOnly = ({ game, children }: { game: I.AvailableGames | I.Availa
 	</ContextData.Consumer>
 );
 
-const SpaceLeft = ({ max, used }: { max: number, used: number }) => {
-
-
+const SpaceLeft = ({ max, used }: { max: number; used: number }) => {
 	return (
 		<div className="space-left-container">
 			<div className="space-info">
 				<div className="space-label">Space left</div>
 				<div className="space-bar">
-					<div className="filling" style={{ width: `${100 * used / max}%` }} />
+					<div className="filling" style={{ width: `${(100 * used) / max}%` }} />
 				</div>
 			</div>
 			<div className="space-amount">
@@ -86,16 +84,12 @@ const SpaceLeft = ({ max, used }: { max: number, used: number }) => {
 				<div className="space-max">&nbsp;/ {formatBytes(max, 0)}</div>
 			</div>
 		</div>
-	)
-}
+	);
+};
 
 const SpaceLeftContainer = () => (
-	<ContextData.Consumer>
-		{cxt => (
-			<SpaceLeft max={1024 * 1024 * 1024} used={cxt.spaceUsed} />
-		)}
-	</ContextData.Consumer>
-)
+	<ContextData.Consumer>{cxt => <SpaceLeft max={1024 * 1024 * 1024} used={cxt.spaceUsed} />}</ContextData.Consumer>
+);
 
 interface IState {
 	config: I.Config;
@@ -207,7 +201,7 @@ class Config extends Component<IProps, IState> {
 	import = (data: any, callback: any) => async () => {
 		try {
 			await api.files.sync(data);
-		} catch { }
+		} catch {}
 		this.setState({ data: {}, conflict: { teams: 0, players: 0 }, importModalOpen: false }, callback);
 	};
 	importCheck = (callback: any) => (files: FileList) => {
@@ -238,7 +232,7 @@ class Config extends Component<IProps, IState> {
 					importModalOpen: true,
 					data: db
 				});
-			} catch { }
+			} catch {}
 		};
 	};
 	download = (target: 'gsi' | 'cfgs' | 'db') => {
@@ -560,14 +554,21 @@ class Config extends Component<IProps, IState> {
 					<SpaceLeftContainer />
 					<ElectronOnly>
 						<Col md="12" className="config-entry">
-							<div className="config-description">{t('settings.updater.version')}: {update.version}
-
-								{update.available ? <div style={{marginLeft:'15px'}}
-									className={`button green strong ${(update.installing) ? 'disabled empty' : ''}`}
-									onClick={update.installing || !update.available ? this.installUpdate : undefined}
-								>
-									{update.installing ? t('settings.updater.installing') : t('settings.updater.install')}
-								</div> : null}
+							<div className="config-description">
+								{t('settings.updater.version')}: {update.version}
+								{update.available ? (
+									<div
+										style={{ marginLeft: '15px' }}
+										className={`button green strong ${update.installing ? 'disabled empty' : ''}`}
+										onClick={
+											update.installing || !update.available ? this.installUpdate : undefined
+										}
+									>
+										{update.installing
+											? t('settings.updater.installing')
+											: t('settings.updater.install')}
+									</div>
+								) : null}
 							</div>
 						</Col>
 					</ElectronOnly>
@@ -677,8 +678,9 @@ class Config extends Component<IProps, IState> {
 									GameState Integration: {gsi?.message || 'Loaded succesfully'}
 								</div>
 								<div
-									className={`button empty strong wide green ${gsi?.loading || gsi?.success || !gsi?.accessible ? 'disabled' : ''
-										}`}
+									className={`button empty strong wide green ${
+										gsi?.loading || gsi?.success || !gsi?.accessible ? 'disabled' : ''
+									}`}
 									onClick={this.createGSI}
 								>
 									Add GSI file
@@ -690,8 +692,9 @@ class Config extends Component<IProps, IState> {
 										Configs: {cfg?.message || 'Loaded succesfully'}
 									</div>
 									<div
-										className={`button empty strong wide green ${cfg?.loading || cfg?.success || !cfg?.accessible ? 'disabled' : ''
-											}`}
+										className={`button empty strong wide green ${
+											cfg?.loading || cfg?.success || !cfg?.accessible ? 'disabled' : ''
+										}`}
 										onClick={this.createCFG}
 									>
 										Add config files
@@ -708,8 +711,9 @@ class Config extends Component<IProps, IState> {
 								</div>
 								<div className="download-container">
 									<div
-										className={`button empty strong wide green ${this.state.bakkesModAutoconfBusy ? 'disabled' : ''
-											}`}
+										className={`button empty strong wide green ${
+											this.state.bakkesModAutoconfBusy ? 'disabled' : ''
+										}`}
 										onClick={
 											!this.state.bakkesModAutoconfBusy
 												? () => this.loadBakkesModStatus()
@@ -719,10 +723,11 @@ class Config extends Component<IProps, IState> {
 										Refresh
 									</div>
 									<div
-										className={`button empty strong wide green ${this.state.bakkesModAutoconfBusy || this.state.bakkesModStatus.sosConfigSet
+										className={`button empty strong wide green ${
+											this.state.bakkesModAutoconfBusy || this.state.bakkesModStatus.sosConfigSet
 												? 'disabled'
 												: ''
-											}`}
+										}`}
 										onClick={
 											!(
 												this.state.bakkesModAutoconfBusy ||
