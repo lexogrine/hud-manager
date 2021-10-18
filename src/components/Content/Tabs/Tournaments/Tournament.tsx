@@ -8,6 +8,8 @@ import MatchEntry from '../Match/MatchEntry';
 import api from '../../../../api/api';
 import { filterMatches } from '../../../../utils';
 import Elimination from './Brackets/Elimination';
+import { hash } from '../../../../hash';
+import isSvg from '../../../../isSvg';
 
 interface IProps {
 	tournament: I.Tournament;
@@ -77,12 +79,25 @@ const Tournament = ({ tournament, cxt, edit }: IProps) => {
 			tournament.groups[0].type
 		)} (${amountOfTeamsInGroups} teams) then ${tournamentSystem}`;
 	}
+	
+	let logo = '';
+	if (tournament.logo) {
+		if (tournament.logo.includes('api/players/avatar')) {
+			logo = `${tournament.logo}?hash=${hash()}`;
+		} else {
+			logo = `data:image/${isSvg(Buffer.from(tournament.logo, 'base64')) ? 'svg+xml' : 'png'};base64,${
+				tournament.logo
+			}`;
+		}
+	}
 
 	return (
 		<>
 			<div className="tab-content-container no-padding">
 				<div className="tournament-info-header">
-					<div className="tournament-logo"></div>
+					<div className="tournament-logo">
+						{ logo ? <img src={logo} /> : null }
+					</div>
 					<div className="tournament-details">
 						<div className="tournament-info">
 							<div className="tournament-name">

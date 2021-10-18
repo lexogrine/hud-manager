@@ -36,11 +36,11 @@ export const customer: I.CustomerData = {
 	game: null
 };
 
-let availablePlayers = [{ steamid: '1', label: 'Dupa' }] as I.CameraRoomPlayer[];
+let availablePlayers = [] as I.CameraRoomPlayer[];
 
 export const registerRoomSetup = (socket: SimpleWebSocket) => {
 	setTimeout(() => {
-		if(user.room.uuid) socket.send('registerRoomPlayers', user.room.uuid, availablePlayers);
+		if (user.room.uuid) socket.send('registerRoomPlayers', user.room.uuid, availablePlayers);
 	}, 1000);
 };
 

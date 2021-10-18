@@ -11,11 +11,13 @@ interface IProps {
 
 const Cameras = ({ cxt }: IProps) => {
 	const [players, setPlayers] = useState<(CameraRoomPlayer | null)[]>([]);
+	const [room, setRoom] = useState('');
 	const { t } = useTranslation();
 
 	useEffect(() => {
-		api.cameras.get().then(players => {
-			setPlayers(players.availablePlayers);
+		api.cameras.get().then(data => {
+			setPlayers(data.availablePlayers);
+			setRoom(data.uuid);
 		});
 	}, []);
 
@@ -40,6 +42,9 @@ const Cameras = ({ cxt }: IProps) => {
 	return (
 		<>
 			<div className="tab-content-container cameras no-padding">
+				{ room ? <div className="infobox">
+					Send this to your players: https://lexogrine.com/manager/cameras/?&room={room}
+				</div> : null}
 				{[...Array(10)]
 					.map((_, i) => i)
 					.map(index => (

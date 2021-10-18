@@ -271,7 +271,7 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 	}, [data]);
 
 	const togglePlayers = () => {
-		if (selectedPlayers.length > 0) {
+		if (selectedPlayers.length === cxt.players.length) {
 			setSelectedPlayers([]);
 			return;
 		}
@@ -368,7 +368,7 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 							className="image-button transparent"
 							style={{ marginLeft: 18 }}
 						/>
-						<Checkbox checked={selectedPlayers.length > 0} onChange={togglePlayers} />
+						<Checkbox checked={selectedPlayers.length > 0} onChange={togglePlayers} semiChecked={!!(selectedPlayers.length && selectedPlayers.length < cxt.players.length)} />
 					</div>
 				</div>
 				{sortPlayers(cxt.players.filter(filterPlayers)).map(player => (

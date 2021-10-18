@@ -1,7 +1,10 @@
 //import TeamEditModal from './TeamEditModal';
 import { useTranslation } from 'react-i18next';
 import { TournamentTypes } from '../../../../../types/interfaces';
+import { hash } from '../../../../hash';
+import isSvg from '../../../../isSvg';
 import { IContextData } from '../../../Context';
+import DragFileInput from '../../../DragFileInput';
 import LabeledInput from '../../../LabeledInput';
 
 interface IProps {
@@ -10,6 +13,7 @@ interface IProps {
 	onChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 	save: () => void;
 	close: () => void;
+	fileHandler: (files: FileList) => void;
 }
 
 export interface TournamentForm {
@@ -26,7 +30,7 @@ export interface TournamentForm {
 	groupParticipants: string[];
 }
 
-const TournamentEdit = ({ tournament, onChange, save, cxt }: IProps) => {
+const TournamentEdit = ({ tournament, onChange, save, cxt, fileHandler }: IProps) => {
 	const { t } = useTranslation();
 
 	const onChangeSelect = (e: any) => {
@@ -36,6 +40,16 @@ const TournamentEdit = ({ tournament, onChange, save, cxt }: IProps) => {
 		onChange({ target: { name: e.target.name, value: values } } as any);
 	};
 
+	let logo = '';
+	if (tournament.logo) {
+		if (tournament.logo.includes('api/players/avatar')) {
+			logo = `${tournament.logo}?hash=${hash()}`;
+		} else {
+			logo = `data:image/${isSvg(Buffer.from(tournament.logo, 'base64')) ? 'svg+xml' : 'png'};base64,${
+				tournament.logo
+			}`;
+		}
+	}
 	return (
 		<>
 			<div className="tab-content-container no-padding">
@@ -49,6 +63,14 @@ const TournamentEdit = ({ tournament, onChange, save, cxt }: IProps) => {
 							onChange={onChange}
 							value={tournament.name}
 							placeholder={t('common.firstName')}
+						/>
+						<DragFileInput
+							image
+							removable
+							onChange={fileHandler}
+							id="tournament_logo"
+							label={t('tournaments.uploadLogo')}
+							imgSrc={logo}
 						/>
 						<LabeledInput
 							label="Brackets"

@@ -40,11 +40,10 @@ let cameraSupportInit = false;
 
 export const room: { uuid: string | null } = { uuid: null };
 
-
 const socketMap: Record<string, Socket> = {};
 
 const connectSocket = () => {
-	if(!room.uuid){
+	if (!room.uuid) {
 		room.uuid = uuidv4();
 		console.log('CAMERA ROOM:', room.uuid);
 	}
@@ -56,7 +55,7 @@ const connectSocket = () => {
 	});
 
 	socket.on('connection', () => {
-		if(room.uuid) socket?.send('registerAsProxy', room.uuid);
+		if (room.uuid) socket?.send('registerAsProxy', room.uuid);
 	});
 
 	socket._socket.onerror = (err: any) => {
@@ -83,7 +82,7 @@ const connectSocket = () => {
 		setTimeout(connectSocket, 2000);
 	});
 
-	if(room.uuid) socket.send('registerAsProxy', room.uuid);
+	if (room.uuid) socket.send('registerAsProxy', room.uuid);
 
 	registerRoomSetup(socket);
 

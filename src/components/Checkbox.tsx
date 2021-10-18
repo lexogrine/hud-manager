@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-const Checkbox = ({ checked, onChange }: { checked?: boolean; onChange?: () => void }) => {
+const Checkbox = ({ checked, onChange, semiChecked }: { checked?: boolean; onChange?: () => void, semiChecked?: boolean }) => {
 	const [innerState, setInnerState] = useState(false);
 
 	const state = checked === undefined ? innerState : checked;
@@ -14,8 +14,8 @@ const Checkbox = ({ checked, onChange }: { checked?: boolean; onChange?: () => v
 	};
 
 	return (
-		<div className={`delete-checkbox ${state ? 'active' : ''}`} onClick={onClick}>
-			{state ? '✓' : null}
+		<div className={`delete-checkbox ${state ? 'active' : ''} ${semiChecked ? 'semi-active':''}`} onClick={onClick}>
+			{state && !semiChecked ? '✓' : null}
 		</div>
 	);
 };

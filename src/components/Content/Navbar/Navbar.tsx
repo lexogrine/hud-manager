@@ -2,8 +2,6 @@ import { useEffect, useState } from 'react';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import * as Tabs from './TabIcons';
 import { GameOnly } from '../Tabs/Config/Config';
-import Tip from '../../Tooltip';
-import { ContextData } from '../../Context';
 import { useTranslation } from 'react-i18next';
 //import { isCGMode } from '../Content';
 import { socket } from '../Tabs/Live/Live';
@@ -96,58 +94,18 @@ const Navbar = ({ activeTab, toggle, files, setCollapse, isCollapsed }: IProps) 
 				</NavItem>
 				<div className="separator" />
 				<GameOnly game="csgo">
-					<ContextData.Consumer>
-						{data => (
-							<>
-								{!data?.customer?.license?.type ||
-								data.customer?.license.type === 'free' ||
-								data.customer.license.type === 'personal' ? (
-									<Tip
-										id="aco_nav"
-										label={
-											<NavItem className="hover-pointer">
-												<NavLink active={activeTab === 'aco'} disabled>
-													<Tabs.ACO />
-													<div>{t('navbar.aco')}</div>
-												</NavLink>
-											</NavItem>
-										}
-									>
-										{t('navbar.professionalOnly')}
-									</Tip>
-								) : (
-									<NavItem className="hover-pointer" onClick={toggleHandler('aco')}>
-										<NavLink active={activeTab === 'aco'}>
-											<Tabs.ACO />
-											<div>{t('navbar.aco')}</div>
-										</NavLink>
-									</NavItem>
-								)}
-								{!data?.customer?.license?.type || data.customer?.license.type === 'free' ? (
-									<Tip
-										id="arg_nav"
-										label={
-											<NavItem className="hover-pointer">
-												<NavLink active={activeTab === 'arg'} disabled>
-													<Tabs.ARG />
-													<div>ARG</div>
-												</NavLink>
-											</NavItem>
-										}
-									>
-										{t('navbar.nonFreeOnly')}
-									</Tip>
-								) : (
-									<NavItem className="hover-pointer" onClick={toggleHandler('arg')}>
-										<NavLink active={activeTab === 'arg'}>
-											<Tabs.ARG />
-											<div>ARG</div>
-										</NavLink>
-									</NavItem>
-								)}
-							</>
-						)}
-					</ContextData.Consumer>
+					<NavItem className="hover-pointer" onClick={toggleHandler('aco')}>
+						<NavLink active={activeTab === 'aco'}>
+							<Tabs.ACO />
+							<div>{t('navbar.aco')}</div>
+						</NavLink>
+					</NavItem>
+					<NavItem className="hover-pointer" onClick={toggleHandler('arg')}>
+						<NavLink active={activeTab === 'arg'}>
+							<Tabs.ARG />
+							<div>ARG</div>
+						</NavLink>
+					</NavItem>
 					<NavItem className="hover-pointer" onClick={toggleHandler('ar')}>
 						<NavLink active={activeTab === 'ar'}>
 							<Tabs.AR />
@@ -171,7 +129,7 @@ const Navbar = ({ activeTab, toggle, files, setCollapse, isCollapsed }: IProps) 
 					<NavLink active={activeTab === 'config'}>
 						<Tabs.Settings />
 						<div>
-							{t('settings.header')} {!files ? <i className="material-icons">warning</i> : null}
+							{t('settings.header')} {!files ? <>(!)</> : null}
 						</div>
 					</NavLink>
 				</NavItem>

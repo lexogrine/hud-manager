@@ -125,8 +125,8 @@ const verifyUrl = async (url) => {
         `http://${exports.publicIP}:${cfg.port}`,
         `http://localhost:${cfg.port}`
     ];
-    if (electron_1.isDev) {
-        bases.push(`http://localhost:3000/?port=${cfg.port}`);
+    if (electron_1.isDev && url.startsWith(`http://localhost:3000`)) {
+        return true;
     }
     if (bases.find(base => url.startsWith(`${base}/dev`))) {
         return true;

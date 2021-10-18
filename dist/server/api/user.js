@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.logout = exports.getCurrent = exports.loginHandler = exports.api = exports.verifyGame = exports.generatedRoom = exports.socket = exports.fetch = void 0;
+exports.logout = exports.getCurrent = exports.loginHandler = exports.api = exports.verifyGame = exports.room = exports.socket = exports.fetch = void 0;
 const electron_1 = require("electron");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const node_fetch_1 = __importDefault(require("node-fetch"));
@@ -33,10 +33,13 @@ let cameraSupportInit = false;
 
     });
 }*/
-exports.generatedRoom = (0, uuid_1.v4)();
-console.log('CAMERA ROOM:', exports.generatedRoom);
+exports.room = { uuid: null };
 const socketMap = {};
 const connectSocket = () => {
+    if (!exports.room.uuid) {
+        exports.room.uuid = (0, uuid_1.v4)();
+        console.log('CAMERA ROOM:', exports.room.uuid);
+    }
     if (exports.socket)
         return;
     exports.socket = new simple_websockets_1.SimpleWebSocket(USE_LOCAL_BACKEND ? `ws://${domain}` : `wss://${domain}/`, {
@@ -45,8 +48,8 @@ const connectSocket = () => {
         }
     });
     exports.socket.on('connection', () => {
-        console.log('aaa');
-        exports.socket?.send('registerAsProxy', exports.generatedRoom);
+        if (exports.room.uuid)
+            exports.socket?.send('registerAsProxy', exports.room.uuid);
     });
     exports.socket._socket.onerror = (err) => {
         console.log(err);
@@ -57,25 +60,22 @@ const connectSocket = () => {
         });
     });
     exports.socket.on('db_update', async () => {
-        console.log('a?');
         if (!api_1.customer.game)
             return;
-        console.log('a!');
         const io = await socket_1.ioPromise;
         const result = await (0, cloud_1.checkCloudStatus)(api_1.customer.game);
         if (result !== 'ALL_SYNCED') {
-            console.log('a-');
             // TODO: Handle that
             return;
         }
-        console.log('a+');
         io.emit('db_update');
     });
     exports.socket.on('disconnect', () => {
         exports.socket = null;
         setTimeout(connectSocket, 2000);
     });
-    exports.socket.send('registerAsProxy', exports.generatedRoom);
+    if (exports.room.uuid)
+        exports.socket.send('registerAsProxy', exports.room.uuid);
     (0, api_1.registerRoomSetup)(exports.socket);
     socket_1.ioPromise.then(io => {
         exports.socket?.on('hudsOnline', (hudsUUID) => {

@@ -59,6 +59,15 @@ body {
 		}
 	}
 }
+.infobox {
+	padding: 15px;
+	backdrop-filter: blur(100px);
+	border: 1px solid rgba(107, 28, 255, 0.7);
+	background-color: rgba(0, 0, 0, 0.2);
+	font-size: 12px;
+	margin-bottom: 15px;
+	user-select: text;
+}
 .delete-checkbox {
 	border: 1.5px solid rgba(255, 255, 255, 0.6);
 	width: 18px;
@@ -74,6 +83,10 @@ body {
 	&.active {
 		border: 1.5px solid #6B1CFF;
 		background-color: #6B1CFF;
+	}
+	&.semi-active {
+		border: 1.5px solid #BDF2D5;
+		background-color: #BDF2D5;
 	}
 }
 .main-container {
@@ -408,7 +421,12 @@ body {
 	&.cameras {
 		padding: 30px !important; 
 	}
-
+	&.tournaments {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: flex-start;
+		align-content: flex-start
+	}
 	&.aco {
 		display: flex;
 		flex-wrap: wrap;
@@ -792,6 +810,86 @@ img.smallLogo {
 				margin-left: 5px;
 			}
 		}
+	}
+}
+.tournament-entry {
+	min-width:327px;
+	flex:1;
+	height: 156px;
+	border: 1px solid rgba(255,255,255,0.1);
+	display: flex;
+	flex-direction: column;
+	margin: 10px;
+	cursor: pointer;
+	text-transform: uppercase;
+	.tournament-info {
+		flex: 1;
+		padding: 15px;
+		.tournament-name {
+			font-weight: 700;
+			font-size: 12px;
+			letter-spacing: 0.2rem;
+		}
+		.tournament-groups {
+			font-weight: 600;
+			font-size: 10px;
+			letter-spacing: 0.1rem;
+			opacity: 0.6;
+		}
+	}
+	.logo-container {
+		height: 88px;
+		width:100%;
+		background-repeat: no-repeat;
+		background-size:cover;
+
+		.overlay {
+			background-color: rgba(0,0,0, 0.75);
+			height: 100%;
+			width:100%;
+			overflow: hidden;
+			position: relative;
+			backdrop-filter: blur(2px);
+			img{
+				max-width: 90px;
+				max-height: 90px;
+				position: absolute;
+				right: 10px;
+				top: 20px;
+			}
+		}
+	}
+	.tournament-separator {
+		height: 3px;
+		width: 100%;
+		background-color: #6B1CFF;
+		box-shadow: 0px 0px 20px 0px #6B1CFF;
+
+	}
+	
+	.logo-container.bg-0 {
+		background-image: url('./maps/mirage.jpg');
+	}
+	.logo-container.bg-1 {
+		background-image: url('./maps/inferno.jpg');
+	}
+	.logo-container.bg-2 {
+		background-image: url('./maps/overpass.jpg');
+	}
+	.logo-container.bg-3 {
+		background-image: url('./maps/train.jpg');
+	}
+	.logo-container.bg-4 {
+		background-image: url('./maps/dust2.jpg');
+	}
+	.logo-container.bg-5 {
+		background-image: url('./maps/ancient.png');
+	}
+	.logo-container.bg-6 {
+		background-image: url('./maps/nuke.jpg');
+	}
+	.logo-container.bg-7 {
+		background-image: url('./maps/vertigo.jpg');
 	}
 }
 .side-menu {
@@ -1264,15 +1362,18 @@ select#player_for_names.form-control {
 	display: flex;
 	flex-direction: column;
 	.scoreboard_player {
-		flex: 1;
 		cursor: pointer;
-		background-color: rgba(0,0,0,0.5);
-		height: 40px;
+		height: 67px;
 		padding: 10px;
-		border-bottom: 1px solid rgba(255,255,255,0.3);
+		border-bottom: 1px solid rgba(255,255,255,0.1);
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
 		.name {
 			display: flex;
 			align-items: center;
+			font-weight: 600;
+			font-size: 14px;
 			i {
 				font-size: 11pt;
 				font-weight: 900;
@@ -1285,8 +1386,9 @@ select#player_for_names.form-control {
 		.steamid {
 			display: flex;
 			align-items: center;
-			font-size: 10pt;
-			color: grey;
+			font-size: 14px;
+			color: white;
+			opacity: 0.6;
 		}
 	}
 }
@@ -1301,6 +1403,7 @@ select#player_for_names.form-control {
 }
 .scoreboard_container.right {
 	.scoreboard_player {
+		flex-direction: row-reverse;
 		.name {
 			i {
 				margin-right: auto;
@@ -1328,15 +1431,17 @@ select#player_for_names.form-control {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		font-weight: 700;
 	}
-	height: 50px;
-	background-color: rgba(0,0,0,0.2);
+	font-size: 14px;
+	font-weight: 600;
+	height: 29px;
+	background-color: rgba(33, 33, 33, 0.5);
 	display: flex;
 	align-items: center;
 	.team_name {
 		text-transform: uppercase;
-		letter-spacing: 1.25px;
+		letter-spacing: 0.1rem;
+		font-family: 'Rajdhani';
 	}
 }
 .scoreboard_score.CT {
@@ -2033,7 +2138,18 @@ form {
 }
 .tournament-info-header {
 	height: 210px;
+	display: flex;
 	border-bottom: 1px solid rgba(255,255,255,0.1);
+	.tournament-logo {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		img {
+			max-width: 90px;
+			max-height: 130px;
+			margin: 0 20px 0 30px;
+		}
+	}
 	.tournament-details {
 		display: flex;
 		height: 100%;
@@ -2096,6 +2212,27 @@ form {
 		}
 	}
 }
+.blocker {
+	width: 100%;
+	height: 100%;
+    position: relative;
+	.info {
+		width: 100%;
+		height: 100%;
+		display: flex;
+		position: absolute;
+		backdrop-filter: blur(20px);
+		z-index: 999;
+		font-size: 16px;
+		color: white;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		a {
+			margin-top: 30px;
+		}
+	}
+}
 .checkbox-container {
 	display: flex;
 	margin-bottom: 16px;
@@ -2154,7 +2291,7 @@ form {
 		display: flex;
 		align-items: center;
 		flex: 1;
-
+		line-break: anywhere;
 		&.team-no {
 			flex: unset;
 			width: 40px;

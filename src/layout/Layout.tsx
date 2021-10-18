@@ -155,6 +155,7 @@ export default class Layout extends Component<{}, IState> {
 	};
 	setUser = (user?: I.Customer) => {
 		const { data } = this.state;
+
 		data.customer = user;
 		this.setState({ data });
 	};

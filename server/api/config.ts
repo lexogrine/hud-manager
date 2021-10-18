@@ -131,8 +131,8 @@ export const verifyUrl = async (url: string) => {
 		`http://${publicIP}:${cfg.port}`,
 		`http://localhost:${cfg.port}`
 	];
-	if (isDev) {
-		bases.push(`http://localhost:3000/?port=${cfg.port}`);
+	if (isDev && url.startsWith(`http://localhost:3000`)) {
+		return true;
 	}
 	if (bases.find(base => url.startsWith(`${base}/dev`))) {
 		return true;

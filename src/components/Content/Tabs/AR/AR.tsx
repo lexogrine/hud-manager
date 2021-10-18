@@ -15,9 +15,10 @@ const isElectron = config.isElectron;
 interface IProps {
 	cxt: IContextData;
 	toggle: (tab: string, data?: any) => void;
+	setOnBackClick: I.HeaderHandler;
 }
 
-const AR = ({ cxt }: IProps) => {
+const AR = ({ cxt, setOnBackClick }: IProps) => {
 	const [active, setActive] = useState<I.HUD | I.ARModule | null>(null);
 	const [huds, setHUDs] = useState<I.HUD[]>([]);
 	const [ars, setARs] = useState<I.ARModule[]>([]);
@@ -38,6 +39,11 @@ const AR = ({ cxt }: IProps) => {
 		});
 		socket.emit('get_active_modules');
 	}, []);
+
+	const setARAsActive = (ar: I.HUD | I.ARModule | null) => {
+		setActive(ar);
+		setOnBackClick(ar ? () => { setARAsActive(null) } : null);
+	}
 
 	const handleZIPs = (files: FileList) => {
 		const file = files[0];
@@ -91,7 +97,7 @@ const AR = ({ cxt }: IProps) => {
 							<HudEntry
 								key={ar.dir}
 								hud={ar}
-								setActive={setActive}
+								setActive={setARAsActive}
 								active={activeModules.some(mod => mod === ar.dir)}
 							/>
 						))}

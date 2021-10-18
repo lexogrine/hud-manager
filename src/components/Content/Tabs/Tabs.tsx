@@ -14,6 +14,7 @@ import ARG from './ARG/ARG';
 import Tournamentss from './Tournaments/Tournamentss';
 import { HeaderHandler } from '../../../api/interfaces';
 import Cameras from './Cameras';
+import ForPlansOnly from '../../ForPlansOnly';
 
 interface IProps {
 	activeTab: string;
@@ -46,7 +47,7 @@ const Tabs = ({ activeTab, data, toggle, gsiCheck, setOnBackClick }: IProps) => 
 					<Tournamentss cxt={cxt} setOnBackClick={setOnBackClick}></Tournamentss>
 				</TabPane>
 				<TabPane tabId="arg">
-					<ARG></ARG>
+					<ForPlansOnly required="personal"><ARG></ARG></ForPlansOnly>
 				</TabPane>
 				<TabPane tabId="live">
 					<Live toggle={toggle} cxt={cxt}></Live>
@@ -55,13 +56,13 @@ const Tabs = ({ activeTab, data, toggle, gsiCheck, setOnBackClick }: IProps) => 
 					<Config cxt={cxt} toggle={toggle} gsiCheck={gsiCheck}></Config>
 				</TabPane>
 				<TabPane tabId="ar">
-					<AR cxt={cxt} toggle={toggle}></AR>
+					<AR cxt={cxt} toggle={toggle} setOnBackClick={setOnBackClick}></AR>
 				</TabPane>
 				<TabPane tabId="aco">
-					<ACO></ACO>
+					<ForPlansOnly required="professional"><ACO></ACO></ForPlansOnly>
 				</TabPane>
 				<TabPane tabId="cameras">
-					<Cameras cxt={cxt} />
+					<ForPlansOnly required="personal"><Cameras cxt={cxt} /></ForPlansOnly>
 				</TabPane>
 				<TabPane tabId="credits">
 					<Credits></Credits>

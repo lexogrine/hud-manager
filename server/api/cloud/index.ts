@@ -297,7 +297,9 @@ export const checkCloudStatus = async (game: I.AvailableGames) => {
 
 		const syncConflicted = I.availableResources.filter(
 			availableResource =>
-				!lastUpdateStatusLocal[game][availableResource] && lastUpdateStatusOnline[availableResource] && mappedResources[availableResource].length
+				!lastUpdateStatusLocal[game][availableResource] &&
+				lastUpdateStatusOnline[availableResource] &&
+				mappedResources[availableResource].length
 		);
 
 		if (syncConflicted.length) {
@@ -342,7 +344,6 @@ export const checkCloudStatus = async (game: I.AvailableGames) => {
 			game,
 			result.filter(resource => nonSyncedResources.includes(resource.resource))
 		);
-
 
 		return 'ALL_SYNCED';
 	} catch (e) {

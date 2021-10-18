@@ -134,7 +134,7 @@ export default {
 			apiV2('version/last', 'POST', { version, releaseDate })
 	},
 	cameras: {
-		get: (): Promise<{ availablePlayers: I.CameraRoomPlayer[] }> => apiV2('camera'),
+		get: (): Promise<{ availablePlayers: I.CameraRoomPlayer[], uuid: string }> => apiV2('camera'),
 		update: (players: I.CameraRoomPlayer[]) => apiV2('camera', 'POST', players)
 	},
 	cfgs: {

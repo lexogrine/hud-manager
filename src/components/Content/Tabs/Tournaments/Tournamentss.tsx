@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Button } from 'reactstrap';
 import api from './../../../../api/api';
 import * as I from './../../../../api/interfaces';
 import { IContextData } from './../../../../components/Context';
@@ -37,7 +36,7 @@ const Tournamentss = ({ cxt, setOnBackClick }: IProps) => {
 		playoffType: 'single',
 		groupType: 'swiss',
 		phases: 0,
-		groupPhases: 0,
+		groupPhases: 5,
 		participants: [],
 		groupParticipants: []
 	};
@@ -168,6 +167,7 @@ const Tournamentss = ({ cxt, setOnBackClick }: IProps) => {
 					tournament={form}
 					onChange={changeHandler}
 					save={save}
+					fileHandler={fileHandler}
 					close={() => setEditState(false)}
 				/>
 			);
@@ -188,19 +188,13 @@ const Tournamentss = ({ cxt, setOnBackClick }: IProps) => {
 
 		return (
 			<>
-				<div className="tab-content-container no-padding">
-					<div className="item-list-entry heading">
-						<div className="picture">Logo</div>
-						<div className="name">{t('common.teamName')}</div>
-						<div className="options">
-							<Button className="purple-btn round-btn">{t('common.manage')}</Button>
-						</div>
-					</div>
-					{cxt.tournaments.map(team => (
+				<div className="tab-content-container no-padding tournaments">
+					{cxt.tournaments.map((team, index) => (
 						<TournamentEntry
+							index={index}
 							hash={cxt.hash}
 							key={team._id}
-							team={team}
+							tournament={team}
 							edit={() => edit(team)}
 							show={() => show(team._id)}
 							fields={visibleFields}

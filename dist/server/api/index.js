@@ -57,10 +57,11 @@ exports.customer = {
     customer: null,
     game: null
 };
-let availablePlayers = [{ steamid: '1', label: 'Dupa' }];
+let availablePlayers = [];
 const registerRoomSetup = (socket) => {
     setTimeout(() => {
-        socket.send('registerRoomPlayers', user.generatedRoom, availablePlayers);
+        if (user.room.uuid)
+            socket.send('registerRoomPlayers', user.room.uuid, availablePlayers);
     }, 1000);
 };
 exports.registerRoomSetup = registerRoomSetup;
@@ -87,7 +88,7 @@ async function default_1() {
     __1.app.route('/api/version/last').get(machine.getLastLaunchedVersion).post(machine.saveLastLaunchedVersion);
     __1.app.route('/api/camera')
         .get((_req, res) => {
-        res.json({ availablePlayers, uuid: user.generatedRoom });
+        res.json({ availablePlayers, uuid: user.room.uuid });
     })
         .post((req, res) => {
         if (!Array.isArray(req.body) ||
@@ -98,7 +99,7 @@ async function default_1() {
         availablePlayers = req.body;
         setTimeout(() => {
             if (user_1.socket)
-                user_1.socket.send('registerRoomPlayers', user.generatedRoom, req.body);
+                user_1.socket.send('registerRoomPlayers', user.room.uuid, req.body);
         }, 1000);
         return res.sendStatus(200);
     });

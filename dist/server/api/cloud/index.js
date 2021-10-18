@@ -238,15 +238,12 @@ exports.uploadLocalToCloud = uploadLocalToCloud;
 const checkCloudStatus = async (game) => {
     console.log('CHECKING CLOUD...');
     if (__1.customer.customer?.license.type !== 'professional' && __1.customer.customer?.license.type !== 'enterprise') {
-        console.log('Fallback');
         return 'ALL_SYNCED';
     }
     const cfg = await (0, config_1.loadConfig)();
     if (cfg.sync === false)
         return 'ALL_SYNCED';
-    console.log('cfg sync', cfg.sync);
     if (!cfg.sync) {
-        console.log('updating sync to true...');
         await (0, config_1.setConfig)({ ...cfg, sync: true });
     }
     try {
@@ -279,12 +276,13 @@ const checkCloudStatus = async (game) => {
             tournaments: resources[5]
         };
         const lastUpdateStatusLocal = getLastUpdateDateLocally();
-        const syncConflicted = I.availableResources.filter(availableResource => !lastUpdateStatusLocal[game][availableResource] && lastUpdateStatusOnline[availableResource] && mappedResources[availableResource].length);
+        const syncConflicted = I.availableResources.filter(availableResource => !lastUpdateStatusLocal[game][availableResource] &&
+            lastUpdateStatusOnline[availableResource] &&
+            mappedResources[availableResource].length);
         if (syncConflicted.length) {
             // resources exist both locally and remotely, but local db wasnt ever synced
             // show options: download cloud, no sync
             console.log('SYNC CONFLICT, WHAT DO? #1', syncConflicted);
-            console.log(lastUpdateStatusOnline['matches']);
             return 'NO_SYNC_LOCAL';
         }
         const nonSyncedResources = I.availableResources.filter(availableResource => lastUpdateStatusOnline[availableResource] !== lastUpdateStatusLocal[game][availableResource]);
@@ -303,7 +301,6 @@ const checkCloudStatus = async (game) => {
         // Local data older, download non-synced resources
         await Promise.all(nonSyncedResources.map(resource => downloadCloudData(game, resource, lastUpdateStatusLocal[game][resource])));
         updateLastDateLocally(game, result.filter(resource => nonSyncedResources.includes(resource.resource)));
-        console.log('NICE');
         return 'ALL_SYNCED';
     }
     catch (e) {
