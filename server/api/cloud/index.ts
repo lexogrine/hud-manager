@@ -68,7 +68,7 @@ const getLastUpdateDateLocally = () => {
 	}
 };
 
-const updateLastDateLocally = (game: I.AvailableGames, resources: I.ResourceResponseStatus[]) => {
+const updateLastDateLocally = (game: I.AvailableGames, resources: I.ResourceResponseStatus[], blockUpdate = false) => {
 	const lastUpdateLocal = getLastUpdateDateLocally();
 
 	for (const resourceInfo of resources) {
@@ -79,11 +79,16 @@ const updateLastDateLocally = (game: I.AvailableGames, resources: I.ResourceResp
 	const database = path.join(userData, 'databases', 'lastUpdated.lhm');
 
 	fs.writeFileSync(database, JSON.stringify(lastUpdateLocal), 'utf8');
-	if (socket) {
+	if (socket && !blockUpdate) {
 		socket.send('init_db_update');
 	}
 	return lastUpdateLocal;
 };
+
+export const updateLastDateLocallyOnly = (game: I.AvailableGames | null, resources: I.AvailableResources[]) => {
+	if(!game || !resources.length) return;
+	updateLastDateLocally(game, resources.map(resource => ({ resource, status: (new Date()).toISOString() })), true);
+}
 
 export const addResource = async <T>(game: I.AvailableGames, resource: I.AvailableResources, data: T | T[]) => {
 	const result = (await api(`storage/${resource}/${game}`, 'POST', data)) as {

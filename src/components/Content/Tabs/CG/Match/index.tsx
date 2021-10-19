@@ -14,13 +14,12 @@ interface Props {
 	cxt: IContextData;
 }
 
-
 export const MatchHandler: {
 	edit: (match: I.Match | null) => void;
 	match: I.Match | null;
 	handler: (match: I.Match | null) => void;
 } = {
-	handler: () => { },
+	handler: () => {},
 	match: null,
 	edit: (match: I.Match | null) => {
 		if (match && MatchHandler.match && match.id === MatchHandler.match.id) {

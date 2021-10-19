@@ -6,7 +6,7 @@ import * as M from './index';
 import { ioPromise } from '../../socket';
 import { customer, validateCloudAbility } from '..';
 import { AvailableGames } from '../../../types/interfaces';
-import { addResource, checkCloudStatus, deleteResource, updateResource } from '../cloud';
+import { addResource, checkCloudStatus, deleteResource, updateLastDateLocallyOnly, updateResource } from '../cloud';
 import { bindMatch } from '../tournaments';
 
 export const getMatchesRoute: express.RequestHandler = async (req, res) => {
@@ -58,6 +58,8 @@ export const addMatchRoute: RequestHandler = async (req, res) => {
 
 	if (match && cloudStatus) {
 		await addResource(customer.game as AvailableGames, 'matches', match);
+	} else if(match) {
+		updateLastDateLocallyOnly(customer.game, ['matches']);
 	}
 	return res.sendStatus(match ? 200 : 500);
 };
@@ -80,6 +82,8 @@ export const deleteMatchRoute: RequestHandler = async (req, res) => {
 	const match = await M.deleteMatch(req.params.id);
 	if (cloudStatus && match) {
 		await deleteResource(customer.game as AvailableGames, 'matches', req.params.id);
+	} else if(match) {
+		updateLastDateLocallyOnly(customer.game, ['matches']);
 	}
 	return res.sendStatus(match ? 200 : 500);
 };
@@ -95,6 +99,8 @@ export const updateMatchRoute: RequestHandler = async (req, res) => {
 	const match = await M.updateMatch(req.body);
 	if (cloudStatus && match) {
 		await updateResource(customer.game as AvailableGames, 'matches', { ...req.body });
+	} else if(match) {
+		updateLastDateLocallyOnly(customer.game, ['matches']);
 	}
 	io.emit('match');
 	return res.sendStatus(match ? 200 : 500);

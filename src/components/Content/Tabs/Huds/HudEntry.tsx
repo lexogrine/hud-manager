@@ -22,6 +22,8 @@ import ElectronOnly from '../../../ElectronOnly';
 import { GameOnly } from '../Config/Config';
 import { useTranslation } from 'react-i18next';
 
+import { ReactComponent as Loading } from './../../../../styles/icons/loading.svg';
+
 interface IProps {
 	hud: I.HUD;
 	isActive: boolean;
@@ -231,7 +233,7 @@ const HudEntry = ({
 													{t('huds.actions.upload')}
 												</Tip>
 											) : (
-												t('huds.actions.uploading')
+												<Loading height={15} />
 											)
 										) : null}
 										<Tip
@@ -283,7 +285,7 @@ const HudEntry = ({
 													/>
 												) : null
 											) : (
-												t('huds.actions.downloading')
+												<Loading height={15} />
 											)}
 											<Tip
 												id={`hud_delete_cloud_button_${hashCode(hud.dir)}`}

@@ -76,6 +76,9 @@ const addMatchRoute = async (req, res) => {
     if (match && cloudStatus) {
         await (0, cloud_1.addResource)(__1.customer.game, 'matches', match);
     }
+    else if (match) {
+        (0, cloud_1.updateLastDateLocallyOnly)(__1.customer.game, ['matches']);
+    }
     return res.sendStatus(match ? 200 : 500);
 };
 exports.addMatchRoute = addMatchRoute;
@@ -96,6 +99,9 @@ const deleteMatchRoute = async (req, res) => {
     if (cloudStatus && match) {
         await (0, cloud_1.deleteResource)(__1.customer.game, 'matches', req.params.id);
     }
+    else if (match) {
+        (0, cloud_1.updateLastDateLocallyOnly)(__1.customer.game, ['matches']);
+    }
     return res.sendStatus(match ? 200 : 500);
 };
 exports.deleteMatchRoute = deleteMatchRoute;
@@ -109,6 +115,9 @@ const updateMatchRoute = async (req, res) => {
     const match = await M.updateMatch(req.body);
     if (cloudStatus && match) {
         await (0, cloud_1.updateResource)(__1.customer.game, 'matches', { ...req.body });
+    }
+    else if (match) {
+        (0, cloud_1.updateLastDateLocallyOnly)(__1.customer.game, ['matches']);
     }
     io.emit('match');
     return res.sendStatus(match ? 200 : 500);

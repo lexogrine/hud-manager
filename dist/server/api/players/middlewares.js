@@ -102,6 +102,9 @@ const updatePlayer = async (req, res) => {
         if (cloudStatus) {
             await (0, cloud_1.updateResource)(__1.customer.game, 'players', { ...updated, _id: req.params.id });
         }
+        else {
+            (0, cloud_1.updateLastDateLocallyOnly)(__1.customer.game, ['players']);
+        }
         const player = await (0, index_1.getPlayerById)(req.params.id);
         return res.json(player);
     });
@@ -129,6 +132,9 @@ const addPlayer = async (req, res) => {
     }
     if (cloudStatus) {
         await (0, cloud_1.addResource)(__1.customer.game, 'players', result[0]);
+    }
+    else {
+        (0, cloud_1.updateLastDateLocallyOnly)(__1.customer.game, ['players']);
     }
     return res.json(result[0]);
 };
@@ -181,6 +187,9 @@ const addPlayersWithExcel = async (req, res) => {
         if (cloudStatus) {
             await (0, cloud_1.addResource)(__1.customer.game, 'players', result);
         }
+        else {
+            (0, cloud_1.updateLastDateLocallyOnly)(__1.customer.game, ['players']);
+        }
         return res.json({ message: `Added ${result.length} players` });
     }
     catch {
@@ -209,6 +218,9 @@ const deletePlayer = async (req, res) => {
         }
         if (cloudStatus) {
             await (0, cloud_1.deleteResource)(__1.customer.game, 'players', ids);
+        }
+        else {
+            (0, cloud_1.updateLastDateLocallyOnly)(__1.customer.game, ['players']);
         }
         return res.sendStatus(n ? 200 : 404);
     });

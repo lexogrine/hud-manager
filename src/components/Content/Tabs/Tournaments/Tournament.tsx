@@ -43,7 +43,7 @@ const systemDescription = (system: I.TournamentTypes) => {
 	return `${system.charAt(0).toUpperCase()}${system.slice(1)} Elimination`;
 };
 
-const Tournament = ({ tournament, cxt, edit, remove, maps, setOnBackClick }: IProps) => {
+const Tournament = ({ tournament, cxt, edit, remove, maps, setOnBackClick, close }: IProps) => {
 	const [tab, setTab] = useState<Tabs>('playoffs');
 	const [matchTab, setMatchTab] = useState('current');
 
@@ -64,10 +64,15 @@ const Tournament = ({ tournament, cxt, edit, remove, maps, setOnBackClick }: IPr
 		cxt.reload();
 	};
 
+	const stopEditing = () => {
+		setMatch(null);
+		setOnBackClick(close, 'Tournament page')
+	}
+
 	const startEditMatch = (match: I.Match | null) => {
 		setMatch(match);
-		setOnBackClick(match ? () => setMatch(null) : null, match ? 'Edit match' : 'Tournament page')
-	}
+		setOnBackClick(stopEditing, 'Edit match');
+	};
 
 	const setCurrent = (id: string) => async () => {
 		const { matches } = cxt;
@@ -102,8 +107,9 @@ const Tournament = ({ tournament, cxt, edit, remove, maps, setOnBackClick }: IPr
 		if (tournament.logo.includes('api/players/avatar')) {
 			logo = `${tournament.logo}?hash=${hash()}`;
 		} else {
-			logo = `data:image/${isSvg(Buffer.from(tournament.logo, 'base64')) ? 'svg+xml' : 'png'};base64,${tournament.logo
-				}`;
+			logo = `data:image/${isSvg(Buffer.from(tournament.logo, 'base64')) ? 'svg+xml' : 'png'};base64,${
+				tournament.logo
+			}`;
 		}
 	}
 
@@ -111,18 +117,10 @@ const Tournament = ({ tournament, cxt, edit, remove, maps, setOnBackClick }: IPr
 		return (
 			<>
 				<div className="tab-content-container">
-						<EditMatch
-							match={match}
-							edit={editMatch}
-							cxt={cxt}
-							maps={maps}
-						/>
+					<EditMatch match={match} edit={editMatch} cxt={cxt} maps={maps} />
 				</div>
 				<div className="action-container">
-					<LoadingButton
-						className="button green strong big wide"
-						onClick={() => setMatch(null)}
-					>
+					<LoadingButton className="button green strong big wide" onClick={() => setMatch(null)}>
 						{t('common.cancel')}
 					</LoadingButton>
 				</div>

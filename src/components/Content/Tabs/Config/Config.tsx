@@ -551,7 +551,7 @@ class Config extends Component<IProps, IState> {
 						players={conflict.players}
 						save={this.import(data, cxt.reload)}
 					/>
-					{ active ? <SpaceLeftContainer /> : null }
+					{active ? <SpaceLeftContainer /> : null}
 					<ElectronOnly>
 						<Col md="12" className="config-entry">
 							<div className="config-description">

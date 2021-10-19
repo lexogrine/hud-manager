@@ -23,7 +23,6 @@ const Navbar = ({ activeTab, toggle, files, setCollapse, isCollapsed }: IProps) 
 		toggle(tab);
 	};
 
-
 	return (
 		<Nav tabs className={`navbar-container ${isCollapsed ? 'collapsed' : ''}`}>
 			<div className="collapse-button" onClick={toggleNav}>
@@ -66,10 +65,7 @@ const Navbar = ({ activeTab, toggle, files, setCollapse, isCollapsed }: IProps) 
 						<div>{t('common.tournaments')}</div>
 					</NavLink>
 				</NavItem>
-				<NavItem
-					className={`hover-pointer `}
-					onClick={toggleHandler('cgpanel')}
-				>
+				<NavItem className={`hover-pointer `} onClick={toggleHandler('cgpanel')}>
 					<NavLink active={activeTab === 'cgpanel'}>
 						<Tabs.CGMode />
 						<div>{t('common.cgMode')}</div>
@@ -108,8 +104,8 @@ const Navbar = ({ activeTab, toggle, files, setCollapse, isCollapsed }: IProps) 
 						</NavLink>
 					</NavItem>
 				</GameOnly>
-				<NavItem className="hover-pointer" id="settings" onClick={toggleHandler('config')}>
-					<NavLink active={activeTab === 'config'}>
+				<NavItem className="hover-pointer" id="settings" onClick={toggleHandler('settings')}>
+					<NavLink active={activeTab === 'settings'}>
 						<Tabs.Settings />
 						<div>
 							{t('settings.header')} {!files ? <>(!)</> : null}

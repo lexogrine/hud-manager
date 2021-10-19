@@ -4,7 +4,7 @@ import db from './../../../init/database';
 import { getActiveGameMatches } from '../matches';
 import { AvailableGames, Tournament } from '../../../types/interfaces';
 import { validateCloudAbility, customer } from '..';
-import { checkCloudStatus, addResource, updateResource, deleteResource } from '../cloud';
+import { checkCloudStatus, addResource, updateResource, deleteResource, updateLastDateLocallyOnly } from '../cloud';
 
 const tournamentsDb = db.tournaments;
 
@@ -61,6 +61,8 @@ export const addTournament: express.RequestHandler = async (req, res) => {
 	const tournamentWithId = await T.addTournament(tournament);
 	if (cloudStatus) {
 		await addResource(customer.game as AvailableGames, 'tournaments', tournamentWithId);
+	} else {
+		updateLastDateLocallyOnly(customer.game, ['tournaments']);
 	}
 
 	if (!tournamentWithId) return res.sendStatus(500);
@@ -80,6 +82,8 @@ export const bindMatchToMatchup: express.RequestHandler = async (req, res) => {
 
 	if (cloudStatus) {
 		await updateResource(customer.game as AvailableGames, 'tournaments', tournament);
+	} else {
+		updateLastDateLocallyOnly(customer.game, ['tournaments']);
 	}
 
 	return res.sendStatus(200);
@@ -101,6 +105,8 @@ export const updateTournament: express.RequestHandler = async (req, res) => {
 
 	if (cloudStatus) {
 		await updateResource(customer.game as AvailableGames, 'teams', { ...newTournament, _id: req.params.id });
+	} else {
+		updateLastDateLocallyOnly(customer.game, ['tournaments']);
 	}
 	return res.sendStatus(newTournament ? 200 : 500);
 };
@@ -113,6 +119,8 @@ export const deleteTournament: express.RequestHandler = async (req, res) => {
 	const del = await T.deleteTournament(req.params.id);
 	if (cloudStatus) {
 		await deleteResource(customer.game as AvailableGames, 'teams', req.params.id);
+	} else {
+		updateLastDateLocallyOnly(customer.game, ['tournaments']);
 	}
 	return res.sendStatus(del ? 200 : 500);
 };

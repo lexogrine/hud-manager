@@ -11,6 +11,7 @@ import { ReactComponent as EditIcon } from './../../../../styles/icons/pencil.sv
 import { useTranslation } from 'react-i18next';
 import ImportTeamsModal from './ImportTeamsModal';
 import Checkbox from '../../../Checkbox';
+import DeleteModal from '../../../DeleteModal';
 
 interface IProps {
 	cxt: IContextData;
@@ -36,6 +37,7 @@ const TeamsTab = ({ cxt }: IProps) => {
 	const [editModalState, setEditState] = useState(false);
 	const [fieldsModalState, setFieldsState] = useState(false);
 	const [importModalState, setImportState] = useState(false);
+	const [deleteModalState, setDeleteState] = useState(false);
 
 	const [sortBy, setSortBy] = useState<keyof I.Team>('name');
 	const [sortByType, setSortByType] = useState<'DESC' | 'ASC'>('ASC');
@@ -220,7 +222,8 @@ const TeamsTab = ({ cxt }: IProps) => {
 		if (!selectedTeams.length) return;
 		await api.teams.delete(selectedTeams);
 		setSelectedTeams([]);
-		cxt.reload();
+		setDeleteState(false);
+		await cxt.reload();
 	};
 
 	const toggleTeams = () => {
@@ -266,6 +269,13 @@ const TeamsTab = ({ cxt }: IProps) => {
 					placeholder={t('common.search')}
 				/>
 	</div>*/}
+			<DeleteModal
+				title="Delete teams"
+				content={`Are you sure you want to remove ${selectedTeams.length} players?`}
+				isOpen={deleteModalState}
+				toggle={ () => setDeleteState(false) }
+				confirmDelete={deleteTeams}
+			/>
 			<ImportTeamsModal
 				cxt={cxt}
 				open={importModalState}
@@ -300,11 +310,11 @@ const TeamsTab = ({ cxt }: IProps) => {
 						</div>
 					))}
 					<div className="options">
-						<EditIcon className="image-button transparent" onClick={openCustomFields} />
+						<EditIcon className="image-button" onClick={openCustomFields} />
 						<DeleteIcon
-							onClick={deleteTeams}
-							className="image-button transparent"
-							style={{ marginLeft: 18 }}
+							onClick={() => { selectedTeams.length && setDeleteState(true); }}
+							className={`image-button ${selectedTeams.length ? '' : 'transparent'}`}
+							style={{ marginLeft: 18, cursor: selectedTeams.length ? 'pointer':'auto' }}
 						/>
 						<Checkbox
 							checked={selectedTeams.length > 0}

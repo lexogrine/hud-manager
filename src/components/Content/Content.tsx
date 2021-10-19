@@ -120,11 +120,30 @@ const Content = ({
 		}
 	};
 
+	const getHeaderTitle = () => {
+		let title = activeTab;
+		let size = null;
+		if(activeTab === 'arg'){
+			title =  'Auto Replay Generator';
+			size = 25;
+		} else if(activeTab === 'aco'){
+			title = 'Auto Cinematic Observer';
+			size = 25;
+		} else if(activeTab === 'ar'){
+			title = 'Augmented Reality';
+			size = 25;
+		} else if(activeTab === 'cgpanel'){
+			title = 'CG Mode';
+		}
+		return { title, size };
+	}
+
 	useEffect(() => {
 		checkFiles();
 	}, [game]);
 
 	const { t } = useTranslation();
+	const { title, size } = getHeaderTitle();
 	return (
 		<div className={`main-container ${isCollapsed ? 'collapsed' : ''}`} onDragOver={allow} onDrop={drop}>
 			<Navbar
@@ -137,9 +156,9 @@ const Content = ({
 			<Col style={{ display: 'flex', flexDirection: 'column' }}>
 				<WindowBar />
 				<div className="tab-title-container">
-					<div className="header-title">
+					<div className="header-title" style={{ fontSize: size || undefined}}>
 						{onBackClick.handler ? <img src={goBack} onClick={onBackClick.handler} /> : null}{' '}
-						{onBackClick.header || activeTab}
+						{onBackClick.header || title}
 					</div>
 					<div className="top_buttons">
 						<div className={`button strong`} onClick={clearGame}>

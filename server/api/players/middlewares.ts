@@ -7,7 +7,7 @@ import isSvg from './../../../src/isSvg';
 import { getPlayersList, getPlayerById, getPlayerBySteamId, addPlayers } from './index';
 import * as F from './../fields';
 import { validateCloudAbility, customer } from '..';
-import { addResource, updateResource, deleteResource, checkCloudStatus } from '../cloud';
+import { addResource, updateResource, deleteResource, checkCloudStatus, updateLastDateLocallyOnly } from '../cloud';
 import { Workbook } from 'exceljs';
 import { getTeamsList } from '../teams';
 
@@ -88,6 +88,8 @@ export const updatePlayer: express.RequestHandler = async (req, res) => {
 		}
 		if (cloudStatus) {
 			await updateResource(customer.game as AvailableGames, 'players', { ...updated, _id: req.params.id });
+		} else {
+			updateLastDateLocallyOnly(customer.game, ['players']);
 		}
 		const player = await getPlayerById(req.params.id);
 		return res.json(player);
@@ -117,6 +119,8 @@ export const addPlayer: express.RequestHandler = async (req, res) => {
 
 	if (cloudStatus) {
 		await addResource(customer.game as AvailableGames, 'players', result[0]);
+	} else {
+		updateLastDateLocallyOnly(customer.game, ['players']);
 	}
 
 	return res.json(result[0]);
@@ -185,6 +189,8 @@ export const addPlayersWithExcel: express.RequestHandler = async (req, res) => {
 
 		if (cloudStatus) {
 			await addResource(customer.game as AvailableGames, 'players', result);
+		} else {
+			updateLastDateLocallyOnly(customer.game, ['players']);
 		}
 
 		return res.json({ message: `Added ${result.length} players` });
@@ -218,6 +224,8 @@ export const deletePlayer: express.RequestHandler = async (req, res) => {
 		}
 		if (cloudStatus) {
 			await deleteResource(customer.game as AvailableGames, 'players', ids);
+		} else {
+			updateLastDateLocallyOnly(customer.game, ['players']);
 		}
 		return res.sendStatus(n ? 200 : 404);
 	});

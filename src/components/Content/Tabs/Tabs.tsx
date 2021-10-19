@@ -27,19 +27,21 @@ interface IProps {
 }
 
 const Tabs = ({ activeTab, data, toggle, gsiCheck, setOnBackClick }: IProps) => {
-	const [ maps, setMaps ] = useState<string[]>([]);
+	const [maps, setMaps] = useState<string[]>([]);
 
 	useEffect(() => {
 		api.match.getMaps().then(maps => {
 			setMaps(maps);
 		});
-	}, [])
+	}, []);
 	return (
 		<ContextData.Consumer>
 			{cxt => (
 				<TabContent activeTab={activeTab}>
 					<TabPane tabId="cgpanel">
-						<CG cxt={cxt}></CG>
+						<ForPlansOnly required="personal">
+							<CG cxt={cxt}></CG>
+						</ForPlansOnly>
 					</TabPane>
 					<TabPane tabId="teams">
 						<Teams cxt={cxt}></Teams>
@@ -64,7 +66,7 @@ const Tabs = ({ activeTab, data, toggle, gsiCheck, setOnBackClick }: IProps) => 
 					<TabPane tabId="live">
 						<Live toggle={toggle} cxt={cxt}></Live>
 					</TabPane>
-					<TabPane tabId="config">
+					<TabPane tabId="settings">
 						<Config cxt={cxt} toggle={toggle} gsiCheck={gsiCheck}></Config>
 					</TabPane>
 					<TabPane tabId="ar">
@@ -86,7 +88,7 @@ const Tabs = ({ activeTab, data, toggle, gsiCheck, setOnBackClick }: IProps) => 
 				</TabContent>
 			)}
 		</ContextData.Consumer>
-	)
+	);
 };
 
 export default Tabs;

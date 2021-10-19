@@ -184,7 +184,7 @@ const Tournamentss = ({ cxt, setOnBackClick, maps }: IProps) => {
 					cxt={cxt}
 					setOnBackClick={setOnBackClick}
 					tournament={tournament}
-					close={() => setShowing(null)}
+					close={close}
 					remove={deleteTournament}
 					maps={maps}
 				/>

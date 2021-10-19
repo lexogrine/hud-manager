@@ -12,6 +12,7 @@ import { ReactComponent as DeleteIcon } from './../../../../styles/icons/bin.svg
 import { ReactComponent as EditIcon } from './../../../../styles/icons/pencil.svg';
 import ImportPlayerModal from './ImportPlayersModal';
 import Checkbox from '../../../Checkbox';
+import DeleteModal from '../../../DeleteModal';
 // import { GameOnly } from '../Config/Config';
 // import downloadIcon from './../../../../styles/downloadHUDIcon.png';
 
@@ -47,6 +48,7 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 	const [editModalState, setEditState] = useState(false);
 	const [fieldsModalState, setFieldsState] = useState(false);
 	const [importModalState, setImportState] = useState(false);
+	const [deleteModalState, setDeleteState] = useState(false);
 
 	const [customFieldForm, setCustomFieldForm] = useState<I.CustomFieldEntry[]>(quickClone(cxt.fields.players));
 
@@ -68,6 +70,7 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 		await api.players.delete(selectedPlayers);
 		setSelectedPlayers([]);
 		await cxt.reload();
+		setDeleteState(false);
 	};
 
 	const sortPlayers = (players: I.Player[]) => {
@@ -189,7 +192,6 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 	const deletePlayer = async () => {
 		if (form._id === 'empty') return;
 		const response = await api.players.delete(form._id);
-		console.log(response);
 		if (response) {
 			setEditState(false);
 			await loadPlayers();
@@ -321,6 +323,13 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 					placeholder={t('common.search')}
 				/>
 			</div>*/}
+			<DeleteModal
+				title="Delete players"
+				content={`Are you sure you want to remove ${selectedPlayers.length} players?`}
+				isOpen={deleteModalState}
+				toggle={ () => setDeleteState(false) }
+				confirmDelete={deletePlayers}
+			/>
 			<ImportPlayerModal
 				open={importModalState}
 				cxt={cxt}
@@ -363,11 +372,11 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 						</div>
 					))}
 					<div className="options">
-						<EditIcon className="image-button transparent" onClick={openCustomFields} />
+						<EditIcon className="image-button" onClick={openCustomFields} />
 						<DeleteIcon
-							onClick={deletePlayers}
-							className="image-button transparent"
-							style={{ marginLeft: 18 }}
+							onClick={() => { selectedPlayers.length && setDeleteState(true); }}
+							className={`image-button ${selectedPlayers.length ? '' : 'transparent'}`}
+							style={{ marginLeft: 18, cursor: selectedPlayers.length ? 'pointer':'auto' }}
 						/>
 						<Checkbox
 							checked={selectedPlayers.length > 0}

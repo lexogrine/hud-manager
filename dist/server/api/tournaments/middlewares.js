@@ -59,6 +59,9 @@ const addTournament = async (req, res) => {
     if (cloudStatus) {
         await (0, cloud_1.addResource)(__1.customer.game, 'tournaments', tournamentWithId);
     }
+    else {
+        (0, cloud_1.updateLastDateLocallyOnly)(__1.customer.game, ['tournaments']);
+    }
     if (!tournamentWithId)
         return res.sendStatus(500);
     return res.json(tournamentWithId);
@@ -76,6 +79,9 @@ const bindMatchToMatchup = async (req, res) => {
         return res.sendStatus(500);
     if (cloudStatus) {
         await (0, cloud_1.updateResource)(__1.customer.game, 'tournaments', tournament);
+    }
+    else {
+        (0, cloud_1.updateLastDateLocallyOnly)(__1.customer.game, ['tournaments']);
     }
     return res.sendStatus(200);
 };
@@ -97,6 +103,9 @@ const updateTournament = async (req, res) => {
     if (cloudStatus) {
         await (0, cloud_1.updateResource)(__1.customer.game, 'teams', { ...newTournament, _id: req.params.id });
     }
+    else {
+        (0, cloud_1.updateLastDateLocallyOnly)(__1.customer.game, ['tournaments']);
+    }
     return res.sendStatus(newTournament ? 200 : 500);
 };
 exports.updateTournament = updateTournament;
@@ -108,6 +117,9 @@ const deleteTournament = async (req, res) => {
     const del = await T.deleteTournament(req.params.id);
     if (cloudStatus) {
         await (0, cloud_1.deleteResource)(__1.customer.game, 'teams', req.params.id);
+    }
+    else {
+        (0, cloud_1.updateLastDateLocallyOnly)(__1.customer.game, ['tournaments']);
     }
     return res.sendStatus(del ? 200 : 500);
 };

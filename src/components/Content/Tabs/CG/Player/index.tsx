@@ -14,7 +14,6 @@ interface Props {
 	cxt: IContextData;
 }
 
-
 const PlayerForm = ({ cxt }: Props) => {
 	const emptyPlayer: I.Player = {
 		_id: 'empty',

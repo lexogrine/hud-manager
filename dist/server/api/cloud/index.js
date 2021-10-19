@@ -22,7 +22,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.checkCloudStatus = exports.uploadLocalToCloud = exports.downloadCloudToLocal = exports.getResource = exports.deleteResource = exports.updateResource = exports.addResource = void 0;
+exports.checkCloudStatus = exports.uploadLocalToCloud = exports.downloadCloudToLocal = exports.getResource = exports.deleteResource = exports.updateResource = exports.addResource = exports.updateLastDateLocallyOnly = void 0;
 const user_1 = require("./../user");
 const I = __importStar(require("../../../types/interfaces"));
 const config_1 = require("../config");
@@ -84,7 +84,7 @@ const getLastUpdateDateLocally = () => {
         return lastUpdated;
     }
 };
-const updateLastDateLocally = (game, resources) => {
+const updateLastDateLocally = (game, resources, blockUpdate = false) => {
     const lastUpdateLocal = getLastUpdateDateLocally();
     for (const resourceInfo of resources) {
         lastUpdateLocal[game][resourceInfo.resource] = resourceInfo.status;
@@ -92,11 +92,17 @@ const updateLastDateLocally = (game, resources) => {
     const userData = electron_1.app.getPath('userData');
     const database = path_1.default.join(userData, 'databases', 'lastUpdated.lhm');
     fs_1.default.writeFileSync(database, JSON.stringify(lastUpdateLocal), 'utf8');
-    if (user_1.socket) {
+    if (user_1.socket && !blockUpdate) {
         user_1.socket.send('init_db_update');
     }
     return lastUpdateLocal;
 };
+const updateLastDateLocallyOnly = (game, resources) => {
+    if (!game || !resources.length)
+        return;
+    updateLastDateLocally(game, resources.map(resource => ({ resource, status: (new Date()).toISOString() })), true);
+};
+exports.updateLastDateLocallyOnly = updateLastDateLocallyOnly;
 const addResource = async (game, resource, data) => {
     const result = (await (0, user_1.api)(`storage/${resource}/${game}`, 'POST', data));
     if (!result) {

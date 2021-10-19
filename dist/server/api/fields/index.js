@@ -87,6 +87,9 @@ const updateFields = async (fields, type, game) => {
                 if (cloudStatus) {
                     await (0, cloud_1.updateResource)(__1.customer.game, 'customs', result);
                 }
+                else {
+                    (0, cloud_1.updateLastDateLocallyOnly)(__1.customer.game, ['customs']);
+                }
                 res(result);
             });
         });

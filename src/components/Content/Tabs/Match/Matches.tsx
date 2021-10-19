@@ -142,12 +142,7 @@ class Matches extends Component<IProps, { match: I.Match | null; activeTab: stri
 				)*/}
 				<div className="tab-content-container no-padding">
 					{match ? (
-						<MatchEdit
-							match={match}
-							edit={this.edit}
-							cxt={this.props.cxt}
-							maps={this.props.maps}
-						/>
+						<MatchEdit match={match} edit={this.edit} cxt={this.props.cxt} maps={this.props.maps} />
 					) : (
 						<>
 							<div className="match-type-menu">

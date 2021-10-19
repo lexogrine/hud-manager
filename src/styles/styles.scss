@@ -295,7 +295,7 @@ body {
 }
 .login-view {
     position: absolute;
-    z-index: 9;
+    z-index: 1000;
     top: 0;
     left: 0;
     right: 0;
@@ -356,7 +356,7 @@ body {
 	width: 316px;
 	height:100%;
     backdrop-filter: blur(100px);
-    z-index: 5;
+    z-index: 999;
 	padding: 0 30px;
 	font-family: 'Rajdhani';
 	text-transform: uppercase;
@@ -438,6 +438,7 @@ body {
     border-bottom: 1px solid rgba(255,255,255,0.1);
 	.header-title {
 		display: flex;
+		line-height: 25px;
 		align-items: center;
 		img {
 			margin-right: 30px;

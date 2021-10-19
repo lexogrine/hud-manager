@@ -142,7 +142,6 @@ const TeamForm = ({ cxt }: Props) => {
 			</Row>
 			<Row>
 				<Col md="12">
-
 					<FormGroup>
 						<Input
 							type="select"

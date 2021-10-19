@@ -10,7 +10,6 @@ import { ReactComponent as EditIcon } from './../../../../../styles/icons/pencil
 import { ReactComponent as LiveIcon } from './../../../../../styles/icons/live.svg';
 import { ReactComponent as AddIcon } from './../../../../../styles/icons/add.svg';
 
-
 interface Props {
 	cxt: IContextData;
 }
@@ -55,13 +54,13 @@ const MatchPreview = ({ match, cxt }: { match: I.Match; cxt: IContextData }) => 
 			<div className="match-versus">VS</div>
 			<TeamPreview name={right?.name || 'Team #2'} logo={right?.logo} />
 			<div className="match-edit-button" onClick={deleteMatch}>
-				<DeleteIcon  className="image-button  transparent" />
+				<DeleteIcon className="image-button  transparent" />
 			</div>
 			<div className="match-edit-button" onClick={() => MatchHandler.edit(match)}>
-				<EditIcon  className="image-button  transparent" />
+				<EditIcon className="image-button  transparent" />
 			</div>
 			<div className="match-edit-button" onClick={setCurrent}>
-				<LiveIcon  className={`image-button ${match.current ? '' : 'transparent'}`} />
+				<LiveIcon className={`image-button ${match.current ? '' : 'transparent'}`} />
 			</div>
 		</div>
 	);
@@ -98,7 +97,16 @@ const Matches = ({ cxt }: Props) => {
 	};
 
 	return (
-		<Section title={<>{t('match.matches')}<AddIcon onClick={add} /></>} cxt={cxt} width={450}>
+		<Section
+			title={
+				<>
+					{t('match.matches')}
+					<AddIcon onClick={add} />
+				</>
+			}
+			cxt={cxt}
+			width={450}
+		>
 			{cxt.matches.map(match => (
 				<MatchPreview key={match.id} match={match} cxt={cxt} />
 			))}
