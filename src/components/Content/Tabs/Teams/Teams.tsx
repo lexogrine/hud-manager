@@ -273,7 +273,7 @@ const TeamsTab = ({ cxt }: IProps) => {
 				title="Delete teams"
 				content={`Are you sure you want to remove ${selectedTeams.length} players?`}
 				isOpen={deleteModalState}
-				toggle={ () => setDeleteState(false) }
+				toggle={() => setDeleteState(false)}
 				confirmDelete={deleteTeams}
 			/>
 			<ImportTeamsModal
@@ -312,9 +312,11 @@ const TeamsTab = ({ cxt }: IProps) => {
 					<div className="options">
 						<EditIcon className="image-button" onClick={openCustomFields} />
 						<DeleteIcon
-							onClick={() => { selectedTeams.length && setDeleteState(true); }}
+							onClick={() => {
+								selectedTeams.length && setDeleteState(true);
+							}}
 							className={`image-button ${selectedTeams.length ? '' : 'transparent'}`}
-							style={{ marginLeft: 18, cursor: selectedTeams.length ? 'pointer':'auto' }}
+							style={{ marginLeft: 18, cursor: selectedTeams.length ? 'pointer' : 'auto' }}
 						/>
 						<Checkbox
 							checked={selectedTeams.length > 0}

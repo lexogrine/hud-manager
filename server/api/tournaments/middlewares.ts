@@ -104,7 +104,7 @@ export const updateTournament: express.RequestHandler = async (req, res) => {
 	const newTournament = await T.updateTournament(tournament);
 
 	if (cloudStatus) {
-		await updateResource(customer.game as AvailableGames, 'teams', { ...newTournament, _id: req.params.id });
+		await updateResource(customer.game as AvailableGames, 'tournaments', { ...newTournament, _id: req.params.id });
 	} else {
 		updateLastDateLocallyOnly(customer.game, ['tournaments']);
 	}
@@ -118,7 +118,7 @@ export const deleteTournament: express.RequestHandler = async (req, res) => {
 	}
 	const del = await T.deleteTournament(req.params.id);
 	if (cloudStatus) {
-		await deleteResource(customer.game as AvailableGames, 'teams', req.params.id);
+		await deleteResource(customer.game as AvailableGames, 'tournaments', req.params.id);
 	} else {
 		updateLastDateLocallyOnly(customer.game, ['tournaments']);
 	}

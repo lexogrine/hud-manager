@@ -6,7 +6,7 @@ interface Props {
 	content: string;
 	toggle: () => void;
 	confirmDelete: () => void;
-    isOpen: boolean;
+	isOpen: boolean;
 }
 
 const DeleteModal = ({ title, content, toggle, confirmDelete, isOpen }: Props) => {

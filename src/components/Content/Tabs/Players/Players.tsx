@@ -327,7 +327,7 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 				title="Delete players"
 				content={`Are you sure you want to remove ${selectedPlayers.length} players?`}
 				isOpen={deleteModalState}
-				toggle={ () => setDeleteState(false) }
+				toggle={() => setDeleteState(false)}
 				confirmDelete={deletePlayers}
 			/>
 			<ImportPlayerModal
@@ -374,9 +374,11 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 					<div className="options">
 						<EditIcon className="image-button" onClick={openCustomFields} />
 						<DeleteIcon
-							onClick={() => { selectedPlayers.length && setDeleteState(true); }}
+							onClick={() => {
+								selectedPlayers.length && setDeleteState(true);
+							}}
 							className={`image-button ${selectedPlayers.length ? '' : 'transparent'}`}
-							style={{ marginLeft: 18, cursor: selectedPlayers.length ? 'pointer':'auto' }}
+							style={{ marginLeft: 18, cursor: selectedPlayers.length ? 'pointer' : 'auto' }}
 						/>
 						<Checkbox
 							checked={selectedPlayers.length > 0}

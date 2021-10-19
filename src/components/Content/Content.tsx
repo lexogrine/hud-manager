@@ -123,20 +123,20 @@ const Content = ({
 	const getHeaderTitle = () => {
 		let title = activeTab;
 		let size = null;
-		if(activeTab === 'arg'){
-			title =  'Auto Replay Generator';
+		if (activeTab === 'arg') {
+			title = 'Auto Replay Generator';
 			size = 25;
-		} else if(activeTab === 'aco'){
+		} else if (activeTab === 'aco') {
 			title = 'Auto Cinematic Observer';
 			size = 25;
-		} else if(activeTab === 'ar'){
+		} else if (activeTab === 'ar') {
 			title = 'Augmented Reality';
 			size = 25;
-		} else if(activeTab === 'cgpanel'){
+		} else if (activeTab === 'cgpanel') {
 			title = 'CG Mode';
 		}
 		return { title, size };
-	}
+	};
 
 	useEffect(() => {
 		checkFiles();
@@ -156,7 +156,7 @@ const Content = ({
 			<Col style={{ display: 'flex', flexDirection: 'column' }}>
 				<WindowBar />
 				<div className="tab-title-container">
-					<div className="header-title" style={{ fontSize: size || undefined}}>
+					<div className="header-title" style={{ fontSize: size || undefined }}>
 						{onBackClick.handler ? <img src={goBack} onClick={onBackClick.handler} /> : null}{' '}
 						{onBackClick.header || title}
 					</div>

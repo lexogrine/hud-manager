@@ -86,9 +86,13 @@ const updateLastDateLocally = (game: I.AvailableGames, resources: I.ResourceResp
 };
 
 export const updateLastDateLocallyOnly = (game: I.AvailableGames | null, resources: I.AvailableResources[]) => {
-	if(!game || !resources.length) return;
-	updateLastDateLocally(game, resources.map(resource => ({ resource, status: (new Date()).toISOString() })), true);
-}
+	if (!game || !resources.length) return;
+	updateLastDateLocally(
+		game,
+		resources.map(resource => ({ resource, status: new Date().toISOString() })),
+		true
+	);
+};
 
 export const addResource = async <T>(game: I.AvailableGames, resource: I.AvailableResources, data: T | T[]) => {
 	const result = (await api(`storage/${resource}/${game}`, 'POST', data)) as {

@@ -66,8 +66,8 @@ const Tournament = ({ tournament, cxt, edit, remove, maps, setOnBackClick, close
 
 	const stopEditing = () => {
 		setMatch(null);
-		setOnBackClick(close, 'Tournament page')
-	}
+		setOnBackClick(close, 'Tournament page');
+	};
 
 	const startEditMatch = (match: I.Match | null) => {
 		setMatch(match);

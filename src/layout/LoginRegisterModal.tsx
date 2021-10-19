@@ -65,7 +65,12 @@ const LoginRegisterModal = ({ isOpen, loading, setLoading, loadUser, error }: IP
 					tabIndex={0}
 				/>
 				<div className="forget_password">
-					<a target="_blank" rel="noopener noreferrer" href="https://lexogrine.com/manager/remember" tabIndex={-1}>
+					<a
+						target="_blank"
+						rel="noopener noreferrer"
+						href="https://lexogrine.com/manager/remember"
+						tabIndex={-1}
+					>
 						Forgot Password?
 					</a>
 				</div>
@@ -88,7 +93,12 @@ const LoginRegisterModal = ({ isOpen, loading, setLoading, loadUser, error }: IP
 				</div>
 				<div className="register">
 					Don’t have an account?{' '}
-					<a target="_blank" rel="noopener noreferrer" href="https://lexogrine.com/manager/register"  tabIndex={-1}>
+					<a
+						target="_blank"
+						rel="noopener noreferrer"
+						href="https://lexogrine.com/manager/register"
+						tabIndex={-1}
+					>
 						Register now!
 					</a>
 				</div>
