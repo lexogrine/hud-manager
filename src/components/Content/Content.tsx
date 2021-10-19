@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Col } from 'reactstrap';
+import { Col, Input } from 'reactstrap';
 import api from '../../api/api';
 import Navbar from './Navbar/Navbar';
 import Tabs from './Tabs/Tabs';
@@ -49,6 +49,12 @@ const Content = ({
 
 	const [isProfileShown, setShowProfile] = useState(false);
 
+	const [search, setSearch] = useState('');
+
+	const searchHandler = (event: any) => {
+		setSearch(event.target.value);
+	};
+
 	const checkFiles = async () => {
 		const responses = await Promise.all([api.gamestate.check(game as any), api.cfgs.check(game as any)]);
 		setGSI(responses[0].success);
@@ -57,6 +63,7 @@ const Content = ({
 
 	const toggle = (tab: string, data?: any) => {
 		if (activeTab !== tab) {
+			setSearch('')
 			setTab(tab);
 			setData(data);
 			setOnBackClick(tabTitles[tab] || { handler: null, header: null });
@@ -160,6 +167,14 @@ const Content = ({
 						{onBackClick.handler ? <img src={goBack} onClick={onBackClick.handler} /> : null}{' '}
 						{onBackClick.header || title}
 					</div>
+					{ title === 'players' || title === 'teams' ? <Input
+						type="text"
+						name="name"
+						id="player_search"
+						value={search}
+						onChange={searchHandler}
+						placeholder={t('common.search')}
+					/> : null }
 					<div className="top_buttons">
 						<div className={`button strong`} onClick={clearGame}>
 							{t('app.changeGame')}
@@ -184,6 +199,7 @@ const Content = ({
 					activeTab={activeTab}
 					data={data}
 					toggle={toggle}
+					search={search}
 					gsiCheck={checkFiles}
 				/>
 			</Col>

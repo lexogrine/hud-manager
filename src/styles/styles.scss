@@ -1780,16 +1780,16 @@ form {
 	top: 20px;
 }
 #player_search {
-	border: none;
-	max-width: 270px;
-	margin-left: auto;
-	margin-right: 180px;
-	padding: 11px 0;
-	height: unset;
-	border-bottom: 1px solid grey;
-	border-radius: 0;
-	position: relative;
-	top: 20px;
+    border: none;
+    max-width: 270px;
+    margin-left: 20px;
+    margin-right: auto;
+    padding: 11px 0;
+    height: unset;
+    border-bottom: 1px solid grey;
+    border-radius: 0;
+    position: relative;
+    background-color: transparent;
 }
 .nav-tabs {
 	.nav-link {

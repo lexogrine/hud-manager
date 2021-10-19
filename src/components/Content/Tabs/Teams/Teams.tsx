@@ -15,11 +15,12 @@ import DeleteModal from '../../../DeleteModal';
 
 interface IProps {
 	cxt: IContextData;
+	search: string;
 }
 
 const quickClone: <T>(obj: T) => T = obj => JSON.parse(JSON.stringify(obj));
 
-const TeamsTab = ({ cxt }: IProps) => {
+const TeamsTab = ({ cxt, search }: IProps) => {
 	const emptyTeam: I.Team = {
 		_id: 'empty',
 		name: '',
@@ -32,7 +33,6 @@ const TeamsTab = ({ cxt }: IProps) => {
 
 	const [selectedTeams, setSelectedTeams] = useState<string[]>([]);
 	const [form, setForm] = useState(emptyTeam);
-	const [search] = useState('');
 
 	const [editModalState, setEditState] = useState(false);
 	const [fieldsModalState, setFieldsState] = useState(false);

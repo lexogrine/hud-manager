@@ -101,7 +101,7 @@ const updateTournament = async (req, res) => {
     }
     const newTournament = await T.updateTournament(tournament);
     if (cloudStatus) {
-        await (0, cloud_1.updateResource)(__1.customer.game, 'teams', { ...newTournament, _id: req.params.id });
+        await (0, cloud_1.updateResource)(__1.customer.game, 'tournaments', { ...newTournament, _id: req.params.id });
     }
     else {
         (0, cloud_1.updateLastDateLocallyOnly)(__1.customer.game, ['tournaments']);
@@ -116,7 +116,7 @@ const deleteTournament = async (req, res) => {
     }
     const del = await T.deleteTournament(req.params.id);
     if (cloudStatus) {
-        await (0, cloud_1.deleteResource)(__1.customer.game, 'teams', req.params.id);
+        await (0, cloud_1.deleteResource)(__1.customer.game, 'tournaments', req.params.id);
     }
     else {
         (0, cloud_1.updateLastDateLocallyOnly)(__1.customer.game, ['tournaments']);

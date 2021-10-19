@@ -23,10 +23,11 @@ interface IProps {
 	data: any;
 	toggle: (tab: string, data?: any) => void;
 	gsiCheck: Function;
+	search: string;
 	setOnBackClick: HeaderHandler;
 }
 
-const Tabs = ({ activeTab, data, toggle, gsiCheck, setOnBackClick }: IProps) => {
+const Tabs = ({ activeTab, data, toggle, gsiCheck, setOnBackClick, search }: IProps) => {
 	const [maps, setMaps] = useState<string[]>([]);
 
 	useEffect(() => {
@@ -44,10 +45,10 @@ const Tabs = ({ activeTab, data, toggle, gsiCheck, setOnBackClick }: IProps) => 
 						</ForPlansOnly>
 					</TabPane>
 					<TabPane tabId="teams">
-						<Teams cxt={cxt}></Teams>
+						<Teams cxt={cxt} search={search}></Teams>
 					</TabPane>
 					<TabPane tabId="players">
-						<Players cxt={cxt} data={data}></Players>
+						<Players cxt={cxt} data={data} search={search}></Players>
 					</TabPane>
 					<TabPane tabId="matches">
 						<Matches maps={maps} cxt={cxt} setOnBackClick={setOnBackClick}></Matches>
