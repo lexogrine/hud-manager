@@ -1025,6 +1025,7 @@ img.smallLogo {
 	}
 }
 .button {
+	text-align: center;
     &:hover {
         color: unset;
     }
@@ -1087,6 +1088,10 @@ img.smallLogo {
 	&.disabled {
 		opacity: 0.5;
 		cursor: unset;
+	}
+	&.full {
+		margin: 0;
+		width: 100%;
 	}
 }
 .huds-options {
@@ -1994,10 +1999,18 @@ form {
 		height: 16px;
 	}
 	.side-picker {
+		flex-direction: column;
 		display: flex;
-		margin: 5px 0;
-		>div {
-			margin: 0 5px;
+		padding: 19px;
+		width: 108px;
+		justify-content: space-between;
+		border-left: 1px solid rgba(255,255,255,0.06);
+		border-right: 1px solid rgba(255,255,255,0.06);
+		.picker-button:not(.active) {
+			border: 1px solid rgba(255,255,255,0.25);
+		}
+		.checkbox-container {
+			margin-bottom: 0;
 		}
 	}
 	.side-reverse {
@@ -2006,23 +2019,20 @@ form {
 	display: flex;
 	padding: 10px;
 	background-color: rgba(0,0,0,0.05);
-	border-radius: 5px;
 	overflow: hidden;
 	flex-direction: column;
 	.picker-button {
-		padding: 2px 5px;
 		font-size: 10px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		border-radius: 100px;
 		width: 100%;
 		cursor: pointer;
 		font-weight: 700;
-		background-color: #46494f33;
+		height: 22px;
 	}
 	.picker-button.active {
-		background-color: #53bf53;
+		background-color:  #49BF4D;
 	}
 	.picker-button.ban.active {
 		background-color: #dc3545;
@@ -2055,11 +2065,17 @@ form {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		justify-content: space-evenly;
-		margin: 0.25rem 0;
-		padding-left: 0;
-		padding-right: 0;
-		flex: 1;
+		justify-content: space-between;
+		padding: 19px;
+		width: 155px;
+		.picker-button {
+			font-size: 10px;
+			letter-spacing: 0.1rem;
+		}
+
+		.picker-button:not(.active) {
+			border: 1px solid rgba(255,255,255,0.25);
+		}
 	}
 	.team-picker-container {
 		display: flex;
@@ -2067,10 +2083,12 @@ form {
 		justify-content: center;
 		padding-left: 0;
 		.picker-button {
-			height: 22px;
 			font-size: 11px;
-			margin: 4px 0;
+			height: 61px;
+			width: 171px;
 			font-weight: 600;
+			border-right: 1px solid rgba(255, 255, 255, 0.06);
+			font-size: 10px;
 			img {
 				height: 16px;
 				margin-right: 5px;
@@ -2078,25 +2096,37 @@ form {
 		}
 	}
 	.map-picker-container {
-		padding-right: 0;
+		padding: 19px;
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+
+		.checkbox-container {
+			margin-bottom: 0;
+		}
 	}
 	.veto-list {
+		display: flex;
 		.form-group {
 			margin: 0.5rem 0;
 			padding: 0.5rem 0;
 		}
 		background-color: rgba(0,0,0,0.25);
-		padding: 5px 10px;
 		margin: 5px 0;
+		border: 1px solid rgba(255, 255, 255, 0.06);
 		>.row {
 			margin: 0;
 		}
 	}
 	.match-preview {
 		display: flex;
-		background-color: rgba(0,0,0,0.25);
+		background-color: rgba(0,0,0,0.2);
 		margin: 5px 0;
+		border: 1px solid rgba(255, 255, 255, 0.06);
+		backdrop-filter: blur(100px);
 		padding: 10px 0;
+		align-items: center;
 		.team-preview {
 			flex: 1;
 			display: flex;
@@ -2110,7 +2140,9 @@ form {
 				margin-top: 3px;
 			}
 			img {
-				max-height: 35px;
+				max-height: 30px;
+				max-width: 30px;
+				height:30px;
 				margin: 5px 0;
 			}
 		}
@@ -2118,6 +2150,7 @@ form {
 			display: flex;
 			align-items: center;
 			justify-content: center;
+			font-size: 14px;
 			font-weight: 700;
 		}
 	}
@@ -2594,17 +2627,29 @@ form {
 	height: unset !important;
 	max-height: calc(100vh - 135px - 32px);
 	padding: 20px;
+    align-items: flex-start;
+    align-content: flex-start;
 }
 .cg-section {
 	display: flex;
 	flex-direction: column;
 	margin: 0 10px;
+	&.players, &.teams {
+		.cg-content {
+			background-color: rgba(0, 0, 0, 0.2);
+			border: 1px solid rgba(255, 255, 255, 0.06);
+			border-top: none !important;
+		}
+	}
 	.match-edit-button {
-		width: 40px;
+		width: 34px;
 		height: 100%;
 		display: flex;
 		align-items: center;
 		cursor: pointer;
+		&:nth-child(4) {
+			margin-left:14px;
+		}
 		.record-icon {
 			width: 25px;
 			height: 25px;
@@ -2618,11 +2663,20 @@ form {
 	}
 	.toggle-section {
 		cursor: pointer;
+		color: #BDF2D5;
+		font-size: 12px;
+		text-transform: uppercase;
+		letter-spacing: 0.1rem;
+		font-weight: 600;
 	}
 	.swap-btn {
 		margin-top: 10px;
 		text-transform: uppercase;
 		font-size: 12px;
+		width: 66px;
+		height: 25px;
+		border-radius: 0;
+		background-color: transparent;
 	}
 	.swap-container {
 		display: flex;
@@ -2640,7 +2694,18 @@ form {
 	.title {
 		flex: 1;
 		display: flex;
-		justify-content: space-between;
+		font-family: 'Rajdhani';
+		font-size:14px;
+		letter-spacing: 0.1rem;
+		font-weight: 600;
+		text-transform: uppercase;
+		align-items: center;
+		svg {
+			margin-left: 10px;
+			cursor: pointer;
+			position: relative;
+			top: -1px;
+		}
 	}
 }
 .cg-section.hide {

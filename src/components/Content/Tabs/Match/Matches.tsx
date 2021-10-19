@@ -17,15 +17,15 @@ import LoadingButton from '../../../LoadingButton';
 interface IProps {
 	cxt: IContextData;
 	t: any;
+	maps: string[];
 	setOnBackClick: I.HeaderHandler;
 }
 
-class Matches extends Component<IProps, { match: I.Match | null; maps: string[]; activeTab: string }> {
+class Matches extends Component<IProps, { match: I.Match | null; activeTab: string }> {
 	constructor(props: IProps) {
 		super(props);
 		this.state = {
 			match: null,
-			maps: [],
 			activeTab: 'current'
 		};
 	}
@@ -102,8 +102,6 @@ class Matches extends Component<IProps, { match: I.Match | null; maps: string[];
 
 	async componentDidMount() {
 		await this.props.cxt.reload();
-		const maps = await api.match.getMaps();
-		this.setState({ maps });
 		socket.on('match', async (force?: boolean) => {
 			const currentlyEditing = this.state.match;
 			if (!force || !currentlyEditing || !currentlyEditing.id) return;
@@ -126,7 +124,7 @@ class Matches extends Component<IProps, { match: I.Match | null; maps: string[];
 	render() {
 		const { matches } = this.props.cxt;
 		const t = this.props.t;
-		const { match, maps } = this.state;
+		const { match } = this.state;
 		return (
 			<>
 				{/*match ? (
@@ -142,14 +140,13 @@ class Matches extends Component<IProps, { match: I.Match | null; maps: string[];
 				) : (
 					<div className="tab-title-container">{t('match.matches')}</div>
 				)*/}
-				<div className={`tab-content-container no-padding ${match ? 'no-scroll' : ''}`}>
+				<div className="tab-content-container no-padding">
 					{match ? (
 						<MatchEdit
 							match={match}
 							edit={this.edit}
-							teams={this.props.cxt.teams}
 							cxt={this.props.cxt}
-							maps={maps}
+							maps={this.props.maps}
 						/>
 					) : (
 						<>
@@ -185,7 +182,7 @@ class Matches extends Component<IProps, { match: I.Match | null; maps: string[];
 						className="button green strong big wide"
 						onClick={!match ? this.add : () => this.startEdit()}
 					>
-						{t('common.createNew')}
+						{!match ? t('common.createNew') : t('common.cancel')}
 					</LoadingButton>
 				</div>
 			</>

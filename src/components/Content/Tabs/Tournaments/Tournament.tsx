@@ -10,12 +10,16 @@ import { filterMatches } from '../../../../utils';
 import Elimination from './Brackets/Elimination';
 import { hash } from '../../../../hash';
 import isSvg from '../../../../isSvg';
+import EditMatch from '../Match/EditMatch';
+import LoadingButton from '../../../LoadingButton';
 
 interface IProps {
 	tournament: I.Tournament;
 	close: () => void;
 	edit: () => void;
 	cxt: IContextData;
+	setOnBackClick: I.HeaderHandler;
+	maps: string[];
 	remove: () => void;
 }
 
@@ -39,9 +43,11 @@ const systemDescription = (system: I.TournamentTypes) => {
 	return `${system.charAt(0).toUpperCase()}${system.slice(1)} Elimination`;
 };
 
-const Tournament = ({ tournament, cxt, edit, remove }: IProps) => {
+const Tournament = ({ tournament, cxt, edit, remove, maps, setOnBackClick }: IProps) => {
 	const [tab, setTab] = useState<Tabs>('playoffs');
 	const [matchTab, setMatchTab] = useState('current');
+
+	const [match, setMatch] = useState<I.Match | null>(null);
 
 	const { t } = useTranslation();
 
@@ -52,6 +58,16 @@ const Tournament = ({ tournament, cxt, edit, remove }: IProps) => {
 			{(tab && t('match.tabs.' + tab)) || ''}
 		</div>
 	);
+
+	const editMatch = async (id: string, match: I.Match) => {
+		await api.match.update(id, match);
+		cxt.reload();
+	};
+
+	const startEditMatch = (match: I.Match | null) => {
+		setMatch(match);
+		setOnBackClick(match ? () => setMatch(null) : null, match ? 'Edit match' : 'Tournament page')
+	}
 
 	const setCurrent = (id: string) => async () => {
 		const { matches } = cxt;
@@ -86,10 +102,32 @@ const Tournament = ({ tournament, cxt, edit, remove }: IProps) => {
 		if (tournament.logo.includes('api/players/avatar')) {
 			logo = `${tournament.logo}?hash=${hash()}`;
 		} else {
-			logo = `data:image/${isSvg(Buffer.from(tournament.logo, 'base64')) ? 'svg+xml' : 'png'};base64,${
-				tournament.logo
-			}`;
+			logo = `data:image/${isSvg(Buffer.from(tournament.logo, 'base64')) ? 'svg+xml' : 'png'};base64,${tournament.logo
+				}`;
 		}
+	}
+
+	if (match) {
+		return (
+			<>
+				<div className="tab-content-container">
+						<EditMatch
+							match={match}
+							edit={editMatch}
+							cxt={cxt}
+							maps={maps}
+						/>
+				</div>
+				<div className="action-container">
+					<LoadingButton
+						className="button green strong big wide"
+						onClick={() => setMatch(null)}
+					>
+						{t('common.cancel')}
+					</LoadingButton>
+				</div>
+			</>
+		);
 	}
 
 	return (
@@ -146,7 +184,7 @@ const Tournament = ({ tournament, cxt, edit, remove }: IProps) => {
 								.map(match => (
 									<MatchEntry
 										key={match.id}
-										edit={() => {}}
+										edit={startEditMatch}
 										setCurrent={setCurrent(match.id)}
 										match={match}
 										teams={cxt.teams}

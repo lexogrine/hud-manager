@@ -1,12 +1,8 @@
-import { useEffect, useState } from 'react';
 import { Nav, NavItem, NavLink } from 'reactstrap';
 import * as Tabs from './TabIcons';
 import { GameOnly } from '../Tabs/Config/Config';
 import { useTranslation } from 'react-i18next';
 //import { isCGMode } from '../Content';
-import { socket } from '../Tabs/Live/Live';
-import { Config } from '../../../api/interfaces';
-import api from '../../../api/api';
 import toggleIcon from './../../../styles/navbarToggle.png';
 interface IProps {
 	activeTab: string;
@@ -17,16 +13,8 @@ interface IProps {
 }
 
 const Navbar = ({ activeTab, toggle, files, setCollapse, isCollapsed }: IProps) => {
-	const [config, setConfig] = useState<Config | null>(null);
 	const { t } = useTranslation();
 
-	const getConfig = async () => {
-		const config = await api.config.get();
-
-		const { ip, ...cfg } = config;
-
-		setConfig(cfg);
-	};
 	const toggleNav = () => {
 		setCollapse(!isCollapsed);
 	};
@@ -35,12 +23,7 @@ const Navbar = ({ activeTab, toggle, files, setCollapse, isCollapsed }: IProps) 
 		toggle(tab);
 	};
 
-	useEffect(() => {
-		socket.on('config', getConfig);
-		getConfig();
-	}, []);
 
-	const onlyNonCGClass = !config || !config.cg ? '' : 'hide';
 	return (
 		<Nav tabs className={`navbar-container ${isCollapsed ? 'collapsed' : ''}`}>
 			<div className="collapse-button" onClick={toggleNav}>
@@ -59,37 +42,37 @@ const Navbar = ({ activeTab, toggle, files, setCollapse, isCollapsed }: IProps) 
 						<div>{t('navbar.huds')}</div>
 					</NavLink>
 				</NavItem>
-				<NavItem
-					className={`hover-pointer ${config && config.cg ? '' : 'hide'}`}
-					onClick={toggleHandler('cgpanel')}
-				>
-					<NavLink active={activeTab === 'cgpanel'}>
-						<Tabs.Teams />
-						<div>{t('common.panel')}</div>
-					</NavLink>
-				</NavItem>
-				<NavItem className={`hover-pointer ${onlyNonCGClass}`} onClick={toggleHandler('teams')}>
+				<NavItem className={`hover-pointer `} onClick={toggleHandler('teams')}>
 					<NavLink active={activeTab === 'teams'}>
 						<Tabs.Teams />
 						<div>{t('common.teams')}</div>
 					</NavLink>
 				</NavItem>
-				<NavItem className={`hover-pointer ${onlyNonCGClass}`} onClick={toggleHandler('players')}>
+				<NavItem className={`hover-pointer `} onClick={toggleHandler('players')}>
 					<NavLink active={activeTab === 'players'}>
 						<Tabs.Players />
 						<div>{t('common.players')}</div>
 					</NavLink>
 				</NavItem>
-				<NavItem className={`hover-pointer ${onlyNonCGClass}`} onClick={toggleHandler('matches')}>
+				<NavItem className={`hover-pointer `} onClick={toggleHandler('matches')}>
 					<NavLink active={activeTab === 'matches'}>
 						<Tabs.Matches />
 						<div>{t('match.matches')}</div>
 					</NavLink>
 				</NavItem>
-				<NavItem className={`hover-pointer ${onlyNonCGClass}`} onClick={toggleHandler('tournaments')}>
+				<NavItem className={`hover-pointer `} onClick={toggleHandler('tournaments')}>
 					<NavLink active={activeTab === 'tournaments'}>
 						<Tabs.Tournaments />
 						<div>{t('common.tournaments')}</div>
+					</NavLink>
+				</NavItem>
+				<NavItem
+					className={`hover-pointer `}
+					onClick={toggleHandler('cgpanel')}
+				>
+					<NavLink active={activeTab === 'cgpanel'}>
+						<Tabs.CGMode />
+						<div>{t('common.cgMode')}</div>
 					</NavLink>
 				</NavItem>
 				<div className="separator" />

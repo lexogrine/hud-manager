@@ -9,6 +9,7 @@ import TournamentEdit, { TournamentForm } from './TournamentEdit';
 import Tournament from './Tournament';
 
 interface IProps {
+	maps: string[];
 	cxt: IContextData;
 	setOnBackClick: I.HeaderHandler;
 }
@@ -26,7 +27,7 @@ const tournamentToForm = (tournament: I.Tournament): TournamentForm => ({
 	groupPhases: tournament.groups?.[0]?.phases || 0
 });
 
-const Tournamentss = ({ cxt, setOnBackClick }: IProps) => {
+const Tournamentss = ({ cxt, setOnBackClick, maps }: IProps) => {
 	const emptyTournament: TournamentForm = {
 		_id: 'empty',
 		name: '',
@@ -181,9 +182,11 @@ const Tournamentss = ({ cxt, setOnBackClick }: IProps) => {
 				<Tournament
 					edit={() => edit(tournament)}
 					cxt={cxt}
+					setOnBackClick={setOnBackClick}
 					tournament={tournament}
 					close={() => setShowing(null)}
 					remove={deleteTournament}
+					maps={maps}
 				/>
 			);
 		}

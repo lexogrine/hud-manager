@@ -74,13 +74,13 @@ const SpaceLeft = ({ max, used }: { max: number; used: number }) => {
 	return (
 		<div className="space-left-container">
 			<div className="space-info">
-				<div className="space-label">Space left</div>
+				<div className="space-label">Space used</div>
 				<div className="space-bar">
 					<div className="filling" style={{ width: `${(100 * used) / max}%` }} />
 				</div>
 			</div>
 			<div className="space-amount">
-				<div className="space-left">{formatBytes(max - used, 0)}</div>
+				<div className="space-left">{formatBytes(used, 0)}</div>
 				<div className="space-max">&nbsp;/ {formatBytes(max, 0)}</div>
 			</div>
 		</div>
@@ -551,7 +551,7 @@ class Config extends Component<IProps, IState> {
 						players={conflict.players}
 						save={this.import(data, cxt.reload)}
 					/>
-					<SpaceLeftContainer />
+					{ active ? <SpaceLeftContainer /> : null }
 					<ElectronOnly>
 						<Col md="12" className="config-entry">
 							<div className="config-description">

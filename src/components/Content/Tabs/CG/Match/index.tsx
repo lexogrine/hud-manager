@@ -1,23 +1,26 @@
 import { useState, useEffect } from 'react';
 import Section from '../Section';
-import { Row, Col, FormGroup, Input, Button, Label } from 'reactstrap';
+import { Row, Col, FormGroup, Input, Button } from 'reactstrap';
+import { ReactComponent as LiveIcon } from './../../../../../styles/icons/live.svg';
 import { IContextData } from '../../../../Context';
 import { useTranslation } from 'react-i18next';
 import api from '../../../../../api/api';
 import * as I from './../../../../../api/interfaces';
 import moment from 'moment';
 import { Orientation, Side } from 'csgogsi-socket';
+import { VetoSides } from '../../../../../../types/interfaces';
 
 interface Props {
 	cxt: IContextData;
 }
+
 
 export const MatchHandler: {
 	edit: (match: I.Match | null) => void;
 	match: I.Match | null;
 	handler: (match: I.Match | null) => void;
 } = {
-	handler: () => {},
+	handler: () => { },
 	match: null,
 	edit: (match: I.Match | null) => {
 		if (match && MatchHandler.match && match.id === MatchHandler.match.id) {
@@ -121,94 +124,76 @@ const CurrentMatchForm = ({ cxt }: Props) => {
 
 	const getCSGOVeto = (veto: I.CSGOVeto, i: number) => (
 		<div key={veto.mapName + veto.teamId + i} className="veto-list">
-			<Row>
-				<Col md="5" className="team-picker-container">
-					{teams.map((team, j) => (
+			<div className="team-picker-container">
+				{teams.map((team, j) => (
+					<div
+						key={team._id + j + i}
+						className={`picker-button ${veto.teamId === team._id ? 'active' : ''}`}
+						onClick={() => setTeamForVeto(i, team._id)}
+					>
+						{team.logo ? <img src={team.logo} /> : null}
+						{team.name}
+					</div>
+				))}
+			</div>
+			<div className="picker-container">
+				<div
+					className={`picker-button pick ${veto.type === 'pick' ? 'active' : ''}`}
+					onClick={() => setVetoType(veto, 'pick')}
+				>
+					PICK
+				</div>
+				<div
+					className={`picker-button ban ${veto.type === 'ban' ? 'active' : ''}`}
+					onClick={() => setVetoType(veto, 'ban')}
+				>
+					BAN
+				</div>
+				<div
+					className={`picker-button decider ${veto.type === 'decider' ? 'active' : ''}`}
+					onClick={() => setVetoType(veto, 'decider')}
+				>
+					DECIDER
+				</div>
+			</div>
+			<div className="side-picker">
+				{(['CT', 'T', 'NO'] as VetoSides[]).map(side => (
+					<div key={side} className="checkbox-container">
 						<div
-							key={team._id + j + i}
-							className={`picker-button ${veto.teamId === team._id ? 'active' : ''}`}
-							onClick={() => setTeamForVeto(i, team._id)}
+							className={`checkbox-el ${side === veto.side ? 'active' : ''}`}
+							onClick={() => setSidePick(veto, side)}
 						>
-							{team.logo ? <img src={team.logo} /> : null}
-							{team.name}
+							{side === veto.side ? `✓` : null}
 						</div>
+						<div className="checkbox-label">{side}</div>
+					</div>
+				))}
+			</div>
+			<div className="map-picker-container">
+				<Input
+					type="select"
+					name="maps"
+					value={veto.mapName || undefined}
+					onChange={e => setMap(veto, e.target.value)}
+				>
+					<option value="">{t('common.map')}</option>
+					{maps.map(map => (
+						<option key={map} value={map}>
+							{map}
+						</option>
 					))}
-				</Col>
-				<Col md="2" className="picker-container">
+				</Input>
+
+				<div className="checkbox-container">
 					<div
-						className={`picker-button pick ${veto.type === 'pick' ? 'active' : ''}`}
-						onClick={() => setVetoType(veto, 'pick')}
+						className={`checkbox-el ${veto.reverseSide ? 'active' : ''}`}
+						onClick={() => setReversed(veto, !veto.reverseSide)}
 					>
-						PICK
+						{veto.reverseSide ? `✓` : null}
 					</div>
-					<div
-						className={`picker-button ban ${veto.type === 'ban' ? 'active' : ''}`}
-						onClick={() => setVetoType(veto, 'ban')}
-					>
-						BAN
-					</div>
-					<div
-						className={`picker-button decider ${veto.type === 'decider' ? 'active' : ''}`}
-						onClick={() => setVetoType(veto, 'decider')}
-					>
-						DECIDER
-					</div>
-				</Col>
-				<Col md="5" className="map-picker-container">
-					<FormGroup>
-						<Input
-							type="select"
-							name="maps"
-							value={veto.mapName || undefined}
-							onChange={e => setMap(veto, e.target.value)}
-						>
-							<option value="">{t('common.map')}</option>
-							{maps.map(map => (
-								<option key={map} value={map}>
-									{map}
-								</option>
-							))}
-						</Input>
-					</FormGroup>
-				</Col>
-			</Row>
-			<Row>
-				<Col s={12} className="side-picker">
-					<div
-						className={`picker-button CT ${veto.side === 'CT' ? 'active' : ''}`}
-						onClick={() => setSidePick(veto, 'CT')}
-					>
-						{t('common.ct')}
-					</div>
-					<div
-						className={`picker-button T ${veto.side === 'T' ? 'active' : ''}`}
-						onClick={() => setSidePick(veto, 'T')}
-					>
-						{t('common.t')}
-					</div>
-					<div
-						className={`picker-button NO ${veto.side === 'NO' ? 'active' : ''}`}
-						onClick={() => setSidePick(veto, 'NO')}
-					>
-						{t('common.no')}
-					</div>
-				</Col>
-			</Row>
-			<Row>
-				<Col s={12} className="side-reverse">
-					<FormGroup check>
-						<Label check>
-							<Input
-								type="checkbox"
-								onChange={e => setReversed(veto, e.target.checked)}
-								checked={veto.reverseSide || false}
-							/>{' '}
-							<div className="customCheckbox"></div>
-							{t('match.reversedSides')}
-						</Label>
-					</FormGroup>
-				</Col>
-			</Row>
+					<div className="checkbox-label">{t('match.reversedSides')}</div>
+				</div>
+			</div>
 		</div>
 	);
 
@@ -264,13 +249,13 @@ const CurrentMatchForm = ({ cxt }: Props) => {
 					Match
 					{match ? (
 						<div className={`match-edit-button`} onClick={setCurrent}>
-							<div className={`record-icon  ${match.current ? 'current' : ''}`} />
+							<LiveIcon className={`image-button ${match.current ? '' : 'transparent'}`} />
 						</div>
 					) : null}
 				</>
 			}
 			cxt={cxt}
-			width={450}
+			width={698}
 		>
 			{match ? (
 				<>

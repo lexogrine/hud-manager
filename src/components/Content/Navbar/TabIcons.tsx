@@ -20,5 +20,6 @@ import { ReactComponent as AR } from './../../../styles/icons/ar.svg';
 import { ReactComponent as ARG } from './../../../styles/icons/arg.svg';
 import { ReactComponent as Settings } from './../../../styles/icons/settings.svg';
 import { ReactComponent as Cameras } from './../../../styles/icons/cameras.svg';
+import { ReactComponent as CGMode } from './../../../styles/icons/cgmode.svg';
 
-export { Players, Teams, HUDs, Matches, Live, Tournaments, ACO, AR, ARG, Settings, Cameras };
+export { Players, Teams, HUDs, Matches, Live, Tournaments, ACO, AR, ARG, Settings, Cameras, CGMode };

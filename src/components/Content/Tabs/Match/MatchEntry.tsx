@@ -13,7 +13,7 @@ interface Props {
 	match: I.Match;
 	teams: I.Team[];
 	cxt: IContextData;
-	edit: Function;
+	edit: (match: I.Match) => void;
 	setCurrent: Function;
 }
 

@@ -46,12 +46,11 @@ const TeamScore = ({ cxt, team, onSave, teamState, side, t }: TeamScoreProps) =>
 interface IProps {
 	cxt: IContextData;
 	match: I.Match;
-	teams: I.Team[];
-	edit: Function;
+	edit: (id: string, match: I.Match) => void;
 	maps: string[];
 }
 
-const EditMatch = ({ cxt, match, teams, edit, maps }: IProps) => {
+const EditMatch = ({ cxt, match, edit, maps }: IProps) => {
 	const [matchState, setMatchState] = useState(match);
 
 	const { t } = useTranslation();
@@ -133,8 +132,8 @@ const EditMatch = ({ cxt, match, teams, edit, maps }: IProps) => {
 		save();
 	}, [matchState]);
 
-	const left = teams.find(team => team._id === match.left.id) || null;
-	const right = teams.find(team => team._id === match.right.id) || null;
+	const left = cxt.teams.find(team => team._id === match.left.id) || null;
+	const right = cxt.teams.find(team => team._id === match.right.id) || null;
 	const vetoTeams: I.Team[] = [];
 	if (left) vetoTeams.push(left);
 	if (right) vetoTeams.push(right);

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import Section from '../Section';
-import { Row, Col, FormGroup, Input, FormText, Button } from 'reactstrap';
+import { Row, Col, FormGroup, Input, FormText } from 'reactstrap';
 import countries from '../../../countries';
 import DragFileInput from '../../../../DragFileInput';
 import { IContextData } from '../../../../Context';
@@ -13,6 +13,7 @@ import api, { clone } from '../../../../../api/api';
 interface Props {
 	cxt: IContextData;
 }
+
 
 const PlayerForm = ({ cxt }: Props) => {
 	const emptyPlayer: I.Player = {
@@ -101,7 +102,7 @@ const PlayerForm = ({ cxt }: Props) => {
 	}, [])*/
 
 	return (
-		<Section title="Players" cxt={cxt} width={300}>
+		<Section title="Players" cxt={cxt} width={300} className="players">
 			<Row>
 				<Col md="12">
 					<FormGroup>
@@ -240,9 +241,9 @@ const PlayerForm = ({ cxt }: Props) => {
 			</Row>
 			<Row>
 				<Col s={12}>
-					<Button color="primary" className="modal-save" onClick={updatePlayer}>
+					<div className="button green strong full" onClick={updatePlayer}>
 						{t('common.save')}
-					</Button>
+					</div>
 				</Col>
 			</Row>
 		</Section>
