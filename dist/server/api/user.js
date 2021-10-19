@@ -23,7 +23,7 @@ const cookieJar = new tough_cookie_1.CookieJar(new tough_cookie_file_store_1.Fil
 exports.fetch = (0, fetch_cookie_1.default)(node_fetch_1.default, cookieJar);
 exports.socket = null;
 const USE_LOCAL_BACKEND = false;
-const domain = USE_LOCAL_BACKEND ? '192.168.50.40:5000' : 'hmapi-dev.lexogrine.pl';
+const domain = USE_LOCAL_BACKEND ? '192.168.50.40:5000' : 'hmapi.lexogrine.com';
 let cameraSupportInit = false;
 /*const initCameras = () => {
     if(cameraSupportInit) return;

@@ -63,7 +63,7 @@ const Content = ({
 
 	const toggle = (tab: string, data?: any) => {
 		if (activeTab !== tab) {
-			setSearch('')
+			setSearch('');
 			setTab(tab);
 			setData(data);
 			setOnBackClick(tabTitles[tab] || { handler: null, header: null });
@@ -167,14 +167,16 @@ const Content = ({
 						{onBackClick.handler ? <img src={goBack} onClick={onBackClick.handler} /> : null}{' '}
 						{onBackClick.header || title}
 					</div>
-					{ title === 'players' || title === 'teams' ? <Input
-						type="text"
-						name="name"
-						id="player_search"
-						value={search}
-						onChange={searchHandler}
-						placeholder={t('common.search')}
-					/> : null }
+					{title === 'players' || title === 'teams' ? (
+						<Input
+							type="text"
+							name="name"
+							id="player_search"
+							value={search}
+							onChange={searchHandler}
+							placeholder={t('common.search')}
+						/>
+					) : null}
 					<div className="top_buttons">
 						<div className={`button strong`} onClick={clearGame}>
 							{t('app.changeGame')}

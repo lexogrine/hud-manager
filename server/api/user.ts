@@ -25,7 +25,7 @@ export let socket: SimpleWebSocket | null = null;
 
 const USE_LOCAL_BACKEND = false;
 
-const domain = USE_LOCAL_BACKEND ? '192.168.50.40:5000' : 'hmapi-dev.lexogrine.pl';
+const domain = USE_LOCAL_BACKEND ? '192.168.50.40:5000' : 'hmapi.lexogrine.com';
 
 let cameraSupportInit = false;
 

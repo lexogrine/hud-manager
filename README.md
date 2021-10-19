@@ -140,7 +140,7 @@ Lexogrine HUD Manager now allows for hosting rooms to connect player cameras dir
 
 It's worth noting, that it's early implementation, and as of now it is recommended to share a network with players - whether it's local, or hamachi-like virtual. It will help with reducing initiating time, as connecting through the Internet might take a ~15s.
 
->Note - This feature is in beta - if player has connected, but you don't see him, refresh HUD and wait ~20s. If you still don't see video from his camera, try joining a mutual virtual private network.
+>Note - This feature is in beta and requires very stable connection. If player has connected, but you don't see him, refresh HUD and wait ~20s. If you still don't see video from his camera, try joining a mutual virtual private network.
 ### Legacy
 
 Lexogrine HUD Manager exposes RTMP server on port 8000 (rmtp://localhost/live, stream key HUD_MANAGER). The Manager expects 750x300 stream, which is divided in 10 150x150 squares, each corresponding to the player face camera. The stream is later accessible on /rmtp.html (in example HUD iframe is used to put feed in the avatar place). Full tutorial on how to setup cam feed is accessible here:
