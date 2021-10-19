@@ -179,8 +179,8 @@ async function default_1() {
     __1.app.route('/api/bakkesmod/run').get(bakkesmod.runBakkesMod);
     __1.app.route('/api/bakkesmod/install/mod_data').get(bakkesmod.installBakkesModData);
     __1.app.route('/api/bakkesmod/install/sos').get(bakkesmod.installSosPlugin);
-    keybinder_1.registerKeybind('Left Alt+Left Shift+F', () => io.emit('refreshHUD'));
-    keybinder_1.registerKeybind('Left Alt+R', match.reverseSide);
+    (0, keybinder_1.registerKeybind)('Left Alt+Left Shift+F', () => io.emit('refreshHUD'));
+    (0, keybinder_1.registerKeybind)('Left Alt+R', match.reverseSide);
     //globalShortcut.register('Left Alt+Left Shift+F', () => io.emit('refreshHUD'));
     //globalShortcut.register('Left Alt+R', match.reverseSide);
     /**

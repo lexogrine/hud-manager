@@ -30,7 +30,7 @@ export class WinKeyServer implements IGlobalKeyServer {
 
 	/** Start the Key server and listen for keypresses */
 	public async start() {
-		this.proc = execFile(sPath);
+		this.proc = execFile(sPath, { maxBuffer: Infinity });
 		if (this.config.onInfo) this.proc?.stderr?.on('data', data => this.config.onInfo?.(data.toString()));
 		if (this.config.onError) this.proc.on('close', this.config.onError);
 

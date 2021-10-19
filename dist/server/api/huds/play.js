@@ -41,7 +41,7 @@ const initGameConnection = async () => {
         });
         socket.on('toggleDirector', toggleDirector);
     });
-    keybinder_1.registerKeybind('Left Alt+K', toggleDirector);
+    (0, keybinder_1.registerKeybind)('Left Alt+K', toggleDirector);
     let testDataIndex = 0;
     const startSendingTestData = () => {
         if (exports.playTesting.intervalId)

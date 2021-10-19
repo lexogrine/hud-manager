@@ -26,7 +26,7 @@ class WinKeyServer {
     }
     /** Start the Key server and listen for keypresses */
     async start() {
-        this.proc = child_process_1.execFile(sPath);
+        this.proc = (0, child_process_1.execFile)(sPath, { maxBuffer: Infinity });
         if (this.config.onInfo)
             this.proc?.stderr?.on('data', data => this.config.onInfo?.(data.toString()));
         if (this.config.onError)
@@ -40,7 +40,7 @@ class WinKeyServer {
         });
         return new Promise((res, err) => {
             this.proc.on('error', err);
-            if (isSpawnEventSupported_1.isSpawnEventSupported())
+            if ((0, isSpawnEventSupported_1.isSpawnEventSupported)())
                 this.proc.on('spawn', res);
             // A timed fallback if the spawn event is not supported
             else
