@@ -54,7 +54,7 @@ const loadConfig = async () => {
                 if (config[0].afxCEFHudInteropPath && !fs_1.default.existsSync(config[0].afxCEFHudInteropPath)) {
                     config[0].afxCEFHudInteropPath = '';
                 }
-                return res(await exports.setConfig(config[0]));
+                return res(await (0, exports.setConfig)(config[0]));
             }
             configs.insert(defaultConfig, (err, config) => {
                 if (err) {
@@ -67,7 +67,7 @@ const loadConfig = async () => {
 };
 exports.loadConfig = loadConfig;
 const getConfig = async (_req, res) => {
-    const config = await exports.loadConfig();
+    const config = await (0, exports.loadConfig)();
     if (!config) {
         return res.sendStatus(500);
     }
@@ -77,7 +77,7 @@ const getConfig = async (_req, res) => {
 exports.getConfig = getConfig;
 const updateConfig = async (req, res) => {
     const io = await socket_1.ioPromise;
-    const currentConfig = await exports.loadConfig();
+    const currentConfig = await (0, exports.loadConfig)();
     const updated = {
         steamApiKey: req.body.steamApiKey,
         port: Number(req.body.port),
@@ -89,7 +89,7 @@ const updateConfig = async (req, res) => {
         autoSwitch: !!req.body.autoSwitch,
         game: currentConfig.game
     };
-    const config = await exports.setConfig(updated);
+    const config = await (0, exports.setConfig)(updated);
     if (!config) {
         return res.sendStatus(500);
     }
@@ -102,7 +102,7 @@ const setConfig = async (config) => new Promise(res => {
         if (err) {
             return res(defaultConfig);
         }
-        const newConfig = await exports.loadConfig();
+        const newConfig = await (0, exports.loadConfig)();
         if (!newConfig) {
             return res(defaultConfig);
         }
@@ -116,7 +116,7 @@ exports.setConfig = setConfig;
 const verifyUrl = async (url) => {
     if (!url || typeof url !== 'string')
         return false;
-    const cfg = await exports.loadConfig();
+    const cfg = await (0, exports.loadConfig)();
     if (!cfg) {
         return false;
     }
@@ -125,8 +125,8 @@ const verifyUrl = async (url) => {
         `http://${exports.publicIP}:${cfg.port}`,
         `http://localhost:${cfg.port}`
     ];
-    if (electron_1.isDev) {
-        bases.push(`http://localhost:3000/?port=${cfg.port}`);
+    if (electron_1.isDev && url.startsWith(`http://localhost:3000`)) {
+        return true;
     }
     if (bases.find(base => url.startsWith(`${base}/dev`))) {
         return true;

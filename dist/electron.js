@@ -35,7 +35,7 @@ exports.AFXInterop = {
 };
 exports.isDev = process.env.DEV === 'true';
 async function mainProcess(server, forceDev = false, gui = true) {
-    const RMTPServer = child_process_1.fork(require.resolve('./RMTPServer.js'));
+    const RMTPServer = (0, child_process_1.fork)(require.resolve('./RMTPServer.js'));
     const closeManager = () => {
         if (server) {
             server.close();
@@ -54,7 +54,7 @@ async function mainProcess(server, forceDev = false, gui = true) {
     const args = ['./', '--renderer'];
     if (forceDev)
         args.push('--dev');
-    const renderer = child_process_1.spawn(process.execPath, args, {
+    const renderer = (0, child_process_1.spawn)(process.execPath, args, {
         stdio: forceDev ? ['pipe', 'pipe', 'pipe', 'ipc'] : ['ignore', 'ignore', 'ignore', 'ipc']
     });
     electron_1.app.on('second-instance', () => {
@@ -73,12 +73,12 @@ async function mainProcess(server, forceDev = false, gui = true) {
 async function startManager() {
     electron_1.app.setAppUserModelId('com.lexogrine.hudmanager');
     if (process.argv.includes('--renderer')) {
-        renderer_1.createMainWindow(process.argv.includes('--dev'));
+        (0, renderer_1.createMainWindow)(process.argv.includes('--dev'));
         return;
     }
     directories.checkDirectories();
-    const server = await server_1.default();
-    const argv = args_1.default(process.argv);
+    const server = await (0, server_1.default)();
+    const argv = (0, args_1.default)(process.argv);
     mainProcess(server, argv.dev || exports.isDev, !argv.noGUI);
 }
 const lock = electron_1.app.requestSingleInstanceLock();

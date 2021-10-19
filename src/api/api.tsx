@@ -17,6 +17,22 @@ function arrayBufferToBase64(buffer: any) {
 	return window.btoa(binary);
 }
 
+export const maxWins = (type: I.BOTypes) => {
+	switch (type) {
+		case 'bo1':
+			return 1;
+		case 'bo3':
+			return 2;
+		case 'bo5':
+			return 3;
+		case 'bo7':
+			return 4;
+		case 'bo9':
+			return 5;
+		default:
+			return 2;
+	}
+};
 const apiHandler: <T>(url: string, method?: string, body?: any, credentials?: boolean) => Promise<T> = (
 	url,
 	method = 'GET',
@@ -67,10 +83,12 @@ export default {
 		get: () => apiV2<I.Player[]>('players'),
 		add: async (player: any) => await apiV2('players', 'POST', player),
 		update: async (id: string, player: any) => await apiV2(`players/${id}`, 'PATCH', player),
-		delete: async (id: string) => await apiV2(`players/${id}`, 'DELETE'),
+		delete: async (id: string | string[]) =>
+			await apiV2(`players/${typeof id === 'string' ? id : id.join(';')}`, 'DELETE'),
 		getAvatar: async (id: string) => {
 			fetch(`${apiUrl}api/players/avatar/${id}`);
 		},
+		import: (data: string) => apiV2('players/import', 'POST', { data }),
 		fields: {
 			get: () => apiV2<CustomFieldEntry[]>('players/fields'),
 			update: (fields: CustomFieldEntry[]) => apiV2<CustomFieldEntry[]>('players/fields', 'PATCH', fields)
@@ -81,7 +99,9 @@ export default {
 		get: async () => apiV2<I.Team[]>('teams'),
 		add: async (team: any) => await apiV2('teams', 'POST', team),
 		update: async (id: string, team: any) => await apiV2(`teams/${id}`, 'PATCH', team),
-		delete: async (id: string) => await apiV2(`teams/${id}`, 'DELETE'),
+		delete: async (id: string | string[]) =>
+			await apiV2(`teams/${typeof id === 'string' ? id : id.join(';')}`, 'DELETE'),
+		import: (data: string) => apiV2('teams/import', 'POST', { data }),
 		getLogo: async (id: string) => {
 			const response = await fetch(`${apiUrl}api/teams/logo/${id}`);
 			return response;
@@ -113,6 +133,10 @@ export default {
 		setLastVersion: (version: string, releaseDate: string) =>
 			apiV2('version/last', 'POST', { version, releaseDate })
 	},
+	cameras: {
+		get: (): Promise<{ availablePlayers: I.CameraRoomPlayer[]; uuid: string }> => apiV2('camera'),
+		update: (players: I.CameraRoomPlayer[]) => apiV2('camera', 'POST', players)
+	},
 	cfgs: {
 		check: async (game: 'csgo' | 'dota2'): Promise<I.CFGGSIObject> => await apiV2(`cfg?game=${game}`),
 		create: async (game: 'csgo' | 'dota2'): Promise<I.CFGGSIObject> => await apiV2(`cfg?game=${game}`, 'PUT')
@@ -133,7 +157,8 @@ export default {
 	},
 	cloud: {
 		upload: () => apiV2('cloud/upload', 'POST'),
-		download: () => apiV2('cloud/download', 'POST')
+		download: () => apiV2('cloud/download', 'POST'),
+		size: (): Promise<{ size: number }> => apiV2('cloud/size')
 	},
 	huds: {
 		get: async (): Promise<I.HUD[]> => await apiV2('huds'),
@@ -159,8 +184,16 @@ export default {
 	},
 	tournaments: {
 		get: async (): Promise<I.Tournament[]> => await apiV2('tournaments'),
-		add: (tournament: { name: string; logo: string; teams: number; type: string }): Promise<I.Tournament> =>
-			apiV2('tournaments', 'POST', tournament),
+		add: (tournament: {
+			name: string;
+			logo: string;
+			playoffTeams: number;
+			playoffType: string;
+			groupType?: string;
+			groupTeams?: number;
+			phases?: number;
+			groupPhases?: number;
+		}): Promise<I.Tournament> => apiV2('tournaments', 'POST', tournament),
 		bind: (tournamentId: string, matchId: string, matchupId: string) =>
 			apiV2(`tournaments/${tournamentId}`, 'POST', { matchId, matchupId }),
 		delete: (tournamentId: string) => apiV2(`tournaments/${tournamentId}`, 'DELETE'),

@@ -1,7 +1,7 @@
 import db from './../../../init/database';
 import { CustomFieldEntry, CustomFieldStore, AvailableGames } from '../../../types/interfaces';
 import { validateCloudAbility, customer } from '..';
-import { checkCloudStatus, updateResource } from '../cloud';
+import { checkCloudStatus, updateLastDateLocallyOnly, updateResource } from '../cloud';
 
 const { custom } = db;
 
@@ -93,6 +93,8 @@ export const updateFields = async (fields: CustomFieldEntry[], type: keyof Custo
 				const result = await initiateCustomFields(game);
 				if (cloudStatus) {
 					await updateResource(customer.game as AvailableGames, 'customs', result);
+				} else {
+					updateLastDateLocallyOnly(customer.game, ['customs']);
 				}
 				res(result);
 			});

@@ -17,6 +17,17 @@ import { getTournaments } from '../tournaments';
 
 const cloudErrorHandler = () => {};
 
+const getResources = (game: I.AvailableGames) => {
+	return Promise.all([
+		getPlayersList({ game }),
+		getTeamsList({ game }),
+		getCustomFieldsDb(game),
+		getACOs(),
+		getActiveGameMatches(),
+		getTournaments({ game })
+	]);
+};
+
 const getLastUpdateDateLocally = () => {
 	const userData = app.getPath('userData');
 	const database = path.join(userData, 'databases', 'lastUpdated.lhm');
@@ -57,7 +68,7 @@ const getLastUpdateDateLocally = () => {
 	}
 };
 
-const updateLastDateLocally = (game: I.AvailableGames, resources: I.ResourceResponseStatus[]) => {
+const updateLastDateLocally = (game: I.AvailableGames, resources: I.ResourceResponseStatus[], blockUpdate = false) => {
 	const lastUpdateLocal = getLastUpdateDateLocally();
 
 	for (const resourceInfo of resources) {
@@ -68,10 +79,19 @@ const updateLastDateLocally = (game: I.AvailableGames, resources: I.ResourceResp
 	const database = path.join(userData, 'databases', 'lastUpdated.lhm');
 
 	fs.writeFileSync(database, JSON.stringify(lastUpdateLocal), 'utf8');
-	if (socket) {
+	if (socket && !blockUpdate) {
 		socket.send('init_db_update');
 	}
 	return lastUpdateLocal;
+};
+
+export const updateLastDateLocallyOnly = (game: I.AvailableGames | null, resources: I.AvailableResources[]) => {
+	if (!game || !resources.length) return;
+	updateLastDateLocally(
+		game,
+		resources.map(resource => ({ resource, status: new Date().toISOString() })),
+		true
+	);
 };
 
 export const addResource = async <T>(game: I.AvailableGames, resource: I.AvailableResources, data: T | T[]) => {
@@ -103,12 +123,15 @@ export const updateResource = async <T>(game: I.AvailableGames, resource: I.Avai
 	return result;
 };
 
-export const deleteResource = async (game: I.AvailableGames, resource: I.AvailableResources, id: string) => {
+export const deleteResource = async (game: I.AvailableGames, resource: I.AvailableResources, id: string | string[]) => {
 	const status = await checkCloudStatus(game);
 	if (status !== 'ALL_SYNCED') {
 		return;
 	}
-	const result = (await api(`storage/${resource}/${game}/${id}`, 'DELETE')) as {
+
+	const ids = typeof id === 'string' ? id : id.join(';');
+
+	const result = (await api(`storage/${resource}/${game}/${ids}`, 'DELETE')) as {
 		success: boolean;
 		lastUpdateTime: string;
 	};
@@ -204,22 +227,15 @@ export const downloadCloudToLocal = async (game: I.AvailableGames) => {
 };
 
 export const uploadLocalToCloud = async (game: I.AvailableGames) => {
-	const resources = await Promise.all([
-		getPlayersList({ game }),
-		getTeamsList({ game }),
-		getCustomFieldsDb(game),
-		getACOs()
-		//getActiveGameMatches(),
-		//getTournaments({ game })
-	]);
+	const resources = await getResources(game);
 
 	const mappedResources = {
 		players: resources[0],
 		teams: resources[1],
 		customs: resources[2],
-		mapconfigs: resources[3]
-		//matches: resources[4],
-		//tournaments: resources[5]
+		mapconfigs: resources[3],
+		matches: resources[4],
+		tournaments: resources[5]
 	} as { [resource in I.AvailableResources]: any };
 	try {
 		const result = [] as { entries: number; lastUpdateTime: string | null }[];
@@ -236,6 +252,7 @@ export const uploadLocalToCloud = async (game: I.AvailableGames) => {
 };
 
 export const checkCloudStatus = async (game: I.AvailableGames) => {
+	console.log('CHECKING CLOUD...');
 	if (customer.customer?.license.type !== 'professional' && customer.customer?.license.type !== 'enterprise') {
 		return 'ALL_SYNCED';
 	}
@@ -244,7 +261,6 @@ export const checkCloudStatus = async (game: I.AvailableGames) => {
 	if (cfg.sync === false) return 'ALL_SYNCED';
 
 	if (!cfg.sync) {
-		console.log('updating sync to true...');
 		await setConfig({ ...cfg, sync: true });
 	}
 
@@ -263,12 +279,7 @@ export const checkCloudStatus = async (game: I.AvailableGames) => {
 			lastUpdateStatusOnline[resourceStatus.resource] = resourceStatus.status;
 		}
 
-		const resources = await Promise.all([
-			getPlayersList({ game }),
-			getTeamsList({ game }),
-			getCustomFieldsDb(game),
-			getACOs() /*, getMatches()*/
-		]);
+		const resources = await getResources(game);
 
 		if (resources.every(resource => !resource.length)) {
 			// no local resources
@@ -282,11 +293,22 @@ export const checkCloudStatus = async (game: I.AvailableGames) => {
 			return 'ALL_SYNCED';
 		}
 
+		const mappedResources = {
+			players: resources[0],
+			teams: resources[1],
+			customs: resources[2],
+			mapconfigs: resources[3],
+			matches: resources[4],
+			tournaments: resources[5]
+		} as { [resource in I.AvailableResources]: any[] };
+
 		const lastUpdateStatusLocal = getLastUpdateDateLocally();
 
 		const syncConflicted = I.availableResources.filter(
 			availableResource =>
-				!lastUpdateStatusLocal[game][availableResource] && lastUpdateStatusOnline[availableResource]
+				!lastUpdateStatusLocal[game][availableResource] &&
+				lastUpdateStatusOnline[availableResource] &&
+				mappedResources[availableResource].length
 		);
 
 		if (syncConflicted.length) {
@@ -331,8 +353,6 @@ export const checkCloudStatus = async (game: I.AvailableGames) => {
 			game,
 			result.filter(resource => nonSyncedResources.includes(resource.resource))
 		);
-
-		console.log('NICE');
 
 		return 'ALL_SYNCED';
 	} catch (e) {

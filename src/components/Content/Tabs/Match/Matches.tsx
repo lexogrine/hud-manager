@@ -1,7 +1,6 @@
 import { Component } from 'react';
 import api from './../../../../api/api';
 import * as I from './../../../../api/interfaces';
-import { Row, Button, Col } from 'reactstrap';
 //import Match from './Match';
 import MatchEdit from './EditMatch';
 import MatchEntry from './MatchEntry';
@@ -9,20 +8,24 @@ import uuidv4 from 'uuid/v4';
 
 import { IContextData } from '../../../Context';
 
-import goBack from './../../../../styles/goBack.png';
+// import goBack from './../../../../styles/goBack.png';
 import { socket } from '../Live/Live';
-import moment from 'moment';
 import { withTranslation } from 'react-i18next';
+import { filterMatches } from '../../../../utils';
+import LoadingButton from '../../../LoadingButton';
 
-class Matches extends Component<
-	{ cxt: IContextData; t: any },
-	{ match: I.Match | null; maps: string[]; activeTab: string }
-> {
-	constructor(props: { cxt: IContextData; t: any }) {
+interface IProps {
+	cxt: IContextData;
+	t: any;
+	maps: string[];
+	setOnBackClick: I.HeaderHandler;
+}
+
+class Matches extends Component<IProps, { match: I.Match | null; activeTab: string }> {
+	constructor(props: IProps) {
 		super(props);
 		this.state = {
 			match: null,
-			maps: [],
 			activeTab: 'current'
 		};
 	}
@@ -61,7 +64,7 @@ class Matches extends Component<
 		}
 		await api.match.add(newMatch);
 		//await api.match.set(matches);
-		this.props.cxt.reload();
+		await this.props.cxt.reload();
 		this.setState({ activeTab: 'current' });
 	};
 
@@ -75,7 +78,16 @@ class Matches extends Component<
 	};
 
 	startEdit = (match?: I.Match) => {
-		this.setState({ match: match || null });
+		this.setState({ match: match || null }, () => {
+			this.props.setOnBackClick(
+				match
+					? () => {
+							this.startEdit();
+					  }
+					: null,
+				match ? 'Edit match' : null
+			);
+		});
 	};
 
 	setCurrent = (id: string) => async () => {
@@ -90,8 +102,6 @@ class Matches extends Component<
 
 	async componentDidMount() {
 		await this.props.cxt.reload();
-		const maps = await api.match.getMaps();
-		this.setState({ maps });
 		socket.on('match', async (force?: boolean) => {
 			const currentlyEditing = this.state.match;
 			if (!force || !currentlyEditing || !currentlyEditing.id) return;
@@ -111,44 +121,13 @@ class Matches extends Component<
 		</div>
 	);
 
-	filterMatches = (match: I.Match) => {
-		const boToWinsMap = {
-			1: 1,
-			2: 2,
-			3: 2,
-			5: 3
-		};
-		const { activeTab } = this.state;
-		const picks = (match.vetos || []).filter(veto => match.game !== 'csgo' || (veto as I.CSGOVeto).type !== 'ban');
-		let isEnded = false;
-		const bo = parseInt((match.matchType || 'bo1').replace('bo', '')) as 1 | 2 | 3 | 5;
-
-		if (bo === 2) {
-			isEnded = picks.filter(pick => pick.mapEnd).length === 2 || match.left.wins + match.right.wins >= 2;
-		} else {
-			isEnded =
-				(match.left && match.left.wins === boToWinsMap[bo]) ||
-				(match.right && match.right.wins === boToWinsMap[bo]);
-		}
-		if (activeTab === 'ended') {
-			return isEnded;
-		}
-		if (isEnded) {
-			return false;
-		}
-
-		const isInFuture = Boolean(match.startTime && moment(match.startTime).isAfter(moment(), 'day'));
-
-		return isInFuture === (activeTab === 'future');
-	};
-
 	render() {
 		const { matches } = this.props.cxt;
 		const t = this.props.t;
-		const { match, maps } = this.state;
+		const { match } = this.state;
 		return (
 			<>
-				{match ? (
+				{/*match ? (
 					<div className="tab-title-container">
 						<img
 							src={goBack}
@@ -160,16 +139,10 @@ class Matches extends Component<
 					</div>
 				) : (
 					<div className="tab-title-container">{t('match.matches')}</div>
-				)}
-				<div className={`tab-content-container no-padding ${match ? 'full-scroll' : ''}`}>
+				)*/}
+				<div className="tab-content-container no-padding">
 					{match ? (
-						<MatchEdit
-							match={match}
-							edit={this.edit}
-							teams={this.props.cxt.teams}
-							cxt={this.props.cxt}
-							maps={maps}
-						/>
+						<MatchEdit match={match} edit={this.edit} cxt={this.props.cxt} maps={this.props.maps} />
 					) : (
 						<>
 							<div className="match-type-menu">
@@ -184,25 +157,28 @@ class Matches extends Component<
 								<div className="match-time">{t('match.columns.time')}</div>
 								<div className="options"></div>
 							</div>
-							{matches.filter(this.filterMatches).map(match => (
-								<MatchEntry
-									key={match.id}
-									edit={this.startEdit}
-									setCurrent={this.setCurrent(match.id)}
-									match={match}
-									teams={this.props.cxt.teams}
-									cxt={this.props.cxt}
-								/>
-							))}
-							<Row>
-								<Col className="main-buttons-container">
-									<Button onClick={this.add} color="primary">
-										+{t('common.createNew')}
-									</Button>
-								</Col>
-							</Row>
+							{matches
+								.filter(match => filterMatches(match, this.state.activeTab))
+								.map(match => (
+									<MatchEntry
+										key={match.id}
+										edit={this.startEdit}
+										setCurrent={this.setCurrent(match.id)}
+										match={match}
+										teams={this.props.cxt.teams}
+										cxt={this.props.cxt}
+									/>
+								))}
 						</>
 					)}
+				</div>
+				<div className="action-container">
+					<LoadingButton
+						className="button green strong big wide"
+						onClick={!match ? this.add : () => this.startEdit()}
+					>
+						{!match ? t('common.createNew') : t('common.cancel')}
+					</LoadingButton>
 				</div>
 			</>
 		);

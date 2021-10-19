@@ -95,7 +95,7 @@ export const updateMatches = async (updateMatches: Match[]) => {
 	await setMatches(matchesFixed);
 };
 
-export const addMatch = (match: Match) =>
+export const addMatch = (match: Match): Promise<Match | null> =>
 	new Promise(res => {
 		if (!match.id) {
 			match.id = uuidv4();
@@ -309,8 +309,8 @@ export const updateRound = async (game: CSGO) => {
 export const replaceLocalMatches = (newMatches: Match[], game: AvailableGames, existing: string[]) =>
 	new Promise<boolean>(res => {
 		const or: any[] = [
-			{ game, _id: { $nin: existing } },
-			{ game, _id: { $in: newMatches.map(match => match.id) } }
+			{ game, id: { $nin: existing } },
+			{ game, id: { $in: newMatches.map(match => match.id) } }
 		];
 		if (game === 'csgo') {
 			or.push(

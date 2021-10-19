@@ -4,9 +4,13 @@ import * as I from './../../../../api/interfaces';
 import { IContextData } from './../../../../components/Context';
 import { TournamentMatchup, DepthTournamentMatchup } from '../../../../../types/interfaces';
 import BindModal from './BindModal';
-import AddTournamentModal from './AddTournament';
 import { withTranslation } from 'react-i18next';
 import { Component } from 'react';
+
+const getMatchupsFromTournament = (tournament: I.Tournament) => [
+	...tournament.playoffs.matchups,
+	...tournament.groups.map(group => group.matchups).flat()
+];
 
 interface MatchData {
 	left: { name: string; score: string | number; logo: string };
@@ -20,7 +24,9 @@ interface State {
 	isAdding: boolean;
 	form: {
 		name: string;
-		type: 'se' | 'de';
+		type: 'se' | 'de' | 'ss';
+		groupType: 'se' | 'de' | 'ss';
+		groupTeams: number;
 		teams: number;
 		logo: string;
 		_id: string;
@@ -34,6 +40,8 @@ class Tournaments extends Component<{ cxt: IContextData; t: any }, State> {
 			form: {
 				name: '',
 				type: 'se',
+				groupTeams: 0,
+				groupType: 'ss',
 				teams: 2,
 				_id: '',
 				logo: ''
@@ -72,12 +80,25 @@ class Tournaments extends Component<{ cxt: IContextData; t: any }, State> {
 		this.toggleAdding();
 		let { tournament } = this.state;
 		if (!tournament) {
-			return this.setState({ form: { name: '', teams: 2, logo: '', type: 'se', _id: '' } });
+			return this.setState({
+				form: { name: '', teams: 2, groupTeams: 0, groupType: 'ss', logo: '', type: 'se', _id: '' }
+			});
 		}
 		tournament = this.props.cxt.tournaments.find(trnm => trnm._id === tournament?._id) || null;
-		if (!tournament) return this.setState({ form: { name: '', teams: 2, logo: '', type: 'se', _id: '' } });
+		if (!tournament)
+			return this.setState({
+				form: { name: '', teams: 2, groupTeams: 0, groupType: 'ss', logo: '', type: 'se', _id: '' }
+			});
 		return this.setState({
-			form: { name: tournament.name, teams: 2, logo: tournament.logo, type: 'se', _id: tournament._id }
+			form: {
+				name: tournament.name,
+				groupTeams: 0,
+				groupType: 'ss',
+				teams: 2,
+				logo: tournament.logo,
+				type: 'se',
+				_id: tournament._id
+			}
 		});
 	};
 
@@ -109,7 +130,9 @@ class Tournaments extends Component<{ cxt: IContextData; t: any }, State> {
 
 	copyMatchups = (): DepthTournamentMatchup[] => {
 		if (!this.state.tournament) return [];
-		const matchups = JSON.parse(JSON.stringify(this.state.tournament.matchups)) as DepthTournamentMatchup[];
+		const matchups = JSON.parse(
+			JSON.stringify(getMatchupsFromTournament(this.state.tournament))
+		) as DepthTournamentMatchup[];
 		return matchups;
 	};
 
@@ -280,11 +303,10 @@ class Tournaments extends Component<{ cxt: IContextData; t: any }, State> {
 	};
 
 	render() {
-		const { match, isOpen, tournament, isAdding } = this.state;
+		const { match, isOpen, tournament } = this.state;
 		const { cxt, t } = this.props;
 		return (
 			<Form>
-				<div className="tab-title-container">{t('common.tournaments')}</div>
 				<div className="tab-content-container">
 					{tournament ? (
 						<BindModal
@@ -292,20 +314,11 @@ class Tournaments extends Component<{ cxt: IContextData; t: any }, State> {
 							teams={cxt.teams}
 							matches={cxt.matches}
 							isOpen={isOpen}
-							tournamentId={tournament._id}
 							matchId={match}
-							bindHandler={this.bindHandler}
+							onChange={this.bindHandler}
 							toggle={this.toggleModal}
 						/>
 					) : null}
-					<AddTournamentModal
-						isOpen={isAdding}
-						toggle={this.toggleAdding}
-						reload={cxt.reload}
-						changeHandler={this.changeHandler}
-						fileHandler={this.fileHandler}
-						form={this.state.form}
-					/>
 					<FormGroup>
 						<Input
 							type="select"

@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.logout = exports.getCurrent = exports.loginHandler = exports.api = exports.verifyGame = exports.socket = exports.fetch = void 0;
+exports.logout = exports.getCurrent = exports.loginHandler = exports.api = exports.verifyGame = exports.room = exports.socket = exports.fetch = void 0;
 const electron_1 = require("electron");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const node_fetch_1 = __importDefault(require("node-fetch"));
@@ -17,18 +17,39 @@ const machine_1 = require("./machine");
 const simple_websockets_1 = require("simple-websockets");
 const socket_1 = require("../socket");
 const cloud_1 = require("./cloud");
+const uuid_1 = require("uuid");
 const cookiePath = path_1.default.join(electron_1.app.getPath('userData'), 'cookie.json');
 const cookieJar = new tough_cookie_1.CookieJar(new tough_cookie_file_store_1.FileCookieStore(cookiePath));
-exports.fetch = fetch_cookie_1.default(node_fetch_1.default, cookieJar);
+exports.fetch = (0, fetch_cookie_1.default)(node_fetch_1.default, cookieJar);
 exports.socket = null;
 const USE_LOCAL_BACKEND = false;
+const domain = USE_LOCAL_BACKEND ? '192.168.50.40:5000' : 'hmapi.lexogrine.com';
+let cameraSupportInit = false;
+/*const initCameras = () => {
+    if(cameraSupportInit) return;
+    cameraSupportInit = true;
+
+    ioPromise.then(io => {
+
+    });
+}*/
+exports.room = { uuid: null };
+const socketMap = {};
 const connectSocket = () => {
+    if (!exports.room.uuid) {
+        exports.room.uuid = (0, uuid_1.v4)();
+        console.log('CAMERA ROOM:', exports.room.uuid);
+    }
     if (exports.socket)
         return;
-    exports.socket = new simple_websockets_1.SimpleWebSocket(USE_LOCAL_BACKEND ? 'ws://192.168.50.40:5000' : 'wss://hmapi.lexogrine.com/', {
+    exports.socket = new simple_websockets_1.SimpleWebSocket(USE_LOCAL_BACKEND ? `ws://${domain}` : `wss://${domain}/`, {
         headers: {
-            Cookie: cookieJar.getCookieStringSync(USE_LOCAL_BACKEND ? 'http://192.168.50.40:5000/' : 'https://hmapi.lexogrine.com/')
+            Cookie: cookieJar.getCookieStringSync(USE_LOCAL_BACKEND ? `http://${domain}/` : `https://${domain}/`)
         }
+    });
+    exports.socket.on('connection', () => {
+        if (exports.room.uuid)
+            exports.socket?.send('registerAsProxy', exports.room.uuid);
     });
     exports.socket._socket.onerror = (err) => {
         console.log(err);
@@ -42,7 +63,7 @@ const connectSocket = () => {
         if (!api_1.customer.game)
             return;
         const io = await socket_1.ioPromise;
-        const result = await cloud_1.checkCloudStatus(api_1.customer.game);
+        const result = await (0, cloud_1.checkCloudStatus)(api_1.customer.game);
         if (result !== 'ALL_SYNCED') {
             // TODO: Handle that
             return;
@@ -52,6 +73,50 @@ const connectSocket = () => {
     exports.socket.on('disconnect', () => {
         exports.socket = null;
         setTimeout(connectSocket, 2000);
+    });
+    if (exports.room.uuid)
+        exports.socket.send('registerAsProxy', exports.room.uuid);
+    (0, api_1.registerRoomSetup)(exports.socket);
+    socket_1.ioPromise.then(io => {
+        exports.socket?.on('hudsOnline', (hudsUUID) => {
+            io.to('csgo').emit('hudsOnline', hudsUUID);
+        });
+        exports.socket?.on('offerFromPlayer', (room, data, steamid, uuid) => {
+            const targetSocket = socketMap[uuid];
+            if (!targetSocket)
+                return;
+            targetSocket.emit('offerFromPlayer', room, data, steamid);
+        });
+        if (!cameraSupportInit) {
+            cameraSupportInit = true;
+            io.on('offerFromHUD', (room, data, steamid, uuid) => {
+                exports.socket?.send('offerFromHUD', room, data, steamid, uuid);
+            });
+            io.on('connection', ioSocket => {
+                ioSocket.on('registerAsHUD', (room) => {
+                    const sockets = Object.values(socketMap);
+                    if (sockets.includes(ioSocket))
+                        return;
+                    const uuid = (0, uuid_1.v4)();
+                    socketMap[uuid] = ioSocket;
+                    exports.socket?.send('registerAsHUD', room, uuid);
+                });
+                ioSocket.on('offerFromHUD', (room, data, steamid) => {
+                    const sockets = Object.entries(socketMap);
+                    const targetSocket = sockets.find(entry => entry[1] === ioSocket);
+                    if (!targetSocket)
+                        return;
+                    exports.socket?.send('offerFromHUD', room, data, steamid, targetSocket[0]);
+                });
+                ioSocket.on('disconnect', () => {
+                    const sockets = Object.entries(socketMap);
+                    const targetSocket = sockets.find(entry => entry[1] === ioSocket);
+                    if (!targetSocket)
+                        return;
+                    delete socketMap[targetSocket[0]];
+                });
+            });
+        }
     });
 };
 const verifyGame = (req, res, next) => {
@@ -73,16 +138,16 @@ const api = (url, method = 'GET', body, opts) => {
         options.body = JSON.stringify(body);
     }
     let data = null;
-    return exports.fetch(USE_LOCAL_BACKEND ? `http://192.168.50.40:5000/${url}` : `https://hmapi.lexogrine.com/${url}`, options).then(res => {
+    return (0, exports.fetch)(USE_LOCAL_BACKEND ? `http://${domain}/${url}` : `https://${domain}/${url}`, options).then(res => {
         data = res;
         return res.json().catch(() => data && data.status < 300);
     });
 };
 exports.api = api;
 const userHandlers = {
-    get: (machineId) => exports.api(`auth/${machineId}`),
-    login: (username, password, ver, code) => exports.api('auth', 'POST', { username, password, ver, code }),
-    logout: () => exports.api('auth', 'DELETE')
+    get: (machineId) => (0, exports.api)(`auth/${machineId}`),
+    login: (username, password, ver, code) => (0, exports.api)('auth', 'POST', { username, password, ver, code }),
+    logout: () => (0, exports.api)('auth', 'DELETE')
 };
 const verifyToken = (token) => {
     try {
@@ -97,7 +162,7 @@ const verifyToken = (token) => {
     }
 };
 const loadUser = async (loggedIn = false) => {
-    const machineId = machine_1.getMachineId();
+    const machineId = (0, machine_1.getMachineId)();
     const userToken = await userHandlers.get(machineId);
     if (!userToken) {
         return { success: false, message: loggedIn ? 'Your session has expired - try restarting the application' : '' };

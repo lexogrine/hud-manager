@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { Button, Form, Input, Row, Col } from 'reactstrap';
 import countries from './../../countries';
 import api from './../../../../api/api';
 import * as I from './../../../../api/interfaces';
@@ -9,17 +8,23 @@ import PlayerEditModal from './PlayerEditModal';
 import CustomFieldsModal from '../../../CustomFields/CustomFieldsModal';
 import { useTranslation } from 'react-i18next';
 import NamesFileModal from './NamesFileModal';
-import { GameOnly } from '../Config/Config';
-import downloadIcon from './../../../../styles/downloadHUDIcon.png';
+import { ReactComponent as DeleteIcon } from './../../../../styles/icons/bin.svg';
+import { ReactComponent as EditIcon } from './../../../../styles/icons/pencil.svg';
+import ImportPlayerModal from './ImportPlayersModal';
+import Checkbox from '../../../Checkbox';
+import DeleteModal from '../../../DeleteModal';
+// import { GameOnly } from '../Config/Config';
+// import downloadIcon from './../../../../styles/downloadHUDIcon.png';
 
 interface IProps {
 	cxt: IContextData;
+	search: string;
 	data: any;
 }
 
 const quickClone: <T>(obj: T) => T = obj => JSON.parse(JSON.stringify(obj));
 
-const PlayersTab = ({ cxt, data }: IProps) => {
+const PlayersTab = ({ cxt, data, search }: IProps) => {
 	const emptyPlayer: I.Player = {
 		_id: 'empty',
 		firstName: '',
@@ -32,8 +37,8 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 		team: '',
 		extra: {}
 	};
+	const [selectedPlayers, setSelectedPlayers] = useState<string[]>([]);
 	const [form, setForm] = useState(emptyPlayer);
-	const [search, setSearch] = useState('');
 
 	const [isFilesOpened, setFilesOpened] = useState(false);
 
@@ -42,12 +47,30 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 
 	const [editModalState, setEditState] = useState(false);
 	const [fieldsModalState, setFieldsState] = useState(false);
+	const [importModalState, setImportState] = useState(false);
+	const [deleteModalState, setDeleteState] = useState(false);
 
 	const [customFieldForm, setCustomFieldForm] = useState<I.CustomFieldEntry[]>(quickClone(cxt.fields.players));
 
 	const openCustomFields = () => {
 		setCustomFieldForm(quickClone(cxt.fields.players));
 		setFieldsState(true);
+	};
+
+	const togglePlayer = (id: string) => {
+		setSelectedPlayers(
+			selectedPlayers.includes(id)
+				? selectedPlayers.filter(playerId => playerId !== id)
+				: [...selectedPlayers, id]
+		);
+	};
+
+	const deletePlayers = async () => {
+		if (!selectedPlayers.length) return;
+		await api.players.delete(selectedPlayers);
+		setSelectedPlayers([]);
+		await cxt.reload();
+		setDeleteState(false);
 	};
 
 	const sortPlayers = (players: I.Player[]) => {
@@ -124,9 +147,9 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 		};
 	};
 
-	const searchHandler = (event: any) => {
+	/*const searchHandler = (event: any) => {
 		setSearch(event.target.value);
-	};
+	};*/
 
 	const changeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
 		event.persist();
@@ -161,7 +184,8 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 			response = await api.players.update(form._id, { ...form, avatar });
 		}
 		if (response && response._id) {
-			loadPlayers(response._id);
+			setEditState(false);
+			await cxt.reload();
 		}
 	};
 
@@ -171,7 +195,7 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 		if (response) {
 			setEditState(false);
 			await loadPlayers();
-			return loadEmpty();
+			loadEmpty();
 		}
 	};
 
@@ -248,11 +272,40 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 		setEditState(true);
 	}, [data]);
 
+	const togglePlayers = () => {
+		if (selectedPlayers.length === cxt.players.length) {
+			setSelectedPlayers([]);
+			return;
+		}
+
+		setSelectedPlayers(cxt.players.map(player => player._id));
+	};
+
 	const visibleFields = cxt.fields.players.filter(field => field.visible);
 	const { t } = useTranslation();
+	if (editModalState) {
+		return (
+			<PlayerEditModal
+				open={editModalState}
+				toggle={() => {
+					setEditState(!editModalState);
+				}}
+				player={form}
+				onChange={changeHandler}
+				onFileChange={fileHandler}
+				onExtraChange={extraChangeHandler as I.onExtraChangeFunction}
+				save={save}
+				deletePlayer={deletePlayer}
+				fields={cxt.fields.teams}
+				cxt={cxt}
+				teams={cxt.teams}
+			/>
+		);
+	}
+
 	return (
-		<Form>
-			<div className="tab-title-container">
+		<>
+			{/*<div className="tab-title-container">
 				<div className="tab-title">
 					{t('common.players')}
 					<GameOnly game="csgo">
@@ -269,21 +322,20 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 					onChange={searchHandler}
 					placeholder={t('common.search')}
 				/>
-			</div>
-			<PlayerEditModal
-				open={editModalState}
-				toggle={() => {
-					setEditState(!editModalState);
-				}}
-				player={form}
-				teams={cxt.teams}
-				onChange={changeHandler}
-				onExtraChange={extraChangeHandler as I.onExtraChangeFunction}
-				onFileChange={fileHandler}
-				save={save}
-				deletePlayer={deletePlayer}
-				fields={cxt.fields.players}
+			</div>*/}
+			<DeleteModal
+				title="Delete players"
+				content={`Are you sure you want to remove ${selectedPlayers.length} players?`}
+				isOpen={deleteModalState}
+				toggle={() => setDeleteState(false)}
+				confirmDelete={deletePlayers}
+			/>
+			<ImportPlayerModal
+				open={importModalState}
 				cxt={cxt}
+				toggle={() => {
+					setImportState(!importModalState);
+				}}
 			/>
 			<NamesFileModal
 				isOpen={isFilesOpened}
@@ -320,9 +372,19 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 						</div>
 					))}
 					<div className="options">
-						<Button className="purple-btn round-btn" onClick={openCustomFields}>
-							{t('common.manage')}
-						</Button>
+						<EditIcon className="image-button" onClick={openCustomFields} />
+						<DeleteIcon
+							onClick={() => {
+								selectedPlayers.length && setDeleteState(true);
+							}}
+							className={`image-button ${selectedPlayers.length ? '' : 'transparent'}`}
+							style={{ marginLeft: 18, cursor: selectedPlayers.length ? 'pointer' : 'auto' }}
+						/>
+						<Checkbox
+							checked={selectedPlayers.length > 0}
+							onChange={togglePlayers}
+							semiChecked={!!(selectedPlayers.length && selectedPlayers.length < cxt.players.length)}
+						/>
 					</div>
 				</div>
 				{sortPlayers(cxt.players.filter(filterPlayers)).map(player => (
@@ -333,18 +395,21 @@ const PlayersTab = ({ cxt, data }: IProps) => {
 						edit={() => edit(player)}
 						team={cxt.teams.find(team => team._id === player.team)}
 						cxt={cxt}
+						isChecked={selectedPlayers.includes(player._id)}
 						fields={visibleFields}
+						togglePlayer={togglePlayer}
 					/>
 				))}
-				<Row>
-					<Col className="main-buttons-container">
-						<Button color="primary" onClick={add}>
-							{t('players.addPlayer')}
-						</Button>
-					</Col>
-				</Row>
 			</div>
-		</Form>
+			<div className="action-container">
+				<div className="button green empty big wide" onClick={() => setImportState(true)}>
+					Import players
+				</div>
+				<div className="button green strong big wide" onClick={add}>
+					{t('players.addPlayer')}
+				</div>
+			</div>
+		</>
 	);
 };
 

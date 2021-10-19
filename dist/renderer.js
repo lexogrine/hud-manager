@@ -56,17 +56,18 @@ const createMainWindow = async (forceDev = false) => {
             win?.maximize();
         }
     });
-    autoUpdater_1.default(win);
+    (0, autoUpdater_1.default)(win);
     electron_1.ipcMain.on('close', () => {
         win?.close();
     });
     win.once('ready-to-show', () => {
         if (win) {
             win.show();
+            win.webContents.openDevTools();
         }
     });
     // win.setMenu(null);
-    const config = await config_1.loadConfig();
+    const config = await (0, config_1.loadConfig)();
     win.setMenuBarVisibility(false);
     const startUrl = `http://localhost:${config.port}/`;
     win.webContents.on('new-window', (e, url) => {

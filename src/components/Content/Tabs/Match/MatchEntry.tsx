@@ -1,22 +1,23 @@
-import { useState } from 'react';
 import api from './../../../../api/api';
 import * as I from './../../../../api/interfaces';
-import { Button } from 'reactstrap';
 import { IContextData } from '../../../Context';
 import { hash } from '../../../../hash';
 import moment from 'moment';
+import { ReactComponent as DeleteIcon } from './../../../../styles/icons/bin.svg';
+import { ReactComponent as EditIcon } from './../../../../styles/icons/pencil.svg';
+import { ReactComponent as LiveIcon } from './../../../../styles/icons/live.svg';
 import { useTranslation } from 'react-i18next';
+import { WinIcon } from './VetoEntry';
 
 interface Props {
 	match: I.Match;
 	teams: I.Team[];
 	cxt: IContextData;
-	edit: Function;
+	edit: (match: I.Match) => void;
 	setCurrent: Function;
 }
 
 const MatchEntry = ({ match, teams, cxt, edit, setCurrent }: Props) => {
-	const [isExpanded, setExpanded] = useState(false);
 	const { t } = useTranslation();
 
 	const deleteMatch = async () => {
@@ -37,7 +38,7 @@ const MatchEntry = ({ match, teams, cxt, edit, setCurrent }: Props) => {
 	const right = teams.filter(team => match.right && team._id === match.right.id)[0];
 	return (
 		<div className={`entry-container ${match.current ? 'live' : ''} match-entry`}>
-			<div className={`entry-main ${isExpanded ? 'expanded' : 'collapsed'}`}>
+			<div className={`entry-main collapsed`}>
 				<div className="match-name">
 					{(left && left.shortName) || t('common.teamOne')} {t('common.vs')}{' '}
 					{(right && right.shortName) || t('common.teamTwo')}
@@ -45,9 +46,7 @@ const MatchEntry = ({ match, teams, cxt, edit, setCurrent }: Props) => {
 				</div>
 
 				<div className="map-score">
-					<div className={`win-icon ${match.left?.wins === boToWinsMap[match.matchType] ? 'active' : ''}`}>
-						{t('match.wins')}
-					</div>
+					<WinIcon show={match.left?.wins === boToWinsMap[match.matchType]} />
 					{left?.logo ? (
 						<img src={`${left.logo}?hash=${hash()}`} alt={`${left.name} logo`} className="team-logo" />
 					) : (
@@ -61,40 +60,20 @@ const MatchEntry = ({ match, teams, cxt, edit, setCurrent }: Props) => {
 					) : (
 						''
 					)}
-					<div className={`win-icon ${match.right?.wins === boToWinsMap[match.matchType] ? 'active' : ''}`}>
-						{t('match.wins')}
-					</div>
+					<WinIcon show={match.right?.wins === boToWinsMap[match.matchType]} />
 				</div>
-				<div className="match-date force-no-break">
+				<div className="match-date">
 					{match.startTime ? moment(match.startTime).format(moment.HTML5_FMT.DATE) : '-'}
 				</div>
-				<div className="match-time force-no-break">
-					{match.startTime ? moment(match.startTime).format('LT') : '-'}
-				</div>
-				<div className={`side-menu-container ${isExpanded ? 'expanded' : 'collapsed'}`}>
+				<div className="match-time">{match.startTime ? moment(match.startTime).format('LT') : '-'}</div>
+				<div className={`side-menu-container expanded`}>
 					<div className={`side-menu`}>
-						<div
-							className="toggler"
-							onClick={() => {
-								setExpanded(!isExpanded);
-							}}
-						></div>
-						<Button className="round-btn edit-veto " onClick={deleteMatch}>
-							{t('common.delete')}
-						</Button>
-						<Button
-							className="round-btn lightblue-btn edit-veto"
-							id={`match_id_${match.id}`}
-							onClick={() => edit(match)}
-						>
-							{t('common.edit')}
-						</Button>
-						<Button
-							className={`purple-btn round-btn edit-veto ${match.current ? 'current' : ''}`}
+						<DeleteIcon onClick={deleteMatch} className="image-button  transparent" />
+						<EditIcon onClick={() => edit(match)} className="image-button transparent" />
+						<LiveIcon
 							onClick={() => setCurrent()}
-						>
-							{t('match.toggleLive')}
-						</Button>
+							className={`image-button ${match.current ? '' : 'transparent'}`}
+						/>
 					</div>
 				</div>
 			</div>

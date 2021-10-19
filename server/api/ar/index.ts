@@ -84,6 +84,11 @@ export async function loadAR(base64: string, name: string, existingUUID?: string
 		}
 		try {
 			const fileString = base64.split(';base64,').pop();
+
+			if (!fileString) {
+				throw new Error();
+			}
+
 			const tempArchiveName = `./ar_temp_archive_${getRandomString()}.zip`;
 			fs.writeFileSync(tempArchiveName, fileString, { encoding: 'base64', mode: 777 });
 

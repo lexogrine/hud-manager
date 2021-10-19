@@ -1,5 +1,6 @@
 import db from './../../../init/database';
 import { Player, AvailableGames } from '../../../types/interfaces';
+import Excel from 'exceljs';
 
 const { players } = db;
 
@@ -36,6 +37,16 @@ export const getPlayersList = (query: any) =>
 		});
 	});
 
+export const addPlayers = (newPlayers: Player[]) => {
+	return new Promise<Player[] | null>(res => {
+		players.insert(newPlayers, (err, docs) => {
+			if (err) return res(null);
+
+			return res(docs);
+		});
+	});
+};
+
 export const replaceLocalPlayers = (newPlayers: Player[], game: AvailableGames, existing: string[]) =>
 	new Promise<boolean>(res => {
 		const or: any[] = [
@@ -52,7 +63,6 @@ export const replaceLocalPlayers = (newPlayers: Player[], game: AvailableGames, 
 			if (err) {
 				return res(false);
 			}
-			console.log('removed', n, 'players');
 			players.insert(newPlayers, (err, docs) => {
 				return res(!err);
 			});

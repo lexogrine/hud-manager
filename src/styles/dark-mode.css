@@ -29,10 +29,11 @@ button.btn-primary {
     justify-content: center;
     position: absolute;
     width:100%;
-    height: calc(100% - 64px);
+    height: 100%;
     z-index:1060;
     transition: opacity 0.5s, transform 0s 0.5s;
-    background-color: rgba(107, 28, 255, 0.82);
+    background-color: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(20px);
 }
 .tooltip-inner {
     
@@ -61,12 +62,26 @@ button.btn-primary {
     background-color: #53bf53;
 }
 .top_buttons {
-        position: absolute;
-        top: 91px;
-        right: 220px;
-        z-index: 5;
-        display: flex;
-    
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    height: 26px;
+    align-self: flex-end;
+    position: relative;
+    bottom: 15px;
+}
+.top_buttons .greeting {
+    text-transform: none;
+    font-family: 'Montserrat';
+    font-weight: normal;
+    font-size: 12px;
+    display: flex;
+    cursor: pointer;
+    align-items: center;
+}
+.top_buttons .greeting img {
+    transform: scaleX(-1);
+    margin-left: 12px;
 }
 .loading-container.hide {
     opacity:0;
@@ -191,7 +206,7 @@ button.btn-primary {
     position: absolute;
     right: 0;
     height: 50%;
-    background-color: #ffd70026;
+    background-color: rgba(255,255,255,0.1);
     width: 1px;
 }
 .bracket:first-child > .connector {
@@ -210,7 +225,7 @@ button.btn-primary {
     width: 100%;
     position: absolute;
     height: 1px;
-    background: #ffd70026;
+    background: rgba(255,255,255,0.1);
 }
 .match-connector.last-match {
     width: 220px;
@@ -229,22 +244,38 @@ button.btn-primary {
 .bracket-details .match-details{
     display: flex;
     flex-direction: column;
-    width: 200px;
+    width: 246px;
     margin: 10px 20px;
-    background: rgba(0,0,0,0.5);
-    border-radius: 2px;
     padding: 5px;
     z-index: 1;
     cursor: pointer;
 }
 .bracket-details .match-details .team-data {
     display: flex;
+    background: rgba(33, 33, 33, 0.5);
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(100px);
+    font-size: 10px;
+    height: 29px;
+    font-weight: 700;
+
 }
 .bracket-details .match-details .team-data .team-name {
     flex:1;
+    display: flex;
+    align-items: center;
 }
 .bracket-details .match-details .team-data .team-score {
-    width: 10px;
+    width: 29px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(255,255,255,0.2);
+    color: #111111;
+}
+.bracket-details .match-details .team-data .win.team-score {
+    background-color: #6B1CFF;
+    color: white;
 }
 .bracket-details .match-details .team-data .team-logo {
     width:30px;
@@ -312,24 +343,21 @@ button.btn-primary {
     align-items: center;
 }
 .aco_area_config {
-    height: 82px;
     padding-left:23px;
     padding-right:23px;
     display: flex;
+    min-width: 400px;
+    height: 76px;
     align-items: center;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
 }
 .aco_area_config div {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
     margin-right: 30px;
+    padding: 29px 0;
+    font-weight: 700;
+    font-size: 14px;
 }
-.aco_area_config:nth-child(2n) {
-    background-color: #202328;
-}
-.aco_area_config:nth-child(2n+1) {
-    background-color: #2f3238;
-}
+
 .aco_area_config img {
     margin-left: auto;
     cursor: pointer;
@@ -339,7 +367,6 @@ button.btn-primary {
 }
 .btn.add_aco_config {
     margin: 0;
-    flex:1;
     margin-top:20px;
 }
 .aco_dot {

@@ -548,6 +548,11 @@ async function loadHUD(base64: string, name: string, existingUUID?: string): Pro
 		}
 		try {
 			const fileString = base64.split(';base64,').pop();
+
+			if (!fileString) {
+				throw new Error();
+			}
+
 			const tempArchiveName = `./hud_temp_archive_${getRandomString()}.zip`;
 			fs.writeFileSync(tempArchiveName, fileString, { encoding: 'base64', mode: 777 });
 

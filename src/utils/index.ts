@@ -1,3 +1,4 @@
+import moment from 'moment';
 import { RequiredFields } from '../../types/interfaces';
 import * as I from '../api/interfaces';
 
@@ -49,4 +50,34 @@ export const getMissingFields = (currentFields: I.CustomFieldStore, requiredFiel
 	}
 
 	return missingFields;
+};
+
+export const filterMatches = (match: I.Match, activeTab: string) => {
+	const boToWinsMap = {
+		1: 1,
+		2: 2,
+		3: 2,
+		5: 3
+	};
+	const picks = (match.vetos || []).filter(veto => match.game !== 'csgo' || (veto as I.CSGOVeto).type !== 'ban');
+	let isEnded = false;
+	const bo = parseInt((match.matchType || 'bo1').replace('bo', '')) as 1 | 2 | 3 | 5;
+
+	if (bo === 2) {
+		isEnded = picks.filter(pick => pick.mapEnd).length === 2 || match.left.wins + match.right.wins >= 2;
+	} else {
+		isEnded =
+			(match.left && match.left.wins === boToWinsMap[bo]) ||
+			(match.right && match.right.wins === boToWinsMap[bo]);
+	}
+	if (activeTab === 'ended') {
+		return isEnded;
+	}
+	if (isEnded) {
+		return false;
+	}
+
+	const isInFuture = Boolean(match.startTime && moment(match.startTime).isAfter(moment(), 'day'));
+
+	return isInFuture === (activeTab === 'future');
 };

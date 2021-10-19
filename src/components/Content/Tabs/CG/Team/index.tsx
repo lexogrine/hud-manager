@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import Section from '../Section';
-import { Row, Col, FormGroup, Input, FormText, Button } from 'reactstrap';
+import { Row, Col, FormGroup, Input, FormText } from 'reactstrap';
 import { IContextData } from '../../../../Context';
 import { useTranslation } from 'react-i18next';
 import * as I from './../../../../../api/interfaces';
@@ -89,7 +89,7 @@ const TeamForm = ({ cxt }: Props) => {
 	};
 
 	return (
-		<Section title="Teams" cxt={cxt} width={300}>
+		<Section title="Teams" cxt={cxt} width={300} className="teams">
 			<Row>
 				<Col md="12">
 					<FormGroup>
@@ -177,9 +177,9 @@ const TeamForm = ({ cxt }: Props) => {
 			</Row>
 			<Row>
 				<Col s={12}>
-					<Button color="primary" className="modal-save" onClick={updateTeam}>
+					<div className="button green strong full" onClick={updateTeam}>
 						{t('common.save')}
-					</Button>
+					</div>
 				</Col>
 			</Row>
 		</Section>

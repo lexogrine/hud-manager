@@ -21,11 +21,14 @@ import TimelineHandler from './timeline/routes';
 import ARGHandler from './arg/routes';
 import * as match from './matches';
 import TeamHandler from './teams/routes';
+import CloudHandler from './cloud/routes';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import { ioPromise } from '../socket';
 import { app } from '..';
 import { checkCloudStatus, uploadLocalToCloud, downloadCloudToLocal } from './cloud';
 import { getRadarConfigs } from './huds/radar';
+import { SimpleWebSocket } from 'simple-websockets';
+import { socket } from './user';
 import { registerKeybind } from './keybinder';
 
 let init = true;
@@ -33,6 +36,14 @@ let init = true;
 export const customer: I.CustomerData = {
 	customer: null,
 	game: null
+};
+
+let availablePlayers = [] as I.CameraRoomPlayer[];
+
+export const registerRoomSetup = (socket: SimpleWebSocket) => {
+	setTimeout(() => {
+		if (user.room.uuid) socket.send('registerRoomPlayers', user.room.uuid, availablePlayers);
+	}, 1000);
 };
 
 export const validateCloudAbility = async (resource?: I.AvailableResources) => {
@@ -62,6 +73,28 @@ export default async function () {
 
 	app.route('/api/version/last').get(machine.getLastLaunchedVersion).post(machine.saveLastLaunchedVersion);
 
+	app.route('/api/camera')
+		.get((_req, res) => {
+			res.json({ availablePlayers, uuid: user.room.uuid });
+		})
+		.post((req, res) => {
+			if (
+				!Array.isArray(req.body) ||
+				!req.body.every(
+					x => typeof x === 'object' && typeof x.steamid === 'string' && typeof x.label === 'string'
+				)
+			)
+				return res.sendStatus(422);
+			if (JSON.stringify(req.body).length > 1000) return res.sendStatus(422);
+
+			availablePlayers = req.body;
+
+			setTimeout(() => {
+				if (socket) socket.send('registerRoomPlayers', user.room.uuid, req.body);
+			}, 1000);
+			return res.sendStatus(200);
+		});
+
 	TournamentHandler();
 
 	MatchHandler();
@@ -77,6 +110,8 @@ export default async function () {
 	ARHandler();
 
 	ARGHandler();
+
+	CloudHandler();
 
 	app.route('/api/games/start/:game').get(async (req, res) => {
 		const cfg = await config.loadConfig();

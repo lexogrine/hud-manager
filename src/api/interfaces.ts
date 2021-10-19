@@ -5,8 +5,14 @@ export type {
 	SelectActionInput,
 	GeneralInput,
 	PanelInputType,
+	TournamentMatchup,
 	KeyBind,
+	TournamentStage,
+	BOTypes,
+	TournamentTypes,
+	VetoScore,
 	PanelTemplate,
+	CameraRoomPlayer,
 	HUD,
 	Player,
 	Match,
@@ -36,6 +42,8 @@ export type {
 	ARModule
 } from './../../types/interfaces';
 
+export type HeaderHandler = (onBackClick: null | (() => void), header?: string | null) => void;
+
 export interface CFGGSIObject {
 	success: boolean;
 	accessible: boolean;
@@ -53,12 +61,21 @@ export interface User {
 	password: string;
 	admin: boolean;
 	banned: boolean;
+	username: string;
+	token: string;
+	license: License;
 }
 export interface License {
 	id: number;
 	type: LicenseType;
-	validUntil: Date;
 	owner: number;
+	status: string;
+	valid: boolean;
+	endTime: number;
+	validFrom: number;
+	validUntil: Date;
+	nextUpdate: number;
+	startTime: number;
 }
 
 export interface Customer {

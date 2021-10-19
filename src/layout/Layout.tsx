@@ -5,13 +5,14 @@ import * as I from './../api/interfaces';
 import config from './../api/config';
 import { socket } from './../components/Content/Tabs/Live/Live';
 import LoginRegisterModal from './LoginRegisterModal';
-import ElectronOnly from './../components/ElectronOnly';
+//import ElectronOnly from './../components/ElectronOnly';
 import { hash } from '../hash';
 import GamePicker from './GamePicker';
 import { AvailableGames, CloudSyncStatus } from '../../types/interfaces';
 import SyncModal from './SyncModal';
 import Changelog from './ChangelogModal';
 import { Component } from 'react';
+// import WindowBar from '../WindowBar';
 
 const isElectron = config.isElectron;
 
@@ -35,6 +36,7 @@ export default class Layout extends Component<{}, IState> {
 				teams: [],
 				players: [],
 				matches: [],
+				spaceUsed: 0,
 				tournaments: [],
 				reload: () => {
 					return Promise.all([
@@ -43,7 +45,8 @@ export default class Layout extends Component<{}, IState> {
 						this.loadMatch(),
 						this.loadTournaments(),
 						this.getCustomFields(),
-						this.loadConfig()
+						this.loadConfig(),
+						this.getSpaceUsed()
 					]).then(this.rehash);
 				},
 				fields: { players: [], teams: [] },
@@ -61,8 +64,16 @@ export default class Layout extends Component<{}, IState> {
 			config: null
 		};
 	}
+	getSpaceUsed = async () => {
+		const response = await api.cloud.size();
+		if (!response) return;
+		const { data } = this.state;
+		data.spaceUsed = response.size;
+		this.setState({ data });
+	};
 	async componentDidMount() {
 		//const socket = io.connect(`${config.isDev ? config.apiAddress : '/'}`);
+		await this.loadUser();
 		api.games.getCurrent().then(result => {
 			const { data } = this.state;
 			data.game = result.game;
@@ -80,7 +91,6 @@ export default class Layout extends Component<{}, IState> {
 			);
 		});
 		await this.getVersion();
-		this.loadUser();
 		socket.on('match', (fromVeto?: boolean) => {
 			if (fromVeto) this.loadMatch();
 		});
@@ -221,19 +231,24 @@ export default class Layout extends Component<{}, IState> {
 		const available =
 			data.customer?.license?.type === 'professional' || data.customer?.license?.type === 'enterprise';
 		const active = Boolean(available && config?.sync);
+
+		// const url = new URL(window.location.href);
+		// const isHLAEGUI = url.searchParams.get('hlaegui');
+
 		return (
 			<Provider value={this.state.data}>
+				{/*isHLAEGUI === null ? <WindowBar /> : null*/}
 				<div className={`loaded ${isElectron ? 'electron' : ''}`}>
-					{data.customer ? (
+					{/*data.customer ? (
 						<div className={`license-status ${isElectron ? 'electron' : ''}`}>
-							{data.customer.license.type} {version}
+							{data.customer.license.type}
 							<ElectronOnly>
 								<div className="logout-button" onClick={this.logout}>
 									Logout
 								</div>
 							</ElectronOnly>
 						</div>
-					) : null}
+					) : null*/}
 					{<div className={`loading-container ${loading || loadingGame ? '' : 'hide'}`}>Loading...</div>}
 					<LoginRegisterModal
 						isOpen={!data.customer}
@@ -256,6 +271,8 @@ export default class Layout extends Component<{}, IState> {
 						toggleSync={this.toggleSync}
 						clearGame={this.clearGame}
 						game={this.state.data.game}
+						customer={data.customer}
+						logout={this.logout}
 					/>
 				</div>
 			</Provider>

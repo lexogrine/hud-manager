@@ -3,16 +3,26 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createDEBracket = exports.createSEBracket = void 0;
+exports.createDEBracket = exports.createSEBracket = exports.createSSBracket = void 0;
 const v4_1 = __importDefault(require("uuid/v4"));
-const createMatchup = () => ({
-    _id: v4_1.default(),
+const createMatchup = (stage = null) => ({
+    _id: (0, v4_1.default)(),
     winner_to: null,
     loser_to: null,
+    stage,
     label: '',
     matchId: null,
     parents: []
 });
+const createSSBracket = (teams, phases) => {
+    const amountOfMatchups = teams * phases;
+    const matchups = [];
+    for (let i = 0; i < amountOfMatchups; i++) {
+        matchups.push(createMatchup(Math.floor(i / teams)));
+    }
+    return matchups;
+};
+exports.createSSBracket = createSSBracket;
 const createSEBracket = (teams) => {
     if (!Number.isInteger(Math.log2(teams)))
         return [];
@@ -38,7 +48,7 @@ exports.createSEBracket = createSEBracket;
 const createDEBracket = (teams) => {
     if (!Number.isInteger(Math.log2(teams)))
         return [];
-    const upperBracket = exports.createSEBracket(teams);
+    const upperBracket = (0, exports.createSEBracket)(teams);
     if (!upperBracket.length)
         return [];
     if (teams === 2) {

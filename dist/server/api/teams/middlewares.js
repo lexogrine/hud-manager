@@ -22,14 +22,16 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateFields = exports.getFields = exports.getLogoFile = exports.deleteTeam = exports.updateTeam = exports.addTeam = exports.getTeam = exports.getTeams = void 0;
+exports.updateFields = exports.getFields = exports.getLogoFile = exports.deleteTeam = exports.updateTeam = exports.addTeamsWithExcel = exports.addTeam = exports.getTeam = exports.getTeams = void 0;
 const database_1 = __importDefault(require("./../../../init/database"));
+const interfaces_1 = require("../../../types/interfaces");
 const config_1 = require("./../config");
 const isSvg_1 = __importDefault(require("./../../../src/isSvg"));
 const index_1 = require("./index");
 const F = __importStar(require("./../fields"));
 const __1 = require("..");
 const cloud_1 = require("../cloud");
+const exceljs_1 = require("exceljs");
 const teams = database_1.default.teams;
 const players = database_1.default.players;
 const getTeams = async (req, res) => {
@@ -38,8 +40,8 @@ const getTeams = async (req, res) => {
     if (game === 'csgo') {
         $or.push({ game: { $exists: false } });
     }
-    const teams = await index_1.getTeamsList({ $or });
-    const config = await config_1.loadConfig();
+    const teams = await (0, index_1.getTeamsList)({ $or });
+    const config = await (0, config_1.loadConfig)();
     return res.json(teams.map(team => ({
         ...team,
         logo: team.logo && team.logo.length ? `http://${config_1.internalIP}:${config.port}/api/teams/logo/${team._id}` : null
@@ -50,11 +52,11 @@ const getTeam = async (req, res) => {
     if (!req.params.id) {
         return res.sendStatus(422);
     }
-    const team = await index_1.getTeamById(req.params.id, true);
+    const team = await (0, index_1.getTeamById)(req.params.id, true);
     if (!team) {
         return res.sendStatus(404);
     }
-    const config = await config_1.loadConfig();
+    const config = await (0, config_1.loadConfig)();
     return res.json({
         ...team,
         logo: team.logo && team.logo.length ? `http://${config_1.internalIP}:${config.port}/api/teams/logo/${team._id}` : null
@@ -63,8 +65,8 @@ const getTeam = async (req, res) => {
 exports.getTeam = getTeam;
 const addTeam = async (req, res) => {
     let cloudStatus = false;
-    if (await __1.validateCloudAbility()) {
-        cloudStatus = (await cloud_1.checkCloudStatus(__1.customer.game)) === 'ALL_SYNCED';
+    if (await (0, __1.validateCloudAbility)()) {
+        cloudStatus = (await (0, cloud_1.checkCloudStatus)(__1.customer.game)) === 'ALL_SYNCED';
     }
     const newTeam = {
         name: req.body.name,
@@ -74,28 +76,79 @@ const addTeam = async (req, res) => {
         game: __1.customer.game,
         extra: req.body.extra
     };
-    teams.insert(newTeam, async (err, team) => {
-        if (err) {
-            return res.sendStatus(500);
-        }
-        if (cloudStatus) {
-            await cloud_1.addResource(__1.customer.game, 'teams', team);
-        }
-        return res.json(team);
-    });
+    const result = await (0, index_1.addTeams)([newTeam]);
+    if (!result || !result.length) {
+        return res.sendStatus(500);
+    }
+    if (cloudStatus) {
+        await (0, cloud_1.addResource)(__1.customer.game, 'teams', result[0]);
+    }
+    else {
+        (0, cloud_1.updateLastDateLocallyOnly)(__1.customer.game, ['teams']);
+    }
+    return res.json(result[0]);
 };
 exports.addTeam = addTeam;
+const addTeamsWithExcel = async (req, res) => {
+    const fileBase64 = req.body.data;
+    const game = __1.customer.game;
+    if (!interfaces_1.availableGames.includes(game))
+        return res.sendStatus(422);
+    let cloudStatus = false;
+    if (await (0, __1.validateCloudAbility)()) {
+        cloudStatus = (await (0, cloud_1.checkCloudStatus)(__1.customer.game)) === 'ALL_SYNCED';
+    }
+    const file = Buffer.from(fileBase64, 'base64');
+    try {
+        const workbook = new exceljs_1.Workbook();
+        await workbook.xlsx.load(file);
+        const worksheet = workbook.worksheets[0];
+        if (!worksheet)
+            return res.sendStatus(422);
+        const teams = [];
+        worksheet.eachRow(row => {
+            const name = row.getCell('A').value?.toString?.();
+            if (!name || name === 'Team name') {
+                return;
+            }
+            const shortName = row.getCell('B').value?.toString?.();
+            const country = row.getCell('C').value?.toString?.();
+            teams.push({
+                name,
+                shortName,
+                country,
+                logo: '',
+                extra: {}
+            });
+        });
+        const result = await (0, index_1.addTeams)(teams);
+        if (!result) {
+            return res.sendStatus(503);
+        }
+        if (cloudStatus) {
+            await (0, cloud_1.addResource)(__1.customer.game, 'teams', result);
+        }
+        else {
+            (0, cloud_1.updateLastDateLocallyOnly)(__1.customer.game, ['teams']);
+        }
+        return res.json({ message: `Added ${result.length} teams` });
+    }
+    catch {
+        return res.sendStatus(500);
+    }
+};
+exports.addTeamsWithExcel = addTeamsWithExcel;
 const updateTeam = async (req, res) => {
     if (!req.params.id) {
         return res.sendStatus(422);
     }
-    const team = await index_1.getTeamById(req.params.id, true);
+    const team = await (0, index_1.getTeamById)(req.params.id, true);
     if (!team) {
         return res.sendStatus(404);
     }
     let cloudStatus = false;
-    if (await __1.validateCloudAbility()) {
-        cloudStatus = (await cloud_1.checkCloudStatus(__1.customer.game)) === 'ALL_SYNCED';
+    if (await (0, __1.validateCloudAbility)()) {
+        cloudStatus = (await (0, cloud_1.checkCloudStatus)(__1.customer.game)) === 'ALL_SYNCED';
     }
     const updated = {
         name: req.body.name,
@@ -113,9 +166,12 @@ const updateTeam = async (req, res) => {
             return res.sendStatus(500);
         }
         if (cloudStatus) {
-            await cloud_1.updateResource(__1.customer.game, 'teams', { ...updated, _id: req.params.id });
+            await (0, cloud_1.updateResource)(__1.customer.game, 'teams', { ...updated, _id: req.params.id });
         }
-        const team = await index_1.getTeamById(req.params.id);
+        else {
+            (0, cloud_1.updateLastDateLocallyOnly)(__1.customer.game, ['teams']);
+        }
+        const team = await (0, index_1.getTeamById)(req.params.id);
         return res.json(team);
     });
 };
@@ -124,21 +180,27 @@ const deleteTeam = async (req, res) => {
     if (!req.params.id) {
         return res.sendStatus(422);
     }
-    const team = await index_1.getTeamById(req.params.id);
+    /*
+    const team = await getTeamById(req.params.id);
     if (!team) {
         return res.sendStatus(404);
     }
+    */
+    const ids = req.params.id.split(';');
     let cloudStatus = false;
-    if (await __1.validateCloudAbility()) {
-        cloudStatus = (await cloud_1.checkCloudStatus(__1.customer.game)) === 'ALL_SYNCED';
+    if (await (0, __1.validateCloudAbility)()) {
+        cloudStatus = (await (0, cloud_1.checkCloudStatus)(__1.customer.game)) === 'ALL_SYNCED';
     }
     //players.update({team:})
-    teams.remove({ _id: req.params.id }, async (err, n) => {
+    teams.remove({ _id: { $in: ids } }, { multi: true }, async (err, n) => {
         if (err) {
             return res.sendStatus(500);
         }
         if (cloudStatus) {
-            await cloud_1.deleteResource(__1.customer.game, 'teams', req.params.id);
+            await (0, cloud_1.deleteResource)(__1.customer.game, 'teams', ids);
+        }
+        else {
+            (0, cloud_1.updateLastDateLocallyOnly)(__1.customer.game, ['teams']);
         }
         return res.sendStatus(n ? 200 : 404);
     });
@@ -148,13 +210,13 @@ const getLogoFile = async (req, res) => {
     if (!req.params.id) {
         return res.sendStatus(422);
     }
-    const team = await index_1.getTeamById(req.params.id, true);
+    const team = await (0, index_1.getTeamById)(req.params.id, true);
     if (!team || !team.logo || !team.logo.length) {
         return res.sendStatus(404);
     }
     const imgBuffer = Buffer.from(team.logo, 'base64');
     res.writeHead(200, {
-        'Content-Type': isSvg_1.default(imgBuffer) ? 'image/svg+xml' : 'image/png',
+        'Content-Type': (0, isSvg_1.default)(imgBuffer) ? 'image/svg+xml' : 'image/png',
         'Content-Length': imgBuffer.length
     });
     res.end(imgBuffer);

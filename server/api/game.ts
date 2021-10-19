@@ -62,7 +62,7 @@ function isCorrect(cfg: CFG) {
 		}
 		const file = cfg.file;
 		const cfgDir = path.join(GamePath.game.path, 'csgo', 'cfg');
-		return fs.readFileSync(path.join(cfgDir, file), 'UTF-8') === cfg.cfg;
+		return fs.readFileSync(path.join(cfgDir, file), 'utf-8') === cfg.cfg;
 	} catch {
 		return false;
 	}
@@ -158,7 +158,7 @@ export const createCFGs: express.RequestHandler = async (req, res) => {
 			if (fs.existsSync(cfgPath)) {
 				fs.unlinkSync(cfgPath);
 			}
-			fs.writeFileSync(cfgPath, cfg.cfg, 'UTF-8');
+			fs.writeFileSync(cfgPath, cfg.cfg, 'utf-8');
 		}
 		return res.json({ success: true, message: 'Configs were successfully saved' });
 	} catch {

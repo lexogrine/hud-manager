@@ -2,7 +2,7 @@ import { CSGO } from 'csgogsi-socket';
 
 export type AvailableGames = 'csgo' | 'rocketleague' | 'dota2';
 
-export type AvailableResources = 'teams' | 'players' | 'customs' | 'mapconfigs' | 'matches' | 'tournaments' | 'arg';
+export type AvailableResources = 'teams' | 'players' | 'customs' | 'mapconfigs' | 'matches' | 'tournaments';
 
 export interface Item {
 	id: string;
@@ -10,13 +10,18 @@ export interface Item {
 	active: boolean;
 }
 
+export interface CameraRoomPlayer {
+	steamid: string;
+	label: string;
+}
+
 export const availableResources: AvailableResources[] = [
 	'teams',
 	'players',
 	'customs',
-	'mapconfigs'
-	//'matches',
-	//'tournaments',
+	'mapconfigs',
+	'matches',
+	'tournaments'
 	//'arg'
 ];
 
@@ -98,14 +103,16 @@ export interface Team {
 
 export type VetoType = 'ban' | 'pick' | 'decider';
 
+export type VetoScore = {
+	[key: string]: number;
+};
+export type VetoSides = 'CT' | 'T' | 'NO';
 export interface CSGOVeto {
 	teamId: string;
 	mapName: string;
-	side: 'CT' | 'T' | 'NO';
+	side: VetoSides;
 	type: VetoType;
-	score?: {
-		[key: string]: number;
-	};
+	score?: VetoScore;
 	rounds?: RoundData[];
 	reverseSide?: boolean;
 	winner?: string;
@@ -116,18 +123,14 @@ export interface CSGOVeto {
 export interface Dota2Veto {
 	mapEnd: boolean;
 	winner?: string;
-	score?: {
-		[key: string]: number;
-	};
+	score?: VetoScore;
 	reverseSide?: boolean;
 }
 
 export interface RocketLeagueVeto {
 	mapEnd: boolean;
 	winner?: string;
-	score?: {
-		[key: string]: number;
-	};
+	score?: VetoScore;
 	reverseSide?: boolean;
 	// map: string
 }
@@ -178,6 +181,7 @@ export interface TournamentMatchup {
 	winner_to: string | null;
 	label: string;
 	matchId: string | null;
+	stage: string | number | null;
 	parents: TournamentMatchup[];
 }
 
@@ -186,11 +190,39 @@ export interface DepthTournamentMatchup extends TournamentMatchup {
 	parents: DepthTournamentMatchup[];
 }
 
+export type TournamentTypes = 'swiss' | 'single' | 'double';
+
+export type TournamentStage = {
+	type: TournamentTypes;
+	matchups: TournamentMatchup[];
+	teams: number;
+	phases: number;
+	participants: string[];
+};
+
 export interface Tournament {
 	_id: string;
 	name: string;
 	logo: string;
-	matchups: TournamentMatchup[];
+	groups: TournamentStage[];
+	playoffs: TournamentStage;
+	autoCreate: boolean;
+}
+
+export interface LegacyTournamentMatchup {
+	_id: string;
+	loser_to: string | null; // IDs of Matchups, not Matches
+	winner_to: string | null;
+	label: string;
+	matchId: string | null;
+	parents: LegacyTournamentMatchup[];
+}
+
+export interface LegacyTournament {
+	_id: string;
+	name: string;
+	logo: string;
+	matchups: LegacyTournamentMatchup[];
 	autoCreate: boolean;
 }
 
@@ -320,14 +352,23 @@ export interface User {
 	password: string;
 	admin: boolean;
 	banned: boolean;
+	username: string;
+	token: string;
+	license: License;
 }
 
 export type LicenseType = 'free' | 'professional' | 'personal' | 'enterprise';
 export interface License {
 	id: number;
 	type: LicenseType;
-	validUntil: Date;
 	owner: number;
+	status: string;
+	valid: boolean;
+	validFrom: number;
+	validUntil: Date;
+	endTime: number;
+	nextUpdate: number;
+	startTime: number;
 }
 
 export interface Customer {

@@ -23,7 +23,7 @@ exports.playTesting = {
 };
 const initGameConnection = async () => {
     const io = await socket_1.ioPromise;
-    const director = aco_1.createDirector();
+    const director = (0, aco_1.createDirector)();
     director.pgl = socket_1.mirvPgl;
     const toggleDirector = () => {
         if (!__1.customer.customer ||
@@ -41,7 +41,7 @@ const initGameConnection = async () => {
         });
         socket.on('toggleDirector', toggleDirector);
     });
-    keybinder_1.registerKeybind('Left Alt+K', toggleDirector);
+    (0, keybinder_1.registerKeybind)('Left Alt+K', toggleDirector);
     let testDataIndex = 0;
     const startSendingTestData = () => {
         if (exports.playTesting.intervalId)

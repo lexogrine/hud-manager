@@ -22,7 +22,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.validateCloudAbility = exports.customer = void 0;
+exports.validateCloudAbility = exports.registerRoomSetup = exports.customer = void 0;
 const express_1 = __importDefault(require("express"));
 const electron_1 = require("electron");
 const steam_game_path_1 = require("steam-game-path");
@@ -46,17 +46,27 @@ const routes_6 = __importDefault(require("./timeline/routes"));
 const routes_7 = __importDefault(require("./arg/routes"));
 const match = __importStar(require("./matches"));
 const routes_8 = __importDefault(require("./teams/routes"));
+const routes_9 = __importDefault(require("./cloud/routes"));
 const http_proxy_middleware_1 = require("http-proxy-middleware");
 const socket_1 = require("../socket");
 const __1 = require("..");
 const cloud_1 = require("./cloud");
 const radar_1 = require("./huds/radar");
+const user_1 = require("./user");
 const keybinder_1 = require("./keybinder");
 let init = true;
 exports.customer = {
     customer: null,
     game: null
 };
+let availablePlayers = [];
+const registerRoomSetup = (socket) => {
+    setTimeout(() => {
+        if (user.room.uuid)
+            socket.send('registerRoomPlayers', user.room.uuid, availablePlayers);
+    }, 1000);
+};
+exports.registerRoomSetup = registerRoomSetup;
 const validateCloudAbility = async (resource) => {
     if (resource && !I.availableResources.includes(resource))
         return false;
@@ -73,19 +83,37 @@ const validateCloudAbility = async (resource) => {
 exports.validateCloudAbility = validateCloudAbility;
 async function default_1() {
     const io = await socket_1.ioPromise;
-    play_1.initGameConnection();
+    (0, play_1.initGameConnection)();
     __1.app.route('/api/auth').get(user.getCurrent).post(user.loginHandler).delete(user.logout);
     __1.app.route('/api/config').get(config.getConfig).patch(config.updateConfig);
     __1.app.route('/api/version').get((req, res) => res.json({ version: electron_1.app.getVersion() }));
     __1.app.route('/api/version/last').get(machine.getLastLaunchedVersion).post(machine.saveLastLaunchedVersion);
-    routes_1.default();
-    routes_2.default();
-    routes_6.default();
-    routes_3.default();
-    routes_8.default();
-    routes_4.default();
-    routes_5.default();
-    routes_7.default();
+    __1.app.route('/api/camera')
+        .get((_req, res) => {
+        res.json({ availablePlayers, uuid: user.room.uuid });
+    })
+        .post((req, res) => {
+        if (!Array.isArray(req.body) ||
+            !req.body.every(x => typeof x === 'object' && typeof x.steamid === 'string' && typeof x.label === 'string'))
+            return res.sendStatus(422);
+        if (JSON.stringify(req.body).length > 1000)
+            return res.sendStatus(422);
+        availablePlayers = req.body;
+        setTimeout(() => {
+            if (user_1.socket)
+                user_1.socket.send('registerRoomPlayers', user.room.uuid, req.body);
+        }, 1000);
+        return res.sendStatus(200);
+    });
+    (0, routes_1.default)();
+    (0, routes_2.default)();
+    (0, routes_6.default)();
+    (0, routes_3.default)();
+    (0, routes_8.default)();
+    (0, routes_4.default)();
+    (0, routes_5.default)();
+    (0, routes_7.default)();
+    (0, routes_9.default)();
     __1.app.route('/api/games/start/:game').get(async (req, res) => {
         const cfg = await config.loadConfig();
         const game = req.params.game;
@@ -93,7 +121,7 @@ async function default_1() {
         delete cfg._id;
         await config.setConfig(cfg);
         exports.customer.game = game;
-        const result = await cloud_1.checkCloudStatus(game);
+        const result = await (0, cloud_1.checkCloudStatus)(game);
         io.emit('reloadHUDs');
         res.json({ result });
     });
@@ -101,14 +129,14 @@ async function default_1() {
         const game = exports.customer.game;
         if (!game)
             return res.sendStatus(403);
-        const result = await cloud_1.uploadLocalToCloud(game);
+        const result = await (0, cloud_1.uploadLocalToCloud)(game);
         return res.json({ result });
     });
     __1.app.route('/api/cloud/download').post(async (req, res) => {
         const game = exports.customer.game;
         if (!game)
             return res.sendStatus(403);
-        const result = await cloud_1.downloadCloudToLocal(game);
+        const result = await (0, cloud_1.downloadCloudToLocal)(game);
         return res.json({ result });
     });
     __1.app.route('/api/games/current').get((req, res) => {
@@ -127,7 +155,7 @@ async function default_1() {
     __1.app.route('/api/radar/maps').get(radar_1.getRadarConfigs);
     __1.app.route('/api/gsi').get(gsi.checkGSIFile).put(gsi.createGSIFile);
     __1.app.route('/api/import').post(sync.importDb);
-    __1.app.route('/api/steam').get((req, res) => res.json({ gamePath: steam_game_path_1.getGamePath(730) }));
+    __1.app.route('/api/steam').get((req, res) => res.json({ gamePath: (0, steam_game_path_1.getGamePath)(730) }));
     __1.app.route('/api/import/verify').post(sync.checkForConflicts);
     __1.app.route('/api/gsi/download').get(gsi.saveFile('gamestate_integration_hudmanager.cfg', gsi.generateGSIFile(exports.customer.game)));
     __1.app.route('/api/db/download').get(gsi.saveFile('hudmanagerdb.json', sync.exportDatabase()));
@@ -140,7 +168,7 @@ async function default_1() {
     __1.app.route('/huds/:dir/').get(huds.renderHUD);
     __1.app.route('/hud/:dir/').get(huds.renderOverlay());
     __1.app.route('/development/').get(huds.renderOverlay(true));
-    __1.app.use('/dev', huds.verifyOverlay, http_proxy_middleware_1.createProxyMiddleware({ target: 'http://localhost:3500', ws: true, logLevel: 'silent' }));
+    __1.app.use('/dev', huds.verifyOverlay, (0, http_proxy_middleware_1.createProxyMiddleware)({ target: 'http://localhost:3500', ws: true, logLevel: 'silent' }));
     __1.app.route('/api/machine').get(machine.getMachineIdRoute);
     __1.app.use('/huds/:dir/', huds.renderAssets);
     __1.app.route('/huds/:dir/thumbnail').get(huds.renderThumbnail);
@@ -151,8 +179,8 @@ async function default_1() {
     __1.app.route('/api/bakkesmod/run').get(bakkesmod.runBakkesMod);
     __1.app.route('/api/bakkesmod/install/mod_data').get(bakkesmod.installBakkesModData);
     __1.app.route('/api/bakkesmod/install/sos').get(bakkesmod.installSosPlugin);
-    keybinder_1.registerKeybind('Left Alt+Left Shift+F', () => io.emit('refreshHUD'));
-    keybinder_1.registerKeybind('Left Alt+R', match.reverseSide);
+    (0, keybinder_1.registerKeybind)('Left Alt+Left Shift+F', () => io.emit('refreshHUD'));
+    (0, keybinder_1.registerKeybind)('Left Alt+R', match.reverseSide);
     //globalShortcut.register('Left Alt+Left Shift+F', () => io.emit('refreshHUD'));
     //globalShortcut.register('Left Alt+R', match.reverseSide);
     /**

@@ -21,16 +21,16 @@ export const getMachineId = () => {
 		.substr(0, 15);
 
 	if (fs.existsSync(machinePath)) {
-		id = fs.readFileSync(machinePath, 'UTF-8');
+		id = fs.readFileSync(machinePath, 'utf-8');
 		return id;
 	}
 
 	if (fs.existsSync(machineOldPath)) {
-		id = fs.readFileSync(machineOldPath, 'UTF-8');
+		id = fs.readFileSync(machineOldPath, 'utf-8');
 		fs.renameSync(machineOldPath, machinePath);
 		return id;
 	}
-	fs.writeFileSync(machinePath, id, { encoding: 'UTF-8' });
+	fs.writeFileSync(machinePath, id, { encoding: 'utf-8' });
 	return id;
 };
 

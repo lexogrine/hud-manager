@@ -1,14 +1,26 @@
 import uuidv4 from 'uuid/v4';
 import * as I from './../../../types/interfaces';
 
-const createMatchup = (): I.TournamentMatchup => ({
+const createMatchup = (stage: string | number | null = null): I.TournamentMatchup => ({
 	_id: uuidv4(),
 	winner_to: null,
 	loser_to: null,
+	stage,
 	label: '',
 	matchId: null,
 	parents: []
 });
+
+export const createSSBracket = (teams: number, phases: number) => {
+	const amountOfMatchups = teams * phases;
+
+	const matchups: I.TournamentMatchup[] = [];
+
+	for (let i = 0; i < amountOfMatchups; i++) {
+		matchups.push(createMatchup(Math.floor(i / teams)));
+	}
+	return matchups;
+};
 
 export const createSEBracket = (teams: number) => {
 	if (!Number.isInteger(Math.log2(teams))) return [];

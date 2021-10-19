@@ -134,7 +134,14 @@ Moreover, you don't need to bother your head with copying the config files. You 
 In a situation when config installation doesn't succeed or the Lexogrine HUD Manager is unable to locate CS:GO, you can download the GSI config and an archive with all of the required cfg files using two buttons at the bottom of this section.
 
 
-## Player cam feed
+## Player cam feed (Beta)
+
+Lexogrine HUD Manager now allows for hosting rooms to connect player cameras directly to the HUD. To use it, add at most 10 players in the Cameras tab, hit save, and send url at the top of the screen to players. They will be able to select themselves, their prefferable video device and connect to the hud.
+
+It's worth noting, that it's early implementation, and as of now it is recommended to share a network with players - whether it's local, or hamachi-like virtual. It will help with reducing initiating time, as connecting through the Internet might take a ~15s.
+
+>Note - This feature is in beta and requires very stable connection. If player has connected, but you don't see him, refresh HUD and wait ~20s. If you still don't see video from his camera, try joining a mutual virtual private network.
+### Legacy
 
 Lexogrine HUD Manager exposes RTMP server on port 8000 (rmtp://localhost/live, stream key HUD_MANAGER). The Manager expects 750x300 stream, which is divided in 10 150x150 squares, each corresponding to the player face camera. The stream is later accessible on /rmtp.html (in example HUD iframe is used to put feed in the avatar place). Full tutorial on how to setup cam feed is accessible here:
 

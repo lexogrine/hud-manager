@@ -6,7 +6,7 @@ import TeamModal from './SetTeamModal';
 import { socket } from '../Live/Live';
 
 import { IContextData } from '../../../Context';
-import { Form, Row, Col, FormGroup, Input } from 'reactstrap';
+import { Input } from 'reactstrap';
 import moment from 'moment';
 import VetoEntry from './VetoEntry';
 import { useTranslation } from 'react-i18next';
@@ -46,12 +46,11 @@ const TeamScore = ({ cxt, team, onSave, teamState, side, t }: TeamScoreProps) =>
 interface IProps {
 	cxt: IContextData;
 	match: I.Match;
-	teams: I.Team[];
-	edit: Function;
+	edit: (id: string, match: I.Match) => void;
 	maps: string[];
 }
 
-const EditMatch = ({ cxt, match, teams, edit, maps }: IProps) => {
+const EditMatch = ({ cxt, match, edit, maps }: IProps) => {
 	const [matchState, setMatchState] = useState(match);
 
 	const { t } = useTranslation();
@@ -133,16 +132,15 @@ const EditMatch = ({ cxt, match, teams, edit, maps }: IProps) => {
 		save();
 	}, [matchState]);
 
-	const left = teams.find(team => team._id === match.left.id) || null;
-	const right = teams.find(team => team._id === match.right.id) || null;
+	const left = cxt.teams.find(team => team._id === match.left.id) || null;
+	const right = cxt.teams.find(team => team._id === match.right.id) || null;
 	const vetoTeams: I.Team[] = [];
 	if (left) vetoTeams.push(left);
 	if (right) vetoTeams.push(right);
 
 	return (
-		<>
+		<div className="match-edit">
 			<div className={`match_row editing ${match.current ? 'live' : ''}`}>
-				<div className="live-indicator">{t('match.live')}</div>
 				<div className="main_data">
 					<TeamScore cxt={cxt} side="left" team={left} teamState={matchState.left} onSave={getData} t={t} />
 					<div className="versus">{t('common.vs')}</div>
@@ -155,59 +153,48 @@ const EditMatch = ({ cxt, match, teams, edit, maps }: IProps) => {
 						t={t}
 					/>
 				</div>
-				<div className="vetos"></div>
+				<div>
+					<Input
+						type="select"
+						id="matchType"
+						name="matchType"
+						onChange={changeMatchType}
+						value={matchState.matchType}
+					>
+						<option value="bo1">BO1</option>
+						<option value="bo2">BO2</option>
+						<option value="bo3">BO3</option>
+						<option value="bo5">BO5</option>
+						<option value="bo7">BO7</option>
+						<option value="bo9">BO9</option>
+					</Input>
+				</div>
+				<div>
+					<Input
+						type="datetime-local"
+						value={
+							matchState.startTime
+								? moment(matchState.startTime).format(moment.HTML5_FMT.DATETIME_LOCAL)
+								: ''
+						}
+						onChange={changeStartTime}
+					/>
+				</div>
 			</div>
-			<Form id="match_form">
-				<Row>
-					<Col md="12">
-						<FormGroup>
-							<Input
-								type="select"
-								id="matchType"
-								name="matchType"
-								onChange={changeMatchType}
-								value={matchState.matchType}
-							>
-								<option value="bo1">BO1</option>
-								<option value="bo2">BO2</option>
-								<option value="bo3">BO3</option>
-								<option value="bo5">BO5</option>
-								<option value="bo7">BO7</option>
-								<option value="bo9">BO9</option>
-							</Input>
-						</FormGroup>
-					</Col>
-				</Row>
-				<Row>
-					<Col md="12">
-						<FormGroup>
-							<Input
-								type="datetime-local"
-								value={
-									matchState.startTime
-										? moment(matchState.startTime).format(moment.HTML5_FMT.DATETIME_LOCAL)
-										: ''
-								}
-								onChange={changeStartTime}
-							/>
-						</FormGroup>
-					</Col>
-				</Row>
-				<Row>
-					{matchState.vetos.map((veto, i) => (
-						<VetoEntry
-							vetoTeams={vetoTeams}
-							key={i}
-							map={i}
-							maps={maps}
-							onSave={vetoHandler}
-							veto={veto}
-							match={matchState}
-						/>
-					))}
-				</Row>
-			</Form>
-		</>
+			<div className="veto-container">
+				{matchState.vetos.map((veto, i) => (
+					<VetoEntry
+						vetoTeams={vetoTeams}
+						key={i}
+						map={i}
+						maps={maps}
+						onSave={vetoHandler}
+						veto={veto}
+						match={matchState}
+					/>
+				))}
+			</div>
+		</div>
 	);
 };
 export default EditMatch;

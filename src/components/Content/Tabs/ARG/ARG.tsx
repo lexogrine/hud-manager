@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Row, Button, Col, Input } from 'reactstrap';
+import { Row, Col, Input } from 'reactstrap';
 import api from '../../../../api/api';
 import { socket } from '../Live/Live';
 import { DndProvider } from 'react-dnd';
@@ -101,13 +101,13 @@ const ARG = () => {
 
 	return (
 		<>
-			<div className="tab-title-container arg-title">
+			{/*<div className="tab-title-container arg-title">
 				ARG
 				<span className={isConnected ? 'connected' : 'disconnected'}>
 					<div className="status"></div>
 					{isConnected ? 'CONNECTED' : 'DISCONNECTED'}
 				</span>
-			</div>
+			</div>*/}
 			<div className={`tab-content-container no-padding arg`}>
 				<Row className="config-container">
 					<Col md="12">
@@ -115,23 +115,30 @@ const ARG = () => {
 							<div className="">{cards.map((card, i) => renderCard(card, i))}</div>
 						</DndProvider>
 					</Col>
-					<Col md="12" className="config-entry">
-						<div className="config-description">Delay Config</div>
-						<Input value={delay} type="number" onChange={onDelayChange} />
-					</Col>
-					<Col md="12" className="config-entry">
-						<div className="config-description">Computer ID</div>
-						<Input value={pcID} disabled={isConnected} onChange={e => setPCID(e.target.value)} />
-					</Col>
 				</Row>
-
-				<Row>
-					<Col className="main-buttons-container">
-						<Button onClick={isConnected ? api.arg.disconnect : connect} color="primary">
-							{isConnected ? 'DISCONNECT' : 'CONNECT'}
-						</Button>
-					</Col>
-				</Row>
+			</div>
+			<div className="arg-options">
+				<div className="arg-config-entry">
+					<div className="config-description">Delay Config</div>
+					<Input value={delay} type="number" onChange={onDelayChange} />
+				</div>
+				<div className="arg-config-entry">
+					<div className="config-description">Computer ID</div>
+					<Input
+						value={pcID}
+						disabled={isConnected}
+						placeholder="Computer ID"
+						onChange={e => setPCID(e.target.value)}
+					/>
+				</div>
+			</div>
+			<div className="action-container">
+				<div
+					className={`button green strong big wide ${isConnected ? '' : 'empty'} ${!pcID ? 'disabled' : ''}`}
+					onClick={isConnected ? api.arg.disconnect : connect}
+				>
+					{isConnected ? 'DISCONNECT' : 'CONNECT'}
+				</div>
 			</div>
 		</>
 	);

@@ -8,7 +8,7 @@ import Switch from './../../../../components/Switch/Switch';
 import ElectronOnly from './../../../../components/ElectronOnly';
 import DragInput from './../../../DragFileInput';
 import HudEntry from './HudEntry';
-import goBack from './../../../../styles/goBack.png';
+//import goBack from './../../../../styles/goBack.png';
 import config from './../../../../api/config';
 import { withTranslation } from 'react-i18next';
 import { GameOnly } from '../Config/Config';
@@ -57,6 +57,7 @@ interface IProps {
 	cxt: IContextData;
 	t: any; // TODO: Add typings. Or don't because the functional version should use useTranslation instead of withTranslation anyway
 	toggle: (tab: string, data?: any) => void;
+	setOnBackClick: I.HeaderHandler;
 }
 
 interface IForm {
@@ -186,7 +187,9 @@ class Huds extends Component<IProps, IState> {
 		api.huds.start(dir);
 	}
 	toggleConfig = (hud?: I.HUD) => () => {
-		this.setState({ active: hud || null });
+		this.setState({ active: hud || null }, () => {
+			this.props.setOnBackClick(hud ? this.toggleConfig() : null);
+		});
 	};
 	forceBlock = (status: boolean, ...blockedToggles: (keyof IForm)[]) => {
 		this.setState((state: any) => {
@@ -214,10 +217,10 @@ class Huds extends Component<IProps, IState> {
 		if (active) {
 			return (
 				<>
-					<div className="tab-title-container">
+					{/*<div className="tab-title-container">
 						<img src={goBack} onClick={this.toggleConfig()} className="go-back-button" alt="Go back" />
 						HUD Settings
-					</div>
+					</div>*/}
 					<div className="tab-content-container full-scroll no-padding">
 						<Panel hud={active} cxt={this.props.cxt} />
 					</div>
@@ -230,7 +233,6 @@ class Huds extends Component<IProps, IState> {
 
 		return (
 			<>
-				<div className="tab-title-container">{t('huds.header')}</div>
 				<div className={`tab-content-container no-padding ${!isElectron ? 'full-scroll' : ''}`}>
 					<GameOnly game="csgo">
 						<Row className="config-container">
@@ -301,7 +303,7 @@ class Huds extends Component<IProps, IState> {
 										<ElectronOnly>
 											<div className="config-description">{t('common.or').toUpperCase()}</div>
 											<Button
-												className="round-btn run-game"
+												className="button green strong"
 												disabled={
 													(killfeed && !config.hlaePath) ||
 													(afx && (!config.hlaePath || !config.afxCEFHudInteropPath))
@@ -311,7 +313,7 @@ class Huds extends Component<IProps, IState> {
 												{t('huds.config.runGame')}
 											</Button>
 											<Button
-												className="round-btn run-game"
+												className="button green strong empty"
 												// disabled={!this.state.enableTest}
 												onClick={api.game.runTest}
 											>
@@ -319,14 +321,9 @@ class Huds extends Component<IProps, IState> {
 													? t('huds.config.pauseTest')
 													: t('huds.config.runTest')}
 											</Button>
-											<Button
-												className="round-btn run-game"
-												onClick={() => this.props.toggle('ar')}
-											>
-												AR
-											</Button>
 										</ElectronOnly>
 									</div>
+
 									<div className="warning">
 										<ElectronOnly>
 											{(killfeed || afx) && !config.hlaePath ? (
@@ -390,9 +387,27 @@ class Huds extends Component<IProps, IState> {
 							</Col>
 						</Row>
 					</GameOnly>
-
-					<Row className="padded">
-						<Col>
+					<div className="huds-options">
+						<div className="hud-tabs"></div>
+						<div className="huds-buttons">
+							<input
+								type="file"
+								id={'hud-upload'}
+								accept={'.zip'}
+								onChange={e => {
+									e.target.files && this.handleZIPs(e.target.files);
+								}}
+							/>
+							<label htmlFor="hud-upload">
+								<div className="button empty green dashed">Add new HUD</div>
+							</label>
+							<div className="button empty green" onClick={api.huds.openDirectory}>
+								{t('huds.config.openDirectory')}
+							</div>
+						</div>
+					</div>
+					<div className="huds-container">
+						{!!false && isElectron ? (
 							<Col s={12}>
 								<DragInput
 									id={`hud_zip`}
@@ -401,39 +416,39 @@ class Huds extends Component<IProps, IState> {
 									accept=".zip"
 								/>
 							</Col>
-							{independentOrDevHUDs.map(hud => (
-								<HudEntry
-									key={hud.dir}
-									hud={hud}
-									toggleConfig={this.toggleConfig}
-									isActive={hud.url === this.state.currentHUD}
-									customFields={this.props.cxt.fields}
-									loadHUDs={this.loadHUDs}
-									setHUDLoading={this.setHUDLoading}
-									isLoading={!!hud.uuid && this.state.loadingHUDs.includes(hud.uuid)}
-									isCloudAvailable={available}
-									isHUDOpened={isHUDOpened}
-								/>
-							))}
-							{independentOrDevHUDs.length && gameHUDs.length ? <div className="huds-separator" /> : null}
-							{gameHUDs.map(hud => (
-								<HudEntry
-									key={hud.dir}
-									hud={hud}
-									toggleConfig={this.toggleConfig}
-									isActive={hud.url === this.state.currentHUD}
-									customFields={this.props.cxt.fields}
-									loadHUDs={this.loadHUDs}
-									setHUDLoading={this.setHUDLoading}
-									isLoading={!!hud.uuid && this.state.loadingHUDs.includes(hud.uuid)}
-									isCloudAvailable={available}
-									isHUDOpened={isHUDOpened}
-								/>
-							))}
-						</Col>
-					</Row>
+						) : null}
+						{independentOrDevHUDs.map(hud => (
+							<HudEntry
+								key={hud.dir}
+								hud={hud}
+								toggleConfig={this.toggleConfig}
+								isActive={hud.url === this.state.currentHUD}
+								customFields={this.props.cxt.fields}
+								loadHUDs={this.loadHUDs}
+								setHUDLoading={this.setHUDLoading}
+								isLoading={!!hud.uuid && this.state.loadingHUDs.includes(hud.uuid)}
+								isCloudAvailable={available}
+								isHUDOpened={isHUDOpened}
+							/>
+						))}
+						{independentOrDevHUDs.length && gameHUDs.length ? <div className="huds-separator" /> : null}
+						{gameHUDs.map(hud => (
+							<HudEntry
+								key={hud.dir}
+								hud={hud}
+								toggleConfig={this.toggleConfig}
+								isActive={hud.url === this.state.currentHUD}
+								customFields={this.props.cxt.fields}
+								loadHUDs={this.loadHUDs}
+								setHUDLoading={this.setHUDLoading}
+								isLoading={!!hud.uuid && this.state.loadingHUDs.includes(hud.uuid)}
+								isCloudAvailable={available}
+								isHUDOpened={isHUDOpened}
+							/>
+						))}
+					</div>
 
-					{isElectron ? (
+					{isElectron && !!false ? (
 						<Row>
 							<Col className="main-buttons-container">
 								<Button onClick={api.huds.openDirectory} color="primary">

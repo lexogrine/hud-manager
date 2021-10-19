@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.replaceLocalTeams = exports.getTeamsList = exports.getTeamById = void 0;
+exports.replaceLocalTeams = exports.addTeams = exports.getTeamsList = exports.getTeamById = void 0;
 const database_1 = __importDefault(require("./../../../init/database"));
 const { teams } = database_1.default;
 async function getTeamById(id, logo = false) {
@@ -28,6 +28,16 @@ const getTeamsList = (query) => new Promise(res => {
     });
 });
 exports.getTeamsList = getTeamsList;
+const addTeams = (newTeams) => {
+    return new Promise(res => {
+        teams.insert(newTeams, (err, docs) => {
+            if (err)
+                return res(null);
+            return res(docs);
+        });
+    });
+};
+exports.addTeams = addTeams;
 const replaceLocalTeams = (newTeams, game, existing) => new Promise(res => {
     const or = [
         { game, _id: { $nin: existing } },

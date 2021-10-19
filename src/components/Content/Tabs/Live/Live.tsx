@@ -5,6 +5,7 @@ import { GSISocket, CSGO, Player, Team, PlayerExtension } from 'csgogsi-socket';
 import { IContextData } from '../../../Context';
 import { useTranslation } from 'react-i18next';
 import api from '../../../../api/api';
+import { ReactComponent as EditIcon } from './../../../../styles/icons/pencil.svg';
 
 export const { GSI, socket } = GSISocket(`${config.isDev ? config.apiAddress : '/'}`, 'update');
 
@@ -59,15 +60,11 @@ const Teamboard = ({ players, team, toggle, cxt }: Props) => {
 						key={player.steamid}
 						onClick={() => toggle('players', { steamid: player.steamid })}
 					>
-						<div className="name">
-							{player.name}{' '}
-							<i className="material-icons">
-								{cxt.players.map(player => player.steamid).includes(player.steamid)
-									? 'check_circle_outline'
-									: 'edit'}
-							</i>
+						<div>
+							<div className="name">{player.name}</div>
+							<div className="steamid">{player.steamid}</div>
 						</div>
-						<div className="steamid">{player.steamid}</div>
+						<EditIcon />
 					</div>
 				))}
 			</div>
@@ -87,7 +84,6 @@ const Live = ({ toggle, cxt }: { toggle: (tab: string, data?: any) => void; cxt:
 	if (!game)
 		return (
 			<>
-				<div className="tab-title-container">{t('live.header')}</div>
 				<div className="tab-content-container full-scroll">{t('live.noGame')}</div>
 			</>
 		);
@@ -102,7 +98,6 @@ const Live = ({ toggle, cxt }: { toggle: (tab: string, data?: any) => void; cxt:
 	if (!left || !right) {
 		return (
 			<>
-				<div className="tab-title-container">{t('live.header')}</div>
 				<div className="tab-content-container full-scroll">{t('live.noGame')}</div>
 			</>
 		);
@@ -110,10 +105,13 @@ const Live = ({ toggle, cxt }: { toggle: (tab: string, data?: any) => void; cxt:
 
 	return (
 		<>
-			<div className="tab-title-container">{t('live.header')}</div>
 			<div className="tab-content-container full-scroll">
 				<Row>
-					<Col md="12" className="config-container no-margin" style={{ flexDirection: 'column' }}>
+					<Col
+						md="12"
+						className="config-container no-margin"
+						style={{ flexDirection: 'column', fontSize: '12px', marginBottom: '50px' }}
+					>
 						<div>{t('live.tip')}</div>
 					</Col>
 				</Row>

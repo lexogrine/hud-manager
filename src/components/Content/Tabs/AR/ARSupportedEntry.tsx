@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next';
 
 interface IProps {
 	hud: I.HUD | I.ARModule;
-	setActive: (hud: I.HUD | I.ARModule) => void;
+	setActive: (hud: I.HUD | I.ARModule | null) => void;
 	active?: boolean;
 }
 

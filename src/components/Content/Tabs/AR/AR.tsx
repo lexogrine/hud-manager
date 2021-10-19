@@ -1,9 +1,8 @@
 import { useState, useEffect } from 'react';
 import { IContextData } from './../../../../components/Context';
 import * as I from './../../../../api/interfaces';
-import goBack from './../../../../styles/goBack.png';
 import config from './../../../../api/config';
-import { Col, Row, Button } from 'reactstrap';
+import { Col, Row } from 'reactstrap';
 import HudEntry from './ARSupportedEntry';
 import ARSettings from './Settings';
 import DragInput from './../../../DragFileInput';
@@ -16,9 +15,10 @@ const isElectron = config.isElectron;
 interface IProps {
 	cxt: IContextData;
 	toggle: (tab: string, data?: any) => void;
+	setOnBackClick: I.HeaderHandler;
 }
 
-const AR = ({ cxt, toggle }: IProps) => {
+const AR = ({ cxt, setOnBackClick }: IProps) => {
 	const [active, setActive] = useState<I.HUD | I.ARModule | null>(null);
 	const [huds, setHUDs] = useState<I.HUD[]>([]);
 	const [ars, setARs] = useState<I.ARModule[]>([]);
@@ -39,6 +39,17 @@ const AR = ({ cxt, toggle }: IProps) => {
 		});
 		socket.emit('get_active_modules');
 	}, []);
+
+	const setARAsActive = (ar: I.HUD | I.ARModule | null) => {
+		setActive(ar);
+		setOnBackClick(
+			ar
+				? () => {
+						setARAsActive(null);
+				  }
+				: null
+		);
+	};
 
 	const handleZIPs = (files: FileList) => {
 		const file = files[0];
@@ -61,10 +72,10 @@ const AR = ({ cxt, toggle }: IProps) => {
 	if (active) {
 		return (
 			<>
-				<div className="tab-title-container">
+				{/*<div className="tab-title-container">
 					<img src={goBack} onClick={() => setActive(null)} className="go-back-button" alt="Go back" />
 					AR
-				</div>
+				</div>*/}
 				<div className="tab-content-container full-scroll no-padding">
 					<ARSettings cxt={cxt} hud={active.dir} section={isAssetHUD(active) ? active.ar : active.panel} />
 				</div>
@@ -73,10 +84,10 @@ const AR = ({ cxt, toggle }: IProps) => {
 	}
 	return (
 		<>
-			<div className="tab-title-container">
+			{/*<div className="tab-title-container">
 				<img src={goBack} onClick={() => toggle('huds')} className="go-back-button" alt="Go back" />
 				AR
-			</div>
+			</div>*/}
 			<div className={`tab-content-container ${!isElectron ? 'full-scroll' : ''}`}>
 				<Row className="padded">
 					<Col>
@@ -92,7 +103,7 @@ const AR = ({ cxt, toggle }: IProps) => {
 							<HudEntry
 								key={ar.dir}
 								hud={ar}
-								setActive={setActive}
+								setActive={setARAsActive}
 								active={activeModules.some(mod => mod === ar.dir)}
 							/>
 						))}
@@ -103,16 +114,14 @@ const AR = ({ cxt, toggle }: IProps) => {
 							))}
 					</Col>
 				</Row>
-				<ElectronOnly>
-					<Row>
-						<Col className="main-buttons-container">
-							<Button onClick={api.huds.openDirectory} color="primary">
-								{t('huds.config.openDirectory')}
-							</Button>
-						</Col>
-					</Row>
-				</ElectronOnly>
 			</div>
+			<ElectronOnly>
+				<div className="action-container">
+					<div className="button green strong big wide" onClick={api.huds.openDirectory}>
+						{t('huds.config.openDirectory')}
+					</div>
+				</div>
+			</ElectronOnly>
 		</>
 	);
 };

@@ -42,11 +42,11 @@ const connectToARG = (code) => {
     if (exports.argSocket.socket) {
         return;
     }
-    const socketAddress = exports.getIP(code);
+    const socketAddress = (0, exports.getIP)(code);
     const onClose = () => {
         exports.argSocket.socket = null;
         exports.argSocket.id = null;
-        exports.sendARGStatus();
+        (0, exports.sendARGStatus)();
     };
     const socket = new simple_websockets_1.SimpleWebSocket(socketAddress);
     socket.on('connection', () => {

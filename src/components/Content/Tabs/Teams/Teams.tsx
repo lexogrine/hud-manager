@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Button, Form, Input, Row, Col } from 'reactstrap';
 import countries from './../../countries';
 import api from './../../../../api/api';
 import * as I from './../../../../api/interfaces';
@@ -7,15 +6,21 @@ import { IContextData } from './../../../../components/Context';
 import TeamEditModal from './TeamEditModal';
 import TeamListEntry from './Team';
 import CustomFieldsModal from '../../../CustomFields/CustomFieldsModal';
+import { ReactComponent as DeleteIcon } from './../../../../styles/icons/bin.svg';
+import { ReactComponent as EditIcon } from './../../../../styles/icons/pencil.svg';
 import { useTranslation } from 'react-i18next';
+import ImportTeamsModal from './ImportTeamsModal';
+import Checkbox from '../../../Checkbox';
+import DeleteModal from '../../../DeleteModal';
 
 interface IProps {
 	cxt: IContextData;
+	search: string;
 }
 
 const quickClone: <T>(obj: T) => T = obj => JSON.parse(JSON.stringify(obj));
 
-const TeamsTab = ({ cxt }: IProps) => {
+const TeamsTab = ({ cxt, search }: IProps) => {
 	const emptyTeam: I.Team = {
 		_id: 'empty',
 		name: '',
@@ -25,11 +30,14 @@ const TeamsTab = ({ cxt }: IProps) => {
 		game: cxt.game,
 		extra: {}
 	};
+
+	const [selectedTeams, setSelectedTeams] = useState<string[]>([]);
 	const [form, setForm] = useState(emptyTeam);
-	const [search, setSearch] = useState('');
 
 	const [editModalState, setEditState] = useState(false);
 	const [fieldsModalState, setFieldsState] = useState(false);
+	const [importModalState, setImportState] = useState(false);
+	const [deleteModalState, setDeleteState] = useState(false);
 
 	const [sortBy, setSortBy] = useState<keyof I.Team>('name');
 	const [sortByType, setSortByType] = useState<'DESC' | 'ASC'>('ASC');
@@ -95,9 +103,9 @@ const TeamsTab = ({ cxt }: IProps) => {
 		};
 	};
 
-	const searchHandler = (event: any) => {
+	/*const searchHandler = (event: any) => {
 		setSearch(event.target.value);
-	};
+	};*/
 
 	const changeHandler = (event: React.ChangeEvent<HTMLInputElement>) => {
 		event.persist();
@@ -111,6 +119,12 @@ const TeamsTab = ({ cxt }: IProps) => {
 		}
 
 		return fileHandler(event.target.files);
+	};
+
+	const toggleTeam = (id: string) => {
+		setSelectedTeams(
+			selectedTeams.includes(id) ? selectedTeams.filter(teamId => teamId !== id) : [...selectedTeams, id]
+		);
 	};
 
 	const extraChangeHandler = (field: string, type: Exclude<I.PanelInputType, 'select' | 'action' | 'checkbox'>) => {
@@ -157,7 +171,8 @@ const TeamsTab = ({ cxt }: IProps) => {
 			response = await api.teams.update(form._id, { ...form, logo });
 		}
 		if (response && response._id) {
-			loadTeams(response._id);
+			setEditState(false);
+			await cxt.reload();
 		}
 	};
 
@@ -202,20 +217,28 @@ const TeamsTab = ({ cxt }: IProps) => {
 		cxt.reload();
 		setFieldsState(false);
 	};
+
+	const deleteTeams = async () => {
+		if (!selectedTeams.length) return;
+		await api.teams.delete(selectedTeams);
+		setSelectedTeams([]);
+		setDeleteState(false);
+		await cxt.reload();
+	};
+
+	const toggleTeams = () => {
+		if (selectedTeams.length === cxt.teams.length) {
+			setSelectedTeams([]);
+			return;
+		}
+
+		setSelectedTeams(cxt.teams.map(player => player._id));
+	};
+
 	const visibleFields = cxt.fields.teams.filter(field => field.visible);
-	return (
-		<Form>
-			<div className="tab-title-container">
-				<div>{t('common.teams')}</div>
-				<Input
-					type="text"
-					name="name"
-					id="team_search"
-					value={search}
-					onChange={searchHandler}
-					placeholder={t('common.search')}
-				/>
-			</div>
+
+	if (editModalState) {
+		return (
 			<TeamEditModal
 				open={editModalState}
 				toggle={() => {
@@ -229,6 +252,36 @@ const TeamsTab = ({ cxt }: IProps) => {
 				deleteTeam={deleteTeam}
 				fields={cxt.fields.teams}
 				cxt={cxt}
+			/>
+		);
+	}
+
+	return (
+		<>
+			{/*<div className="tab-title-container">
+				<div>{t('common.teams')}</div>
+				<Input
+					type="text"
+					name="name"
+					id="team_search"
+					value={search}
+					onChange={searchHandler}
+					placeholder={t('common.search')}
+				/>
+	</div>*/}
+			<DeleteModal
+				title="Delete teams"
+				content={`Are you sure you want to remove ${selectedTeams.length} players?`}
+				isOpen={deleteModalState}
+				toggle={() => setDeleteState(false)}
+				confirmDelete={deleteTeams}
+			/>
+			<ImportTeamsModal
+				cxt={cxt}
+				open={importModalState}
+				toggle={() => {
+					setImportState(!importModalState);
+				}}
 			/>
 			<CustomFieldsModal
 				fields={customFieldForm}
@@ -257,9 +310,19 @@ const TeamsTab = ({ cxt }: IProps) => {
 						</div>
 					))}
 					<div className="options">
-						<Button className="purple-btn round-btn" onClick={openCustomFields}>
-							{t('common.manage')}
-						</Button>
+						<EditIcon className="image-button" onClick={openCustomFields} />
+						<DeleteIcon
+							onClick={() => {
+								selectedTeams.length && setDeleteState(true);
+							}}
+							className={`image-button ${selectedTeams.length ? '' : 'transparent'}`}
+							style={{ marginLeft: 18, cursor: selectedTeams.length ? 'pointer' : 'auto' }}
+						/>
+						<Checkbox
+							checked={selectedTeams.length > 0}
+							onChange={toggleTeams}
+							semiChecked={!!(selectedTeams.length && selectedTeams.length < cxt.teams.length)}
+						/>
 					</div>
 				</div>
 				{sortTeams(cxt.teams.filter(filterTeams)).map(team => (
@@ -269,18 +332,21 @@ const TeamsTab = ({ cxt }: IProps) => {
 						team={team}
 						edit={() => edit(team)}
 						fields={visibleFields}
+						isChecked={selectedTeams.includes(team._id)}
 						cxt={cxt}
+						toggleTeam={toggleTeam}
 					/>
 				))}
-				<Row>
-					<Col className="main-buttons-container">
-						<Button color="primary" onClick={add}>
-							{t('teams.addTeam')}
-						</Button>
-					</Col>
-				</Row>
 			</div>
-		</Form>
+			<div className="action-container">
+				<div className="button green empty big wide" onClick={() => setImportState(true)}>
+					Import teams
+				</div>
+				<div className="button green strong big wide" onClick={add}>
+					{t('teams.addTeam')}
+				</div>
+			</div>
+		</>
 	);
 };
 

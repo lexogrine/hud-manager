@@ -2,12 +2,13 @@ import Section from '../Section';
 import { IContextData } from '../../../../Context';
 import { useTranslation } from 'react-i18next';
 import * as I from './../../../../../api/interfaces';
-import editIcon from './../../../../../styles/EditIcon.png';
-import trash from './../../../../../styles/trash.svg';
 import { MatchHandler } from '../Match';
 import api from '../../../../../api/api';
 import uuidv4 from 'uuid/v4';
-import { Row, Col, Button } from 'reactstrap';
+import { ReactComponent as DeleteIcon } from './../../../../../styles/icons/bin.svg';
+import { ReactComponent as EditIcon } from './../../../../../styles/icons/pencil.svg';
+import { ReactComponent as LiveIcon } from './../../../../../styles/icons/live.svg';
+import { ReactComponent as AddIcon } from './../../../../../styles/icons/add.svg';
 
 interface Props {
 	cxt: IContextData;
@@ -52,14 +53,14 @@ const MatchPreview = ({ match, cxt }: { match: I.Match; cxt: IContextData }) => 
 			<TeamPreview name={left?.name || 'Team #1'} logo={left?.logo} />
 			<div className="match-versus">VS</div>
 			<TeamPreview name={right?.name || 'Team #2'} logo={right?.logo} />
-			<div className="match-edit-button" onClick={() => MatchHandler.edit(match)}>
-				<img src={editIcon} />
-			</div>
 			<div className="match-edit-button" onClick={deleteMatch}>
-				<img src={trash} />
+				<DeleteIcon className="image-button  transparent" />
 			</div>
-			<div className={`match-edit-button`} onClick={setCurrent}>
-				<div className={`record-icon  ${match.current ? 'current' : ''}`} />
+			<div className="match-edit-button" onClick={() => MatchHandler.edit(match)}>
+				<EditIcon className="image-button  transparent" />
+			</div>
+			<div className="match-edit-button" onClick={setCurrent}>
+				<LiveIcon className={`image-button ${match.current ? '' : 'transparent'}`} />
 			</div>
 		</div>
 	);
@@ -96,17 +97,19 @@ const Matches = ({ cxt }: Props) => {
 	};
 
 	return (
-		<Section title={t('match.matches')} cxt={cxt} width={450}>
+		<Section
+			title={
+				<>
+					{t('match.matches')}
+					<AddIcon onClick={add} />
+				</>
+			}
+			cxt={cxt}
+			width={450}
+		>
 			{cxt.matches.map(match => (
 				<MatchPreview key={match.id} match={match} cxt={cxt} />
 			))}
-			<Row>
-				<Col s={12}>
-					<Button color="primary" className="modal-save" onClick={add}>
-						{t('common.createNew')}
-					</Button>
-				</Col>
-			</Row>
 		</Section>
 	);
 };
