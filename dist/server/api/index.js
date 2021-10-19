@@ -53,6 +53,7 @@ const __1 = require("..");
 const cloud_1 = require("./cloud");
 const radar_1 = require("./huds/radar");
 const user_1 = require("./user");
+const keybinder_1 = require("./keybinder");
 let init = true;
 exports.customer = {
     customer: null,
@@ -178,8 +179,10 @@ async function default_1() {
     __1.app.route('/api/bakkesmod/run').get(bakkesmod.runBakkesMod);
     __1.app.route('/api/bakkesmod/install/mod_data').get(bakkesmod.installBakkesModData);
     __1.app.route('/api/bakkesmod/install/sos').get(bakkesmod.installSosPlugin);
-    electron_1.globalShortcut.register('Alt+Shift+F', () => io.emit('refreshHUD'));
-    electron_1.globalShortcut.register('Alt+R', match.reverseSide);
+    keybinder_1.registerKeybind('Left Alt+Left Shift+F', () => io.emit('refreshHUD'));
+    keybinder_1.registerKeybind('Left Alt+R', match.reverseSide);
+    //globalShortcut.register('Left Alt+Left Shift+F', () => io.emit('refreshHUD'));
+    //globalShortcut.register('Left Alt+R', match.reverseSide);
     /**
      * LEGACY ROUTING
      */

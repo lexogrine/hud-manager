@@ -29,6 +29,7 @@ import { checkCloudStatus, uploadLocalToCloud, downloadCloudToLocal } from './cl
 import { getRadarConfigs } from './huds/radar';
 import { SimpleWebSocket } from 'simple-websockets';
 import { socket } from './user';
+import { registerKeybind } from './keybinder';
 
 let init = true;
 
@@ -229,9 +230,13 @@ export default async function () {
 
 	app.route('/api/bakkesmod/install/sos').get(bakkesmod.installSosPlugin);
 
-	globalShortcut.register('Alt+Shift+F', () => io.emit('refreshHUD'));
+	registerKeybind('Left Alt+Left Shift+F', () => io.emit('refreshHUD'));
 
-	globalShortcut.register('Alt+R', match.reverseSide);
+	registerKeybind('Left Alt+R', match.reverseSide);
+
+	//globalShortcut.register('Left Alt+Left Shift+F', () => io.emit('refreshHUD'));
+
+	//globalShortcut.register('Left Alt+R', match.reverseSide);
 
 	/**
 	 * LEGACY ROUTING

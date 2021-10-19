@@ -74,7 +74,7 @@ class MIRVPGL {
                         }
                         const gameEvent = gameEventUnserializer.unserialize(bufferReader);
                         if (gameEvent.name === 'player_hurt') {
-                            io.to('game').emit('update_mirv', gameEvent, 'player_hurt');
+                            io.to('game').emit('mirv', gameEvent, 'player_hurt');
                         }
                         if (gameEvent.name === 'player_death') {
                             io.to('game').emit('update_mirv', gameEvent);

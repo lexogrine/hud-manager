@@ -85,7 +85,7 @@ class HUD {
                     (0, keybinder_1.unregisterKeybind)(keybind.bind, hud.dir);
                 }
             }
-            (0, keybinder_1.unregisterKeybind)('Alt+F');
+            keybinder_1.unregisterKeybind('Left Alt+F');
             // globalShortcut.unregister('Alt+F');
             this.hud = null;
             this.current = null;
@@ -105,7 +105,7 @@ class HUD {
             if (!this.current || !hud || !hud.url) return;
             this.current.loadURL(hud.url);
         });*/
-        (0, keybinder_1.registerKeybind)('Alt+F', () => {
+        keybinder_1.registerKeybind('Left Alt+F', () => {
             if (!this.current || !hud || !hud.url)
                 return;
             this.current.loadURL(hud.url);

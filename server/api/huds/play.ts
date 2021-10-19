@@ -6,7 +6,7 @@ import { testData } from '../testing';
 import WebSocket from 'ws';
 import { createDirector } from '../../aco';
 import { PlayerExtension } from 'csgogsi-socket';
-import { globalShortcut } from 'electron';
+import { registerKeybind } from '../keybinder';
 
 const assertUser: express.RequestHandler = (req, res, next) => {
 	if (!customer.customer) {
@@ -47,7 +47,7 @@ export const initGameConnection = async () => {
 		socket.on('toggleDirector', toggleDirector);
 	});
 
-	globalShortcut.register('Alt+K', toggleDirector);
+	registerKeybind('Left Alt+K', toggleDirector);
 
 	let testDataIndex = 0;
 

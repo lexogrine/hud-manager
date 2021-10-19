@@ -74,7 +74,7 @@ class HUD {
 					unregisterKeybind(keybind.bind, hud.dir);
 				}
 			}
-			unregisterKeybind('Alt+F');
+			unregisterKeybind('Left Alt+F');
 			// globalShortcut.unregister('Alt+F');
 
 			this.hud = null;
@@ -98,7 +98,7 @@ class HUD {
 			this.current.loadURL(hud.url);
 		});*/
 
-		registerKeybind('Alt+F', () => {
+		registerKeybind('Left Alt+F', () => {
 			if (!this.current || !hud || !hud.url) return;
 			this.current.loadURL(hud.url);
 		});
