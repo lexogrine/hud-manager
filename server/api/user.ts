@@ -43,9 +43,9 @@ export const room: { uuid: string | null } = { uuid: null };
 const socketMap: Record<string, Socket> = {};
 
 setInterval(() => {
-	if(!socket) return;
+	if (!socket) return;
 
-	socket.send("ping");
+	socket.send('ping');
 }, 45000);
 
 const connectSocket = () => {

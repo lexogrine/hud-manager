@@ -94,14 +94,19 @@ export default async function () {
 
 			setTimeout(() => {
 				if (socket)
-					fetch(`${user.USE_LOCAL_BACKEND ? `http://${domain}` : `https://${domain}`}/cameras/setup/${user.room.uuid}`, {
-						method: 'POST',
-						headers: {
-							Accept: 'application/json',
-							'Content-Type': 'application/json'
-						},
-						body: JSON.stringify([...availablePlayers])
-					});
+					fetch(
+						`${user.USE_LOCAL_BACKEND ? `http://${domain}` : `https://${domain}`}/cameras/setup/${
+							user.room.uuid
+						}`,
+						{
+							method: 'POST',
+							headers: {
+								Accept: 'application/json',
+								'Content-Type': 'application/json'
+							},
+							body: JSON.stringify([...availablePlayers])
+						}
+					);
 			}, 1000);
 			return res.sendStatus(200);
 		});
