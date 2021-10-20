@@ -91,11 +91,15 @@ export default async function () {
 			availablePlayers = req.body;
 
 			setTimeout(() => {
-				if (socket) fetch(`https://hmapi.lexogrine.com/cameras/setup/${user.room.uuid}`, { method: 'POST',
-				headers: {
-					Accept: 'application/json',
-					'Content-Type': 'application/json'
-				}, body: JSON.stringify([...availablePlayers])});
+				if (socket)
+					fetch(`https://hmapi.lexogrine.com/cameras/setup/${user.room.uuid}`, {
+						method: 'POST',
+						headers: {
+							Accept: 'application/json',
+							'Content-Type': 'application/json'
+						},
+						body: JSON.stringify([...availablePlayers])
+					});
 			}, 1000);
 			return res.sendStatus(200);
 		});
