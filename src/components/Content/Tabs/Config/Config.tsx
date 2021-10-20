@@ -561,7 +561,7 @@ class Config extends Component<IProps, IState> {
 										style={{ marginLeft: '15px' }}
 										className={`button green strong ${update.installing ? 'disabled empty' : ''}`}
 										onClick={
-											update.installing || !update.available ? this.installUpdate : undefined
+											!(update.installing || !update.available) ? this.installUpdate : undefined
 										}
 									>
 										{update.installing

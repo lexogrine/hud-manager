@@ -38,7 +38,7 @@ const socketMap = {};
 setInterval(() => {
     if (!exports.socket)
         return;
-    exports.socket.send("ping");
+    exports.socket.send('ping');
 }, 45000);
 const connectSocket = () => {
     if (!exports.room.uuid) {
