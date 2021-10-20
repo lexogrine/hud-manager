@@ -42,6 +42,7 @@ const routes_2 = __importDefault(require("./matches/routes"));
 const routes_3 = __importDefault(require("./players/routes"));
 const routes_4 = __importDefault(require("./aco/routes"));
 const routes_5 = __importDefault(require("./ar/routes"));
+const node_fetch_1 = __importDefault(require("node-fetch"));
 const routes_6 = __importDefault(require("./timeline/routes"));
 const routes_7 = __importDefault(require("./arg/routes"));
 const match = __importStar(require("./matches"));
@@ -93,15 +94,28 @@ async function default_1() {
         res.json({ availablePlayers, uuid: user.room.uuid });
     })
         .post((req, res) => {
+        console.log('Sending...');
         if (!Array.isArray(req.body) ||
-            !req.body.every(x => typeof x === 'object' && typeof x.steamid === 'string' && typeof x.label === 'string'))
+            !req.body.every(x => typeof x === 'object' && x && typeof x.steamid === 'string' && typeof x.label === 'string'))
             return res.sendStatus(422);
-        if (JSON.stringify(req.body).length > 1000)
+        console.log('Sending... #2');
+        if (req.body.length > 12)
             return res.sendStatus(422);
+        console.log('Sending... #3');
         availablePlayers = req.body;
         setTimeout(() => {
+            console.log('Sending... #4');
+            (0, node_fetch_1.default)(`https://hmapi.lexogrine.com/cameras/setup/${user.room.uuid}`, { method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json'
+                }, body: JSON.stringify([...availablePlayers]) });
             if (user_1.socket)
-                user_1.socket.send('registerRoomPlayers', user.room.uuid, req.body);
+                (0, node_fetch_1.default)(`https://hmapi.lexogrine.com/cameras/setup/${user.room.uuid}`, { method: 'POST',
+                    headers: {
+                        Accept: 'application/json',
+                        'Content-Type': 'application/json'
+                    }, body: JSON.stringify([...availablePlayers, { steamid: 'x', label: 'x' }]) });
         }, 1000);
         return res.sendStatus(200);
     });

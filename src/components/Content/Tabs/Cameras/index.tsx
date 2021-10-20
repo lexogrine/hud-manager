@@ -62,7 +62,7 @@ const Cameras = ({ cxt }: IProps) => {
 								{t('common.players')}
 							</option>
 							{cxt.players
-								.concat()
+								.filter(player => player.steamid)
 								.sort((a, b) => (a.username.toLowerCase() < b.username.toLowerCase() ? -1 : 1))
 								.map(player => (
 									<option value={player.steamid} key={`${player.steamid}${index}`}>
