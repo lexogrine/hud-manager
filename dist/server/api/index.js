@@ -56,6 +56,7 @@ const radar_1 = require("./huds/radar");
 const user_1 = require("./user");
 const keybinder_1 = require("./keybinder");
 let init = true;
+const domain = user.USE_LOCAL_BACKEND ? '192.168.50.40:5000' : 'hmapi.lexogrine.com';
 exports.customer = {
     customer: null,
     game: null
@@ -102,7 +103,7 @@ async function default_1() {
         availablePlayers = req.body;
         setTimeout(() => {
             if (user_1.socket)
-                (0, node_fetch_1.default)(`https://hmapi.lexogrine.com/cameras/setup/${user.room.uuid}`, {
+                (0, node_fetch_1.default)(`${user.USE_LOCAL_BACKEND ? `http://${domain}` : `https://${domain}`}/cameras/setup/${user.room.uuid}`, {
                     method: 'POST',
                     headers: {
                         Accept: 'application/json',

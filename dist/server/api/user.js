@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.logout = exports.getCurrent = exports.loginHandler = exports.api = exports.verifyGame = exports.room = exports.socket = exports.fetch = void 0;
+exports.logout = exports.getCurrent = exports.loginHandler = exports.api = exports.verifyGame = exports.room = exports.USE_LOCAL_BACKEND = exports.socket = exports.fetch = void 0;
 const electron_1 = require("electron");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const node_fetch_1 = __importDefault(require("node-fetch"));
@@ -22,8 +22,8 @@ const cookiePath = path_1.default.join(electron_1.app.getPath('userData'), 'cook
 const cookieJar = new tough_cookie_1.CookieJar(new tough_cookie_file_store_1.FileCookieStore(cookiePath));
 exports.fetch = (0, fetch_cookie_1.default)(node_fetch_1.default, cookieJar);
 exports.socket = null;
-const USE_LOCAL_BACKEND = false;
-const domain = USE_LOCAL_BACKEND ? '192.168.50.40:5000' : 'hmapi.lexogrine.com';
+exports.USE_LOCAL_BACKEND = false;
+const domain = exports.USE_LOCAL_BACKEND ? '192.168.50.40:5000' : 'hmapi.lexogrine.com';
 let cameraSupportInit = false;
 /*const initCameras = () => {
     if(cameraSupportInit) return;
@@ -35,6 +35,11 @@ let cameraSupportInit = false;
 }*/
 exports.room = { uuid: null };
 const socketMap = {};
+setInterval(() => {
+    if (!exports.socket)
+        return;
+    exports.socket.send("ping");
+}, 45000);
 const connectSocket = () => {
     if (!exports.room.uuid) {
         exports.room.uuid = (0, uuid_1.v4)();
@@ -42,9 +47,9 @@ const connectSocket = () => {
     }
     if (exports.socket)
         return;
-    exports.socket = new simple_websockets_1.SimpleWebSocket(USE_LOCAL_BACKEND ? `ws://${domain}` : `wss://${domain}/`, {
+    exports.socket = new simple_websockets_1.SimpleWebSocket(exports.USE_LOCAL_BACKEND ? `ws://${domain}` : `wss://${domain}/`, {
         headers: {
-            Cookie: cookieJar.getCookieStringSync(USE_LOCAL_BACKEND ? `http://${domain}/` : `https://${domain}/`)
+            Cookie: cookieJar.getCookieStringSync(exports.USE_LOCAL_BACKEND ? `http://${domain}/` : `https://${domain}/`)
         }
     });
     exports.socket.on('connection', () => {
@@ -138,7 +143,7 @@ const api = (url, method = 'GET', body, opts) => {
         options.body = JSON.stringify(body);
     }
     let data = null;
-    return (0, exports.fetch)(USE_LOCAL_BACKEND ? `http://${domain}/${url}` : `https://${domain}/${url}`, options).then(res => {
+    return (0, exports.fetch)(exports.USE_LOCAL_BACKEND ? `http://${domain}/${url}` : `https://${domain}/${url}`, options).then(res => {
         data = res;
         return res.json().catch(() => data && data.status < 300);
     });

@@ -23,7 +23,7 @@ export const fetch = fetchHandler(nodeFetch, cookieJar);
 
 export let socket: SimpleWebSocket | null = null;
 
-const USE_LOCAL_BACKEND = false;
+export const USE_LOCAL_BACKEND = false;
 
 const domain = USE_LOCAL_BACKEND ? '192.168.50.40:5000' : 'hmapi.lexogrine.com';
 
@@ -41,6 +41,12 @@ let cameraSupportInit = false;
 export const room: { uuid: string | null } = { uuid: null };
 
 const socketMap: Record<string, Socket> = {};
+
+setInterval(() => {
+	if(!socket) return;
+
+	socket.send("ping");
+}, 45000);
 
 const connectSocket = () => {
 	if (!room.uuid) {

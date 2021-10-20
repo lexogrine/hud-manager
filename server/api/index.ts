@@ -34,6 +34,8 @@ import { registerKeybind } from './keybinder';
 
 let init = true;
 
+const domain = user.USE_LOCAL_BACKEND ? '192.168.50.40:5000' : 'hmapi.lexogrine.com';
+
 export const customer: I.CustomerData = {
 	customer: null,
 	game: null
@@ -92,7 +94,7 @@ export default async function () {
 
 			setTimeout(() => {
 				if (socket)
-					fetch(`https://hmapi.lexogrine.com/cameras/setup/${user.room.uuid}`, {
+					fetch(`${user.USE_LOCAL_BACKEND ? `http://${domain}` : `https://${domain}`}/cameras/setup/${user.room.uuid}`, {
 						method: 'POST',
 						headers: {
 							Accept: 'application/json',
