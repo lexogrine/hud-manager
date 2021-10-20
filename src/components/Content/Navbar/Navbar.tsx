@@ -9,10 +9,11 @@ interface IProps {
 	toggle: (tab: string, data?: any) => void;
 	files: boolean;
 	isCollapsed: boolean;
+	version: string;
 	setCollapse: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const Navbar = ({ activeTab, toggle, files, setCollapse, isCollapsed }: IProps) => {
+const Navbar = ({ activeTab, toggle, files, setCollapse, isCollapsed, version }: IProps) => {
 	const { t } = useTranslation();
 
 	const toggleNav = () => {
@@ -31,7 +32,7 @@ const Navbar = ({ activeTab, toggle, files, setCollapse, isCollapsed }: IProps) 
 			<div className="lhm-logo-container">
 				<div className="lhm-logo-name">
 					LHM
-					<div className="lhm-version">3.0.0</div>
+					<div className="lhm-version">{version}</div>
 				</div>
 			</div>
 			<div className="navbar-links-container">

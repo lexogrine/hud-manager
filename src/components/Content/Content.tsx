@@ -26,6 +26,7 @@ const Content = ({
 	clearGame,
 	game,
 	logout,
+	version,
 	customer
 }: {
 	available: boolean;
@@ -35,6 +36,7 @@ const Content = ({
 	logout: () => void;
 	game: AvailableGames;
 	customer?: Customer;
+	version: string;
 }) => {
 	const [show, setShow] = useState(false);
 	const [activeTab, setTab] = useState('huds');
@@ -158,6 +160,7 @@ const Content = ({
 				toggle={toggle}
 				files={gsi && configs}
 				setCollapse={setCollapse}
+				version={version}
 				isCollapsed={isCollapsed}
 			/>
 			<Col style={{ display: 'flex', flexDirection: 'column' }}>

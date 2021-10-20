@@ -94,28 +94,22 @@ async function default_1() {
         res.json({ availablePlayers, uuid: user.room.uuid });
     })
         .post((req, res) => {
-        console.log('Sending...');
         if (!Array.isArray(req.body) ||
             !req.body.every(x => typeof x === 'object' && x && typeof x.steamid === 'string' && typeof x.label === 'string'))
             return res.sendStatus(422);
-        console.log('Sending... #2');
         if (req.body.length > 12)
             return res.sendStatus(422);
-        console.log('Sending... #3');
         availablePlayers = req.body;
         setTimeout(() => {
-            console.log('Sending... #4');
-            (0, node_fetch_1.default)(`https://hmapi.lexogrine.com/cameras/setup/${user.room.uuid}`, { method: 'POST',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json'
-                }, body: JSON.stringify([...availablePlayers]) });
             if (user_1.socket)
-                (0, node_fetch_1.default)(`https://hmapi.lexogrine.com/cameras/setup/${user.room.uuid}`, { method: 'POST',
+                (0, node_fetch_1.default)(`https://hmapi.lexogrine.com/cameras/setup/${user.room.uuid}`, {
+                    method: 'POST',
                     headers: {
                         Accept: 'application/json',
                         'Content-Type': 'application/json'
-                    }, body: JSON.stringify([...availablePlayers, { steamid: 'x', label: 'x' }]) });
+                    },
+                    body: JSON.stringify([...availablePlayers])
+                });
         }, 1000);
         return res.sendStatus(200);
     });

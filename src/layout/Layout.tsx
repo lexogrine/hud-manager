@@ -273,6 +273,7 @@ export default class Layout extends Component<{}, IState> {
 						game={this.state.data.game}
 						customer={data.customer}
 						logout={this.logout}
+						version={version}
 					/>
 				</div>
 			</Provider>

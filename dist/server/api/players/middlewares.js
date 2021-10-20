@@ -156,7 +156,11 @@ const addPlayersWithExcel = async (req, res) => {
         if (!worksheet)
             return res.sendStatus(422);
         const players = [];
-        const teams = await (0, teams_1.getTeamsList)({ game });
+        const $or = [{ game }];
+        if (game === 'csgo') {
+            $or.push({ game: { $exists: false } });
+        }
+        const teams = await (0, teams_1.getTeamsList)({ $or });
         worksheet.eachRow(row => {
             const username = row.getCell('A').value?.toString?.() || '';
             const steamid = row.getCell('B').value?.toString?.() || '';

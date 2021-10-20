@@ -148,7 +148,12 @@ export const addPlayersWithExcel: express.RequestHandler = async (req, res) => {
 
 		const players: Player[] = [];
 
-		const teams = await getTeamsList({ game });
+		const $or: any[] = [{ game }];
+		if (game === 'csgo') {
+			$or.push({ game: { $exists: false } });
+		}
+
+		const teams = await getTeamsList({ $or });
 
 		worksheet.eachRow(row => {
 			const username = row.getCell('A').value?.toString?.() || '';
