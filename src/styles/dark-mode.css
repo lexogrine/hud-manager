@@ -5,6 +5,11 @@ body{
 body.hlaegui {
     overflow: hidden;
 }
+
+body.hlaegui #root {
+    background-color: transparent !important;
+    background-image: none !important;
+}
 button.btn-primary:hover, button.btn-primary.disabled {
     background-color: #4a7f8f !important;
     border-color: #4a7f8f;
