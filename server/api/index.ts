@@ -17,6 +17,7 @@ import MatchHandler from './matches/routes';
 import PlayerHandler from './players/routes';
 import ACOHandler from './aco/routes';
 import ARHandler from './ar/routes';
+import fetch from 'node-fetch';
 import TimelineHandler from './timeline/routes';
 import ARGHandler from './arg/routes';
 import * as match from './matches';
@@ -81,16 +82,20 @@ export default async function () {
 			if (
 				!Array.isArray(req.body) ||
 				!req.body.every(
-					x => typeof x === 'object' && typeof x.steamid === 'string' && typeof x.label === 'string'
+					x => typeof x === 'object' && x && typeof x.steamid === 'string' && typeof x.label === 'string'
 				)
 			)
 				return res.sendStatus(422);
-			if (JSON.stringify(req.body).length > 1000) return res.sendStatus(422);
+			if (req.body.length > 12) return res.sendStatus(422);
 
 			availablePlayers = req.body;
 
 			setTimeout(() => {
-				if (socket) socket.send('registerRoomPlayers', user.room.uuid, req.body);
+				if (socket) fetch(`https://hmapi.lexogrine.com/cameras/setup/${user.room.uuid}`, { method: 'POST',
+				headers: {
+					Accept: 'application/json',
+					'Content-Type': 'application/json'
+				}, body: JSON.stringify([...availablePlayers])});
 			}, 1000);
 			return res.sendStatus(200);
 		});
