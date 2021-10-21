@@ -87,7 +87,8 @@ socket_1.ioPromise.then(io => {
             }
             else {
                 if (hudUrl) {
-                    const keybinds = (0, huds_1.getHUDKeyBinds)(dir) || [];
+                    const hudData = await (0, huds_1.getHUDData)(dir);
+                    const keybinds = hudData?.keybinds || [];
                     for (const bind of keybinds) {
                         (0, keybinder_1.registerKeybind)(bind.bind, () => {
                             io.to(dir).emit('keybindAction', bind.action);

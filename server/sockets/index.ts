@@ -5,7 +5,7 @@ import { HUDState, ioPromise, runtimeConfig } from '../socket';
 import { playTesting } from './../api/huds/play';
 import { availableGames } from '../../types/interfaces';
 import { unregisterAllKeybinds, registerKeybind } from '../api/keybinder';
-import { getHUDKeyBinds } from '../api/huds';
+import { getHUDData, getHUDKeyBinds } from '../api/huds';
 import HUDWindow from '../../init/huds';
 import { getARModuleData } from '../api/ar';
 
@@ -83,7 +83,8 @@ ioPromise.then(io => {
 				unregisterAllKeybinds(dir);
 			} else {
 				if (hudUrl) {
-					const keybinds = getHUDKeyBinds(dir) || [];
+					const hudData = await getHUDData(dir);
+					const keybinds = hudData?.keybinds || [];
 					for (const bind of keybinds) {
 						registerKeybind(
 							bind.bind,
