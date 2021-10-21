@@ -104,6 +104,9 @@ const connectSocket = () => {
                         return;
                     const uuid = (0, uuid_1.v4)();
                     socketMap[uuid] = ioSocket;
+                    ioSocket.on('disconnect', () => {
+                        exports.socket?.send('unregisterAsHUD', room, uuid);
+                    });
                     exports.socket?.send('registerAsHUD', room, uuid);
                 });
                 ioSocket.on('offerFromHUD', (room, data, steamid) => {
