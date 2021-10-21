@@ -121,7 +121,7 @@ const connectSocket = () => {
 
 					socketMap[uuid] = ioSocket;
 
-					ioSocket.on('disconnect',() => {
+					ioSocket.on('disconnect', () => {
 						socket?.send('unregisterAsHUD', room, uuid);
 					});
 
