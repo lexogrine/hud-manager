@@ -429,6 +429,7 @@ class Huds extends Component<IProps, IState> {
 								isLoading={!!hud.uuid && this.state.loadingHUDs.includes(hud.uuid)}
 								isCloudAvailable={available}
 								isHUDOpened={isHUDOpened}
+								isHUDActive={!!this.state.currentHUD}
 							/>
 						))}
 						{independentOrDevHUDs.length && gameHUDs.length ? <div className="huds-separator" /> : null}
@@ -444,6 +445,7 @@ class Huds extends Component<IProps, IState> {
 								isLoading={!!hud.uuid && this.state.loadingHUDs.includes(hud.uuid)}
 								isCloudAvailable={available}
 								isHUDOpened={isHUDOpened}
+								isHUDActive={!!this.state.currentHUD}
 							/>
 						))}
 					</div>

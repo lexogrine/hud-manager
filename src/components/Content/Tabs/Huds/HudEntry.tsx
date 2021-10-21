@@ -34,6 +34,7 @@ interface IProps {
 	isLoading: boolean;
 	isCloudAvailable: boolean;
 	isHUDOpened: boolean;
+	isHUDActive: boolean;
 }
 
 const HudEntry = ({
@@ -45,7 +46,8 @@ const HudEntry = ({
 	loadHUDs,
 	setHUDLoading,
 	isCloudAvailable,
-	isHUDOpened
+	isHUDOpened,
+	isHUDActive
 }: IProps) => {
 	const gameToTag = (game: string) => {
 		if (game === 'all') {
@@ -208,8 +210,8 @@ const HudEntry = ({
 											label={
 												<img
 													src={Display}
-													onClick={() => startHUD(hud.dir)}
-													className="action"
+													onClick={() => { isHUDOpened || isHUDActive ? undefined : startHUD(hud.dir);}}
+													className={`action ${isHUDOpened || isHUDActive ? 'disabled':''}`}
 													alt="Start HUD"
 												/>
 											}

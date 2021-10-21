@@ -12,7 +12,10 @@ const keybinds: RegisteredKeybind[] = [];
 const parseKeybindInput = (keybindInput: string | string[]) => {
 	const keybind = typeof keybindInput === 'string' ? keybindInput.split('+') : keybindInput;
 
-	return keybind.map(key => key.toUpperCase()).map(key => key === "ALT" ? "LEFT ALT" : key).map(key => key === "CTRL" ? "LEFT CTRL" : key);
+	return keybind
+		.map(key => key.toUpperCase())
+		.map(key => (key === 'ALT' ? 'LEFT ALT' : key))
+		.map(key => (key === 'CTRL' ? 'LEFT CTRL' : key));
 };
 
 const areKeybindsEqual = (keybindInput: string | string[], toCompare: string[]) => {
@@ -46,7 +49,6 @@ listener.addListener((e, down) => {
 
 export const registerKeybind = (keybindInput: string | string[], callback: () => void, owner?: string) => {
 	const keybind = parseKeybindInput(keybindInput);
-	console.log("Registering", keybind);
 	let currentEntry = keybinds.find(keybindEntry => areKeybindsEqual(keybind, keybindEntry.keybind)); //keybinds.find(keybindEntry => keybindEntry.keybind.every(key => keybind.includes(key) && keybind.every(key => keybindEntry.keybind.includes(key))));
 	if (!currentEntry) {
 		currentEntry = {
