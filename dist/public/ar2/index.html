@@ -30,20 +30,9 @@ afx_interop send cefhud [...]
 <p>Number of reconnects: <span id="reconnects">0</span></p>
 <p>Engine connected: <span id="engineStatus">n/a</span></p>
 <p>Drawing connected: <span id="drawingStatus">n/a</span></p>
-<h2>Settings</h2>
-<form>
-	<div>
-		<input type="checkbox" id="sync" name="sync" value="1" checked="checked">
-		<label for="sync"> <b>Enable perfect sync</b> (lower FPS).</label>
-	</div>
-	<div>
-		<input type="checkbox" id="bg" name="bg" value="1" checked="checked">
-		<label for="bg"> <b>Draw game background</b> (for background effects, lower FPS).</label>
-	</div>
-</form>
 <script type="module">
 
-import * as Utils from './modules/utils.js';	
+import * as Utils from '../../js/modules/utils.js';	
 
 function AfxInterop(interop, args) {
 	
@@ -54,8 +43,6 @@ function AfxInterop(interop, args) {
 
 	this.drawingInteropId = null;
 	this.engineInteropId = null;
-	
-	this.engineConnected = false;
 
 	this.messages = {};
 
@@ -64,30 +51,6 @@ function AfxInterop(interop, args) {
 	this.elReconnects = document.getElementById('reconnects');
 	this.elEngineStatus = document.getElementById('engineStatus');
 	this.elDrawingStatus = document.getElementById('drawingStatus');
-	
-	function updateSettings(e) {
-		if(e.target == self.elSync && !e.target.checked) self.elBg.checked = false;
-		else if(e.target == self.elBg && e.target.checked) self.elSync.checked = true;
-	
-		if(!self.engineConnected) return;
-		
-		let settings = {};
-		
-		//settings[e.target.name.toString()] = e.target.checked;
-			settings = {
-				"sync": self.elSync.checked,
-				"bg": self.elBg.checked
-			};
-			
-			Utils.toPromise(self.interop, "sendMessage",  self.engineInteropId, JSON.stringify({
-				"id": "settings",
-				"args": [settings]
-			}));
-	}
-	this.elSync = document.getElementById('sync');
-	this.elBg = document.getElementById('bg');
-	this.elSync.addEventListener("change", updateSettings);
-	this.elBg.addEventListener("change", updateSettings);
 	
 	this.messageHandlers = {
 		"drawingCreated": async function(drawingInteropId) {
@@ -107,25 +70,13 @@ function AfxInterop(interop, args) {
 		"engineCreated": async function(engineInteropId) {
 			console.log("Created engine interop #"+engineInteropId+", connecting ...");
 			this.engineInteropId = engineInteropId;
-			
-			let settings = {
-				"sync": this.elSync.checked,
-				"bg": this.elBg.checked
-			};
-			
-			await Utils.toPromise(this.interop, "sendMessage",  this.engineInteropId, JSON.stringify({
-				"id": "settings",
-				"args": [settings]
-			}));
 
 			await this.reconnect();
 		},
 		"engineConnected": async function(engineInteropId) {
 			this.elEngineStatus.innerText = "connected";
-			this.engineConnected = true;
 		},
 		"engineDisconnected": async function(engineInteropId) {
-			this.engineConnected = false;
 			this.elEngineStatus.innerText = "DISCONNECTED";
 
 			await Utils.sleepPromise(1000);

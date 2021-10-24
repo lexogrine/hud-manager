@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.CSGOGSI = void 0;
-const utils_js_1 = require("./utils.js");
+import { mapSteamIDToPlayer, parseTeam } from './utils.js';
 class CSGOGSI {
     constructor() {
         this.eventNames = () => {
@@ -97,9 +94,9 @@ class CSGOGSI {
         }
         const isCTLeft = Object.values(raw.allplayers).filter(({ observer_slot, team }) => observer_slot !== undefined && observer_slot > 1 && observer_slot <= 5 && team === 'CT').length > 2;
         const bomb = raw.bomb;
-        const teamCT = (0, utils_js_1.parseTeam)(raw.map.team_ct, isCTLeft ? 'left' : 'right', 'CT', isCTLeft ? this.teams.left : this.teams.right);
-        const teamT = (0, utils_js_1.parseTeam)(raw.map.team_t, isCTLeft ? 'right' : 'left', 'T', isCTLeft ? this.teams.right : this.teams.left);
-        const playerMapper = (0, utils_js_1.mapSteamIDToPlayer)(raw.allplayers, { CT: teamCT, T: teamT }, this.players);
+        const teamCT = parseTeam(raw.map.team_ct, isCTLeft ? 'left' : 'right', 'CT', isCTLeft ? this.teams.left : this.teams.right);
+        const teamT = parseTeam(raw.map.team_t, isCTLeft ? 'right' : 'left', 'T', isCTLeft ? this.teams.right : this.teams.left);
+        const playerMapper = mapSteamIDToPlayer(raw.allplayers, { CT: teamCT, T: teamT }, this.players);
         const players = Object.keys(raw.allplayers).map(playerMapper);
         const observed = players.find(player => player.steamid === raw.player.steamid) || null;
         const observer = {
@@ -236,7 +233,7 @@ class CSGOGSI {
         this.last = data;
         this.emit('data', data);
         return data;
-    };
+    }
     digestMIRV(raw) {
         if (!this.last) {
             return null;
@@ -280,4 +277,4 @@ class CSGOGSI {
         return null;
     }
 }
-exports.CSGOGSI = CSGOGSI;
+export { CSGOGSI };

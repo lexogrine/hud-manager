@@ -88,3 +88,9 @@ export function transposeMatrix(matrix) {
 
 	return result;
 }
+
+export function coalesce(lhs,rhs) {
+	let lhsType = typeof lhs;
+	if(lhsType === "undefined" || lhsType === "null") return rhs;
+	return lhs;
+}

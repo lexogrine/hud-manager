@@ -1,474 +1,478 @@
 <!DOCTYPE html>
 <html>
+
 <body>
-<script type="module">
+	<script type="module">
 
-import * as Utils from './modules/utils.js';	
+		import * as Utils from './modules/utils.js';
 
-var AFX_GAMEVENT_ENRICHMENTS = {
-	UserIdWithSteamId: (1 << 0),
-	EntnumWithOrigin: (1 << 1),
-	EntnumWithAngles: (1 << 2),
-	UseridWithEyePosition: (1 << 3),
-	UseridWithEyeAngels: (1<<4)
-};
+		var AFX_GAMEVENT_ENRICHMENTS = {
+			UserIdWithSteamId: (1 << 0),
+			EntnumWithOrigin: (1 << 1),
+			EntnumWithAngles: (1 << 2),
+			UseridWithEyePosition: (1 << 3),
+			UseridWithEyeAngels: (1 << 4)
+		};
 
-var AFX_GAMEVENT_TYPES = {
-	Local: 0,
-	CString: 1,
-	Float: 2,
-	Long: 3,
-	Short: 4,
-	Byte: 5,
-	Bool: 6,
-	Uint64: 7
-}
+		var AFX_GAMEVENT_TYPES = {
+			Local: 0,
+			CString: 1,
+			Float: 2,
+			Long: 3,
+			Short: 4,
+			Byte: 5,
+			Bool: 6,
+			Uint64: 7
+		}
 
-var AFX_RENDERPASS_STATE = {
-	BeforeTranslucentShadow: 2,
-	AfterTranslucentShadow: 3,
-	BeforeTranslucent: 4,
-	AfterTranslucent: 5
-};
+		var AFX_RENDERPASS_STATE = {
+			BeforeTranslucentShadow: 2,
+			AfterTranslucentShadow: 3,
+			BeforeTranslucent: 4,
+			AfterTranslucent: 5
+		};
 
-////////////////////////////////////////////////////////////////////////////////
+		////////////////////////////////////////////////////////////////////////////////
 
-function AfxEngineInterop(interop, args) {
-	
-	var self = this;
-	
-	interop.setPipeName(args.pipeName);
-	
-	this.interop = interop;
-	this.args = args;
-	this.newConnection = true;
+		function AfxEngineInterop(interop, args) {
 
-	this.connected = false;
-	this.messagePromises = {};
-	
-	this.pumpPromise = Promise.resolve();
+			var self = this;
 
-	this.drawingConnectRequested = false;
-	
-	this.messageHandlers = {
-		"connect": async function(senderId) {
-			await this.connect();
-		},
-		"disconnect" : async function(senderId) {
-			await Utils.toPromise(this, "disconnect");
-		},
-		"drawingConnected": async function(senderId) {
+			interop.setPipeName(args.pipeName);
 
-			console.log("drawingConnected: "+senderId);
+			this.interop = interop;
+			this.args = args;
+			this.newConnection = true;
 
-			if(this.drawingConnectedEvent)
-			{
-				var e = this.drawingConnectedEvent;
-				this.drawingConnectedEvent = null;
-				e[0]();
-			}
-		},
-		"drawingDisconnected": async function(senderId) {
-			console.log("drawingDisconnected: "+senderId);
+			this.connected = false;
+			this.messages = {};
+
+			this.pumpPromise = Promise.resolve();
+
 			this.drawingConnectRequested = false;
-			await Utils.toPromise(this, "disconnect");
-		}
-	};
-	
-	interop.onMessage = function(senderId, message){
-		
-		const jMessage = JSON.parse(message);
-		
-		async function processMessage(jMessage)
-		{
-			try {
-				await self.messageHandlers[jMessage.id].apply(self, jMessage.args);
-			}
-			catch(e) {
-				Utils.logError(e);
-				if(!(e && e.soft))
-					await Utils.toPromise(self, "disconnect");
-			}
-		}
-		
-		function queueMessage(jMessage)
-		{
-			const port = jMessage.port || "0";
-			
-			var promise = self.messagePromises[port];
-			if(undefined === promise) self.messagePromises[port] = Promise.resolve();
-			
-			self.messagePromises[port] = self.messagePromises[port].then(()=>{return processMessage(jMessage);});
-		}
-		
-		queueMessage(jMessage);
-	}
 
-	// GameEvents:
-	//
-	// https://wiki.alliedmods.net/Counter-Strike:_Global_Offensive_Event
+			this.indexSettings = {};
 
-	interop.gameEventSetTransmitClientTime(true);
-	interop.gameEventSetTransmitTick(true);
-	
-	var useridEnrichtments = AFX_GAMEVENT_ENRICHMENTS.UserIdWithSteamId
-		| AFX_GAMEVENT_ENRICHMENTS.UseridWithEyePosition
-		| AFX_GAMEVENT_ENRICHMENTS.UseridWithEyeAngels;
-		
-	var entNumEnrichments = AFX_GAMEVENT_ENRICHMENTS.EntnumWithOrigin
-		| AFX_GAMEVENT_ENRICHMENTS.EntnumWithAngles;
-	
-	interop.gameEventSetEnrichment('player_death', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('player_death', 'attacker', useridEnrichtments);
-	interop.gameEventSetEnrichment('player_death', 'assister', useridEnrichtments);
-	interop.gameEventSetEnrichment('other_death', 'attacker', useridEnrichtments);
-	interop.gameEventSetEnrichment('player_hurt', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('player_hurt', 'attacker', useridEnrichtments);
-	interop.gameEventSetEnrichment('item_purchase', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('bomb_beginplant', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('bomb_abortplant', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('bomb_planted', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('bomb_defused', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('bomb_exploded', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('bomb_pickup', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('bomb_dropped', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('bomb_dropped', 'entindex', entNumEnrichments);
-	interop.gameEventSetEnrichment('defuser_dropped', 'entityid', entNumEnrichments);
-	interop.gameEventSetEnrichment('defuser_pickup', 'entityid', entNumEnrichments);
-	interop.gameEventSetEnrichment('defuser_pickup', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('bomb_begindefuse', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('bomb_abortdefuse', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('hostage_follows', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('hostage_follows', 'hostage', entNumEnrichments);
-	interop.gameEventSetEnrichment('hostage_hurt', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('hostage_hurt', 'hostage', entNumEnrichments);
-	interop.gameEventSetEnrichment('hostage_killed', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('hostage_killed', 'hostage', entNumEnrichments);
-	interop.gameEventSetEnrichment('hostage_rescued', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('hostage_rescued', 'hostage', entNumEnrichments);
-	interop.gameEventSetEnrichment('hostage_stops_following', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('hostage_stops_following', 'hostage', entNumEnrichments);
-	interop.gameEventSetEnrichment('hostage_call_for_help', 'hostage', entNumEnrichments);
-	interop.gameEventSetEnrichment('vip_escaped', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('player_radio', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('bomb_beep', 'entindex', entNumEnrichments);
-	interop.gameEventSetEnrichment('weapon_fire', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('weapon_fire_on_empty', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('grenade_thrown', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('weapon_outofammo', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('weapon_reload', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('weapon_zoom', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('silencer_detach', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('inspect_weapon', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('weapon_zoom_rifle', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('player_spawned', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('item_pickup', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('item_pickup_failed', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('item_remove', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('ammo_pickup', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('ammo_pickup', 'index', entNumEnrichments);
-	interop.gameEventSetEnrichment('item_equip', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('enter_buyzone', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('exit_buyzone', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('enter_bombzone', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('exit_bombzone', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('enter_rescue_zone', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('exit_rescue_zone', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('silencer_off', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('silencer_on', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('buymenu_open', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('buymenu_close', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('round_end', 'winner', useridEnrichtments);
-	interop.gameEventSetEnrichment('grenade_bounce', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('hegrenade_detonate', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('flashbang_detonate', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('smokegrenade_detonate', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('smokegrenade_expired', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('molotov_detonate', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('decoy_detonate', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('decoy_started', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('tagrenade_detonate', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('decoy_firing', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('bullet_impact', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('player_footstep', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('player_jump', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('player_blind', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('player_blind', 'entityid', entNumEnrichments);
-	interop.gameEventSetEnrichment('player_falldamage', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('door_moving', 'entityid', entNumEnrichments);
-	interop.gameEventSetEnrichment('door_moving', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('spec_target_updated', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('player_avenged_teammate', 'avenger_id', useridEnrichtments);
-	interop.gameEventSetEnrichment('player_avenged_teammate', 'avenged_player_id', useridEnrichtments);
-	interop.gameEventSetEnrichment('round_mvp', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('player_decal', 'userid', useridEnrichtments);
-	// ... left out the gg / gungame, feel free to add it ...
-	interop.gameEventSetEnrichment('player_reset_vote', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('start_vote', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('player_given_c4', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('player_become_ghost', 'userid', useridEnrichtments);
-	// ... left out the tr, feel free to add it ...
-	interop.gameEventSetEnrichment('jointeam_failed', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('teamchange_pending', 'userid', useridEnrichtments);
-	interop.gameEventSetEnrichment('ammo_refill', 'userid', useridEnrichtments);
-	// ... left out the dangerzone, feel free to add it ...
-	interop.gameEventSetEnrichment('weaponhud_selection', 'userid', useridEnrichtments);
-	
-	//
+			this.messageHandlers = {
+				"settings": async function (settings) {
+					this.indexSettings = Object.assign({}, this.indexSettings, settings);
+				},
+				"connect": async function (senderId) {
+					await this.connect();
+				},
+				"disconnect": async function (senderId) {
+					await Utils.toPromise(this, "disconnect");
+				},
+				"drawingConnected": async function (senderId) {
 
-	this.pumpEventsAsync = {
-		// optional.
-		"onNewConnection": async function(){
-			console.log("New connection");
-			await Utils.toPromise(this.interop, "pump", this.pumpEvents);
-		},
-		// recommended.
-		"onDone": async function(){
-			await Utils.toPromise(this.interop, "pump", this.pumpEvents);
-		},
-		// optional.
-		"onCommands": async function(commands) {
-		
-			var doCommands = [];
-		
-			if(self.newConnection) {
-				self.newConnection = false;
-				doCommands.push("echo afx_interop send cefhud - To send commands to me.");
-			}
-			
-			for(var i=0; i < commands.length; ++i)
-			{
-				var command = commands[i];
-				if(0 < command.length)
-				{
-					if(2 <= command.length && "cefhud" === command[1])
-					{
-						if(3 <= command.length)
-						{
-							var handled = false;
-							var command2 = command[2];
-							switch(command2)
-							{
-							case "echo":
-								var result = "echo";
-								for(var j=3; j < command.length; ++j)
-								{
-									result += " "+command[j];
-								}
-								doCommands.push(result);
-								handled = true;
-								break;
-							}
-							
-							if(handled) continue;
-						}
-						doCommands.push("echo \""+command[0]+" cefhud echo <sText>+ - echo text back to CS:GO.\"");
+					console.log("drawingConnected: " + senderId);
+
+					if (this.drawingConnectedEvent) {
+						var e = this.drawingConnectedEvent;
+						this.drawingConnectedEvent = null;
+						e[0]();
 					}
+				},
+				"drawingDisconnected": async function (senderId) {
+					console.log("drawingDisconnected: " + senderId);
+					this.drawingConnectRequested = false;
+					await Utils.toPromise(this, "disconnect");
+				},
+				"pump": async function () {
+
+					try {
+						await Utils.toPromise(this.interop, "pump", this.pumpEvents);
+					}
+					catch (e) {
+						Utils.logError(e);
+
+						if (!(e && e.soft)) {
+							await Utils.toPromise(this, "disconnect");
+							return;
+						}
+					}
+
+					if (this.connected) this.interop.onMessage(this.interop.id, JSON.stringify({
+						"id": "pump",
+						"args": []
+					}));
 				}
+			};
+
+			interop.onMessage = function (senderId, message) {
+
+				function processMessages(port) {
+					let messages = self.messages[port]
+					let jMessage = messages[0];
+
+					self.messageHandlers[jMessage.id].apply(self, jMessage.args).then(() => {
+						messages.shift();
+						if (0 < messages.length) queueMicrotask(function () { processMessages(port); });
+					}).catch((e) => {
+						Utils.logError(e);
+						if (!(e && e.soft)) {
+							return Utils.toPromise(self, "disconnect");
+						}
+						messages.shift();
+						if (0 < messages.length) queueMicrotask(function () { processMessages(port); });
+					});
+				}
+
+				function queueMessage(jMessage) {
+					const port = jMessage.port || "0";
+
+					var messages = self.messages[port];
+					if (undefined === messages) self.messages[port] = messages = [];
+
+					messages.push(jMessage);
+
+					if (1 === messages.length) queueMicrotask(function () { processMessages(port); });
+				}
+
+				const jMessage = JSON.parse(message);
+
+				queueMessage(jMessage);
 			}
-			await Utils.toPromise(this.interop, "pump", this.pumpEvents, doCommands);
-		},
-		// optional.
-		"onGameEvent": async function(e){
-			await Utils.toPromise(this.interop, "sendMessage", this.args.drawingInteropId, JSON.stringify({
-				"id": "onGameEvent",
-				"args": [e]
+
+			// GameEvents:
+			//
+			// https://wiki.alliedmods.net/Counter-Strike:_Global_Offensive_Event
+
+			interop.gameEventSetTransmitClientTime(true);
+			interop.gameEventSetTransmitTick(true);
+
+			var useridEnrichtments = AFX_GAMEVENT_ENRICHMENTS.UserIdWithSteamId
+				| AFX_GAMEVENT_ENRICHMENTS.UseridWithEyePosition
+				| AFX_GAMEVENT_ENRICHMENTS.UseridWithEyeAngels;
+
+			var entNumEnrichments = AFX_GAMEVENT_ENRICHMENTS.EntnumWithOrigin
+				| AFX_GAMEVENT_ENRICHMENTS.EntnumWithAngles;
+
+			interop.gameEventSetEnrichment('player_death', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('player_death', 'attacker', useridEnrichtments);
+			interop.gameEventSetEnrichment('player_death', 'assister', useridEnrichtments);
+			interop.gameEventSetEnrichment('other_death', 'attacker', useridEnrichtments);
+			interop.gameEventSetEnrichment('player_hurt', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('player_hurt', 'attacker', useridEnrichtments);
+			interop.gameEventSetEnrichment('item_purchase', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('bomb_beginplant', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('bomb_abortplant', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('bomb_planted', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('bomb_defused', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('bomb_exploded', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('bomb_pickup', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('bomb_dropped', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('bomb_dropped', 'entindex', entNumEnrichments);
+			interop.gameEventSetEnrichment('defuser_dropped', 'entityid', entNumEnrichments);
+			interop.gameEventSetEnrichment('defuser_pickup', 'entityid', entNumEnrichments);
+			interop.gameEventSetEnrichment('defuser_pickup', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('bomb_begindefuse', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('bomb_abortdefuse', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('hostage_follows', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('hostage_follows', 'hostage', entNumEnrichments);
+			interop.gameEventSetEnrichment('hostage_hurt', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('hostage_hurt', 'hostage', entNumEnrichments);
+			interop.gameEventSetEnrichment('hostage_killed', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('hostage_killed', 'hostage', entNumEnrichments);
+			interop.gameEventSetEnrichment('hostage_rescued', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('hostage_rescued', 'hostage', entNumEnrichments);
+			interop.gameEventSetEnrichment('hostage_stops_following', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('hostage_stops_following', 'hostage', entNumEnrichments);
+			interop.gameEventSetEnrichment('hostage_call_for_help', 'hostage', entNumEnrichments);
+			interop.gameEventSetEnrichment('vip_escaped', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('player_radio', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('bomb_beep', 'entindex', entNumEnrichments);
+			interop.gameEventSetEnrichment('weapon_fire', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('weapon_fire_on_empty', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('grenade_thrown', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('weapon_outofammo', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('weapon_reload', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('weapon_zoom', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('silencer_detach', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('inspect_weapon', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('weapon_zoom_rifle', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('player_spawned', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('item_pickup', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('item_pickup_failed', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('item_remove', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('ammo_pickup', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('ammo_pickup', 'index', entNumEnrichments);
+			interop.gameEventSetEnrichment('item_equip', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('enter_buyzone', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('exit_buyzone', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('enter_bombzone', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('exit_bombzone', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('enter_rescue_zone', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('exit_rescue_zone', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('silencer_off', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('silencer_on', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('buymenu_open', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('buymenu_close', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('round_end', 'winner', useridEnrichtments);
+			interop.gameEventSetEnrichment('grenade_bounce', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('hegrenade_detonate', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('flashbang_detonate', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('smokegrenade_detonate', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('smokegrenade_expired', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('molotov_detonate', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('decoy_detonate', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('decoy_started', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('tagrenade_detonate', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('decoy_firing', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('bullet_impact', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('player_footstep', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('player_jump', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('player_blind', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('player_blind', 'entityid', entNumEnrichments);
+			interop.gameEventSetEnrichment('player_falldamage', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('door_moving', 'entityid', entNumEnrichments);
+			interop.gameEventSetEnrichment('door_moving', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('spec_target_updated', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('player_avenged_teammate', 'avenger_id', useridEnrichtments);
+			interop.gameEventSetEnrichment('player_avenged_teammate', 'avenged_player_id', useridEnrichtments);
+			interop.gameEventSetEnrichment('round_mvp', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('player_decal', 'userid', useridEnrichtments);
+			// ... left out the gg / gungame, feel free to add it ...
+			interop.gameEventSetEnrichment('player_reset_vote', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('start_vote', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('player_given_c4', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('player_become_ghost', 'userid', useridEnrichtments);
+			// ... left out the tr, feel free to add it ...
+			interop.gameEventSetEnrichment('jointeam_failed', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('teamchange_pending', 'userid', useridEnrichtments);
+			interop.gameEventSetEnrichment('ammo_refill', 'userid', useridEnrichtments);
+			// ... left out the dangerzone, feel free to add it ...
+			interop.gameEventSetEnrichment('weaponhud_selection', 'userid', useridEnrichtments);
+
+			//
+
+			this.pumpEventsAsync = {
+				// optional.
+				"onNewConnection": async function () {
+					console.log("New connection");
+				},
+				// optional.
+				"onDone": async function () {
+				},
+				// optional.
+				"onCommands": async function (commands) {
+
+					var doCommands = [];
+
+					if (self.newConnection) {
+						self.newConnection = false;
+						doCommands.push("echo afx_interop send cefhud - To send commands to me.");
+					}
+
+					for (var i = 0; i < commands.length; ++i) {
+						var command = commands[i];
+						if (0 < command.length) {
+							if (2 <= command.length && "cefhud" === command[1]) {
+								if (3 <= command.length) {
+									var handled = false;
+									var command2 = command[2];
+									switch (command2) {
+										case "echo":
+											var result = "echo";
+											for (var j = 3; j < command.length; ++j) {
+												result += " " + command[j];
+											}
+											doCommands.push(result);
+											handled = true;
+											break;
+									}
+
+									if (handled) continue;
+								}
+								doCommands.push("echo \"" + command[0] + " cefhud echo <sText>+ - echo text back to CS:GO.\"");
+							}
+						}
+					}
+
+					return doCommands;
+				},
+				// optional.
+				"onGameEvent": async function (e) {
+					await Utils.toPromise(this.interop, "sendMessage", this.args.drawingInteropId, JSON.stringify({
+						"id": "onGameEvent",
+						"args": [e]
+					}));
+				},
+				// optional.
+				"onRenderViewBegin": async function (renderInfo) {
+
+					this.renderInfo = renderInfo;
+					this.pass = 0;
+
+					await Utils.toPromise(this.interop, "sendMessage", this.args.drawingInteropId, JSON.stringify({
+						"id": "onRenderViewBegin",
+						"args": [renderInfo, this.indexSettings]
+					}));
+				},
+				/*
+				// optional.
+				"onRenderViewBeforeTranslucent" : async function(view) {
+					//TODO: schedule for drawing.
+				},*/
+				/*
+				// optional.
+				"onRenderViewAfterTranslucent" : async function(view) {
+					//TODO: schedule for drawing.
+				},*/
+				/*
+				// optional.
+				"onRenderViewBeforeTranslucentShadow" : async function(view) {
+					//TODO: schedule for drawing.
+				},*/
+				/*
+				// optional.
+				"onRenderViewAfterTranslucentShadow" : async function(view) {
+					//TODO: schedule for drawing.
+				},*/
+				/*
+				// optional.
+				"onRenderViewHudBegin" : async function() {
+					//TODO: schedule for drawing.
+				},*/
+				// optional.
+				"onRenderViewHudEnd": async function () {
+					//console.log("onRenderViewHudEnd");
+					await Utils.toPromise(this.interop, "sendMessage", this.args.drawingInteropId, JSON.stringify({
+						"id": "onHudEnd",
+						"args": [this.renderInfo.frameCount, this.pass]
+					}));
+
+					this.pass++;
+
+				},
+				// optional.
+				/*"onRenderViewEnd": aync function() {
+					//TODO: schedule for drawing.
+				},*/
+
+				// optional.
+				"onViewOverride": async function (view) {
+					await Utils.toPromise(this.interop, "sendMessage", this.args.drawingInteropId, JSON.stringify({
+						"id": "onViewOverride",
+						"args": [view]
+					}));
+					await Utils.toPromise(this.interop, "pump", this.pumpEvents, {
+						// uncomment to overide:
+						//tX: 0,
+						//tY: 0,
+						//tZ: 0,
+						//rX: 0,
+						//rY: 0,
+						//rZ: 0,
+						//fov: 90,
+					});
+				},
+				"onForceEndQueue": async function () {
+					//console.log("SEND onForceEndQueue");
+					await Utils.toPromise(this.interop, "sendMessage", this.args.drawingInteropId, JSON.stringify({
+						"id": "onForceEndQueue",
+						"args": []
+					}));
+				}
+			};
+
+			this.pumpEvents = this.makePumpEvents();
+
+			Utils.toPromise(this.interop, "sendMessage", this.args.indexInteropId, JSON.stringify({
+				"id": "engineCreated",
+				"args": [self.interop.id]
 			}));
-			await Utils.toPromise(this.interop, "pump", this.pumpEvents);
-		},
-		// optional.
-		"onRenderViewBegin": async function(renderInfo) {
-	
-			this.renderInfo = renderInfo;
-			this.pass = 0;
-			
-			await Utils.toPromise(this.interop, "sendMessage", this.args.drawingInteropId, JSON.stringify({
-				"id": "onRenderViewBegin",
-				"args": [renderInfo]
-			}));
-			await Utils.toPromise(this.interop, "pump", this.pumpEvents);
-		},
-		/*
-		// optional.
-		"onRenderViewBeforeTranslucent" : async function(view) {
-			//TODO: schedule for drawing.
-			await Utils.toPromise(this.interop, "pump", this.pumpEvents);
-		},*/
-		/*
-		// optional.
-		"onRenderViewAfterTranslucent" : async function(view) {
-			//TODO: schedule for drawing.
-			await Utils.toPromise(this.interop, "pump", this.pumpEvents);
-		},*/
-		/*
-		// optional.
-		"onRenderViewBeforeTranslucentShadow" : async function(view) {
-			//TODO: schedule for drawing.
-			await Utils.toPromise(this.interop, "pump", this.pumpEvents);
-		},*/
-		/*
-		// optional.
-		"onRenderViewAfterTranslucentShadow" : async function(view) {
-			//TODO: schedule for drawing.
-			await Utils.toPromise(this.interop, "pump", this.pumpEvents);
-		},*/
-		/*
-		// optional.
-		"onRenderViewHudBegin" : async function() {
-			//TODO: schedule for drawing.
-			await Utils.toPromise(this.interop, "pump", this.pumpEvents);
-		},*/		
-		// optional.
-		"onRenderViewHudEnd": async function(){
-			await Utils.toPromise(this.interop, "sendMessage", this.args.drawingInteropId, JSON.stringify({
-				"id": "onHudEnd",
-				"args": [this.renderInfo.frameCount, this.pass]
-			}));
+		}
 
-			this.pass++;
+		AfxEngineInterop.prototype.connect = async function () {
 
-			await Utils.toPromise(this.interop, "pump", this.pumpEvents);
-		},
-		// optional.
-		/*"onRenderViewEnd": aync function() {
-			//TODO: schedule for drawing.
-			await Utils.toPromise(this.interop, "pump", this.pumpEvents);
-		},*/
-		
-		// optional.
-		"onViewOverride": async function(view) {
-            await Utils.toPromise(this.interop, "sendMessage", this.args.drawingInteropId, JSON.stringify({
-                "id": "onViewOverride",
-                "args": [view]
-            }));
-            await Utils.toPromise(this.interop, "pump", this.pumpEvents, {
-                // uncomment to overide:
-                //tX: 0,
-                //tY: 0,
-                //tZ: 0,
-                //rX: 0,
-                //rY: 0,
-                //rZ: 0,
-                //fov: 90,
-            });
-		},
-	};
+			var self = this;
 
-	this.pumpEvents = this.makePumpEvents();
-	
-	Utils.toPromise(this.interop, "sendMessage", this.args.indexInteropId, JSON.stringify({
-		"id": "engineCreated",
-		"args": [self.interop.id]
-	}));
-}
-
-AfxEngineInterop.prototype.connect = async function() {
-
-	var self = this;
-
-	await new Promise(function(resolve,reject){
-		self.connected = true;
-		self.newConnection = true;
-		self.drawingConnectedEvent = [resolve,reject];
-
-		async function doConnect() {
+			self.connected = true;
+			self.newConnection = true;
 			self.drawingConnectRequested = true;
-			
+
 			await Utils.toPromise(self.interop, "sendMessage", self.args.drawingInteropId, JSON.stringify({
 				"id": "connect",
 				"args": [self.interop.id]
 			}));
-			
+
 			await Utils.toPromise(self.interop, "connect");
-			
+
 			await Utils.toPromise(self.interop, "sendMessage", self.args.indexInteropId, JSON.stringify({
-					"id": "engineConnected",
-					"args": [self.interop.id]
+				"id": "engineConnected",
+				"args": [self.interop.id]
+			}));
+
+			await self.interop.onMessage(self.interop.id, JSON.stringify({
+				"id": "pump",
+				"args": []
 			}));
 		}
 
-		doConnect()
-		.then(()=>Utils.toPromise(self.interop, "pump",  self.pumpEvents));
-	});
-}
+		AfxEngineInterop.prototype.disconnect = async function () {
 
-AfxEngineInterop.prototype.disconnect = async function() {
-	
-	this.interop.cancel();
-	this.messagePromises = {};
-	this.pumpPromise = Promise.resolve();
+			this.interop.cancel();
+			this.messages = {};
+			this.pumpPromise = Promise.resolve();
 
-	if(this.drawingConnectedEvent)
-	{
-		var e = this.drawingConnectedEvent;
-		this.drawingConnectedEvent = null;
-		e[1]();
-		return;
-	}
+			if (this.drawingConnectRequested) {
+				await Utils.toPromise(this.interop, "sendMessage", this.args.drawingInteropId, JSON.stringify({
+					"id": "disconnect",
+					"port": 1,
+					"args": [this.interop.id]
+				}));
 
-	if(this.drawingConnectRequested)
-	{
-		await Utils.toPromise(this.interop, "sendMessage", this.args.drawingInteropId, JSON.stringify({
-			"id": "disconnect",
-			"port": 1,
-			"args": [this.interop.id]
-		}));
+				return;
+			}
 
-		return;
-	}
+			if (this.connected) {
+				this.connected = false;
 
-	if(this.connected)
-	{
-		this.connected = false;
+				try {
+					await Utils.toPromise(this.interop, "close");
+				}
+				catch (e) {
+					Utils.logError(e);
+				}
 
-		try {
-			await Utils.toPromise(this.interop, "close");
-		}
-		catch(e)
-		{
-			Utils.logError(e);
+				await Utils.toPromise(this.interop, "sendMessage", this.args.indexInteropId, JSON.stringify({
+					"id": "engineDisconnected",
+					"args": [this.interop.id]
+				}));
+			}
 		}
 
-		await Utils.toPromise(this.interop, "sendMessage", this.args.indexInteropId, JSON.stringify({
-			"id": "engineDisconnected",
-			"args": [this.interop.id]
-		}));
-	}
-}
+		AfxEngineInterop.prototype.makePumpEvents = function () {
 
- AfxEngineInterop.prototype.makePumpEvents = function() {
+			var self = this;
 
-	var self = this;
+			var pumpEvents = {};
 
-	var pumpEvents = {};
+			Object.keys(self.pumpEventsAsync).forEach((key) => {
 
-	Object.keys(self.pumpEventsAsync).forEach((key) => {
-
-		pumpEvents[key] = function(...args){
-		
-			self.pumpPromise = self.pumpPromise
-			.finally(()=>self.pumpEventsAsync[key].apply(self, args))
-			.catch((e) => {
-				Utils.logError(e);
-
-				if(!(e && e.soft))
-					return Utils.toPromise(self, "disconnect");
+				pumpEvents[key] = function (resolve, reject, ...args) {
+					self.pumpEventsAsync[key].apply(self, args).then((...args) => {
+						resolve(...args);
+					}).catch((...args) => {
+						reject(...args);
+					});
+				}
 			});
+
+			return pumpEvents;
 		}
-	});
 
-	return pumpEvents;
-}
+		////////////////////////////////////////////////////////////////////////////////
 
-////////////////////////////////////////////////////////////////////////////////
+		window.addEventListener('load', function () {
 
-window.addEventListener('load', function(){
+			console.log(window.afxInterop.args);
+			new AfxEngineInterop(window.afxInterop, JSON.parse(window.afxInterop.args))
 
-	console.log(window.afxInterop.args);
-	new AfxEngineInterop(window.afxInterop, JSON.parse(window.afxInterop.args))
-	
-}, false);
+		}, false);
 
-</script>
+	</script>
 </body>
+
 </html>

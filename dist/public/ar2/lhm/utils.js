@@ -1,25 +1,3 @@
-"use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || function (mod) {
-    if (mod && mod.__esModule) return mod;
-    var result = {};
-    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
-    __setModuleDefault(result, mod);
-    return result;
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.setActiveModules = exports.removeARModule = exports.addARModule = exports.parseTeam = exports.mapSteamIDToPlayer = void 0;
 /* eslint-disable no-undef */
 const parsePlayer = (basePlayer, steamid, team, extensions) => {
     const extension = extensions.find(player => player.steamid === steamid);
@@ -40,9 +18,8 @@ const parsePlayer = (basePlayer, steamid, team, extensions) => {
     };
     return player;
 };
-const mapSteamIDToPlayer = (players, teams, extensions) => (steamid) => parsePlayer(players[steamid], steamid, teams[players[steamid].team], extensions);
-exports.mapSteamIDToPlayer = mapSteamIDToPlayer;
-const parseTeam = (team, orientation, side, extension) => ({
+export const mapSteamIDToPlayer = (players, teams, extensions) => (steamid) => parsePlayer(players[steamid], steamid, teams[players[steamid].team], extensions);
+export const parseTeam = (team, orientation, side, extension) => ({
     score: team.score,
     logo: (extension && extension.logo) || null,
     consecutive_round_losses: team.consecutive_round_losses,
@@ -55,16 +32,20 @@ const parseTeam = (team, orientation, side, extension) => ({
     orientation,
     extra: (extension && extension.extra) || {}
 });
-exports.parseTeam = parseTeam;
-let currentModules = [];
+
+let currentModules = []
+
 const getARModule = (dir) => currentModules.find(arModule => arModule.id === dir) || null;
-const addARModule = async (dir, { scene, camera, renderers, GSI, actions }) => {
+
+export const addARModule = async (dir, { scene, camera, renderers, GSI, actions }) => {
     const duplicate = getARModule(dir);
-    if (duplicate) {
+
+    if(duplicate){
         return;
     }
-    const arModule = await Promise.resolve().then(() => __importStar(require(`/ars/${dir}/index.js?cacheBust=${(new Date()).getTime()}`)));
-    if (!arModule || !arModule.startARModule || !arModule.cleanUpARModule) {
+    const arModule = await import(`/ars/${dir}/index.js?cacheBust=${(new Date()).getTime()}`);
+
+    if(!arModule || !arModule.startARModule || !arModule.cleanUpARModule){
         return;
     }
     const customCSS = document.createElement("link");
@@ -72,37 +53,42 @@ const addARModule = async (dir, { scene, camera, renderers, GSI, actions }) => {
     customCSS.setAttribute("type", "text/css");
     customCSS.setAttribute("id", `ar-stylesheet-${dir}`);
     customCSS.setAttribute("href", `/ars/${dir}/index.css?cacheBust=${(new Date()).getTime()}`);
+
     document.getElementsByTagName("head")[0].appendChild(customCSS);
-    const moduleEntry = { id: dir, module: arModule };
+
+    const moduleEntry = { id: dir, module: arModule }
+
     currentModules.push(moduleEntry);
+
     arModule.startARModule(scene, camera, renderers, GSI, actions);
+
     return;
-};
-exports.addARModule = addARModule;
-const removeARModule = (dir, { scene, GSI }) => {
+}
+
+export const removeARModule = (dir, { scene, GSI }) => {
     const customStyleSheet = document.getElementById(`ar-stylesheet-${dir}`);
     if (customStyleSheet) {
         customStyleSheet.remove();
     }
+
     const arModule = getARModule(dir);
-    if (!arModule)
-        return;
+    if(!arModule) return;
+
     arModule.module.cleanUpARModule(scene, GSI);
     return;
-};
-exports.removeARModule = removeARModule;
-const setActiveModules = async (dirs, arSettings) => {
-    for (const dir of dirs) {
+}
+
+export const setActiveModules = async (dirs, arSettings) => {
+    for(const dir of dirs) {
         const currentModule = getARModule(dir);
-        if (!currentModule) {
-            await (0, exports.addARModule)(dir, arSettings);
+        if(!currentModule){
+            await addARModule(dir, arSettings);
         }
     }
-    for (const mod of currentModules) {
-        if (!dirs.includes(mod.id)) {
-            (0, exports.removeARModule)(mod.id, arSettings);
+    for(const mod of currentModules){
+        if(!dirs.includes(mod.id)){
+            removeARModule(mod.id, arSettings);
             currentModules = currentModules.filter(duplicate => duplicate !== getARModule(mod.id));
         }
     }
-};
-exports.setActiveModules = setActiveModules;
+}
