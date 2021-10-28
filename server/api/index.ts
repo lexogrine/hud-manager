@@ -147,9 +147,15 @@ export default async function () {
 
 		res.json({ result });
 
-		if (socket) {
-			socket.send('registerGame', game);
+		const registerGame = () => {
+			if (socket) {
+				socket.send('registerGame', game);
+			}
 		}
+
+		setTimeout(() => {
+			registerGame();
+		}, 5000);
 	});
 
 	app.route('/api/cloud/upload').post(async (req, res) => {

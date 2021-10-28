@@ -133,9 +133,14 @@ async function default_1() {
         const result = await (0, cloud_1.checkCloudStatus)(game);
         io.emit('reloadHUDs');
         res.json({ result });
-        if (user_1.socket) {
-            user_1.socket.send("registerGame", game);
-        }
+        const registerGame = () => {
+            if (user_1.socket) {
+                user_1.socket.send('registerGame', game);
+            }
+        };
+        setTimeout(() => {
+            registerGame();
+        }, 5000);
     });
     __1.app.route('/api/cloud/upload').post(async (req, res) => {
         const game = exports.customer.game;
