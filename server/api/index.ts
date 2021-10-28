@@ -146,6 +146,10 @@ export default async function () {
 		io.emit('reloadHUDs');
 
 		res.json({ result });
+
+		if(socket){
+			socket.send("registerGame", game);
+		}
 	});
 
 	app.route('/api/cloud/upload').post(async (req, res) => {

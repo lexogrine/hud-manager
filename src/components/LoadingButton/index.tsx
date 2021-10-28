@@ -1,5 +1,16 @@
 import { useState } from 'react';
-import { ReactComponent as Loading } from './../../styles/icons/loading.svg';
+// import { ReactComponent as Loading } from './../../styles/icons/loading.svg';
+
+const Spinner = () => {
+
+	return (
+		<div className='spinner-container'>
+			<div className='spinner-dot'/>
+			<div className='spinner-dot'/>
+			<div className='spinner-dot'/>
+		</div>
+	)
+}
 
 const LoadingButton = ({
 	onClick,
@@ -19,7 +30,7 @@ const LoadingButton = ({
 
 	return (
 		<div onClick={onPressHandler} {...props}>
-			{isLoading ? <Loading height={15} /> : children}
+			{isLoading ? <Spinner /> : children}
 		</div>
 	);
 };

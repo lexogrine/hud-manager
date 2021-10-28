@@ -23,8 +23,14 @@ const LoginRegisterModal = ({ isOpen, loading, setLoading, loadUser, error }: IP
 		try {
 			const loginResponse = await api.user.login(email, password, token);
 			if (!loginResponse.success) {
+				if(error === 'You need to pass your one-time token'){
+					setToken('');
+				}
 				return setLoading(false, loginResponse.message);
 			}
+			setEmail('');
+			setPassword('');
+			setToken('');
 			loadUser();
 			setLoading(false);
 		} catch {
@@ -37,54 +43,64 @@ const LoginRegisterModal = ({ isOpen, loading, setLoading, loadUser, error }: IP
 
 	if (!isOpen) return null;
 
+	const showToken = (error === 'You need to pass your one-time token')
+
 	return (
 		<div className="login-view">
 			<div className="logo">LHM</div>
 			<div className="container">
 				{error ? <p className="login-error">{error}</p> : null}
-				<LabeledInput
-					name="email"
-					type="email"
-					label="Email"
-					id="email"
-					placeholder="Email"
-					value={email}
-					onChange={handleChange(setEmail)}
-					onKeyDown={onEnter}
-					tabIndex={0}
-				/>
-				<LabeledInput
-					name="password"
-					type="password"
-					id="password"
-					label="Password"
-					placeholder="Password"
-					value={password}
-					onChange={handleChange(setPassword)}
-					onKeyDown={onEnter}
-					tabIndex={0}
-				/>
-				<div className="forget_password">
-					<a
-						target="_blank"
-						rel="noopener noreferrer"
-						href="https://lexogrine.com/manager/remember"
-						tabIndex={-1}
-					>
-						Forgot Password?
-					</a>
+				<div style={{ display: showToken ? 'none' : 'block' }}>
+					<LabeledInput
+						name="email"
+						type="email"
+						label="Email"
+						id="email"
+						placeholder="Email"
+						value={email}
+						onChange={handleChange(setEmail)}
+						onKeyDown={onEnter}
+						tabIndex={0}
+					/>
 				</div>
-				<LabeledInput
-					name="totp"
-					type="text"
-					id="totp"
-					label="2FA Token"
-					placeholder="2FA Token"
-					value={token}
-					onChange={handleChange(setToken)}
-					onKeyDown={onEnter}
-					tabIndex={0}
-				/>
+				<div style={{ display: showToken ? 'none' : 'block' }}>
+					<LabeledInput
+						name="password"
+						type="password"
+						id="password"
+						label="Password"
+						placeholder="Password"
+						value={password}
+						onChange={handleChange(setPassword)}
+						onKeyDown={onEnter}
+						tabIndex={0}
+					/>
+				</div>
+				<div style={{ display: showToken ? 'none' : 'block' }}>
+					<div className="forget_password">
+						<a
+							target="_blank"
+							rel="noopener noreferrer"
+							href="https://lexogrine.com/manager/remember"
+							tabIndex={-1}
+						>
+							Forgot Password?
+						</a>
+					</div>
+				</div>
+				<div style={{ display: !showToken ? 'none' : 'block' }}>
+					<LabeledInput
+						name="totp"
+						type="text"
+						id="totp"
+						label="2FA Token"
+						placeholder="2FA Token"
+						value={token}
+						onChange={handleChange(setToken)}
+						onKeyDown={onEnter}
+						tabIndex={0}
+					/>
+				</div>
 				<div
 					onClick={loading ? undefined : login}
 					className={`button big strong green wide ${loading ? 'disabled' : ''}`}

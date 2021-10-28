@@ -771,6 +771,54 @@ img.smallLogo {
 		}
 	}
 }
+@keyframes SpinnerLoader {
+	0% {
+		transform: scale(1);
+	}
+	25% {
+		transform: scale(1.5);
+	}
+	50% {
+		transform: scale(1);
+	}
+	100% {
+		transform: scale(1);
+	}
+}
+.spinner-container {
+	display: flex;
+    padding: 3.5px 0;
+	.spinner-dot {
+		width: 8px;
+		height: 8px;
+		background-color: #6B1CFF;
+		border-radius: 50%;
+
+		margin: 0 2px;
+
+		transition-timing-function: linear;
+
+		animation-name: SpinnerLoader;
+		animation-iteration-count: infinite;
+		animation-duration: 1s;
+		animation-timing-function: linear;
+
+
+		&:nth-child(1){
+			animation-delay: 1s;
+		}
+		&:nth-child(2){
+			animation-delay: 1.2s;
+		}
+		&:nth-child(3){
+			animation-delay: 1.4s;
+		}
+	}
+}
+  
+.loading-spinner #loader_12 > g {
+
+}
 .hudRow.signed {
 	border: 1px solid #0aec0a4d;
 }
