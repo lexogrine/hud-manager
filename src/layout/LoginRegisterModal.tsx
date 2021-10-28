@@ -23,7 +23,7 @@ const LoginRegisterModal = ({ isOpen, loading, setLoading, loadUser, error }: IP
 		try {
 			const loginResponse = await api.user.login(email, password, token);
 			if (!loginResponse.success) {
-				if(error === 'You need to pass your one-time token'){
+				if (error === 'You need to pass your one-time token') {
 					setToken('');
 				}
 				return setLoading(false, loginResponse.message);
@@ -43,7 +43,7 @@ const LoginRegisterModal = ({ isOpen, loading, setLoading, loadUser, error }: IP
 
 	if (!isOpen) return null;
 
-	const showToken = (error === 'You need to pass your one-time token')
+	const showToken = error === 'You need to pass your one-time token';
 
 	return (
 		<div className="login-view">

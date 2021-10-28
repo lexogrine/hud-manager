@@ -147,8 +147,8 @@ export default async function () {
 
 		res.json({ result });
 
-		if(socket){
-			socket.send("registerGame", game);
+		if (socket) {
+			socket.send('registerGame', game);
 		}
 	});
 
