@@ -53,9 +53,9 @@ export const getMissingFields = (currentFields: I.CustomFieldStore, requiredFiel
 };
 
 export const canPlanUseCloudStorage = (plan?: I.LicenseType | null) => {
-	if(!plan || plan === "free") return false;
+	if (!plan || plan === 'free') return false;
 	return true;
-}
+};
 
 export const filterMatches = (match: I.Match, activeTab: string) => {
 	const boToWinsMap = {
