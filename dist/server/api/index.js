@@ -77,9 +77,7 @@ const validateCloudAbility = async (resource) => {
     if (!cfg.sync)
         return false;
     utils_1.canPlanUseCloudStorage;
-    if (!exports.customer.customer ||
-        !exports.customer.customer.license ||
-        !(0, utils_1.canPlanUseCloudStorage)(exports.customer.customer.license.type)) {
+    if (!exports.customer.customer || !exports.customer.customer.license || !(0, utils_1.canPlanUseCloudStorage)(exports.customer.customer.license.type)) {
         return false;
     }
     return !!exports.customer.game;

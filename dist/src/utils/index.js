@@ -52,7 +52,7 @@ const getMissingFields = (currentFields, requiredFields) => {
 };
 exports.getMissingFields = getMissingFields;
 const canPlanUseCloudStorage = (plan) => {
-    if (!plan || plan === "free")
+    if (!plan || plan === 'free')
         return false;
     return true;
 };
