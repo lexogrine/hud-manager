@@ -13,6 +13,7 @@ import config from './../../../../api/config';
 import { withTranslation } from 'react-i18next';
 import { GameOnly } from '../Config/Config';
 import { Component } from 'react';
+import { canPlanUseCloudStorage } from '../../../../utils';
 const isElectron = config.isElectron;
 
 function createCFG(
@@ -211,9 +212,7 @@ class Huds extends Component<IProps, IState> {
 		const { killfeed, radar, afx } = this.state.form;
 		const { active, config, isHUDOpened, huds } = this.state;
 		const t = this.props.t;
-		const available =
-			this.props.cxt.customer?.license?.type === 'professional' ||
-			this.props.cxt.customer?.license?.type === 'enterprise';
+		const available = canPlanUseCloudStorage(this.props.cxt.customer?.license?.type);
 		if (active) {
 			return (
 				<>

@@ -40,6 +40,7 @@ const middlewares_1 = require("../tournaments/middlewares");
 const tournaments_1 = require("../tournaments");
 const middlewares_2 = require("./middlewares");
 const socket_1 = require("../../socket");
+const utils_1 = require("../../../src/utils");
 const spaceLimit = {
     enterprise: Infinity,
     professional: 1024 * 1024 * 1024,
@@ -119,7 +120,7 @@ const verifyCloudSpace = async () => {
     const license = __1.customer.customer?.license.type;
     if (!license)
         return false;
-    if (license !== 'professional' && license !== 'enterprise' && license !== "personal") {
+    if (!(0, utils_1.canPlanUseCloudStorage)(license)) {
         return false;
     }
     const spaceUsed = (0, middlewares_2.getAmountOfBytesOfDatabases)();
@@ -277,7 +278,7 @@ const uploadLocalToCloud = async (game) => {
 exports.uploadLocalToCloud = uploadLocalToCloud;
 const checkCloudStatus = async (game) => {
     console.log('CHECKING CLOUD...');
-    if (__1.customer.customer?.license.type !== 'professional' && __1.customer.customer?.license.type !== 'enterprise' && __1.customer.customer?.license.type !== "personal") {
+    if (!(0, utils_1.canPlanUseCloudStorage)(__1.customer.customer?.license.type)) {
         return 'ALL_SYNCED';
     }
     const cfg = await (0, config_1.loadConfig)();

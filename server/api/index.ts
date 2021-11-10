@@ -30,6 +30,7 @@ import { checkCloudStatus, uploadLocalToCloud, downloadCloudToLocal } from './cl
 import { getRadarConfigs } from './huds/radar';
 import { SimpleWebSocket } from 'simple-websockets';
 import { socket } from './user';
+import { canPlanUseCloudStorage } from '../../src/utils';
 import { registerKeybind } from './keybinder';
 
 let init = true;
@@ -53,12 +54,11 @@ export const validateCloudAbility = async (resource?: I.AvailableResources) => {
 	if (resource && !I.availableResources.includes(resource)) return false;
 	const cfg = await config.loadConfig();
 	if (!cfg.sync) return false;
+	canPlanUseCloudStorage
 	if (
 		!customer.customer ||
 		!customer.customer.license ||
-		(customer.customer.license.type !== 'enterprise' &&
-			customer.customer.license.type !== 'personal' &&
-			customer.customer.license.type !== 'professional')
+		!canPlanUseCloudStorage(customer.customer.license.type)
 	) {
 		return false;
 	}

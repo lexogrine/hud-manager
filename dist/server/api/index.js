@@ -54,6 +54,7 @@ const __1 = require("..");
 const cloud_1 = require("./cloud");
 const radar_1 = require("./huds/radar");
 const user_1 = require("./user");
+const utils_1 = require("../../src/utils");
 const keybinder_1 = require("./keybinder");
 let init = true;
 const domain = user.USE_LOCAL_BACKEND ? '192.168.50.40:5000' : 'hmapi.lexogrine.com';
@@ -75,9 +76,10 @@ const validateCloudAbility = async (resource) => {
     const cfg = await config.loadConfig();
     if (!cfg.sync)
         return false;
+    utils_1.canPlanUseCloudStorage;
     if (!exports.customer.customer ||
         !exports.customer.customer.license ||
-        (exports.customer.customer.license.type !== 'enterprise' && exports.customer.customer.license.type !== 'personal' && exports.customer.customer.license.type !== 'professional')) {
+        !(0, utils_1.canPlanUseCloudStorage)(exports.customer.customer.license.type)) {
         return false;
     }
     return !!exports.customer.game;

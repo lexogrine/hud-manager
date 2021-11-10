@@ -67,6 +67,7 @@ socket_1.ioPromise.then(io => {
             }
         });
         socket.on('hud_config', async (data) => {
+            console.log('data incoming');
             socket_1.HUDState.set(data.hud, data.section, data.config);
             const hudData = socket_1.HUDState.get(data.hud);
             const extended = await hudstatemanager_1.HUDStateManager.extend(hudData);

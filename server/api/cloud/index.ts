@@ -15,6 +15,7 @@ import { replaceLocalTournaments } from '../tournaments/middlewares';
 import { getTournaments } from '../tournaments';
 import { getAmountOfBytesOfDatabases } from './middlewares';
 import { ioPromise } from '../../socket';
+import { canPlanUseCloudStorage } from '../../../src/utils';
 
 type SpaceLimit = {
 	[license in I.LicenseType]: number;
@@ -113,7 +114,7 @@ export const getSize = <T>(resource: T | T[]) => {
 const verifyCloudSpace = async () => {
 	const license = customer.customer?.license.type;
 	if (!license) return false;
-	if (license !== 'professional' && license !== 'enterprise' && license !== 'personal') {
+	if (!canPlanUseCloudStorage(license)) {
 		return false;
 	}
 	const spaceUsed = getAmountOfBytesOfDatabases();
@@ -293,11 +294,7 @@ export const uploadLocalToCloud = async (game: I.AvailableGames) => {
 
 export const checkCloudStatus = async (game: I.AvailableGames) => {
 	console.log('CHECKING CLOUD...');
-	if (
-		customer.customer?.license.type !== 'professional' &&
-		customer.customer?.license.type !== 'enterprise' &&
-		customer.customer?.license.type !== 'personal'
-	) {
+	if (!canPlanUseCloudStorage(customer.customer?.license.type)) {
 		return 'ALL_SYNCED';
 	}
 	const cfg = await loadConfig();

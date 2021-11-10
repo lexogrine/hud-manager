@@ -12,6 +12,7 @@ import { AvailableGames, CloudSyncStatus } from '../../types/interfaces';
 import SyncModal from './SyncModal';
 import Changelog from './ChangelogModal';
 import { Component } from 'react';
+import { canPlanUseCloudStorage } from '../utils';
 // import WindowBar from '../WindowBar';
 
 const isElectron = config.isElectron;
@@ -230,8 +231,7 @@ export default class Layout extends Component<{}, IState> {
 			synchronizationStatus,
 			config
 		} = this.state;
-		const available =
-			data.customer?.license?.type === 'professional' || data.customer?.license?.type === 'enterprise';
+		const available = canPlanUseCloudStorage(data.customer?.license?.type);
 		const active = Boolean(available && config?.sync);
 
 		// const url = new URL(window.location.href);

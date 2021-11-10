@@ -9,7 +9,9 @@ exports.getCloudSize = exports.getAmountOfBytesOfDatabases = void 0;
 //import { app } from 'electron';
 const database_1 = __importDefault(require("../../../init/database"));
 const getAmountOfBytesOfDatabases = () => {
-    const size = Object.values(database_1.default).map(db => Buffer.byteLength(JSON.stringify(db.getAllData()), 'utf8')).reduce((a, b) => a + b, 0);
+    const size = Object.values(database_1.default)
+        .map(db => Buffer.byteLength(JSON.stringify(db.getAllData()), 'utf8'))
+        .reduce((a, b) => a + b, 0);
     //const directory = path.join(app.getPath('userData'), 'databases');
     //const files = ['players', 'teams', 'matches', 'tournaments', 'custom', 'aco'];
     /*let bytes = 0;
