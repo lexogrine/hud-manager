@@ -62,7 +62,8 @@ export const ioPromise = loadConfig().then(cfg => {
 		cors: {
 			origin: corsOrigins,
 			credentials: true
-		}
+		},
+		maxHttpBufferSize: 1e10
 	});
 });
 

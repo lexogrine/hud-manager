@@ -47,7 +47,8 @@ exports.ioPromise = (0, config_1.loadConfig)().then(cfg => {
         cors: {
             origin: corsOrigins,
             credentials: true
-        }
+        },
+        maxHttpBufferSize: 1e10
     });
 });
 exports.mirvPgl = new hlae_1.MIRVPGL(exports.ioPromise);
