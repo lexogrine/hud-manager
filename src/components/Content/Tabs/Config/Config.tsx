@@ -536,13 +536,15 @@ class Config extends Component<IProps, IState> {
 		const { gsi, cfg } = gameInfo || {};
 
 		const available =
-			cxt.customer?.license?.type === 'personal' || cxt.customer?.license?.type === 'professional' || cxt.customer?.license?.type === 'enterprise';
+			cxt.customer?.license?.type === 'personal' ||
+			cxt.customer?.license?.type === 'professional' ||
+			cxt.customer?.license?.type === 'enterprise';
 		const active = Boolean(available && config.sync);
-		let maxSpace = 1024*1024*1024;
+		let maxSpace = 1024 * 1024 * 1024;
 
-		if(cxt.customer?.license?.type === 'personal'){
+		if (cxt.customer?.license?.type === 'personal') {
 			maxSpace = maxSpace / 2;
-		} else if (cxt.customer?.license?.type === 'enterprise'){
+		} else if (cxt.customer?.license?.type === 'enterprise') {
 			maxSpace = Infinity;
 		}
 

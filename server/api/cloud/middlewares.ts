@@ -5,8 +5,9 @@ import express from 'express';
 import databases from '../../../init/database';
 
 export const getAmountOfBytesOfDatabases = () => {
-
-	const size = Object.values(databases).map(db => Buffer.byteLength(JSON.stringify(db.getAllData()), 'utf8')).reduce((a, b) => a + b, 0);
+	const size = Object.values(databases)
+		.map(db => Buffer.byteLength(JSON.stringify(db.getAllData()), 'utf8'))
+		.reduce((a, b) => a + b, 0);
 
 	//const directory = path.join(app.getPath('userData'), 'databases');
 	//const files = ['players', 'teams', 'matches', 'tournaments', 'custom', 'aco'];

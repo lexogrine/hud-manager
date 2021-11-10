@@ -17,15 +17,15 @@ import { getAmountOfBytesOfDatabases } from './middlewares';
 import { ioPromise } from '../../socket';
 
 type SpaceLimit = {
-    [license in I.LicenseType]: number
-}
+	[license in I.LicenseType]: number;
+};
 
 const spaceLimit: SpaceLimit = {
-    enterprise: Infinity,
-    professional: 1024*1024*1024,
-    personal: 1024*1024*512,
-    free: 0
-}
+	enterprise: Infinity,
+	professional: 1024 * 1024 * 1024,
+	personal: 1024 * 1024 * 512,
+	free: 0
+};
 
 const cloudErrorHandler = () => {};
 
@@ -106,25 +106,25 @@ export const updateLastDateLocallyOnly = (game: I.AvailableGames | null, resourc
 	);
 };
 
-export const getSize = <T>(resource:T | T[]) => {
-    return Buffer.byteLength(JSON.stringify(resource), 'utf8');
-}
+export const getSize = <T>(resource: T | T[]) => {
+	return Buffer.byteLength(JSON.stringify(resource), 'utf8');
+};
 
 const verifyCloudSpace = async () => {
 	const license = customer.customer?.license.type;
-	if(!license) return false;
-	if (license !== 'professional' && license !== 'enterprise' && license !== "personal") {
+	if (!license) return false;
+	if (license !== 'professional' && license !== 'enterprise' && license !== 'personal') {
 		return false;
 	}
-    const spaceUsed = getAmountOfBytesOfDatabases();
+	const spaceUsed = getAmountOfBytesOfDatabases();
 
-    return spaceLimit[license] > spaceUsed;
-}
+	return spaceLimit[license] > spaceUsed;
+};
 
 export const addResource = async <T>(game: I.AvailableGames, resource: I.AvailableResources, data: T | T[]) => {
 	const io = await ioPromise;
 	const cfg = await loadConfig();
-	
+
 	const result = (await api(`storage/${resource}/${game}`, 'POST', data)) as {
 		entries: number;
 		lastUpdateTime: string | null;
@@ -133,7 +133,7 @@ export const addResource = async <T>(game: I.AvailableGames, resource: I.Availab
 		cloudErrorHandler();
 		return null;
 	}
-	if(!verifyCloudSpace()){
+	if (!verifyCloudSpace()) {
 		await setConfig({ ...cfg, sync: false });
 	}
 	io.emit('config');
@@ -155,7 +155,7 @@ export const updateResource = async <T>(game: I.AvailableGames, resource: I.Avai
 		cloudErrorHandler();
 		return null;
 	}
-	if(!verifyCloudSpace()){
+	if (!verifyCloudSpace()) {
 		await setConfig({ ...cfg, sync: false });
 	}
 	io.emit('config');
@@ -293,7 +293,11 @@ export const uploadLocalToCloud = async (game: I.AvailableGames) => {
 
 export const checkCloudStatus = async (game: I.AvailableGames) => {
 	console.log('CHECKING CLOUD...');
-	if (customer.customer?.license.type !== 'professional' && customer.customer?.license.type !== 'enterprise' && customer.customer?.license.type !== "personal") {
+	if (
+		customer.customer?.license.type !== 'professional' &&
+		customer.customer?.license.type !== 'enterprise' &&
+		customer.customer?.license.type !== 'personal'
+	) {
 		return 'ALL_SYNCED';
 	}
 	const cfg = await loadConfig();
