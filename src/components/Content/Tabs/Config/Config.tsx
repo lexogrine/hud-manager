@@ -87,8 +87,8 @@ const SpaceLeft = ({ max, used }: { max: number; used: number }) => {
 	);
 };
 
-const SpaceLeftContainer = () => (
-	<ContextData.Consumer>{cxt => <SpaceLeft max={1024 * 1024 * 1024} used={cxt.spaceUsed} />}</ContextData.Consumer>
+const SpaceLeftContainer = ({ maxSpace }: { maxSpace: number }) => (
+	<ContextData.Consumer>{cxt => <SpaceLeft max={maxSpace} used={cxt.spaceUsed} />}</ContextData.Consumer>
 );
 
 interface IState {
@@ -536,8 +536,15 @@ class Config extends Component<IProps, IState> {
 		const { gsi, cfg } = gameInfo || {};
 
 		const available =
-			cxt.customer?.license?.type === 'professional' || cxt.customer?.license?.type === 'enterprise';
+			cxt.customer?.license?.type === 'personal' || cxt.customer?.license?.type === 'professional' || cxt.customer?.license?.type === 'enterprise';
 		const active = Boolean(available && config.sync);
+		let maxSpace = 1024*1024*1024;
+
+		if(cxt.customer?.license?.type === 'personal'){
+			maxSpace = maxSpace / 2;
+		} else if (cxt.customer?.license?.type === 'enterprise'){
+			maxSpace = Infinity;
+		}
 
 		// const didBuy = cxt.customer?.license?.type && cxt.customer.license.type !== 'free';
 
@@ -551,7 +558,7 @@ class Config extends Component<IProps, IState> {
 						players={conflict.players}
 						save={this.import(data, cxt.reload)}
 					/>
-					{active ? <SpaceLeftContainer /> : null}
+					{active ? <SpaceLeftContainer maxSpace={maxSpace} /> : null}
 					<ElectronOnly>
 						<Col md="12" className="config-entry">
 							<div className="config-description">

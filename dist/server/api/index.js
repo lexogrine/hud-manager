@@ -77,7 +77,7 @@ const validateCloudAbility = async (resource) => {
         return false;
     if (!exports.customer.customer ||
         !exports.customer.customer.license ||
-        (exports.customer.customer.license.type !== 'enterprise' && exports.customer.customer.license.type !== 'professional')) {
+        (exports.customer.customer.license.type !== 'enterprise' && exports.customer.customer.license.type !== 'personal' && exports.customer.customer.license.type !== 'professional')) {
         return false;
     }
     return !!exports.customer.game;

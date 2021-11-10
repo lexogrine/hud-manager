@@ -56,7 +56,7 @@ export const validateCloudAbility = async (resource?: I.AvailableResources) => {
 	if (
 		!customer.customer ||
 		!customer.customer.license ||
-		(customer.customer.license.type !== 'enterprise' && customer.customer.license.type !== 'professional')
+		(customer.customer.license.type !== 'enterprise' && customer.customer.license.type !== 'personal' && customer.customer.license.type !== 'professional')
 	) {
 		return false;
 	}

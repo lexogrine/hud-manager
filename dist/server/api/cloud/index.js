@@ -22,7 +22,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.checkCloudStatus = exports.uploadLocalToCloud = exports.downloadCloudToLocal = exports.getResource = exports.deleteResource = exports.updateResource = exports.addResource = exports.updateLastDateLocallyOnly = void 0;
+exports.checkCloudStatus = exports.uploadLocalToCloud = exports.downloadCloudToLocal = exports.getResource = exports.deleteResource = exports.updateResource = exports.addResource = exports.getSize = exports.updateLastDateLocallyOnly = void 0;
 const user_1 = require("./../user");
 const I = __importStar(require("../../../types/interfaces"));
 const config_1 = require("../config");
@@ -38,6 +38,14 @@ const fields_1 = require("../fields");
 const Sentry = __importStar(require("@sentry/node"));
 const middlewares_1 = require("../tournaments/middlewares");
 const tournaments_1 = require("../tournaments");
+const middlewares_2 = require("./middlewares");
+const socket_1 = require("../../socket");
+const spaceLimit = {
+    enterprise: Infinity,
+    professional: 1024 * 1024 * 1024,
+    personal: 1024 * 1024 * 512,
+    free: 0
+};
 const cloudErrorHandler = () => { };
 const getResources = (game) => {
     return Promise.all([
@@ -103,17 +111,39 @@ const updateLastDateLocallyOnly = (game, resources) => {
     updateLastDateLocally(game, resources.map(resource => ({ resource, status: new Date().toISOString() })), true);
 };
 exports.updateLastDateLocallyOnly = updateLastDateLocallyOnly;
+const getSize = (resource) => {
+    return Buffer.byteLength(JSON.stringify(resource), 'utf8');
+};
+exports.getSize = getSize;
+const verifyCloudSpace = async () => {
+    const license = __1.customer.customer?.license.type;
+    if (!license)
+        return false;
+    if (license !== 'professional' && license !== 'enterprise' && license !== "personal") {
+        return false;
+    }
+    const spaceUsed = (0, middlewares_2.getAmountOfBytesOfDatabases)();
+    return spaceLimit[license] > spaceUsed;
+};
 const addResource = async (game, resource, data) => {
+    const io = await socket_1.ioPromise;
+    const cfg = await (0, config_1.loadConfig)();
     const result = (await (0, user_1.api)(`storage/${resource}/${game}`, 'POST', data));
     if (!result) {
         cloudErrorHandler();
         return null;
     }
+    if (!verifyCloudSpace()) {
+        await (0, config_1.setConfig)({ ...cfg, sync: false });
+    }
+    io.emit('config');
     updateLastDateLocally(game, [{ resource, status: result.lastUpdateTime }]);
     return result;
 };
 exports.addResource = addResource;
 const updateResource = async (game, resource, data) => {
+    const io = await socket_1.ioPromise;
+    const cfg = await (0, config_1.loadConfig)();
     const status = await (0, exports.checkCloudStatus)(game);
     if (status !== 'ALL_SYNCED') {
         return;
@@ -123,6 +153,10 @@ const updateResource = async (game, resource, data) => {
         cloudErrorHandler();
         return null;
     }
+    if (!verifyCloudSpace()) {
+        await (0, config_1.setConfig)({ ...cfg, sync: false });
+    }
+    io.emit('config');
     updateLastDateLocally(game, [{ resource, status: result.lastUpdateTime }]);
     return result;
 };
@@ -243,7 +277,7 @@ const uploadLocalToCloud = async (game) => {
 exports.uploadLocalToCloud = uploadLocalToCloud;
 const checkCloudStatus = async (game) => {
     console.log('CHECKING CLOUD...');
-    if (__1.customer.customer?.license.type !== 'professional' && __1.customer.customer?.license.type !== 'enterprise') {
+    if (__1.customer.customer?.license.type !== 'professional' && __1.customer.customer?.license.type !== 'enterprise' && __1.customer.customer?.license.type !== "personal") {
         return 'ALL_SYNCED';
     }
     const cfg = await (0, config_1.loadConfig)();

@@ -66,6 +66,7 @@ export default class Layout extends Component<{}, IState> {
 	}
 	getSpaceUsed = async () => {
 		const response = await api.cloud.size();
+		console.log(response);
 		if (!response) return;
 		const { data } = this.state;
 		data.spaceUsed = response.size;
@@ -101,6 +102,7 @@ export default class Layout extends Component<{}, IState> {
 
 		socket.on('config', () => {
 			this.loadConfig();
+			this.getSpaceUsed();
 		});
 	}
 	loadConfig = async () => {
