@@ -151,7 +151,7 @@ export default async function () {
 			if (socket) {
 				socket.send('registerGame', game);
 			}
-		}
+		};
 
 		setTimeout(() => {
 			registerGame();
