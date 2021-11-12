@@ -569,7 +569,11 @@ async function loadHUD(base64, name, existingUUID) {
                     res(hudData);
                 }
                 else {
-                    throw new Error();
+                    if (fs.existsSync(hudPath)) {
+                        (0, exports.remove)(hudPath);
+                    }
+                    (0, exports.removeArchives)();
+                    res(null);
                 }
             });
             tempUnzipper.on('error', () => {

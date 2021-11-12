@@ -13,12 +13,12 @@ export async function getACOByMapName(mapName: string): Promise<MapConfig | null
 				return res(null);
 			}
 
-			if(!customer.customer || customer.customer.license.type === "free"){
+			if (!customer.customer || customer.customer.license.type === 'free') {
 				return res(null);
 			}
 
-			if(customer.customer.license.type === "personal"){
-				return res({ ...acoConfig, areas: acoConfig.areas.slice(0,4) })
+			if (customer.customer.license.type === 'personal') {
+				return res({ ...acoConfig, areas: acoConfig.areas.slice(0, 4) });
 			}
 
 			return res(acoConfig);

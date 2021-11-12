@@ -12,7 +12,7 @@ export const getACOByMap: express.RequestHandler = async (req, res) => {
 		return res.sendStatus(422);
 	}
 
-	if(!customer.customer || customer.customer.license.type === "free"){
+	if (!customer.customer || customer.customer.license.type === 'free') {
 		return res.sendStatus(422);
 	}
 
@@ -21,7 +21,7 @@ export const getACOByMap: express.RequestHandler = async (req, res) => {
 	if (!aco) {
 		return res.sendStatus(404);
 	}
-	
+
 	return res.json(aco);
 };
 

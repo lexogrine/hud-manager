@@ -568,7 +568,11 @@ async function loadHUD(base64: string, name: string, existingUUID?: string): Pro
 					fs.writeFileSync(path.join(hudPath, 'uuid.lhm'), existingUUID || uuidv4(), 'utf8');
 					res(hudData);
 				} else {
-					throw new Error();
+					if (fs.existsSync(hudPath)) {
+						remove(hudPath);
+					}
+					removeArchives();
+					res(null);
 				}
 			});
 			tempUnzipper.on('error', () => {

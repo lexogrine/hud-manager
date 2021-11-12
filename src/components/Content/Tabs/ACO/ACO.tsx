@@ -101,7 +101,6 @@ const ACO = ({ cxt }: IProps) => {
 		api.aco.set(currentACO).then(loadACOs);
 	};
 
-
 	useEffect(() => {
 		loadACOs();
 		socket.on('directorStatus', (status: boolean) => {
@@ -114,13 +113,16 @@ const ACO = ({ cxt }: IProps) => {
 	const config = 'config' in activeMapConfig ? activeMapConfig.config : activeMapConfig.configs[0].config;
 	const areas = acos.find(aco => aco.map === activeMap)?.areas || [];
 
-	const isAddingDisabled = !cxt.customer || cxt.customer.license.type === "free" || (cxt.customer.license.type === "personal" && areas.length >= 4);
+	const isAddingDisabled =
+		!cxt.customer ||
+		cxt.customer.license.type === 'free' ||
+		(cxt.customer.license.type === 'personal' && areas.length >= 4);
 
 	const addArea = () => {
-		if(isAddingDisabled) return;
+		if (isAddingDisabled) return;
 		setNewArea([]);
 		setActiveConfig(null);
-	}
+	};
 
 	return (
 		<>
@@ -210,7 +212,7 @@ const ACO = ({ cxt }: IProps) => {
 				{!newArea ? (
 					<>
 						<div
-							className={`button green strong big wide ${isAddingDisabled ? 'disabled' :''}`}
+							className={`button green strong big wide ${isAddingDisabled ? 'disabled' : ''}`}
 							onClick={addArea}
 						>
 							Add area
