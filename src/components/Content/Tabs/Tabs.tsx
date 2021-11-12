@@ -75,7 +75,7 @@ const Tabs = ({ activeTab, data, toggle, gsiCheck, setOnBackClick, search }: IPr
 					</TabPane>
 					<TabPane tabId="aco">
 						<ForPlansOnly required="professional">
-							<ACO></ACO>
+							<ACO cxt={cxt}></ACO>
 						</ForPlansOnly>
 					</TabPane>
 					<TabPane tabId="cameras">

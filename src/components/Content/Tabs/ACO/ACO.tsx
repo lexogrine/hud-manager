@@ -10,8 +10,12 @@ import AddConfigModal from './AddConfigModal/AddConfigModal';
 import { socket } from '../Live/Live';
 import Switch from '../../../Switch/Switch';
 import { useTranslation } from 'react-i18next';
+import { IContextData } from '../../../Context';
 
-const ACO = () => {
+interface IProps {
+	cxt: IContextData;
+}
+const ACO = ({ cxt }: IProps) => {
 	const [acos, setACOs] = useState<MapConfig[]>([]);
 	const [activeMap, setActiveMap] = useState<string>('de_mirage');
 	const [activeConfig, setActiveConfig] = useState<MapAreaConfig | null>(null);
@@ -97,6 +101,7 @@ const ACO = () => {
 		api.aco.set(currentACO).then(loadACOs);
 	};
 
+
 	useEffect(() => {
 		loadACOs();
 		socket.on('directorStatus', (status: boolean) => {
@@ -108,6 +113,15 @@ const ACO = () => {
 	const activeMapConfig = maps[activeMap];
 	const config = 'config' in activeMapConfig ? activeMapConfig.config : activeMapConfig.configs[0].config;
 	const areas = acos.find(aco => aco.map === activeMap)?.areas || [];
+
+	const isAddingDisabled = !cxt.customer || cxt.customer.license.type === "free" || (cxt.customer.license.type === "personal" && areas.length >= 4);
+
+	const addArea = () => {
+		if(isAddingDisabled) return;
+		setNewArea([]);
+		setActiveConfig(null);
+	}
+
 	return (
 		<>
 			<SaveAreaModal
@@ -196,11 +210,8 @@ const ACO = () => {
 				{!newArea ? (
 					<>
 						<div
-							className="button green strong big wide"
-							onClick={() => {
-								setNewArea([]);
-								setActiveConfig(null);
-							}}
+							className={`button green strong big wide ${isAddingDisabled ? 'disabled' :''}`}
+							onClick={addArea}
 						>
 							Add area
 						</div>

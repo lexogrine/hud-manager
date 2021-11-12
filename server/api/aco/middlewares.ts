@@ -1,4 +1,5 @@
 import express from 'express';
+import { customer } from '..';
 import { getACOByMapName, getACOs, updateACO } from './index';
 
 export const getACO: express.RequestHandler = async (req, res) => {
@@ -11,12 +12,16 @@ export const getACOByMap: express.RequestHandler = async (req, res) => {
 		return res.sendStatus(422);
 	}
 
+	if(!customer.customer || customer.customer.license.type === "free"){
+		return res.sendStatus(422);
+	}
+
 	const aco = await getACOByMapName(req.params.mapName);
 
 	if (!aco) {
 		return res.sendStatus(404);
 	}
-
+	
 	return res.json(aco);
 };
 

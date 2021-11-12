@@ -15,6 +15,12 @@ async function getACOByMapName(mapName) {
             if (err) {
                 return res(null);
             }
+            if (!__1.customer.customer || __1.customer.customer.license.type === "free") {
+                return res(null);
+            }
+            if (__1.customer.customer.license.type === "personal") {
+                return res({ ...acoConfig, areas: acoConfig.areas.slice(0, 4) });
+            }
             return res(acoConfig);
         });
     });

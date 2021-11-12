@@ -1,6 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateACOByMap = exports.getACOByMap = exports.getACO = void 0;
+const __1 = require("..");
 const index_1 = require("./index");
 const getACO = async (req, res) => {
     const acos = await (0, index_1.getACOs)();
@@ -9,6 +10,9 @@ const getACO = async (req, res) => {
 exports.getACO = getACO;
 const getACOByMap = async (req, res) => {
     if (!req.params.mapName) {
+        return res.sendStatus(422);
+    }
+    if (!__1.customer.customer || __1.customer.customer.license.type === "free") {
         return res.sendStatus(422);
     }
     const aco = await (0, index_1.getACOByMapName)(req.params.mapName);
