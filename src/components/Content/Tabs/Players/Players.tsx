@@ -296,7 +296,7 @@ const PlayersTab = ({ cxt, data, search }: IProps) => {
 				onExtraChange={extraChangeHandler as I.onExtraChangeFunction}
 				save={save}
 				deletePlayer={deletePlayer}
-				fields={cxt.fields.teams}
+				fields={cxt.fields.players}
 				cxt={cxt}
 				teams={cxt.teams}
 			/>

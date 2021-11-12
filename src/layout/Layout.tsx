@@ -12,6 +12,7 @@ import { AvailableGames, CloudSyncStatus } from '../../types/interfaces';
 import SyncModal from './SyncModal';
 import Changelog from './ChangelogModal';
 import { Component } from 'react';
+import { canPlanUseCloudStorage } from '../utils';
 // import WindowBar from '../WindowBar';
 
 const isElectron = config.isElectron;
@@ -66,6 +67,7 @@ export default class Layout extends Component<{}, IState> {
 	}
 	getSpaceUsed = async () => {
 		const response = await api.cloud.size();
+		console.log(response);
 		if (!response) return;
 		const { data } = this.state;
 		data.spaceUsed = response.size;
@@ -101,6 +103,7 @@ export default class Layout extends Component<{}, IState> {
 
 		socket.on('config', () => {
 			this.loadConfig();
+			this.getSpaceUsed();
 		});
 	}
 	loadConfig = async () => {
@@ -228,8 +231,7 @@ export default class Layout extends Component<{}, IState> {
 			synchronizationStatus,
 			config
 		} = this.state;
-		const available =
-			data.customer?.license?.type === 'professional' || data.customer?.license?.type === 'enterprise';
+		const available = canPlanUseCloudStorage(data.customer?.license?.type);
 		const active = Boolean(available && config?.sync);
 
 		// const url = new URL(window.location.href);

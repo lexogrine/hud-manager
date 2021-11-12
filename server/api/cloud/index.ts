@@ -4,16 +4,29 @@ import { loadConfig, setConfig } from '../config';
 import { getPlayersList, replaceLocalPlayers } from '../players';
 import { getTeamsList, replaceLocalTeams } from '../teams';
 import { getACOs, replaceLocalMapConfigs } from '../aco';
-import { getActiveGameMatches, getMatches, replaceLocalMatches } from '../matches';
+import { getActiveGameMatches, replaceLocalMatches } from '../matches';
 import { app } from 'electron';
 import path from 'path';
 import fs from 'fs';
 import { customer } from '..';
 import { getCustomFieldsDb, replaceLocalCustomFieldStores } from '../fields';
 import * as Sentry from '@sentry/node';
-import c from 'fetch-cookie';
 import { replaceLocalTournaments } from '../tournaments/middlewares';
 import { getTournaments } from '../tournaments';
+import { getAmountOfBytesOfDatabases } from './middlewares';
+import { ioPromise } from '../../socket';
+import { canPlanUseCloudStorage } from '../../../src/utils';
+
+type SpaceLimit = {
+	[license in I.LicenseType]: number;
+};
+
+const spaceLimit: SpaceLimit = {
+	enterprise: Infinity,
+	professional: 1024 * 1024 * 1024,
+	personal: 1024 * 1024 * 512,
+	free: 0
+};
 
 const cloudErrorHandler = () => {};
 
@@ -94,7 +107,25 @@ export const updateLastDateLocallyOnly = (game: I.AvailableGames | null, resourc
 	);
 };
 
+export const getSize = <T>(resource: T | T[]) => {
+	return Buffer.byteLength(JSON.stringify(resource), 'utf8');
+};
+
+const verifyCloudSpace = async () => {
+	const license = customer.customer?.license.type;
+	if (!license) return false;
+	if (!canPlanUseCloudStorage(license)) {
+		return false;
+	}
+	const spaceUsed = getAmountOfBytesOfDatabases();
+
+	return spaceLimit[license] > spaceUsed;
+};
+
 export const addResource = async <T>(game: I.AvailableGames, resource: I.AvailableResources, data: T | T[]) => {
+	const io = await ioPromise;
+	const cfg = await loadConfig();
+
 	const result = (await api(`storage/${resource}/${game}`, 'POST', data)) as {
 		entries: number;
 		lastUpdateTime: string | null;
@@ -103,11 +134,17 @@ export const addResource = async <T>(game: I.AvailableGames, resource: I.Availab
 		cloudErrorHandler();
 		return null;
 	}
+	if (!verifyCloudSpace()) {
+		await setConfig({ ...cfg, sync: false });
+	}
+	io.emit('config');
 	updateLastDateLocally(game, [{ resource, status: result.lastUpdateTime }]);
 	return result;
 };
 
 export const updateResource = async <T>(game: I.AvailableGames, resource: I.AvailableResources, data: T) => {
+	const io = await ioPromise;
+	const cfg = await loadConfig();
 	const status = await checkCloudStatus(game);
 	if (status !== 'ALL_SYNCED') {
 		return;
@@ -119,6 +156,10 @@ export const updateResource = async <T>(game: I.AvailableGames, resource: I.Avai
 		cloudErrorHandler();
 		return null;
 	}
+	if (!verifyCloudSpace()) {
+		await setConfig({ ...cfg, sync: false });
+	}
+	io.emit('config');
 	updateLastDateLocally(game, [{ resource, status: result.lastUpdateTime }]);
 	return result;
 };
@@ -253,7 +294,7 @@ export const uploadLocalToCloud = async (game: I.AvailableGames) => {
 
 export const checkCloudStatus = async (game: I.AvailableGames) => {
 	console.log('CHECKING CLOUD...');
-	if (customer.customer?.license.type !== 'professional' && customer.customer?.license.type !== 'enterprise') {
+	if (!canPlanUseCloudStorage(customer.customer?.license.type)) {
 		return 'ALL_SYNCED';
 	}
 	const cfg = await loadConfig();

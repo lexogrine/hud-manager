@@ -11,6 +11,7 @@ import Switch from '../../../Switch/Switch';
 import { socket } from '../Live/Live';
 import { Component } from 'react';
 import LabeledInput from '../../../LabeledInput';
+import { canPlanUseCloudStorage } from '../../../../utils';
 
 const { isElectron } = config;
 
@@ -87,8 +88,8 @@ const SpaceLeft = ({ max, used }: { max: number; used: number }) => {
 	);
 };
 
-const SpaceLeftContainer = () => (
-	<ContextData.Consumer>{cxt => <SpaceLeft max={1024 * 1024 * 1024} used={cxt.spaceUsed} />}</ContextData.Consumer>
+const SpaceLeftContainer = ({ maxSpace }: { maxSpace: number }) => (
+	<ContextData.Consumer>{cxt => <SpaceLeft max={maxSpace} used={cxt.spaceUsed} />}</ContextData.Consumer>
 );
 
 interface IState {
@@ -491,8 +492,7 @@ class Config extends Component<IProps, IState> {
 	};
 	toggleHandler = (event: any) => {
 		const { cxt } = this.props;
-		const available =
-			cxt.customer?.license?.type === 'professional' || cxt.customer?.license?.type === 'enterprise';
+		const available = canPlanUseCloudStorage(cxt.customer?.license?.type);
 		if (!available) return;
 		const val = event.target.checked;
 		this.setState(state => {
@@ -535,9 +535,15 @@ class Config extends Component<IProps, IState> {
 		const gameInfo = this.state[(cxt.game || 'csgo') as 'dota2' | 'csgo'] as GameInfo;
 		const { gsi, cfg } = gameInfo || {};
 
-		const available =
-			cxt.customer?.license?.type === 'professional' || cxt.customer?.license?.type === 'enterprise';
+		const available = canPlanUseCloudStorage(cxt.customer?.license?.type);
 		const active = Boolean(available && config.sync);
+		let maxSpace = 1024 * 1024 * 1024;
+
+		if (cxt.customer?.license?.type === 'personal') {
+			maxSpace = maxSpace / 2;
+		} else if (cxt.customer?.license?.type === 'enterprise') {
+			maxSpace = Infinity;
+		}
 
 		// const didBuy = cxt.customer?.license?.type && cxt.customer.license.type !== 'free';
 
@@ -551,7 +557,7 @@ class Config extends Component<IProps, IState> {
 						players={conflict.players}
 						save={this.import(data, cxt.reload)}
 					/>
-					{active ? <SpaceLeftContainer /> : null}
+					{active ? <SpaceLeftContainer maxSpace={maxSpace} /> : null}
 					<ElectronOnly>
 						<Col md="12" className="config-entry">
 							<div className="config-description">
