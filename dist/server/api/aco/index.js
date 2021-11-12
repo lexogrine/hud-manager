@@ -15,6 +15,9 @@ async function getACOByMapName(mapName) {
             if (err) {
                 return res(null);
             }
+            if (!acoConfig) {
+                return res(null);
+            }
             if (!__1.customer.customer || __1.customer.customer.license.type === 'free') {
                 return res(null);
             }

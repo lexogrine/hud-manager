@@ -28,8 +28,7 @@ const initGameConnection = async () => {
     const toggleDirector = () => {
         if (!__1.customer.customer ||
             !__1.customer.customer.license ||
-            __1.customer.customer.license?.type === 'free' ||
-            __1.customer.customer.license?.type === 'personal') {
+            __1.customer.customer.license?.type === 'free') {
             return;
         }
         director.status ? director.stop() : director.start();

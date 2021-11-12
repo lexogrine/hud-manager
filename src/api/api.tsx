@@ -156,7 +156,7 @@ export default {
 		startServices: (game: AvailableGames): Promise<{ result: CloudSyncStatus }> => apiV2(`games/start/${game}`)
 	},
 	cloud: {
-		upload: () => apiV2('cloud/upload', 'POST'),
+		upload: (force = false) => apiV2(force ? 'cloud/upload?&replace=force' : 'cloud/upload', 'POST'),
 		download: () => apiV2('cloud/download', 'POST'),
 		size: (): Promise<{ size: number }> => apiV2('cloud/size')
 	},

@@ -7,7 +7,6 @@ exports.logout = exports.getCurrent = exports.loginHandler = exports.api = expor
 const electron_1 = require("electron");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const node_fetch_1 = __importDefault(require("node-fetch"));
-const publickey_1 = require("./publickey");
 const api_1 = require("./../api");
 const tough_cookie_1 = require("tough-cookie");
 const path_1 = __importDefault(require("path"));
@@ -159,7 +158,8 @@ const userHandlers = {
 };
 const verifyToken = (token) => {
     try {
-        const result = jsonwebtoken_1.default.verify(token, publickey_1.publicKey, { algorithms: ['RS256'] });
+        const result = jsonwebtoken_1.default.decode(token);
+        //jwt.decode()
         if (result.user && result.license) {
             return result;
         }

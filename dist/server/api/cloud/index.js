@@ -126,10 +126,14 @@ const verifyCloudSpace = async () => {
     const spaceUsed = (0, middlewares_2.getAmountOfBytesOfDatabases)();
     return spaceLimit[license] > spaceUsed;
 };
-const addResource = async (game, resource, data) => {
+const addResource = async (game, resource, data, replaceCurrentCloud = false) => {
     const io = await socket_1.ioPromise;
     const cfg = await (0, config_1.loadConfig)();
-    const result = (await (0, user_1.api)(`storage/${resource}/${game}`, 'POST', data));
+    let url = `storage/${resource}/${game}`;
+    if (replaceCurrentCloud) {
+        url = `storage/${resource}/${game}?&replace=force`;
+    }
+    const result = (await (0, user_1.api)(url, 'POST', data));
     if (!result) {
         cloudErrorHandler();
         return null;
@@ -250,7 +254,7 @@ const downloadCloudToLocal = async (game) => {
     }
 };
 exports.downloadCloudToLocal = downloadCloudToLocal;
-const uploadLocalToCloud = async (game) => {
+const uploadLocalToCloud = async (game, replaceCurrentCloud = false) => {
     const resources = await getResources(game);
     const mappedResources = {
         players: resources[0],
@@ -263,7 +267,7 @@ const uploadLocalToCloud = async (game) => {
     try {
         const result = [];
         for (const resource of I.availableResources) {
-            const response = await (0, exports.addResource)(game, resource, mappedResources[resource]);
+            const response = await (0, exports.addResource)(game, resource, mappedResources[resource], replaceCurrentCloud);
             if (!response)
                 return false;
             result.push(response);
@@ -289,6 +293,9 @@ const checkCloudStatus = async (game) => {
     }
     try {
         const result = (await (0, user_1.api)(`storage/${game}/status`));
+        if (!result) {
+            return 'UNKNOWN_ERROR';
+        }
         if (result.every(status => !status.status)) {
             // No remote resources
             // Ask if to upload current db - rejection will result in cloud option turned off

@@ -18,7 +18,7 @@ const SyncModal = ({ isOpen, setOpen, syncStatus, reload }: IProps) => {
 			case 'NO_UPLOADED_RESOURCES':
 				return "It seems that you haven't uploaded to cloud yet. You can upload your current database, or disable synchronization on this machine";
 			case 'NO_SYNC_LOCAL':
-				return 'Your local database is not synchronized with the cloud storage. You can download the database or disable synchronization. Be aware, that download will remove the target database. What do you want to do?';
+				return 'Your local database is not synchronized with the cloud storage. You can download or upload the database or disable synchronization. Be aware, that download will remove what you currently have on this PC, and upload will ERASE cloud storage content. What do you want to do?';
 			case 'UNKNOWN_ERROR':
 			default:
 				return "There's been an error, so to prevent data-loss we turned off synchronization";
@@ -70,6 +70,22 @@ const SyncModal = ({ isOpen, setOpen, syncStatus, reload }: IProps) => {
 							api.cloud
 								.download()
 								.then(reload)
+								.then(() => {
+									setLoading(false);
+									setOpen(false);
+								})
+								.catch(() => {
+									// Handle error
+								});
+						},
+						type: ''
+					},
+					{
+						label: 'Upload',
+						action: () => {
+							setLoading(true);
+							api.cloud
+								.upload(true)
 								.then(() => {
 									setLoading(false);
 									setOpen(false);

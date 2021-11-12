@@ -13,6 +13,10 @@ export async function getACOByMapName(mapName: string): Promise<MapConfig | null
 				return res(null);
 			}
 
+			if(!acoConfig){
+				return res(null);
+			}
+
 			if (!customer.customer || customer.customer.license.type === 'free') {
 				return res(null);
 			}

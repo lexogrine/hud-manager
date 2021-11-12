@@ -159,7 +159,10 @@ export default async function () {
 	app.route('/api/cloud/upload').post(async (req, res) => {
 		const game = customer.game;
 		if (!game) return res.sendStatus(403);
-		const result = await uploadLocalToCloud(game);
+
+		const force = req.query.replace === "force";
+		
+		const result = await uploadLocalToCloud(game, force);
 
 		return res.json({ result });
 	});

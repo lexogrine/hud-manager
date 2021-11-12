@@ -271,7 +271,7 @@ const TeamsTab = ({ cxt, search }: IProps) => {
 	</div>*/}
 			<DeleteModal
 				title="Delete teams"
-				content={`Are you sure you want to remove ${selectedTeams.length} players?`}
+				content={`Are you sure you want to remove ${selectedTeams.length} teams?`}
 				isOpen={deleteModalState}
 				toggle={() => setDeleteState(false)}
 				confirmDelete={deleteTeams}

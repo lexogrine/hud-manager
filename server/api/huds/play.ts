@@ -31,8 +31,7 @@ export const initGameConnection = async () => {
 		if (
 			!customer.customer ||
 			!customer.customer.license ||
-			customer.customer.license?.type === 'free' ||
-			customer.customer.license?.type === 'personal'
+			customer.customer.license?.type === 'free'
 		) {
 			return;
 		}

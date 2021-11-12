@@ -146,7 +146,8 @@ async function default_1() {
         const game = exports.customer.game;
         if (!game)
             return res.sendStatus(403);
-        const result = await (0, cloud_1.uploadLocalToCloud)(game);
+        const force = req.query.replace === "force";
+        const result = await (0, cloud_1.uploadLocalToCloud)(game, force);
         return res.json({ result });
     });
     __1.app.route('/api/cloud/download').post(async (req, res) => {

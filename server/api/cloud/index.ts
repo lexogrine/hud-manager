@@ -24,7 +24,7 @@ type SpaceLimit = {
 const spaceLimit: SpaceLimit = {
 	enterprise: Infinity,
 	professional: 1024 * 1024 * 1024,
-	personal: 1024 * 1024 * 512,
+	personal: 1024 * 1024 * 100,
 	free: 0
 };
 
@@ -122,11 +122,17 @@ const verifyCloudSpace = async () => {
 	return spaceLimit[license] > spaceUsed;
 };
 
-export const addResource = async <T>(game: I.AvailableGames, resource: I.AvailableResources, data: T | T[]) => {
+export const addResource = async <T>(game: I.AvailableGames, resource: I.AvailableResources, data: T | T[], replaceCurrentCloud = false) => {
 	const io = await ioPromise;
 	const cfg = await loadConfig();
 
-	const result = (await api(`storage/${resource}/${game}`, 'POST', data)) as {
+	let url = `storage/${resource}/${game}`;
+
+	if(replaceCurrentCloud){
+		url = `storage/${resource}/${game}?&replace=force`
+	}
+
+	const result = (await api(url, 'POST', data)) as {
 		entries: number;
 		lastUpdateTime: string | null;
 	};
@@ -267,7 +273,7 @@ export const downloadCloudToLocal = async (game: I.AvailableGames) => {
 	}
 };
 
-export const uploadLocalToCloud = async (game: I.AvailableGames) => {
+export const uploadLocalToCloud = async (game: I.AvailableGames, replaceCurrentCloud = false) => {
 	const resources = await getResources(game);
 
 	const mappedResources = {
@@ -281,7 +287,7 @@ export const uploadLocalToCloud = async (game: I.AvailableGames) => {
 	try {
 		const result = [] as { entries: number; lastUpdateTime: string | null }[];
 		for (const resource of I.availableResources) {
-			const response = await addResource(game, resource, mappedResources[resource]);
+			const response = await addResource(game, resource, mappedResources[resource], replaceCurrentCloud);
 			if (!response) return false;
 			result.push(response);
 		}
@@ -307,6 +313,9 @@ export const checkCloudStatus = async (game: I.AvailableGames) => {
 
 	try {
 		const result = (await api(`storage/${game}/status`)) as I.ResourceResponseStatus[];
+		if(!result){
+			return 'UNKNOWN_ERROR';
+		}
 		if (result.every(status => !status.status)) {
 			// No remote resources
 			// Ask if to upload current db - rejection will result in cloud option turned off
