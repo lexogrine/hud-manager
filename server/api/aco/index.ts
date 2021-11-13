@@ -13,7 +13,7 @@ export async function getACOByMapName(mapName: string): Promise<MapConfig | null
 				return res(null);
 			}
 
-			if(!acoConfig){
+			if (!acoConfig) {
 				return res(null);
 			}
 

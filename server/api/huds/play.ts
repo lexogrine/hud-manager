@@ -28,11 +28,7 @@ export const initGameConnection = async () => {
 	director.pgl = mirvPgl;
 
 	const toggleDirector = () => {
-		if (
-			!customer.customer ||
-			!customer.customer.license ||
-			customer.customer.license?.type === 'free'
-		) {
+		if (!customer.customer || !customer.customer.license || customer.customer.license?.type === 'free') {
 			return;
 		}
 		director.status ? director.stop() : director.start();

@@ -122,14 +122,19 @@ const verifyCloudSpace = async () => {
 	return spaceLimit[license] > spaceUsed;
 };
 
-export const addResource = async <T>(game: I.AvailableGames, resource: I.AvailableResources, data: T | T[], replaceCurrentCloud = false) => {
+export const addResource = async <T>(
+	game: I.AvailableGames,
+	resource: I.AvailableResources,
+	data: T | T[],
+	replaceCurrentCloud = false
+) => {
 	const io = await ioPromise;
 	const cfg = await loadConfig();
 
 	let url = `storage/${resource}/${game}`;
 
-	if(replaceCurrentCloud){
-		url = `storage/${resource}/${game}?&replace=force`
+	if (replaceCurrentCloud) {
+		url = `storage/${resource}/${game}?&replace=force`;
 	}
 
 	const result = (await api(url, 'POST', data)) as {
@@ -313,7 +318,7 @@ export const checkCloudStatus = async (game: I.AvailableGames) => {
 
 	try {
 		const result = (await api(`storage/${game}/status`)) as I.ResourceResponseStatus[];
-		if(!result){
+		if (!result) {
 			return 'UNKNOWN_ERROR';
 		}
 		if (result.every(status => !status.status)) {

@@ -190,7 +190,7 @@ const userHandlers = {
 
 const verifyToken = (token: string) => {
 	try {
-		const result = jwt.decode(token, /*publicKey,*/) as unknown as I.Customer;
+		const result = jwt.decode(token /*publicKey,*/) as unknown as I.Customer;
 		//jwt.decode()
 		if (result.user && result.license) {
 			return result;
