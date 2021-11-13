@@ -61,7 +61,7 @@ export const updateACO = (config: MapConfig | MapConfigID) =>
 					if (cloudStatus) {
 						await addResource(customer.game as AvailableGames, 'mapconfigs', newConfig);
 					} else {
-						updateLastDateLocallyOnly(customer.game, ['mapconfigs'])
+						updateLastDateLocallyOnly(customer.game, ['mapconfigs']);
 					}
 					return res(newConfig);
 				});
@@ -80,7 +80,7 @@ export const updateACO = (config: MapConfig | MapConfigID) =>
 							_id: config._id
 						});
 					} else {
-						updateLastDateLocallyOnly(customer.game, ['mapconfigs'])
+						updateLastDateLocallyOnly(customer.game, ['mapconfigs']);
 					}
 					return res(config);
 				});
