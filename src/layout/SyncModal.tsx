@@ -42,7 +42,7 @@ const SyncModal = ({ isOpen, setOpen, syncStatus, reload }: IProps) => {
 					{
 						label: 'Upload',
 						action: () => {
-							if(isLoading) return;
+							if (isLoading) return;
 							setLoading(true);
 							api.cloud
 								.upload()
@@ -67,7 +67,7 @@ const SyncModal = ({ isOpen, setOpen, syncStatus, reload }: IProps) => {
 					{
 						label: 'Download',
 						action: () => {
-							if(isLoading) return;
+							if (isLoading) return;
 							setLoading(true);
 							api.cloud
 								.download()
@@ -85,7 +85,7 @@ const SyncModal = ({ isOpen, setOpen, syncStatus, reload }: IProps) => {
 					{
 						label: 'Upload',
 						action: () => {
-							if(isLoading) return;
+							if (isLoading) return;
 							setLoading(true);
 							api.cloud
 								.upload(true)
@@ -115,7 +115,13 @@ const SyncModal = ({ isOpen, setOpen, syncStatus, reload }: IProps) => {
 			</ModalBody>
 			<ModalFooter className="no-padding in-row">
 				{getActions().map(action => (
-					<div key={action.label} className={`button wide green strong ${action.type} ${isLoading ? 'disabled':''}`} onClick={action.action}>{action.label}</div>
+					<div
+						key={action.label}
+						className={`button wide green strong ${action.type} ${isLoading ? 'disabled' : ''}`}
+						onClick={action.action}
+					>
+						{action.label}
+					</div>
 				))}
 			</ModalFooter>
 		</Modal>

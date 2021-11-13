@@ -42,13 +42,7 @@ const AR = ({ cxt, setOnBackClick }: IProps) => {
 
 	const setARAsActive = (ar: I.HUD | I.ARModule | null) => {
 		setActive(ar);
-		setOnBackClick(
-			ar
-				? () => {
-						setARAsActive(null);
-				  }
-				: null
-		);
+		setOnBackClick(ar ? (() => { setARAsActive(null); }) : null, ar ? ar.name : null);
 	};
 
 	const handleZIPs = (files: FileList) => {
@@ -110,7 +104,7 @@ const AR = ({ cxt, setOnBackClick }: IProps) => {
 						{huds
 							.filter(hud => hud.ar)
 							.map(hud => (
-								<HudEntry key={hud.dir} hud={hud} setActive={setActive} />
+								<HudEntry key={hud.dir} hud={hud} setActive={setARAsActive} />
 							))}
 					</Col>
 				</Row>

@@ -58,6 +58,9 @@ const updateACO = (config) => new Promise(res => {
                 if (cloudStatus) {
                     await (0, cloud_1.addResource)(__1.customer.game, 'mapconfigs', newConfig);
                 }
+                else {
+                    (0, cloud_1.updateLastDateLocallyOnly)(__1.customer.game, ['mapconfigs']);
+                }
                 return res(newConfig);
             });
         }
@@ -75,6 +78,9 @@ const updateACO = (config) => new Promise(res => {
                         ...config,
                         _id: config._id
                     });
+                }
+                else {
+                    (0, cloud_1.updateLastDateLocallyOnly)(__1.customer.game, ['mapconfigs']);
                 }
                 return res(config);
             });

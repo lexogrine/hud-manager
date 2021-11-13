@@ -540,7 +540,7 @@ class Config extends Component<IProps, IState> {
 		let maxSpace = 1024 * 1024 * 1024;
 
 		if (cxt.customer?.license?.type === 'personal') {
-			maxSpace = maxSpace / 2;
+			maxSpace = 100;
 		} else if (cxt.customer?.license?.type === 'enterprise') {
 			maxSpace = Infinity;
 		}

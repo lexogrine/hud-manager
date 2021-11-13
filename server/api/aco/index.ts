@@ -2,7 +2,7 @@ import db from './../../../init/database';
 import { MapConfig, AvailableGames, MapConfigID } from '../../../types/interfaces';
 import areas from '../../aco/areas';
 import { validateCloudAbility, customer } from '..';
-import { checkCloudStatus, addResource, updateResource } from '../cloud';
+import { checkCloudStatus, addResource, updateResource, updateLastDateLocallyOnly } from '../cloud';
 
 const { aco } = db;
 
@@ -60,6 +60,8 @@ export const updateACO = (config: MapConfig | MapConfigID) =>
 					}
 					if (cloudStatus) {
 						await addResource(customer.game as AvailableGames, 'mapconfigs', newConfig);
+					} else {
+						updateLastDateLocallyOnly(customer.game, ['mapconfigs'])
 					}
 					return res(newConfig);
 				});
@@ -77,6 +79,8 @@ export const updateACO = (config: MapConfig | MapConfigID) =>
 							...config,
 							_id: config._id
 						});
+					} else {
+						updateLastDateLocallyOnly(customer.game, ['mapconfigs'])
 					}
 					return res(config);
 				});
