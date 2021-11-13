@@ -26,9 +26,7 @@ const initGameConnection = async () => {
     const director = (0, aco_1.createDirector)();
     director.pgl = socket_1.mirvPgl;
     const toggleDirector = () => {
-        if (!__1.customer.customer ||
-            !__1.customer.customer.license ||
-            __1.customer.customer.license?.type === 'free') {
+        if (!__1.customer.customer || !__1.customer.customer.license || __1.customer.customer.license?.type === 'free') {
             return;
         }
         director.status ? director.stop() : director.start();

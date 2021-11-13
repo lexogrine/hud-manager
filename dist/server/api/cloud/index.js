@@ -44,7 +44,7 @@ const utils_1 = require("../../../src/utils");
 const spaceLimit = {
     enterprise: Infinity,
     professional: 1024 * 1024 * 1024,
-    personal: 1024 * 1024 * 512,
+    personal: 1024 * 1024 * 100,
     free: 0
 };
 const cloudErrorHandler = () => { };

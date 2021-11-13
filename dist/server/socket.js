@@ -225,7 +225,7 @@ exports.ioPromise.then(io => {
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify(payload)
-                });
+                }).catch(() => { });
             }
             catch { }
         }

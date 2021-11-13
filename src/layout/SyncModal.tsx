@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Modal, ModalHeader, ModalBody, Button, ModalFooter } from 'reactstrap';
+import { Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { CloudSyncStatus } from '../../types/interfaces';
 import api from '../api/api';
 interface IProps {
@@ -42,6 +42,7 @@ const SyncModal = ({ isOpen, setOpen, syncStatus, reload }: IProps) => {
 					{
 						label: 'Upload',
 						action: () => {
+							if(isLoading) return;
 							setLoading(true);
 							api.cloud
 								.upload()
@@ -58,7 +59,7 @@ const SyncModal = ({ isOpen, setOpen, syncStatus, reload }: IProps) => {
 					{
 						label: 'Disable',
 						action: disableSyncing,
-						type: 'secondary'
+						type: 'empty'
 					}
 				];
 			case 'NO_SYNC_LOCAL':
@@ -66,6 +67,7 @@ const SyncModal = ({ isOpen, setOpen, syncStatus, reload }: IProps) => {
 					{
 						label: 'Download',
 						action: () => {
+							if(isLoading) return;
 							setLoading(true);
 							api.cloud
 								.download()
@@ -83,6 +85,7 @@ const SyncModal = ({ isOpen, setOpen, syncStatus, reload }: IProps) => {
 					{
 						label: 'Upload',
 						action: () => {
+							if(isLoading) return;
 							setLoading(true);
 							api.cloud
 								.upload(true)
@@ -96,7 +99,7 @@ const SyncModal = ({ isOpen, setOpen, syncStatus, reload }: IProps) => {
 						},
 						type: ''
 					},
-					{ label: 'Disable', action: disableSyncing, type: 'secondary' }
+					{ label: 'Disable', action: disableSyncing, type: 'empty' }
 				];
 			case 'UNKNOWN_ERROR':
 			default:
@@ -112,15 +115,7 @@ const SyncModal = ({ isOpen, setOpen, syncStatus, reload }: IProps) => {
 			</ModalBody>
 			<ModalFooter className="no-padding in-row">
 				{getActions().map(action => (
-					<Button
-						key={action.label}
-						color="primary"
-						className={`modal-save ${action.type}`}
-						onClick={action.action}
-						disabled={isLoading}
-					>
-						{action.label}
-					</Button>
+					<div key={action.label} className={`button wide green strong ${action.type} ${isLoading ? 'disabled':''}`} onClick={action.action}>{action.label}</div>
 				))}
 			</ModalFooter>
 		</Modal>

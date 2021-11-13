@@ -158,7 +158,7 @@ const userHandlers = {
 };
 const verifyToken = (token) => {
     try {
-        const result = jsonwebtoken_1.default.decode(token);
+        const result = jsonwebtoken_1.default.decode(token /*publicKey,*/);
         //jwt.decode()
         if (result.user && result.license) {
             return result;

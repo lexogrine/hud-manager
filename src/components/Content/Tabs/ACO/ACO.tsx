@@ -107,6 +107,7 @@ const ACO = ({ cxt }: IProps) => {
 			setDirectorStatus(status);
 		});
 		socket.emit('getDirectorStatus');
+		socket.on('db_update', loadACOs);
 	}, []);
 
 	const activeMapConfig = maps[activeMap];

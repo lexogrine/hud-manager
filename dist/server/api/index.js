@@ -146,7 +146,7 @@ async function default_1() {
         const game = exports.customer.game;
         if (!game)
             return res.sendStatus(403);
-        const force = req.query.replace === "force";
+        const force = req.query.replace === 'force';
         const result = await (0, cloud_1.uploadLocalToCloud)(game, force);
         return res.json({ result });
     });
