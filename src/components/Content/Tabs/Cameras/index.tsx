@@ -44,7 +44,7 @@ const Cameras = ({ cxt }: IProps) => {
 			<div className="tab-content-container cameras no-padding">
 				{room ? (
 					<div className="infobox">
-						Send this to your players: https://lexogrine.com/manager/cameras/?&room={room}
+						Send this to your players: https://lhm.gg/cameras/?&room={room}
 					</div>
 				) : null}
 				{[...Array(10)]
