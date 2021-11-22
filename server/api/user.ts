@@ -29,6 +29,10 @@ const domain = USE_LOCAL_BACKEND ? '192.168.50.40:5000' : 'hmapi.lexogrine.com';
 
 let cameraSupportInit = false;
 
+const getSocket = () => {
+	return socket;
+}
+
 /*const initCameras = () => {
 	if(cameraSupportInit) return;
 	cameraSupportInit = true;
@@ -108,7 +112,7 @@ const connectSocket = () => {
 			cameraSupportInit = true;
 
 			io.on('offerFromHUD', (room: string, data: any, steamid: string, uuid: string) => {
-				socket?.send('offerFromHUD', room, data, steamid, uuid);
+				getSocket()?.send('offerFromHUD', room, data, steamid, uuid);
 			});
 
 			io.on('connection', ioSocket => {
@@ -122,10 +126,10 @@ const connectSocket = () => {
 					socketMap[uuid] = ioSocket;
 
 					ioSocket.on('disconnect', () => {
-						socket?.send('unregisterAsHUD', room, uuid);
+						getSocket()?.send('unregisterAsHUD', room, uuid);
 					});
 
-					socket?.send('registerAsHUD', room, uuid);
+					getSocket()?.send('registerAsHUD', room, uuid);
 				});
 
 				ioSocket.on('offerFromHUD', (room: string, data: any, steamid: string) => {
@@ -135,7 +139,7 @@ const connectSocket = () => {
 
 					if (!targetSocket) return;
 
-					socket?.send('offerFromHUD', room, data, steamid, targetSocket[0]);
+					getSocket()?.send('offerFromHUD', room, data, steamid, targetSocket[0]);
 				});
 
 				ioSocket.on('disconnect', () => {

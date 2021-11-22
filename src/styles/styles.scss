@@ -1384,6 +1384,26 @@ img.smallLogo {
 		}
 	}
 }
+.cameras-container {
+	display: flex;
+	flex-wrap: wrap;
+}
+.camera-input-container {
+	width: 330px;
+	margin: 10px 10px;
+	.button {
+		margin: 0;
+	}
+	.camera-status {
+		width: 9px;
+		height: 9px;
+		border-radius: 50%;
+
+		&.active {
+			background-color: #008E39;
+		}
+	}
+}
 .base-config {
 	height: 141px;
 	.form-group {

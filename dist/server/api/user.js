@@ -24,6 +24,9 @@ exports.socket = null;
 exports.USE_LOCAL_BACKEND = false;
 const domain = exports.USE_LOCAL_BACKEND ? '192.168.50.40:5000' : 'hmapi.lexogrine.com';
 let cameraSupportInit = false;
+const getSocket = () => {
+    return exports.socket;
+};
 /*const initCameras = () => {
     if(cameraSupportInit) return;
     cameraSupportInit = true;
@@ -94,7 +97,7 @@ const connectSocket = () => {
         if (!cameraSupportInit) {
             cameraSupportInit = true;
             io.on('offerFromHUD', (room, data, steamid, uuid) => {
-                exports.socket?.send('offerFromHUD', room, data, steamid, uuid);
+                getSocket()?.send('offerFromHUD', room, data, steamid, uuid);
             });
             io.on('connection', ioSocket => {
                 ioSocket.on('registerAsHUD', (room) => {
@@ -104,16 +107,16 @@ const connectSocket = () => {
                     const uuid = (0, uuid_1.v4)();
                     socketMap[uuid] = ioSocket;
                     ioSocket.on('disconnect', () => {
-                        exports.socket?.send('unregisterAsHUD', room, uuid);
+                        getSocket()?.send('unregisterAsHUD', room, uuid);
                     });
-                    exports.socket?.send('registerAsHUD', room, uuid);
+                    getSocket()?.send('registerAsHUD', room, uuid);
                 });
                 ioSocket.on('offerFromHUD', (room, data, steamid) => {
                     const sockets = Object.entries(socketMap);
                     const targetSocket = sockets.find(entry => entry[1] === ioSocket);
                     if (!targetSocket)
                         return;
-                    exports.socket?.send('offerFromHUD', room, data, steamid, targetSocket[0]);
+                    getSocket()?.send('offerFromHUD', room, data, steamid, targetSocket[0]);
                 });
                 ioSocket.on('disconnect', () => {
                     const sockets = Object.entries(socketMap);

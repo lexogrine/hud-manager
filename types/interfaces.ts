@@ -13,6 +13,8 @@ export interface Item {
 export interface CameraRoomPlayer {
 	steamid: string;
 	label: string;
+	allow: boolean;
+	active: boolean;
 }
 
 export const availableResources: AvailableResources[] = [
