@@ -41,43 +41,53 @@ const Cameras = ({ cxt }: IProps) => {
 	};
 
 	const fillPlayersWithLiveTab = () => {
-		if(!GSI.current) return;
+		if (!GSI.current) return;
 
-		const players: (CameraRoomPlayer | null)[] = GSI.current.players.map(player => ({ steamid: player.steamid, label: player.name, allow: true, active: false }) as CameraRoomPlayer);
-		for(let i = 0; i < 10; i++){
-			if(players[i]) continue;
+		const players: (CameraRoomPlayer | null)[] = GSI.current.players.map(
+			player => ({ steamid: player.steamid, label: player.name, allow: true, active: false } as CameraRoomPlayer)
+		);
+		for (let i = 0; i < 10; i++) {
+			if (players[i]) continue;
 			players[i] = null;
 		}
 		setPlayers([...players]);
 		save();
-	}
+	};
 
 	const togglePlayerHandler = (index: number) => () => {
 		const player = players[index];
-		if(!player) return;
+		if (!player) return;
 
 		player.allow = !player.allow;
 
 		setPlayers([...players]);
-	}
+	};
 
 	return (
 		<>
 			<div className="tab-content-container cameras no-padding">
 				{room ? (
-					<div className="infobox">
-						Send this to your players: https://lhm.gg/cameras/?&room={room}
-					</div>
+					<div className="infobox">Send this to your players: https://lhm.gg/cameras/?&room={room}</div>
 				) : null}
 				<div className="cameras-container">
 					{[...Array(10)]
 						.map((_, i) => i)
 						.map(index => (
-							<div className="camera-input-container" key={`camera-${index}-${players[index]?.steamid || ''}`}>
+							<div
+								className="camera-input-container"
+								key={`camera-${index}-${players[index]?.steamid || ''}`}
+							>
 								<LabeledInput
 									key={`camera-${index}`}
 									type="select"
-									label={<div style={{display:'flex'}}>Player #{index + 1}<div className={`camera-status ${players[index]?.active ? 'active':''}`} /></div>}
+									label={
+										<div style={{ display: 'flex' }}>
+											Player #{index + 1}
+											<div
+												className={`camera-status ${players[index]?.active ? 'active' : ''}`}
+											/>
+										</div>
+									}
 									name="type"
 									onChange={setPlayerHandler(index)}
 									value={players[index]?.steamid}
@@ -94,7 +104,12 @@ const Cameras = ({ cxt }: IProps) => {
 											</option>
 										))}
 								</LabeledInput>
-								<div onClick={togglePlayerHandler(index)} className={`button green wide ${players[index]?.allow ? 'empty':''}`}>{players[index]?.allow ? 'Disable' : 'Enable'}</div>
+								<div
+									onClick={togglePlayerHandler(index)}
+									className={`button green wide strong ${players[index]?.allow ? 'empty' : ''}`}
+								>
+									{players[index]?.allow ? 'Disable' : 'Enable'}
+								</div>
 							</div>
 						))}
 				</div>

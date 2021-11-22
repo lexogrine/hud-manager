@@ -31,7 +31,7 @@ let cameraSupportInit = false;
 
 const getSocket = () => {
 	return socket;
-}
+};
 
 /*const initCameras = () => {
 	if(cameraSupportInit) return;
