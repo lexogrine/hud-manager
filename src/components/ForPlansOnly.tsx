@@ -23,6 +23,9 @@ export const ForPlansOnly = ({ required, children }: { children: any; required: 
 	<ContextData.Consumer>
 		{cxt => {
 			if (required === 'free') return children;
+			if(!cxt.customer){
+				return <Blocker plan={required}>{null}</Blocker>
+			}
 			if (!cxt.customer || cxt.customer.license.type === 'free')
 				return <Blocker plan={required}>{children}</Blocker>;
 

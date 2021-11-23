@@ -35,6 +35,7 @@ const getSocket = () => {
 
     });
 }*/
+let connectedSteamids = [];
 exports.room = { uuid: null };
 const socketMap = {};
 setInterval(() => {
@@ -94,6 +95,11 @@ const connectSocket = () => {
                 return;
             targetSocket.emit('offerFromPlayer', room, data, steamid);
         });
+        exports.socket?.on('playersOnline', (data) => {
+            connectedSteamids = data;
+            io.emit('playersOnline', data);
+        });
+        exports.socket?.send('getConnectedPlayers');
         if (!cameraSupportInit) {
             cameraSupportInit = true;
             io.on('offerFromHUD', (room, data, steamid, uuid) => {
@@ -110,6 +116,9 @@ const connectSocket = () => {
                         getSocket()?.send('unregisterAsHUD', room, uuid);
                     });
                     getSocket()?.send('registerAsHUD', room, uuid);
+                });
+                ioSocket.on('getConnectedPlayers', () => {
+                    ioSocket.emit('playersOnline', connectedSteamids);
                 });
                 ioSocket.on('offerFromHUD', (room, data, steamid) => {
                     const sockets = Object.entries(socketMap);

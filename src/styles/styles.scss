@@ -61,11 +61,10 @@ body {
 }
 .infobox {
 	padding: 15px;
-	backdrop-filter: blur(100px);
-	border: 1px solid rgba(107, 28, 255, 0.7);
-	background-color: rgba(0, 0, 0, 0.2);
+	border: 1px solid rgba(255, 255, 255, 0.1);
 	font-size: 12px;
 	margin-bottom: 15px;
+	background-color: #0C0B0B;
 	user-select: text;
 }
 .delete-checkbox {
@@ -475,7 +474,21 @@ body {
 	flex: 1;
 	overflow-y: auto;
 	&.cameras {
-		padding: 30px !important; 
+		padding: 30px !important;
+		.infobox {
+			display: flex;
+			justify-content: space-between;
+			cursor: pointer;
+
+			.copy-link {
+				background-repeat: no-repeat;
+				background-image: url('./assets/hyperlink.svg');
+				padding-left: 22px;
+				background-position: left center;
+				font-weight: 600;
+				color: #BDF2D5;
+			}
+		} 
 	}
 	&.tournaments {
 		display: flex;
@@ -1398,7 +1411,8 @@ img.smallLogo {
 		width: 9px;
 		height: 9px;
 		border-radius: 50%;
-
+		margin-left: 10px;
+		margin-top: 5px;
 		&.active {
 			background-color: #008E39;
 		}

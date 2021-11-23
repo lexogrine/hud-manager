@@ -42,6 +42,8 @@ const getSocket = () => {
 	});
 }*/
 
+let connectedSteamids: string[] = [];
+
 export const room: { uuid: string | null } = { uuid: null };
 
 const socketMap: Record<string, Socket> = {};
@@ -108,6 +110,13 @@ const connectSocket = () => {
 			targetSocket.emit('offerFromPlayer', room, data, steamid);
 		});
 
+		socket?.on('playersOnline', (data: string[]) => {
+			connectedSteamids = data;
+			io.emit('playersOnline', data);
+		});
+
+		socket?.send('getConnectedPlayers');
+
 		if (!cameraSupportInit) {
 			cameraSupportInit = true;
 
@@ -130,6 +139,10 @@ const connectSocket = () => {
 					});
 
 					getSocket()?.send('registerAsHUD', room, uuid);
+				});
+
+				ioSocket.on('getConnectedPlayers', () => {
+					ioSocket.emit('playersOnline', connectedSteamids);
 				});
 
 				ioSocket.on('offerFromHUD', (room: string, data: any, steamid: string) => {

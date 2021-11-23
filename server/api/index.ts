@@ -86,25 +86,22 @@ export default async function () {
 				)
 			)
 				return res.sendStatus(422);
-			if (req.body.length > 12) return res.sendStatus(422);
 
 			availablePlayers = req.body;
 
 			setTimeout(() => {
-				if (socket)
-					fetch(
-						`${user.USE_LOCAL_BACKEND ? `http://${domain}` : `https://${domain}`}/cameras/setup/${
-							user.room.uuid
-						}`,
-						{
-							method: 'POST',
-							headers: {
-								Accept: 'application/json',
-								'Content-Type': 'application/json'
-							},
-							body: JSON.stringify([...availablePlayers])
-						}
-					);
+				fetch(
+					`${user.USE_LOCAL_BACKEND ? `http://${domain}` : `https://${domain}`}/cameras/setup/${user.room.uuid
+					}`,
+					{
+						method: 'POST',
+						headers: {
+							Accept: 'application/json',
+							'Content-Type': 'application/json'
+						},
+						body: JSON.stringify([...availablePlayers])
+					}
+				);
 			}, 1000);
 			return res.sendStatus(200);
 		});

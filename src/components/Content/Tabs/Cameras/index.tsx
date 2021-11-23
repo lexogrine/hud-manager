@@ -4,7 +4,8 @@ import { IContextData } from './../../../../components/Context';
 import { useTranslation } from 'react-i18next';
 import LabeledInput from '../../../LabeledInput';
 import { CameraRoomPlayer } from '../../../../api/interfaces';
-import { GSI } from '../Live/Live';
+import { GSI, socket } from '../Live/Live';
+import { copyToClipboard } from '../../../../api/clipboard';
 
 interface IProps {
 	cxt: IContextData;
@@ -16,10 +17,20 @@ const Cameras = ({ cxt }: IProps) => {
 	const { t } = useTranslation();
 
 	useEffect(() => {
-		api.cameras.get().then(data => {
-			setPlayers(data.availablePlayers);
-			setRoom(data.uuid);
+		const loadPlayers = (steamids: string[]) => {
+			api.cameras.get().then(data => {
+				setPlayers(data.availablePlayers);
+				setRoom(data.uuid);
+
+				setPlayers([...data.availablePlayers.map(player => player ? { ...player, active: steamids.includes(player.steamid) } : player)])
+			});
+		}
+		loadPlayers([]);
+		socket.on('playersOnline', (data: string[]) => {
+			loadPlayers(data);
+
 		});
+		socket.emit('getConnectedPlayers');
 	}, []);
 
 	const save = () => {
@@ -51,7 +62,9 @@ const Cameras = ({ cxt }: IProps) => {
 			players[i] = null;
 		}
 		setPlayers([...players]);
-		save();
+		setTimeout(() => {
+			save();
+		}, 500)
 	};
 
 	const togglePlayerHandler = (index: number) => () => {
@@ -67,7 +80,15 @@ const Cameras = ({ cxt }: IProps) => {
 		<>
 			<div className="tab-content-container cameras no-padding">
 				{room ? (
-					<div className="infobox">Send this to your players: https://lhm.gg/cameras/?&room={room}</div>
+					<div>
+						<div style={{ fontFamily: 'Rajdhani', textTransform: 'uppercase', fontSize: 14, fontWeight: 600 }}>Send this to your players:</div>
+						<div className="infobox" onClick={() => copyToClipboard(`https://lhm.gg/cameras/?&room=${room}`)}>
+							https://lhm.gg/cameras/?&room={room}
+							<div className="copy-link">
+								Click & Copy
+							</div>
+						</div>
+					</div>
 				) : null}
 				<div className="cameras-container">
 					{[...Array(10)]
@@ -99,7 +120,7 @@ const Cameras = ({ cxt }: IProps) => {
 										.filter(player => player.steamid)
 										.sort((a, b) => (a.username.toLowerCase() < b.username.toLowerCase() ? -1 : 1))
 										.map(player => (
-											<option value={player.steamid} key={`${player.steamid}${index}`}>
+											<option value={player.steamid} key={`${player.steamid}${index}`} disabled={!!(player.steamid !== players[index]?.steamid && players.find(pl => pl && pl.steamid === player.steamid))}>
 												{player.username}
 											</option>
 										))}
@@ -119,7 +140,7 @@ const Cameras = ({ cxt }: IProps) => {
 					Fill from Live
 				</div>
 				<div className="button green strong big wide" onClick={save}>
-					Save cameras
+					Save
 				</div>
 			</div>
 		</>
