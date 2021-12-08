@@ -256,7 +256,7 @@ ioPromise.then(io => {
 				user: customer.customer.user.id
 			};
 			try {
-				fetch(`https://hmapi.lexogrine.com/users/payload`, {
+				fetch(`https://api.lhm.gg/users/payload`, {
 					method: 'POST',
 					headers: {
 						Accept: 'application/json',

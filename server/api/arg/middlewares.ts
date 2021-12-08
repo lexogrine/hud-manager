@@ -10,6 +10,8 @@ export const setOrder: express.RequestHandler = async (req, res) => {
 			'config',
 			order.map(item => ({ id: item.id, active: item.active }))
 		);
+
+		argSocket.socket?.send('saveClips', argSocket.saveClips);
 	}
 	return res.sendStatus(200);
 };
@@ -48,6 +50,16 @@ export const saveDelay: express.RequestHandler = async (req, res) => {
 	}
 
 	argSocket.delay = req.body.delay;
+	await sendARGStatus();
+	return res.sendStatus(200);
+};
+export const saveClips: express.RequestHandler = async (req, res) => {
+	if (!req.body || !('saveClips' in req.body)) {
+		return res.sendStatus(422);
+	}
+
+	argSocket.saveClips = req.body.saveClips;
+	argSocket?.socket?.send('saveClips', argSocket.saveClips);
 	await sendARGStatus();
 	return res.sendStatus(200);
 };

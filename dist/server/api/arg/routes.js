@@ -24,6 +24,7 @@ const A = __importStar(require("./middlewares"));
 const initRoute = () => {
     __1.app.route('/api/arg').get(A.requestARGStatus).post(A.connect).delete(A.disconnect);
     __1.app.route('/api/arg/delay').post(A.saveDelay);
+    __1.app.route('/api/arg/save').post(A.saveClips);
     __1.app.route('/api/arg/order').get(A.getOrder).post(A.setOrder);
 };
 exports.default = initRoute;

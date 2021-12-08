@@ -3,10 +3,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.logout = exports.getCurrent = exports.loginHandler = exports.api = exports.verifyGame = exports.room = exports.USE_LOCAL_BACKEND = exports.socket = exports.fetch = void 0;
+exports.sendPlayersToRoom = exports.setNewRoomUUID = exports.logout = exports.getCurrent = exports.loginHandler = exports.api = exports.verifyGame = exports.room = exports.USE_LOCAL_BACKEND = exports.socket = exports.fetch = void 0;
 const electron_1 = require("electron");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const node_fetch_1 = __importDefault(require("node-fetch"));
+const fs_1 = __importDefault(require("fs"));
 const api_1 = require("./../api");
 const tough_cookie_1 = require("tough-cookie");
 const path_1 = __importDefault(require("path"));
@@ -22,7 +23,7 @@ const cookieJar = new tough_cookie_1.CookieJar(new tough_cookie_file_store_1.Fil
 exports.fetch = (0, fetch_cookie_1.default)(node_fetch_1.default, cookieJar);
 exports.socket = null;
 exports.USE_LOCAL_BACKEND = false;
-const domain = exports.USE_LOCAL_BACKEND ? '192.168.50.40:5000' : 'hmapi.lexogrine.com';
+const domain = exports.USE_LOCAL_BACKEND ? '192.168.50.40:5000' : 'api-dev.lhm.gg';
 let cameraSupportInit = false;
 const getSocket = () => {
     return exports.socket;
@@ -36,7 +37,11 @@ const getSocket = () => {
     });
 }*/
 let connectedSteamids = [];
-exports.room = { uuid: null };
+exports.room = {
+    uuid: null,
+    availablePlayers: [],
+    password: ''
+};
 const socketMap = {};
 setInterval(() => {
     if (!exports.socket)
@@ -82,18 +87,19 @@ const connectSocket = () => {
         exports.socket = null;
         setTimeout(connectSocket, 2000);
     });
-    if (exports.room.uuid)
-        exports.socket.send('registerAsProxy', exports.room.uuid);
     (0, api_1.registerRoomSetup)(exports.socket);
     socket_1.ioPromise.then(io => {
         exports.socket?.on('hudsOnline', (hudsUUID) => {
             io.to('csgo').emit('hudsOnline', hudsUUID);
         });
-        exports.socket?.on('offerFromPlayer', (room, data, steamid, uuid) => {
+        exports.socket?.on('offerFromPlayer', (roomId, data, steamid, uuid) => {
+            if (!exports.room.availablePlayers.find(player => player.steamid === steamid)) {
+                return;
+            }
             const targetSocket = socketMap[uuid];
             if (!targetSocket)
                 return;
-            targetSocket.emit('offerFromPlayer', room, data, steamid);
+            targetSocket.emit('offerFromPlayer', roomId, data, steamid);
         });
         exports.socket?.on('playersOnline', (data) => {
             connectedSteamids = data;
@@ -236,3 +242,48 @@ const logout = async (req, res) => {
     return res.sendStatus(200);
 };
 exports.logout = logout;
+const setNewRoomUUID = async (req, res) => {
+    if (!exports.socket) {
+        return res.sendStatus(500);
+    }
+    exports.room.uuid = (0, uuid_1.v4)();
+    await (0, api_1.registerRoomSetup)(exports.socket);
+    setTimeout(() => {
+        (0, exports.sendPlayersToRoom)({ players: exports.room.availablePlayers, password: '' });
+        res.sendStatus(200);
+    }, 500);
+};
+exports.setNewRoomUUID = setNewRoomUUID;
+const sendPlayersToRoom = async (input, statusToggling = false) => {
+    if (!Array.isArray(input.players) ||
+        !input.players.every(x => typeof x === 'object' && x && typeof x.steamid === 'string' && typeof x.label === 'string')) {
+        return false;
+    }
+    const io = await socket_1.ioPromise;
+    exports.room.availablePlayers = input.players;
+    exports.room.password = input.password;
+    if (statusToggling) {
+        io.to('game').emit('playersCameraStatus', exports.room.availablePlayers);
+    }
+    setTimeout(() => {
+        (0, exports.fetch)(`${exports.USE_LOCAL_BACKEND ? `http://${domain}` : `https://${domain}`}/cameras/setup/${exports.room.uuid}`, {
+            method: 'POST',
+            headers: {
+                Accept: 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ players: [...exports.room.availablePlayers], password: exports.room.password })
+        })
+            .then(res => res.text())
+            .then(value => {
+            fs_1.default.writeFileSync(path_1.default.join(electron_1.app.getPath('userData'), 'errors', `${new Date().getTime()}.txt`), `Trying to update ${exports.room.uuid} with ${JSON.stringify([
+                ...exports.room.availablePlayers
+            ])}. Response: ${value}`);
+        })
+            .catch(reason => {
+            fs_1.default.writeFileSync(path_1.default.join(electron_1.app.getPath('userData'), 'errors', `${new Date().getTime()}.txt`), reason);
+        });
+    }, 1000);
+    return true;
+};
+exports.sendPlayersToRoom = sendPlayersToRoom;

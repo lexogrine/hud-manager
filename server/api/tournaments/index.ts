@@ -3,6 +3,7 @@ import * as Formats from './formats';
 import * as M from './../matches';
 import uuidv4 from 'uuid/v4';
 import db from './../../../init/database';
+import { customer } from '..';
 
 const { tournaments } = db;
 
@@ -65,6 +66,7 @@ export const createTournament = (
 		name: '',
 		logo: '',
 		groups: [],
+		game: customer.game,
 		playoffs: {
 			type: 'single',
 			teams,

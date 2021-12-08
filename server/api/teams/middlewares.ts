@@ -113,6 +113,7 @@ export const addTeamsWithExcel: express.RequestHandler = async (req, res) => {
 				shortName,
 				country,
 				logo: '',
+				game,
 				extra: {}
 			} as Team);
 		});

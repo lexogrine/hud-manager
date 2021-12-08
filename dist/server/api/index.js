@@ -42,7 +42,6 @@ const routes_2 = __importDefault(require("./matches/routes"));
 const routes_3 = __importDefault(require("./players/routes"));
 const routes_4 = __importDefault(require("./aco/routes"));
 const routes_5 = __importDefault(require("./ar/routes"));
-const node_fetch_1 = __importDefault(require("node-fetch"));
 const routes_6 = __importDefault(require("./timeline/routes"));
 const routes_7 = __importDefault(require("./arg/routes"));
 const match = __importStar(require("./matches"));
@@ -57,18 +56,18 @@ const user_1 = require("./user");
 const utils_1 = require("../../src/utils");
 const keybinder_1 = require("./keybinder");
 let init = true;
-const domain = user.USE_LOCAL_BACKEND ? '192.168.50.40:5000' : 'hmapi.lexogrine.com';
 exports.customer = {
     customer: null,
     game: null
 };
-let availablePlayers = [];
-const registerRoomSetup = (socket) => {
+const registerRoomSetup = (socket) => new Promise((res, rej) => {
+    socket.send('registerAsProxy', user.room.uuid);
     setTimeout(() => {
         if (user.room.uuid)
-            socket.send('registerRoomPlayers', user.room.uuid, availablePlayers);
+            socket.send('registerRoomPlayers', user.room.uuid, user.room.availablePlayers);
+        res();
     }, 1000);
-};
+});
 exports.registerRoomSetup = registerRoomSetup;
 const validateCloudAbility = async (resource) => {
     if (resource && !I.availableResources.includes(resource))
@@ -92,25 +91,17 @@ async function default_1() {
     __1.app.route('/api/version/last').get(machine.getLastLaunchedVersion).post(machine.saveLastLaunchedVersion);
     __1.app.route('/api/camera')
         .get((_req, res) => {
-        res.json({ availablePlayers, uuid: user.room.uuid });
+        res.json({
+            availablePlayers: user.room.availablePlayers,
+            uuid: user.room.uuid,
+            password: user.room.password
+        });
     })
-        .post((req, res) => {
-        if (!Array.isArray(req.body) ||
-            !req.body.every(x => typeof x === 'object' && x && typeof x.steamid === 'string' && typeof x.label === 'string'))
-            return res.sendStatus(422);
-        availablePlayers = req.body;
-        setTimeout(() => {
-            (0, node_fetch_1.default)(`${user.USE_LOCAL_BACKEND ? `http://${domain}` : `https://${domain}`}/cameras/setup/${user.room.uuid}`, {
-                method: 'POST',
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify([...availablePlayers])
-            });
-        }, 1000);
-        return res.sendStatus(200);
-    });
+        .post(async (req, res) => {
+        const result = await user.sendPlayersToRoom(req.body, req.query.toggle === 'true');
+        return res.sendStatus(result ? 200 : 422);
+    })
+        .patch(user.setNewRoomUUID);
     (0, routes_1.default)();
     (0, routes_2.default)();
     (0, routes_6.default)();

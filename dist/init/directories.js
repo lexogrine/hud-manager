@@ -33,7 +33,8 @@ function checkDirectories() {
     const userData = electron_1.app.getPath('userData');
     const database = path.join(userData, 'databases');
     const arData = path.join(userData, 'ARs');
-    [hudsData, userData, database, arData].forEach(createIfMissing);
+    const errors = path.join(userData, 'errors');
+    [hudsData, userData, database, arData, errors].forEach(createIfMissing);
     const mapFile = path.join(electron_1.app.getPath('userData'), 'maps.json');
     if (!fs.existsSync(mapFile)) {
         const maps = [

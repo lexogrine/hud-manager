@@ -11,6 +11,7 @@ import * as machine from './machine';
 import * as user from './user';
 import * as bakkesmod from './bakkesmod';
 import * as I from './../../types/interfaces';
+import fs from 'fs';
 import { initGameConnection } from './huds/play';
 import TournamentHandler from './tournaments/routes';
 import MatchHandler from './matches/routes';
@@ -35,20 +36,19 @@ import { registerKeybind } from './keybinder';
 
 let init = true;
 
-const domain = user.USE_LOCAL_BACKEND ? '192.168.50.40:5000' : 'hmapi.lexogrine.com';
-
 export const customer: I.CustomerData = {
 	customer: null,
 	game: null
 };
 
-let availablePlayers = [] as I.CameraRoomPlayer[];
-
-export const registerRoomSetup = (socket: SimpleWebSocket) => {
-	setTimeout(() => {
-		if (user.room.uuid) socket.send('registerRoomPlayers', user.room.uuid, availablePlayers);
-	}, 1000);
-};
+export const registerRoomSetup = (socket: SimpleWebSocket) =>
+	new Promise<void>((res, rej) => {
+		socket.send('registerAsProxy', user.room.uuid);
+		setTimeout(() => {
+			if (user.room.uuid) socket.send('registerRoomPlayers', user.room.uuid, user.room.availablePlayers);
+			res();
+		}, 1000);
+	});
 
 export const validateCloudAbility = async (resource?: I.AvailableResources) => {
 	if (resource && !I.availableResources.includes(resource)) return false;
@@ -76,35 +76,17 @@ export default async function () {
 
 	app.route('/api/camera')
 		.get((_req, res) => {
-			res.json({ availablePlayers, uuid: user.room.uuid });
+			res.json({
+				availablePlayers: user.room.availablePlayers,
+				uuid: user.room.uuid,
+				password: user.room.password
+			});
 		})
-		.post((req, res) => {
-			if (
-				!Array.isArray(req.body) ||
-				!req.body.every(
-					x => typeof x === 'object' && x && typeof x.steamid === 'string' && typeof x.label === 'string'
-				)
-			)
-				return res.sendStatus(422);
-
-			availablePlayers = req.body;
-
-			setTimeout(() => {
-				fetch(
-					`${user.USE_LOCAL_BACKEND ? `http://${domain}` : `https://${domain}`}/cameras/setup/${user.room.uuid
-					}`,
-					{
-						method: 'POST',
-						headers: {
-							Accept: 'application/json',
-							'Content-Type': 'application/json'
-						},
-						body: JSON.stringify([...availablePlayers])
-					}
-				);
-			}, 1000);
-			return res.sendStatus(200);
-		});
+		.post(async (req, res) => {
+			const result = await user.sendPlayersToRoom(req.body, req.query.toggle === 'true');
+			return res.sendStatus(result ? 200 : 422);
+		})
+		.patch(user.setNewRoomUUID);
 
 	TournamentHandler();
 

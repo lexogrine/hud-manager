@@ -23,7 +23,8 @@ exports.argSocket = {
             text: 'Prioritize team kills',
             active: false
         }
-    ]
+    ],
+    saveClips: false
 };
 const getIP = (code) => {
     const ipNumbers = code.split('-').map(n => parseInt(n, 16));
@@ -35,7 +36,7 @@ const getIP = (code) => {
 exports.getIP = getIP;
 const sendARGStatus = async () => {
     const io = await socket_1.ioPromise;
-    io.emit('ARGStatus', exports.argSocket?.id, exports.argSocket.delay);
+    io.emit('ARGStatus', exports.argSocket?.id, exports.argSocket.delay, exports.argSocket.saveClips);
 };
 exports.sendARGStatus = sendARGStatus;
 const connectToARG = (code) => {
@@ -50,7 +51,7 @@ const connectToARG = (code) => {
     };
     const socket = new simple_websockets_1.SimpleWebSocket(socketAddress);
     socket.on('connection', () => {
-        socket.send('register', exports.argSocket.order.map(item => ({ id: item.id, active: item.active })));
+        socket.send('register', exports.argSocket.order.map(item => ({ id: item.id, active: item.active })), exports.argSocket.saveClips);
     });
     socket.on('registered', exports.sendARGStatus);
     exports.argSocket.socket = socket;

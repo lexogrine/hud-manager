@@ -116,6 +116,7 @@ export default {
 		disconnect: () => apiV2('arg', 'DELETE'),
 		requestStatus: () => apiV2('arg'),
 		setDelay: (delay: number) => apiV2('arg/delay', 'POST', { delay }),
+		setClips: (saveClips: boolean) => apiV2('arg/save', 'POST', { saveClips }),
 		save: (order: I.Item[]) => apiV2('arg/order', 'POST', order),
 		get: (): Promise<I.Item[]> => apiV2('arg/order')
 	},
@@ -134,8 +135,10 @@ export default {
 			apiV2('version/last', 'POST', { version, releaseDate })
 	},
 	cameras: {
-		get: (): Promise<{ availablePlayers: I.CameraRoomPlayer[]; uuid: string }> => apiV2('camera'),
-		update: (players: I.CameraRoomPlayer[]) => apiV2('camera', 'POST', players)
+		get: (): Promise<{ availablePlayers: I.CameraRoomPlayer[]; uuid: string; password: string }> => apiV2('camera'),
+		update: (players: I.CameraRoomPlayer[], password: string, toggle: boolean) =>
+			apiV2(toggle ? 'camera?&toggle=true' : 'camera', 'POST', { players, password }),
+		regenerate: () => apiV2('camera', 'PATCH')
 	},
 	cfgs: {
 		check: async (game: 'csgo' | 'dota2'): Promise<I.CFGGSIObject> => await apiV2(`cfg?game=${game}`),

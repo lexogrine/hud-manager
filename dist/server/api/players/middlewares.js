@@ -181,6 +181,7 @@ const addPlayersWithExcel = async (req, res) => {
                 country,
                 team: teamId,
                 extra: {},
+                game,
                 avatar: ''
             });
         });

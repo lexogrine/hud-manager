@@ -205,6 +205,7 @@ export type TournamentStage = {
 export interface Tournament {
 	_id: string;
 	name: string;
+	game?: string | null;
 	logo: string;
 	groups: TournamentStage[];
 	playoffs: TournamentStage;

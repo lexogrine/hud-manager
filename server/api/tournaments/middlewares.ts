@@ -21,7 +21,12 @@ export const getCurrentTournament: express.RequestHandler = async (req, res) => 
 };
 
 export const getTournaments: express.RequestHandler = async (req, res) => {
-	const tournaments = await T.getTournaments();
+	const game = customer.game;
+	const $or: any[] = [{ game }];
+	if (game === 'csgo') {
+		$or.push({ game: { $exists: false } });
+	}
+	const tournaments = await T.getTournaments({ $or });
 	return res.json(tournaments);
 };
 

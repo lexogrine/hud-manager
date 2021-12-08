@@ -8,11 +8,13 @@ import update from 'immutability-helper';
 import './arg.scss';
 import { Card } from './ARGEntry';
 import { Item } from '../../../../api/interfaces';
+import Checkbox from '../../../Checkbox';
 
 const ARG = () => {
 	const [isConnected, setIsConnected] = useState(false);
 	const [delay, setDelay] = useState(7);
 	const [pcID, setPCID] = useState('');
+	const [saveClips, setSaveClips] = useState(false);
 
 	const [cards, setCards] = useState<Item[]>([
 		{
@@ -55,6 +57,9 @@ const ARG = () => {
 		const delay = Number(event.target.value);
 		api.arg.setDelay(delay);
 	};
+	const onClipsChange = () => {
+		api.arg.setClips(!saveClips);
+	};
 
 	const save = (overwrite?: Item[]) => {
 		api.arg.save(overwrite || cards);
@@ -81,12 +86,13 @@ const ARG = () => {
 	};
 
 	useEffect(() => {
-		socket.on('ARGStatus', (pcID: string | null, delay: number) => {
+		socket.on('ARGStatus', (pcID: string | null, delay: number, saveClips: boolean) => {
 			setIsConnected(!!pcID);
 			setDelay(delay);
 			if (pcID) {
 				setPCID(pcID);
 			}
+			setSaveClips(saveClips);
 		});
 		setTimeout(() => {
 			api.arg.requestStatus();
@@ -118,6 +124,10 @@ const ARG = () => {
 				</Row>
 			</div>
 			<div className="arg-options">
+				<div className="arg-config-entry">
+					<div className="config-description">Save clips?</div>
+					<Checkbox checked={saveClips} onChange={onClipsChange} />
+				</div>
 				<div className="arg-config-entry">
 					<div className="config-description">Delay Config</div>
 					<Input value={delay} type="number" onChange={onDelayChange} />

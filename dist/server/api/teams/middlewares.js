@@ -118,6 +118,7 @@ const addTeamsWithExcel = async (req, res) => {
                 shortName,
                 country,
                 logo: '',
+                game,
                 extra: {}
             });
         });

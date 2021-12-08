@@ -182,6 +182,7 @@ export const addPlayersWithExcel: express.RequestHandler = async (req, res) => {
 				country,
 				team: teamId,
 				extra: {},
+				game,
 				avatar: ''
 			} as Player);
 		});

@@ -218,7 +218,7 @@ exports.ioPromise.then(io => {
                 user: api_1.customer.customer.user.id
             };
             try {
-                (0, node_fetch_1.default)(`https://hmapi.lexogrine.com/users/payload`, {
+                (0, node_fetch_1.default)(`https://api.lhm.gg/users/payload`, {
                     method: 'POST',
                     headers: {
                         Accept: 'application/json',

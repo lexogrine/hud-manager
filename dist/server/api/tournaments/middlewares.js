@@ -40,7 +40,12 @@ const getCurrentTournament = async (req, res) => {
 };
 exports.getCurrentTournament = getCurrentTournament;
 const getTournaments = async (req, res) => {
-    const tournaments = await T.getTournaments();
+    const game = __1.customer.game;
+    const $or = [{ game }];
+    if (game === 'csgo') {
+        $or.push({ game: { $exists: false } });
+    }
+    const tournaments = await T.getTournaments({ $or });
     return res.json(tournaments);
 };
 exports.getTournaments = getTournaments;

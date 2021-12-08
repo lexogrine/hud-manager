@@ -3,7 +3,13 @@ import { SimpleWebSocket } from 'simple-websockets';
 import { CSGO } from 'csgogsi-socket';
 import { Item } from '../../../types/interfaces';
 
-export const argSocket: { socket: SimpleWebSocket | null; id: string | null; delay: number; order: Item[] } = {
+export const argSocket: {
+	socket: SimpleWebSocket | null;
+	id: string | null;
+	delay: number;
+	order: Item[];
+	saveClips: boolean;
+} = {
 	delay: 7,
 	socket: null,
 	id: null,
@@ -23,7 +29,8 @@ export const argSocket: { socket: SimpleWebSocket | null; id: string | null; del
 			text: 'Prioritize team kills',
 			active: false
 		}
-	]
+	],
+	saveClips: false
 };
 
 export const getIP = (code: string) => {
@@ -38,7 +45,7 @@ export const getIP = (code: string) => {
 
 export const sendARGStatus = async () => {
 	const io = await ioPromise;
-	io.emit('ARGStatus', argSocket?.id, argSocket.delay);
+	io.emit('ARGStatus', argSocket?.id, argSocket.delay, argSocket.saveClips);
 };
 
 export const connectToARG = (code: string) => {
@@ -58,7 +65,8 @@ export const connectToARG = (code: string) => {
 	socket.on('connection', () => {
 		socket.send(
 			'register',
-			argSocket.order.map(item => ({ id: item.id, active: item.active }))
+			argSocket.order.map(item => ({ id: item.id, active: item.active })),
+			argSocket.saveClips
 		);
 	});
 

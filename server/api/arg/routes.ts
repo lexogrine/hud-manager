@@ -6,6 +6,8 @@ const initRoute = () => {
 
 	app.route('/api/arg/delay').post(A.saveDelay);
 
+	app.route('/api/arg/save').post(A.saveClips);
+
 	app.route('/api/arg/order').get(A.getOrder).post(A.setOrder);
 };
 

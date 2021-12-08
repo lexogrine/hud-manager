@@ -27,6 +27,7 @@ const Formats = __importStar(require("./formats"));
 const M = __importStar(require("./../matches"));
 const v4_1 = __importDefault(require("uuid/v4"));
 const database_1 = __importDefault(require("./../../../init/database"));
+const __1 = require("..");
 const { tournaments } = database_1.default;
 const parseLegacyMatchups = (matchup) => {
     if ('stage' in matchup)
@@ -77,6 +78,7 @@ const createTournament = (type, teams, groupType, groupTeams, phases, groupPhase
         name: '',
         logo: '',
         groups: [],
+        game: __1.customer.game,
         playoffs: {
             type: 'single',
             teams,
