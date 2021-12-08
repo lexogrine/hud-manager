@@ -267,9 +267,9 @@ const Cameras = ({ cxt }: IProps) => {
 				</div>
 			</div>
 			<div className="action-container">
-				<div className="button green strong big wide empty" onClick={fillPlayersWithLiveTab}>
+				{ cxt.game === "csgo" ? <div className="button green strong big wide empty" onClick={fillPlayersWithLiveTab}>
 					Fill from Live
-				</div>
+				</div> : null }
 				<div className="button green strong big wide" onClick={() => save()}>
 					Save
 				</div>

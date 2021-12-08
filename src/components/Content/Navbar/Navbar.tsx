@@ -98,13 +98,13 @@ const Navbar = ({ activeTab, toggle, files, setCollapse, isCollapsed, version }:
 							<div>{t('navbar.live')}</div>
 						</NavLink>
 					</NavItem>
-					<NavItem className="hover-pointer" onClick={toggleHandler('cameras')}>
-						<NavLink active={activeTab === 'cameras'}>
-							<Tabs.Cameras />
-							<div>Cameras</div>
-						</NavLink>
-					</NavItem>
 				</GameOnly>
+				<NavItem className="hover-pointer" onClick={toggleHandler('cameras')}>
+					<NavLink active={activeTab === 'cameras'}>
+						<Tabs.Cameras />
+						<div>Cameras</div>
+					</NavLink>
+				</NavItem>
 				<NavItem className="hover-pointer" id="settings" onClick={toggleHandler('settings')}>
 					<NavLink active={activeTab === 'settings'}>
 						<Tabs.Settings />
