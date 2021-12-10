@@ -11,6 +11,8 @@ const testing_1 = require("../testing");
 const ws_1 = __importDefault(require("ws"));
 const aco_1 = require("../../aco");
 const keybinder_1 = require("../keybinder");
+const f1_telemetry_client_1 = require("@racehub-io/f1-telemetry-client");
+const { PACKETS } = f1_telemetry_client_1.constants;
 const assertUser = (req, res, next) => {
     if (!__1.customer.customer) {
         return res.sendStatus(403);
@@ -22,7 +24,18 @@ exports.playTesting = {
     isOnLoop: false
 };
 const initGameConnection = async () => {
+    const client = new f1_telemetry_client_1.F1TelemetryClient({ port: 20777 });
     const io = await socket_1.ioPromise;
+    client.on(PACKETS.lapData, data => {
+        io.to('f1').emit('update', { type: 'lap', data });
+    });
+    client.on(PACKETS.session, data => {
+        io.to('f1').emit('update', { type: 'session', data });
+    });
+    client.on(PACKETS.participants, data => {
+        io.to('f1').emit('update', { type: 'participants', data });
+    });
+    client.start();
     const director = (0, aco_1.createDirector)();
     director.pgl = socket_1.mirvPgl;
     const toggleDirector = () => {

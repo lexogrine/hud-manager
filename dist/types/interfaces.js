@@ -10,4 +10,4 @@ exports.availableResources = [
     'tournaments'
     //'arg'
 ];
-exports.availableGames = ['csgo', 'rocketleague', 'dota2'];
+exports.availableGames = ['csgo', 'rocketleague', 'dota2', 'f1'];

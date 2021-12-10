@@ -7,6 +7,8 @@ import WebSocket from 'ws';
 import { createDirector } from '../../aco';
 import { PlayerExtension } from 'csgogsi-socket';
 import { registerKeybind } from '../keybinder';
+import { F1TelemetryClient, constants } from '@racehub-io/f1-telemetry-client';
+const { PACKETS } = constants;
 
 const assertUser: express.RequestHandler = (req, res, next) => {
 	if (!customer.customer) {
@@ -21,7 +23,21 @@ export const playTesting: { intervalId: NodeJS.Timeout | null; isOnLoop: boolean
 };
 
 export const initGameConnection = async () => {
+	const client = new F1TelemetryClient({ port: 20777 });
+
 	const io = await ioPromise;
+
+	client.on(PACKETS.lapData, data => {
+		io.to('f1').emit('update', { type: 'lap', data });
+	});
+	client.on(PACKETS.session, data => {
+		io.to('f1').emit('update', { type: 'session', data });
+	});
+	client.on(PACKETS.participants, data => {
+		io.to('f1').emit('update', { type: 'participants', data });
+	});
+
+	client.start();
 
 	const director = createDirector();
 
