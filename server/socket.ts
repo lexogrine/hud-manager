@@ -15,6 +15,7 @@ import './api/huds/devhud';
 import { getPlayersList } from './api/players';
 import { sendKillsToARG } from './api/arg';
 import { dota2TimelineHandler } from './api/timeline/dota2';
+import { Encoder, Decoder } from './sockets/parser';
 
 interface RuntimeConfig {
 	last: CSGORaw | null;
@@ -63,7 +64,8 @@ export const ioPromise = loadConfig().then(cfg => {
 			origin: corsOrigins,
 			credentials: true
 		},
-		maxHttpBufferSize: 1e10
+		maxHttpBufferSize: 1e10,
+		parser: { Encoder, Decoder }
 	});
 });
 

@@ -24,7 +24,7 @@ export const fetch = fetchHandler(nodeFetch, cookieJar);
 
 export let socket: SimpleWebSocket | null = null;
 
-export const USE_LOCAL_BACKEND = true;
+export const USE_LOCAL_BACKEND = false;
 
 const domain = USE_LOCAL_BACKEND ? 'localhost:5000' : 'api.lhm.gg';
 

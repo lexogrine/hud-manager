@@ -22,7 +22,7 @@ const cookiePath = path_1.default.join(electron_1.app.getPath('userData'), 'cook
 const cookieJar = new tough_cookie_1.CookieJar(new tough_cookie_file_store_1.FileCookieStore(cookiePath));
 exports.fetch = (0, fetch_cookie_1.default)(node_fetch_1.default, cookieJar);
 exports.socket = null;
-exports.USE_LOCAL_BACKEND = true;
+exports.USE_LOCAL_BACKEND = false;
 const domain = exports.USE_LOCAL_BACKEND ? 'localhost:5000' : 'api.lhm.gg';
 let cameraSupportInit = false;
 const getSocket = () => {

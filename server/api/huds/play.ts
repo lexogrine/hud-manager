@@ -8,6 +8,7 @@ import { createDirector } from '../../aco';
 import { PlayerExtension } from 'csgogsi-socket';
 import { registerKeybind } from '../keybinder';
 import { F1TelemetryClient, constants } from '@racehub-io/f1-telemetry-client';
+import { existsSync, writeFileSync } from 'fs';
 const { PACKETS } = constants;
 
 const assertUser: express.RequestHandler = (req, res, next) => {
@@ -27,15 +28,29 @@ export const initGameConnection = async () => {
 
 	const io = await ioPromise;
 
-	client.on(PACKETS.lapData, data => {
+
+	const events = ['session', 'lapData', 'participants', 'carStatus', 'carTelemetry', 'sessionHistory'];
+
+	for (const event of events) {
+		client.on((PACKETS as any)[event as any], data => {
+			io.to('f1').emit('update', { type: event, data });
+		});
+	}
+	/*client.on(PACKETS.lapData, data => {
 		io.to('f1').emit('update', { type: 'lap', data });
+		lap = data;
+		tryToSave();
 	});
 	client.on(PACKETS.session, data => {
 		io.to('f1').emit('update', { type: 'session', data });
+		session = data;
+		tryToSave();
 	});
 	client.on(PACKETS.participants, data => {
 		io.to('f1').emit('update', { type: 'participants', data });
-	});
+		participants = data;
+		tryToSave();
+	});*/
 
 	client.start();
 

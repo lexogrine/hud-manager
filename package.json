@@ -10,6 +10,7 @@
     "@racehub-io/f1-telemetry-client": "^0.2.6",
     "@sentry/node": "^6.13.3",
     "@sentry/tracing": "^6.13.3",
+    "@socket.io/component-emitter": "^3.0.0",
     "archiver": "^5.3.0",
     "big-integer": "^1.6.49",
     "bootstrap": "^4.4.1",

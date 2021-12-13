@@ -43,7 +43,7 @@ const GamePicker = ({ isOpen, setGame }: IProps) => {
 						</div>
 					</div>
 					<div
-						className={`game-preview ${game === 'dota2' ? 'active' : ''}`}
+						className={`game-preview ${game === 'f1' ? 'active' : ''}`}
 						onClick={() => setCurrentGame('f1')}
 					>
 						<div className="game-title">F1</div>
