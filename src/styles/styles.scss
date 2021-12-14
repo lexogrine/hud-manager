@@ -1934,6 +1934,9 @@ form {
 	align-items: center;
 	justify-content: center;
 	margin-top: 0;
+	&.game_pick {
+		width: 750px;
+	}
 	label.form-check-label {
 		color: white;
 		font-size: 12px;
