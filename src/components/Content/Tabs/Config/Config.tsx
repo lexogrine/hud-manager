@@ -110,6 +110,8 @@ interface IState {
 		version: string;
 		installing: boolean;
 	};
+	f1Installed: boolean;
+	f1Configured: boolean;
 	ip: string;
 	data: any;
 }
@@ -118,6 +120,8 @@ class Config extends Component<IProps, IState> {
 	constructor(props: IProps) {
 		super(props);
 		this.state = {
+			f1Configured: false,
+			f1Installed: false,
 			config: {
 				steamApiKey: '',
 				port: 1349,
@@ -249,6 +253,19 @@ class Config extends Component<IProps, IState> {
 
 		this.setState({ config: cfg, ip });
 	};
+	getF1 = async () => {
+		const response = await api.f1.get();
+		this.setState({
+			f1Installed: response.installed,
+			f1Configured: response.configured
+		});
+	};
+	installF1 = async () => {
+		try {
+			await api.f1.install().catch(() => {});
+		} catch {}
+		this.getF1();
+	};
 	createGSI = async () => {
 		const { game } = this.props.cxt as { game: 'dota2' | 'csgo' };
 		if (!game || (game !== 'csgo' && game !== 'dota2')) return;
@@ -361,6 +378,7 @@ class Config extends Component<IProps, IState> {
 			latestGame = this.props.cxt.game;
 			this.checkCFG();
 			this.checkGSI();
+			this.getF1();
 		}
 	}
 
@@ -530,7 +548,7 @@ class Config extends Component<IProps, IState> {
 
 	render() {
 		const { cxt, t } = this.props;
-		const { importModalOpen, conflict, data, ip, config, update } = this.state;
+		const { importModalOpen, conflict, data, ip, config, update, f1Configured, f1Installed } = this.state;
 
 		const gameInfo = this.state[(cxt.game || 'csgo') as 'dota2' | 'csgo'] as GameInfo;
 		const { gsi, cfg } = gameInfo || {};
@@ -677,6 +695,26 @@ class Config extends Component<IProps, IState> {
 									/>
 								</Col>
 							}
+						</GameOnly>
+						<GameOnly game="f1">
+							<Col md="12" className="config-entry">
+								<div className="config-description">
+									F1 Integration:{' '}
+									{f1Configured
+										? 'Loaded succesfully'
+										: f1Installed
+										? 'Not loaded'
+										: 'F1 not installed'}
+								</div>
+								<div
+									className={`button empty strong wide green ${
+										!f1Installed || f1Configured ? 'disabled' : ''
+									}`}
+									onClick={this.installF1}
+								>
+									Add integration
+								</div>
+							</Col>
 						</GameOnly>
 						<GameOnly game={['csgo', 'dota2']}>
 							<Col md="12" className="config-entry">

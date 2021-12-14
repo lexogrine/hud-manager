@@ -1,6 +1,6 @@
 import { CSGO } from 'csgogsi-socket';
 
-export type AvailableGames = 'csgo' | 'rocketleague' | 'dota2';
+export type AvailableGames = 'csgo' | 'rocketleague' | 'dota2' | 'f1';
 
 export type AvailableResources = 'teams' | 'players' | 'customs' | 'mapconfigs' | 'matches' | 'tournaments';
 
@@ -27,7 +27,7 @@ export const availableResources: AvailableResources[] = [
 	//'arg'
 ];
 
-export const availableGames: AvailableGames[] = ['csgo', 'rocketleague', 'dota2'];
+export const availableGames: AvailableGames[] = ['csgo', 'rocketleague', 'dota2', 'f1'];
 
 export type ResourcesTypes = Player | Team | CustomFieldStore;
 
@@ -137,7 +137,15 @@ export interface RocketLeagueVeto {
 	// map: string
 }
 
-export type Veto = CSGOVeto | Dota2Veto | RocketLeagueVeto;
+export interface F1Veto {
+	mapEnd: boolean;
+	winner?: string;
+	score?: VetoScore;
+	reverseSide?: boolean;
+	// map: string
+}
+
+export type Veto = CSGOVeto | Dota2Veto | RocketLeagueVeto | F1Veto;
 
 export interface MatchFactory<T extends Veto, N extends AvailableGames> {
 	id: string;
@@ -156,6 +164,8 @@ export type CSGOMatch = MatchFactory<CSGOVeto, 'csgo'>;
 
 export type RocketLeagueMatch = MatchFactory<RocketLeagueVeto, 'rocketleague'>;
 
+export type F1Match = MatchFactory<F1Veto, 'f1'>;
+
 export type BOTypes = 'bo1' | 'bo2' | 'bo3' | 'bo5' | 'bo7' | 'bo9';
 
 export interface MatchTeam {
@@ -163,7 +173,7 @@ export interface MatchTeam {
 	wins: number;
 }
 
-export type Match = CSGOMatch | Dota2Match | RocketLeagueMatch;
+export type Match = CSGOMatch | Dota2Match | RocketLeagueMatch | F1Match;
 
 /*
 export interface Match {

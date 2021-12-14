@@ -3,6 +3,7 @@ import { Modal, ModalHeader, ModalBody, Button, ModalFooter } from 'reactstrap';
 import csgo from './csgo.png';
 import rl from './rocketleague.png';
 import dota2 from './dota2.png';
+import f1 from './f1.png';
 interface IProps {
 	isOpen: boolean;
 	setGame: any;
@@ -11,7 +12,7 @@ interface IProps {
 const GamePicker = ({ isOpen, setGame }: IProps) => {
 	const [game, setCurrentGame] = useState<string | null>(null);
 	return (
-		<Modal isOpen={isOpen} toggle={() => {}} className="veto_modal">
+		<Modal isOpen={isOpen} toggle={() => {}} className="veto_modal game_pick">
 			<ModalHeader>Pick the Game</ModalHeader>
 			<ModalBody>
 				<div className="games-picker">
@@ -40,6 +41,15 @@ const GamePicker = ({ isOpen, setGame }: IProps) => {
 						<div className="game-title">Dota 2</div>
 						<div className="game-img">
 							<img src={dota2} />
+						</div>
+					</div>
+					<div
+						className={`game-preview ${game === 'f1' ? 'active' : ''}`}
+						onClick={() => setCurrentGame('f1')}
+					>
+						<div className="game-title">F1</div>
+						<div className="game-img">
+							<img src={f1} />
 						</div>
 					</div>
 				</div>

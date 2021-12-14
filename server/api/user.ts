@@ -26,7 +26,7 @@ export let socket: SimpleWebSocket | null = null;
 
 export const USE_LOCAL_BACKEND = false;
 
-const domain = USE_LOCAL_BACKEND ? '192.168.50.40:5000' : 'api-dev.lhm.gg';
+const domain = USE_LOCAL_BACKEND ? 'localhost:5000' : 'api.lhm.gg';
 
 let cameraSupportInit = false;
 

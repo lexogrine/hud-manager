@@ -20,6 +20,7 @@ require("./api/huds/devhud");
 const players_1 = require("./api/players");
 const arg_1 = require("./api/arg");
 const dota2_1 = require("./api/timeline/dota2");
+const parser_1 = require("./sockets/parser");
 let lastUpdate = new Date().getTime();
 let lastSideCheck = new Date().getTime();
 exports.runtimeConfig = {
@@ -48,7 +49,8 @@ exports.ioPromise = (0, config_1.loadConfig)().then(cfg => {
             origin: corsOrigins,
             credentials: true
         },
-        maxHttpBufferSize: 1e10
+        maxHttpBufferSize: 1e10,
+        parser: { Encoder: parser_1.Encoder, Decoder: parser_1.Decoder }
     });
 });
 exports.mirvPgl = new hlae_1.MIRVPGL(exports.ioPromise);

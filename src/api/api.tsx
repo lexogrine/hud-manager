@@ -242,5 +242,9 @@ export default {
 		installModData: async () => await apiV2<I.BakkesModAPIResponse>('bakkesmod/install/mod_data'),
 		installSos: async () => await apiV2<I.BakkesModAPIResponse>('bakkesmod/install/sos'),
 		run: async () => await apiV2<I.BakkesModAPIResponse>('bakkesmod/run')
+	},
+	f1: {
+		get: () => apiV2<{ installed: boolean; configured: boolean }>('f1/status'),
+		install: () => apiV2('f1/install', 'POST')
 	}
 };

@@ -1,7 +1,7 @@
 import { verifyUrl } from '../api/config';
 import { HUDStateManager } from '../api/huds/hudstatemanager';
 import { reverseSide } from '../api/matches';
-import { HUDState, ioPromise, runtimeConfig } from '../socket';
+import { GSI, HUDState, ioPromise, runtimeConfig } from '../socket';
 import { playTesting } from './../api/huds/play';
 import { availableGames } from '../../types/interfaces';
 import { unregisterAllKeybinds, registerKeybind } from '../api/keybinder';
@@ -21,7 +21,7 @@ ioPromise.then(io => {
 		});
 		socket.on('started', () => {
 			if (runtimeConfig.last) {
-				socket.emit('update', runtimeConfig.last);
+				socket.emit('update', runtimeConfig.last, GSI.damage);
 			}
 		});
 		socket.on('registerReader', () => {
