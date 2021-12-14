@@ -10,6 +10,7 @@ import * as sync from './sync';
 import * as machine from './machine';
 import * as user from './user';
 import * as bakkesmod from './bakkesmod';
+import * as f1 from './f1';
 import * as I from './../../types/interfaces';
 import fs from 'fs';
 import { initGameConnection } from './huds/play';
@@ -235,6 +236,10 @@ export default async function () {
 	app.route('/api/bakkesmod/install/mod_data').get(bakkesmod.installBakkesModData);
 
 	app.route('/api/bakkesmod/install/sos').get(bakkesmod.installSosPlugin);
+
+	app.route('/api/f1/status').get(f1.getF1Status)
+	;
+	app.route('/api/f1/install').post(f1.installF1);
 
 	registerKeybind('Left Alt+Left Shift+F', () => io.emit('refreshHUD'));
 

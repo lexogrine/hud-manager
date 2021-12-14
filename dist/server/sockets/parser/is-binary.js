@@ -1,19 +1,13 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.hasBinary = exports.isBinary = void 0;
-const withNativeArrayBuffer = typeof ArrayBuffer === "function";
+const withNativeArrayBuffer = typeof ArrayBuffer === 'function';
 const isView = (obj) => {
-    return typeof ArrayBuffer.isView === "function"
-        ? ArrayBuffer.isView(obj)
-        : obj.buffer instanceof ArrayBuffer;
+    return typeof ArrayBuffer.isView === 'function' ? ArrayBuffer.isView(obj) : obj.buffer instanceof ArrayBuffer;
 };
 const toString = Object.prototype.toString;
-const withNativeBlob = typeof Blob === "function" ||
-    (typeof Blob !== "undefined" &&
-        toString.call(Blob) === "[object BlobConstructor]");
-const withNativeFile = typeof File === "function" ||
-    (typeof File !== "undefined" &&
-        toString.call(File) === "[object FileConstructor]");
+const withNativeBlob = typeof Blob === 'function' || (typeof Blob !== 'undefined' && toString.call(Blob) === '[object BlobConstructor]');
+const withNativeFile = typeof File === 'function' || (typeof File !== 'undefined' && toString.call(File) === '[object FileConstructor]');
 /**
  * Returns true if obj is a Buffer, an ArrayBuffer, a Blob or a File.
  *
@@ -26,7 +20,7 @@ function isBinary(obj) {
 }
 exports.isBinary = isBinary;
 function hasBinary(obj, toJSON) {
-    if (!obj || typeof obj !== "object") {
+    if (!obj || typeof obj !== 'object') {
         return false;
     }
     if (Array.isArray(obj)) {
@@ -40,9 +34,7 @@ function hasBinary(obj, toJSON) {
     if (isBinary(obj)) {
         return true;
     }
-    if (obj.toJSON &&
-        typeof obj.toJSON === "function" &&
-        arguments.length === 1) {
+    if (obj.toJSON && typeof obj.toJSON === 'function' && arguments.length === 1) {
         return hasBinary(obj.toJSON(), true);
     }
     for (const key in obj) {

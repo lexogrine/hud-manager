@@ -12,7 +12,6 @@ const ws_1 = __importDefault(require("ws"));
 const aco_1 = require("../../aco");
 const keybinder_1 = require("../keybinder");
 const f1_telemetry_client_1 = require("@racehub-io/f1-telemetry-client");
-const fs_1 = require("fs");
 const { PACKETS } = f1_telemetry_client_1.constants;
 const assertUser = (req, res, next) => {
     if (!__1.customer.customer) {
@@ -27,20 +26,6 @@ exports.playTesting = {
 const initGameConnection = async () => {
     const client = new f1_telemetry_client_1.F1TelemetryClient({ port: 20777 });
     const io = await socket_1.ioPromise;
-    let saved = false;
-    let lap = null;
-    let session = null;
-    let participants = null;
-    const tryToSave = () => {
-        if (saved)
-            return;
-        if (!lap || !session || !participants)
-            return;
-        if (!(0, fs_1.existsSync)('D:\\create.txt'))
-            return;
-        saved = true;
-        (0, fs_1.writeFileSync)('D:\\telemetry.json', JSON.stringify({ lap, session, participants }, (key, value) => (typeof value === "bigint" ? value.toString() : value)));
-    };
     const events = ['session', 'lapData', 'participants', 'carStatus', 'carTelemetry', 'sessionHistory'];
     for (const event of events) {
         client.on(PACKETS[event], data => {

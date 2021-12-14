@@ -42,36 +42,38 @@ const Navbar = ({ activeTab, toggle, files, setCollapse, isCollapsed, version }:
 						<div>{t('navbar.huds')}</div>
 					</NavLink>
 				</NavItem>
-				<NavItem className={`hover-pointer `} onClick={toggleHandler('teams')}>
-					<NavLink active={activeTab === 'teams'}>
-						<Tabs.Teams />
-						<div>{t('common.teams')}</div>
-					</NavLink>
-				</NavItem>
-				<NavItem className={`hover-pointer `} onClick={toggleHandler('players')}>
-					<NavLink active={activeTab === 'players'}>
-						<Tabs.Players />
-						<div>{t('common.players')}</div>
-					</NavLink>
-				</NavItem>
-				<NavItem className={`hover-pointer `} onClick={toggleHandler('matches')}>
-					<NavLink active={activeTab === 'matches'}>
-						<Tabs.Matches />
-						<div>{t('match.matches')}</div>
-					</NavLink>
-				</NavItem>
-				<NavItem className={`hover-pointer `} onClick={toggleHandler('tournaments')}>
-					<NavLink active={activeTab === 'tournaments'}>
-						<Tabs.Tournaments />
-						<div>{t('common.tournaments')}</div>
-					</NavLink>
-				</NavItem>
-				<NavItem className={`hover-pointer `} onClick={toggleHandler('cgpanel')}>
-					<NavLink active={activeTab === 'cgpanel'}>
-						<Tabs.CGMode />
-						<div>{t('common.cgMode')}</div>
-					</NavLink>
-				</NavItem>
+				<GameOnly game={['csgo', 'dota2', 'rocketleague']}>
+					<NavItem className={`hover-pointer `} onClick={toggleHandler('teams')}>
+						<NavLink active={activeTab === 'teams'}>
+							<Tabs.Teams />
+							<div>{t('common.teams')}</div>
+						</NavLink>
+					</NavItem>
+					<NavItem className={`hover-pointer `} onClick={toggleHandler('players')}>
+						<NavLink active={activeTab === 'players'}>
+							<Tabs.Players />
+							<div>{t('common.players')}</div>
+						</NavLink>
+					</NavItem>
+					<NavItem className={`hover-pointer `} onClick={toggleHandler('matches')}>
+						<NavLink active={activeTab === 'matches'}>
+							<Tabs.Matches />
+							<div>{t('match.matches')}</div>
+						</NavLink>
+					</NavItem>
+					<NavItem className={`hover-pointer `} onClick={toggleHandler('tournaments')}>
+						<NavLink active={activeTab === 'tournaments'}>
+							<Tabs.Tournaments />
+							<div>{t('common.tournaments')}</div>
+						</NavLink>
+					</NavItem>
+					<NavItem className={`hover-pointer `} onClick={toggleHandler('cgpanel')}>
+						<NavLink active={activeTab === 'cgpanel'}>
+							<Tabs.CGMode />
+							<div>{t('common.cgMode')}</div>
+						</NavLink>
+					</NavItem>
+				</GameOnly>
 				<div className="separator" />
 				<GameOnly game="csgo">
 					<NavItem className="hover-pointer" onClick={toggleHandler('aco')}>
@@ -99,12 +101,14 @@ const Navbar = ({ activeTab, toggle, files, setCollapse, isCollapsed, version }:
 						</NavLink>
 					</NavItem>
 				</GameOnly>
-				<NavItem className="hover-pointer" onClick={toggleHandler('cameras')}>
-					<NavLink active={activeTab === 'cameras'}>
-						<Tabs.Cameras />
-						<div>Cameras</div>
-					</NavLink>
-				</NavItem>
+				<GameOnly game={['csgo', 'dota2', 'rocketleague']}>
+					<NavItem className="hover-pointer" onClick={toggleHandler('cameras')}>
+						<NavLink active={activeTab === 'cameras'}>
+							<Tabs.Cameras />
+							<div>Cameras</div>
+						</NavLink>
+					</NavItem>
+				</GameOnly>
 				<NavItem className="hover-pointer" id="settings" onClick={toggleHandler('settings')}>
 					<NavLink active={activeTab === 'settings'}>
 						<Tabs.Settings />

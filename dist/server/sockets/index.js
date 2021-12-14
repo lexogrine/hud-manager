@@ -24,7 +24,7 @@ socket_1.ioPromise.then(io => {
         });
         socket.on('started', () => {
             if (socket_1.runtimeConfig.last) {
-                socket.emit('update', socket_1.runtimeConfig.last);
+                socket.emit('update', socket_1.runtimeConfig.last, socket_1.GSI.damage);
             }
         });
         socket.on('registerReader', () => {
