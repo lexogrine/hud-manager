@@ -28,7 +28,6 @@ export const initGameConnection = async () => {
 
 	const io = await ioPromise;
 
-
 	const events = ['session', 'lapData', 'participants', 'carStatus', 'carTelemetry', 'sessionHistory'];
 
 	for (const event of events) {

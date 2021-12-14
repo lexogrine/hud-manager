@@ -237,8 +237,7 @@ export default async function () {
 
 	app.route('/api/bakkesmod/install/sos').get(bakkesmod.installSosPlugin);
 
-	app.route('/api/f1/status').get(f1.getF1Status)
-	;
+	app.route('/api/f1/status').get(f1.getF1Status);
 	app.route('/api/f1/install').post(f1.installF1);
 
 	registerKeybind('Left Alt+Left Shift+F', () => io.emit('refreshHUD'));

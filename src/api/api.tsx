@@ -244,7 +244,7 @@ export default {
 		run: async () => await apiV2<I.BakkesModAPIResponse>('bakkesmod/run')
 	},
 	f1: {
-		get: () => apiV2<{"installed":boolean,"configured":boolean}>('f1/status'),
+		get: () => apiV2<{ installed: boolean; configured: boolean }>('f1/status'),
 		install: () => apiV2('f1/install', 'POST')
 	}
 };
