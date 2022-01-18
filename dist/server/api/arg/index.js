@@ -1,12 +1,16 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendKillsToARG = exports.connectToARG = exports.sendARGStatus = exports.getIP = exports.argSocket = void 0;
+exports.sendConfigToARG = exports.sendKillsToARG = exports.parseCSGOKills = exports.connectToARG = exports.sendARGStatus = exports.getIP = exports.argSocket = void 0;
 const socket_1 = require("../../socket");
 const simple_websockets_1 = require("simple-websockets");
 exports.argSocket = {
-    delay: 7,
+    delay: 5,
     socket: null,
     id: null,
+    preTime: 1500,
+    postTime: 1500,
+    online: true,
+    useHLAE: false,
     order: [
         {
             id: 'multikills',
@@ -36,7 +40,15 @@ const getIP = (code) => {
 exports.getIP = getIP;
 const sendARGStatus = async () => {
     const io = await socket_1.ioPromise;
-    io.emit('ARGStatus', exports.argSocket?.id, exports.argSocket.delay, exports.argSocket.saveClips);
+    const status = {
+        pcID: exports.argSocket?.id,
+        online: exports.argSocket.online,
+        delay: exports.argSocket.delay,
+        useHLAE: exports.argSocket.useHLAE,
+        saveClips: exports.argSocket.saveClips,
+        safeBand: { preTime: exports.argSocket.preTime, postTime: exports.argSocket.postTime }
+    };
+    io.emit('ARGStatus', status);
 };
 exports.sendARGStatus = sendARGStatus;
 const connectToARG = (code) => {
@@ -51,7 +63,7 @@ const connectToARG = (code) => {
     };
     const socket = new simple_websockets_1.SimpleWebSocket(socketAddress);
     socket.on('connection', () => {
-        socket.send('register', exports.argSocket.order.map(item => ({ id: item.id, active: item.active })), exports.argSocket.saveClips);
+        (0, exports.sendConfigToARG)(true);
     });
     socket.on('registered', exports.sendARGStatus);
     exports.argSocket.socket = socket;
@@ -74,13 +86,7 @@ const getNewKills = (kill, oldKillsStatistics) => {
         teamkill: false
     };
 };
-const sendKillsToARG = (last, csgo) => {
-    if (last.round?.phase === 'freezetime' && csgo.round?.phase !== 'freezetime' && exports.argSocket.socket) {
-        exports.argSocket.socket.send('clearReplay');
-    }
-    else if (csgo.round?.phase === 'freezetime' && last.round?.phase !== 'freezetime' && exports.argSocket.socket) {
-        exports.argSocket.socket.send('showReplay');
-    }
+const parseCSGOKills = (last, csgo) => {
     const playerKills = csgo.players.map(player => ({
         steamid: player.steamid,
         kills: player.stats.kills,
@@ -111,8 +117,32 @@ const sendKillsToARG = (last, csgo) => {
             headshot: newKills.headshot
         });
     }
-    if (exports.argSocket.socket && argKillEntries.length) {
-        exports.argSocket.socket.send('kills', argKillEntries);
+    if (!exports.argSocket.useHLAE)
+        (0, exports.sendKillsToARG)(argKillEntries);
+    setTimeout(() => {
+        if (!exports.argSocket.online)
+            return;
+        if (last.round?.phase === 'freezetime' && csgo.round?.phase !== 'live' && exports.argSocket.socket) {
+            exports.argSocket.socket.send('clearReplay');
+        }
+        else if (csgo.round?.phase === 'freezetime' && last.round?.phase !== 'freezetime' && exports.argSocket.socket) {
+            exports.argSocket.socket.send('showReplay');
+        }
+    }, 100);
+};
+exports.parseCSGOKills = parseCSGOKills;
+const sendKillsToARG = (kills) => {
+    if (exports.argSocket.socket && kills.length && exports.argSocket.online) {
+        exports.argSocket.socket.send('kills', kills);
     }
 };
 exports.sendKillsToARG = sendKillsToARG;
+const sendConfigToARG = (register = false) => {
+    const args = [
+        exports.argSocket.order.map(item => ({ id: item.id, active: item.active })),
+        exports.argSocket.saveClips,
+        { preTime: exports.argSocket.preTime, postTime: exports.argSocket.postTime }
+    ];
+    exports.argSocket.socket?.send(register ? 'register' : 'config', ...args);
+};
+exports.sendConfigToARG = sendConfigToARG;

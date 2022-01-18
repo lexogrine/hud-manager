@@ -118,7 +118,10 @@ export default {
 		setDelay: (delay: number) => apiV2('arg/delay', 'POST', { delay }),
 		setClips: (saveClips: boolean) => apiV2('arg/save', 'POST', { saveClips }),
 		save: (order: I.Item[]) => apiV2('arg/order', 'POST', order),
-		get: (): Promise<I.Item[]> => apiV2('arg/order')
+		get: (): Promise<I.Item[]> => apiV2('arg/order'),
+		setOnline: (online: boolean) => apiV2('arg/online', 'POST', { online }),
+		setHLAE: (hlae: boolean) => apiV2('arg/hlae', 'POST', { hlae }),
+		setSafeband: (preTime: number, postTime: number) => apiV2('arg/safeband', 'POST', { preTime, postTime })
 	},
 	config: {
 		get: async (): Promise<I.ExtendedConfig> => await apiV2('config'),

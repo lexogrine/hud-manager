@@ -36,8 +36,8 @@ class Director {
 
 		const mapName = rawMapName.substr(rawMapName.lastIndexOf('/') + 1);
 
-		const activeAreas = getActiveAreasSorted(mapName, data.players);
-		const area = getBestArea(mapName, data.players);
+		const activeAreas = getActiveAreasSorted(mapName, data.players, data.bomb);
+		const area = getBestArea(mapName, data.players, data.bomb);
 
 		const isCurrentAreaEmpty = Boolean(
 			this.currentArea && !activeAreas.find(area => area.name === this.currentArea)

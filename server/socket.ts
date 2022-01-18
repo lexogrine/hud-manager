@@ -13,7 +13,7 @@ import { server } from '.';
 import { HUDStateManager } from './api/huds/hudstatemanager';
 import './api/huds/devhud';
 import { getPlayersList } from './api/players';
-import { sendKillsToARG } from './api/arg';
+import { parseCSGOKills, argSocket, ARGKillEntry, sendKillsToARG } from './api/arg';
 import { dota2TimelineHandler } from './api/timeline/dota2';
 import { Encoder, Decoder } from './sockets/parser';
 
@@ -142,8 +142,24 @@ ioPromise.then(io => {
 
 	GSI.on('data', csgo => {
 		if (!GSI.last) return;
-		sendKillsToARG(GSI.last, csgo);
+		parseCSGOKills(GSI.last, csgo);
 	});
+
+	GSI.on('kill', event => {
+		if (!argSocket.useHLAE || !GSI.current) return;
+		if(!event.killer) return;
+		const entry: ARGKillEntry = {
+			killer: event.killer.steamid,
+			killerHealth: event.killer.state.health,
+			newKills: 1,
+			name: event.killer.defaultName,
+			teamkill: event.killer.team.side === event.victim.team.side,
+			headshot: event.headshot,
+			timestamp: new Date().getTime() + argSocket.delay * 1000,
+			round: GSI.current.map.round
+		}
+		sendKillsToARG([entry]);
+	})
 
 	Dota2GSI.on('matchEnd', async matchSummary => {
 		const matches = await getActiveGameMatches();

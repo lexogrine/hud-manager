@@ -1,17 +1,55 @@
 import express from 'express';
-import { connectToARG, argSocket, sendARGStatus } from './index';
+import { connectToARG, argSocket, sendARGStatus, sendConfigToARG } from './index';
+
+export const setSafeband: express.RequestHandler = async (req, res) => {
+	const { preTime, postTime } = req.body;
+
+	if(argSocket){
+		argSocket.postTime = postTime;
+		argSocket.preTime = preTime;
+	}
+	sendConfigToARG();
+
+	
+	return res.sendStatus(200);
+}
+
+export const setHLAE: express.RequestHandler = async (req, res) => {
+	const { hlae } = req.body;
+
+	if(argSocket){
+		argSocket.useHLAE = hlae;
+	}
+	
+	await sendARGStatus();
+
+	
+	return res.sendStatus(200);
+}
+
+export const setOnline: express.RequestHandler = async (req, res) => {
+	const { online } = req.body;
+
+	if(argSocket){
+		argSocket.online = online;
+	}
+
+	
+	return res.sendStatus(200);
+}
 
 export const setOrder: express.RequestHandler = async (req, res) => {
 	const order = req.body;
 	if (!order || !Array.isArray(order)) return res.sendStatus(422);
 	if (argSocket) {
 		argSocket.order = order;
-		argSocket.socket?.send(
+		/*argSocket.socket?.send(
 			'config',
 			order.map(item => ({ id: item.id, active: item.active }))
 		);
 
-		argSocket.socket?.send('saveClips', argSocket.saveClips);
+		argSocket.socket?.send('saveClips', argSocket.saveClips);*/
+		sendConfigToARG();
 	}
 	return res.sendStatus(200);
 };
@@ -50,6 +88,8 @@ export const saveDelay: express.RequestHandler = async (req, res) => {
 	}
 
 	argSocket.delay = req.body.delay;
+
+	console.log(argSocket.delay);
 	await sendARGStatus();
 	return res.sendStatus(200);
 };
@@ -59,7 +99,8 @@ export const saveClips: express.RequestHandler = async (req, res) => {
 	}
 
 	argSocket.saveClips = req.body.saveClips;
-	argSocket?.socket?.send('saveClips', argSocket.saveClips);
+	sendConfigToARG()
+	//argSocket?.socket?.send('saveClips', argSocket.saveClips);
 	await sendARGStatus();
 	return res.sendStatus(200);
 };

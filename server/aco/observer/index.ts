@@ -1,4 +1,4 @@
-import { Player } from 'csgogsi';
+import { Bomb, Player } from 'csgogsi';
 import { isInPolygon } from '../polygon';
 import { MapAreaConfig } from '../../../types/interfaces';
 import areas from '../areas';
@@ -28,7 +28,7 @@ const getRandomElement = (array: any[]) => {
 	return array[index];
 };
 
-export const getActiveAreasSorted = (mapName: string, players: Player[]) => {
+export const getActiveAreasSorted = (mapName: string, players: Player[], bomb: Bomb | null) => {
 	const config = areas.areas.find(cfg => cfg.map === mapName);
 	if (!config) {
 		return [];
@@ -38,6 +38,25 @@ export const getActiveAreasSorted = (mapName: string, players: Player[]) => {
 
 	if (!alivePlayers.length) {
 		return [];
+	}
+
+	if (bomb && bomb.position && (bomb?.state === "planting" || bomb?.state === "defusing")) {
+		const areasWithBomb = config.areas
+			.map(area => {
+				const cornersWithFirstAtEnd = [...area.polygonCorners, area.polygonCorners[0]];
+				const playersInside = alivePlayers.filter(player => isInPolygon(player.position, [cornersWithFirstAtEnd]));
+				return {
+					...area,
+					players: playersInside
+				} as MapAreaConfigWithPlayers;
+			})
+			.filter(area => {
+				const cornersWithFirstAtEnd = [...area.polygonCorners, area.polygonCorners[0]];
+				const isBombInside = isInPolygon(bomb.position.split(', ').map(n => Number(n)), [cornersWithFirstAtEnd]);
+				return !!isBombInside;
+			})
+			.sort(sortAreas);
+		return areasWithBomb;
 	}
 
 	const areasWithPlayers = config.areas
@@ -54,8 +73,8 @@ export const getActiveAreasSorted = (mapName: string, players: Player[]) => {
 	return areasWithPlayers;
 };
 
-export const getBestArea = (mapName: string, players: Player[]) => {
-	const activeAreas = getActiveAreasSorted(mapName, players);
+export const getBestArea = (mapName: string, players: Player[], bomb: Bomb | null) => {
+	const activeAreas = getActiveAreasSorted(mapName, players, bomb);
 
 	const activeAreasConfigs: ExecutableACOConfig[] = [];
 

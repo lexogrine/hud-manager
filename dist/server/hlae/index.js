@@ -6,6 +6,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.MIRVPGL = void 0;
 const BufferReader_1 = __importDefault(require("./BufferReader"));
 const GameEventUnserializer_1 = __importDefault(require("./GameEventUnserializer"));
+const socket_1 = require("../socket");
 const knownGameEvents = [];
 class MIRVPGL {
     socket;
@@ -78,6 +79,7 @@ class MIRVPGL {
                         }
                         if (gameEvent.name === 'player_death') {
                             io.to('game').emit('update_mirv', gameEvent);
+                            socket_1.GSI.digestMIRV(gameEvent);
                         }
                     }
                 }

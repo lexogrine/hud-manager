@@ -80,6 +80,9 @@
     font-family: 'Rajdhani';
     font-weight: 600;
     font-size: 14px;
+    &:first-child {
+        min-width: 230px;
+    }
 
     .config-description {
         margin-right: 14px;
@@ -92,17 +95,41 @@
     display: flex;
     justify-content: center;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
-    .arg-config-entry {
-        &:first-child {
-            border-right: 1px solid rgba(255, 255, 255, 0.1);
-        }
+    &.no-border {
+        > .arg-config-entry:first-child {
+            flex-direction: column;
+            border-right: 1px solid rgba(255, 255, 255, 0);
 
-        &:nth-child(2){
+            .arg-config-entry {
+                padding-top: 10px;
+                padding-bottom: 10px;
+                padding-left: 0px;
+                padding-right: 0px;
+            }
+        }
+        > .arg-config-entry:nth-child(n+2) {
             flex-direction: column;
             align-items: flex-start;
 
             .config-description {
                 margin-bottom: 14px;
+            }
+        
+    }
+    }
+    &:not(.no-border) {
+        .arg-config-entry {
+            &:first-child {
+                border-right: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            
+            &:nth-child(n+2){
+                flex-direction: column;
+                align-items: flex-start;
+    
+                .config-description {
+                    margin-bottom: 14px;
+                }
             }
         }
     }

@@ -19,7 +19,7 @@ const getRandomElement = (array) => {
     const index = Math.floor(Math.random() * array.length);
     return array[index];
 };
-const getActiveAreasSorted = (mapName, players) => {
+const getActiveAreasSorted = (mapName, players, bomb) => {
     const config = areas_1.default.areas.find(cfg => cfg.map === mapName);
     if (!config) {
         return [];
@@ -27,6 +27,24 @@ const getActiveAreasSorted = (mapName, players) => {
     const alivePlayers = players.filter(player => player.state.health > 0);
     if (!alivePlayers.length) {
         return [];
+    }
+    if (bomb && bomb.position && (bomb?.state === "planting" || bomb?.state === "defusing")) {
+        const areasWithBomb = config.areas
+            .map(area => {
+            const cornersWithFirstAtEnd = [...area.polygonCorners, area.polygonCorners[0]];
+            const playersInside = alivePlayers.filter(player => (0, polygon_1.isInPolygon)(player.position, [cornersWithFirstAtEnd]));
+            return {
+                ...area,
+                players: playersInside
+            };
+        })
+            .filter(area => {
+            const cornersWithFirstAtEnd = [...area.polygonCorners, area.polygonCorners[0]];
+            const isBombInside = (0, polygon_1.isInPolygon)(bomb.position.split(', ').map(n => Number(n)), [cornersWithFirstAtEnd]);
+            return !!isBombInside;
+        })
+            .sort(sortAreas);
+        return areasWithBomb;
     }
     const areasWithPlayers = config.areas
         .map(area => {
@@ -42,8 +60,8 @@ const getActiveAreasSorted = (mapName, players) => {
     return areasWithPlayers;
 };
 exports.getActiveAreasSorted = getActiveAreasSorted;
-const getBestArea = (mapName, players) => {
-    const activeAreas = (0, exports.getActiveAreasSorted)(mapName, players);
+const getBestArea = (mapName, players, bomb) => {
+    const activeAreas = (0, exports.getActiveAreasSorted)(mapName, players, bomb);
     const activeAreasConfigs = [];
     for (const activeArea of activeAreas) {
         for (const config of activeArea.configs) {

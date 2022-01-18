@@ -26,5 +26,8 @@ const initRoute = () => {
     __1.app.route('/api/arg/delay').post(A.saveDelay);
     __1.app.route('/api/arg/save').post(A.saveClips);
     __1.app.route('/api/arg/order').get(A.getOrder).post(A.setOrder);
+    __1.app.route('/api/arg/online').post(A.setOnline);
+    __1.app.route('/api/arg/safeband').post(A.setSafeband);
+    __1.app.route('/api/arg/hlae').post(A.setHLAE);
 };
 exports.default = initRoute;

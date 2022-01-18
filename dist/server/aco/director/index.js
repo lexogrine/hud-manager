@@ -31,8 +31,8 @@ class Director {
             return;
         const rawMapName = data.map.name;
         const mapName = rawMapName.substr(rawMapName.lastIndexOf('/') + 1);
-        const activeAreas = (0, observer_1.getActiveAreasSorted)(mapName, data.players);
-        const area = (0, observer_1.getBestArea)(mapName, data.players);
+        const activeAreas = (0, observer_1.getActiveAreasSorted)(mapName, data.players, data.bomb);
+        const area = (0, observer_1.getBestArea)(mapName, data.players, data.bomb);
         const isCurrentAreaEmpty = Boolean(this.currentArea && !activeAreas.find(area => area.name === this.currentArea));
         if (isCurrentAreaEmpty) {
             this.lastSwitch = new Date().getTime() - AREA_INTERVAL + 750;

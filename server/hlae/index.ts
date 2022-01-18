@@ -3,6 +3,8 @@ import { Server } from 'socket.io';
 import BufferReader from './BufferReader';
 import GameEventUnserializer from './GameEventUnserializer';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
+import { GSI } from '../socket';
+import { RawKill } from 'csgogsi-socket';
 
 const knownGameEvents: string[] = [];
 export class MIRVPGL {
@@ -129,6 +131,7 @@ export class MIRVPGL {
 						}
 						if (gameEvent.name === 'player_death') {
 							io.to('game').emit('update_mirv', gameEvent);
+							GSI.digestMIRV(gameEvent as RawKill)
 						}
 					}
 				} catch (err) {}

@@ -10,11 +10,18 @@ import { Card } from './ARGEntry';
 import { Item } from '../../../../api/interfaces';
 import Checkbox from '../../../Checkbox';
 
+let preTimeTimeout: NodeJS.Timeout | null = null;
+let postTimeTimeout: NodeJS.Timeout | null = null;
+
 const ARG = () => {
 	const [isConnected, setIsConnected] = useState(false);
 	const [delay, setDelay] = useState(7);
 	const [pcID, setPCID] = useState('');
+	const [isOnline, setOnline] = useState(true);
+	const [preTime, setPreTime] = useState(1500);
+	const [postTime, setPostTime ] = useState(1500);
 	const [saveClips, setSaveClips] = useState(false);
+	const [useHLAE, setUseHLAE] = useState(false);
 
 	const [cards, setCards] = useState<Item[]>([
 		{
@@ -49,6 +56,37 @@ const ARG = () => {
 		[cards]
 	);
 
+	const toggleOnline = () => {
+		api.arg.setOnline(!isOnline);
+		setOnline(!isOnline);
+	}
+	const safebandHandler = (type: 'pre' | 'post'):React.ChangeEventHandler<HTMLInputElement> => event => {
+		const value = Number(event.target.value);
+		if(type === 'post') setPostTime(value);
+		else setPreTime(value);
+
+		if(type === 'pre'){
+			if(preTimeTimeout){
+				clearTimeout(preTimeTimeout);
+			}
+
+			preTimeTimeout = setTimeout(async () => {
+				await api.arg.setSafeband(value, postTime);
+
+				preTimeTimeout = null;
+			}, 1000);
+		} else {
+			if(postTimeTimeout){
+				clearTimeout(postTimeTimeout);
+			}
+
+			postTimeTimeout = setTimeout(async () => {
+				await api.arg.setSafeband(preTime, value);
+
+				postTimeTimeout = null;
+			}, 1000);
+		}
+	}
 	const connect = () => {
 		api.arg.connect(pcID);
 	};
@@ -59,6 +97,10 @@ const ARG = () => {
 	};
 	const onClipsChange = () => {
 		api.arg.setClips(!saveClips);
+	};
+
+	const onHLAEChange = () => {
+		api.arg.setHLAE(!useHLAE);
 	};
 
 	const save = (overwrite?: Item[]) => {
@@ -86,13 +128,30 @@ const ARG = () => {
 	};
 
 	useEffect(() => {
-		socket.on('ARGStatus', (pcID: string | null, delay: number, saveClips: boolean) => {
-			setIsConnected(!!pcID);
-			setDelay(delay);
-			if (pcID) {
-				setPCID(pcID);
+		type Status = {
+			pcID: string;
+			delay: number;
+			saveClips: boolean;
+			online: boolean,
+			useHLAE: boolean,
+			safeBand: {
+				preTime: number;
+				postTime: number;
+			};
+		}
+		
+		socket.on('ARGStatus', (status: Status) => {
+			console.log('update')
+			setIsConnected(!!status.pcID);
+			setDelay(status.delay);
+			if(status.pcID) {
+				setPCID(status.pcID);
 			}
-			setSaveClips(saveClips);
+			setSaveClips(status.saveClips);
+			setOnline(status.online);
+			setPostTime(status.safeBand.postTime);
+			setPreTime(status.safeBand.preTime);
+			setUseHLAE(status.useHLAE);
 		});
 		setTimeout(() => {
 			api.arg.requestStatus();
@@ -104,7 +163,7 @@ const ARG = () => {
 				.catch(() => {});
 		}, 100);
 	}, []);
-
+	console.log(useHLAE);
 	return (
 		<>
 			{/*<div className="tab-title-container arg-title">
@@ -122,6 +181,23 @@ const ARG = () => {
 						</DndProvider>
 					</Col>
 				</Row>
+			</div>
+			<div className="arg-options no-border">
+				<div className="arg-config-entry">
+					<div className="config-description">Safeband</div>
+				<div className="arg-config-entry">
+					<div className="config-description">Use HLAE?</div>
+					<Checkbox checked={useHLAE} onChange={onHLAEChange}  />
+				</div>
+				</div>
+				<div className="arg-config-entry">
+					<div className="config-description">Before kill</div>
+					<Input value={preTime} type="number" onChange={safebandHandler('pre')} />
+				</div>
+				<div className="arg-config-entry">
+					<div className="config-description">After kill</div>
+					<Input value={postTime} type="number" onChange={safebandHandler('post')} />
+				</div>
 			</div>
 			<div className="arg-options">
 				<div className="arg-config-entry">
@@ -148,6 +224,12 @@ const ARG = () => {
 					onClick={isConnected ? api.arg.disconnect : connect}
 				>
 					{isConnected ? 'DISCONNECT' : 'CONNECT'}
+				</div>
+				<div
+					className={`button green strong big wide ${isOnline ? 'empty' : ''}`}
+					onClick={toggleOnline}
+				>
+					{isOnline ? 'Turn off' : 'Turn on'}
 				</div>
 			</div>
 		</>

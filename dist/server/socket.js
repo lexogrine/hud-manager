@@ -125,7 +125,24 @@ exports.ioPromise.then(io => {
     exports.GSI.on('data', csgo => {
         if (!exports.GSI.last)
             return;
-        (0, arg_1.sendKillsToARG)(exports.GSI.last, csgo);
+        (0, arg_1.parseCSGOKills)(exports.GSI.last, csgo);
+    });
+    exports.GSI.on('kill', event => {
+        if (!arg_1.argSocket.useHLAE || !exports.GSI.current)
+            return;
+        if (!event.killer)
+            return;
+        const entry = {
+            killer: event.killer.steamid,
+            killerHealth: event.killer.state.health,
+            newKills: 1,
+            name: event.killer.defaultName,
+            teamkill: event.killer.team.side === event.victim.team.side,
+            headshot: event.headshot,
+            timestamp: new Date().getTime() + arg_1.argSocket.delay * 1000,
+            round: exports.GSI.current.map.round
+        };
+        (0, arg_1.sendKillsToARG)([entry]);
     });
     exports.Dota2GSI.on('matchEnd', async (matchSummary) => {
         const matches = await (0, matches_1.getActiveGameMatches)();
