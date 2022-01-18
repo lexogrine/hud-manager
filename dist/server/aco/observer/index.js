@@ -28,7 +28,7 @@ const getActiveAreasSorted = (mapName, players, bomb) => {
     if (!alivePlayers.length) {
         return [];
     }
-    if (bomb && bomb.position && (bomb?.state === "planting" || bomb?.state === "defusing")) {
+    if (bomb && bomb.position && (bomb?.state === 'planting' || bomb?.state === 'defusing')) {
         const areasWithBomb = config.areas
             .map(area => {
             const cornersWithFirstAtEnd = [...area.polygonCorners, area.polygonCorners[0]];
