@@ -19,7 +19,7 @@ const ARG = () => {
 	const [pcID, setPCID] = useState('');
 	const [isOnline, setOnline] = useState(true);
 	const [preTime, setPreTime] = useState(1500);
-	const [postTime, setPostTime ] = useState(1500);
+	const [postTime, setPostTime] = useState(1500);
 	const [saveClips, setSaveClips] = useState(false);
 	const [useHLAE, setUseHLAE] = useState(false);
 
@@ -59,34 +59,36 @@ const ARG = () => {
 	const toggleOnline = () => {
 		api.arg.setOnline(!isOnline);
 		setOnline(!isOnline);
-	}
-	const safebandHandler = (type: 'pre' | 'post'):React.ChangeEventHandler<HTMLInputElement> => event => {
-		const value = Number(event.target.value);
-		if(type === 'post') setPostTime(value);
-		else setPreTime(value);
+	};
+	const safebandHandler =
+		(type: 'pre' | 'post'): React.ChangeEventHandler<HTMLInputElement> =>
+		event => {
+			const value = Number(event.target.value);
+			if (type === 'post') setPostTime(value);
+			else setPreTime(value);
 
-		if(type === 'pre'){
-			if(preTimeTimeout){
-				clearTimeout(preTimeTimeout);
+			if (type === 'pre') {
+				if (preTimeTimeout) {
+					clearTimeout(preTimeTimeout);
+				}
+
+				preTimeTimeout = setTimeout(async () => {
+					await api.arg.setSafeband(value, postTime);
+
+					preTimeTimeout = null;
+				}, 1000);
+			} else {
+				if (postTimeTimeout) {
+					clearTimeout(postTimeTimeout);
+				}
+
+				postTimeTimeout = setTimeout(async () => {
+					await api.arg.setSafeband(preTime, value);
+
+					postTimeTimeout = null;
+				}, 1000);
 			}
-
-			preTimeTimeout = setTimeout(async () => {
-				await api.arg.setSafeband(value, postTime);
-
-				preTimeTimeout = null;
-			}, 1000);
-		} else {
-			if(postTimeTimeout){
-				clearTimeout(postTimeTimeout);
-			}
-
-			postTimeTimeout = setTimeout(async () => {
-				await api.arg.setSafeband(preTime, value);
-
-				postTimeTimeout = null;
-			}, 1000);
-		}
-	}
+		};
 	const connect = () => {
 		api.arg.connect(pcID);
 	};
@@ -132,19 +134,19 @@ const ARG = () => {
 			pcID: string;
 			delay: number;
 			saveClips: boolean;
-			online: boolean,
-			useHLAE: boolean,
+			online: boolean;
+			useHLAE: boolean;
 			safeBand: {
 				preTime: number;
 				postTime: number;
 			};
-		}
-		
+		};
+
 		socket.on('ARGStatus', (status: Status) => {
-			console.log('update')
+			console.log('update');
 			setIsConnected(!!status.pcID);
 			setDelay(status.delay);
-			if(status.pcID) {
+			if (status.pcID) {
 				setPCID(status.pcID);
 			}
 			setSaveClips(status.saveClips);
@@ -185,10 +187,10 @@ const ARG = () => {
 			<div className="arg-options no-border">
 				<div className="arg-config-entry">
 					<div className="config-description">Safeband</div>
-				<div className="arg-config-entry">
-					<div className="config-description">Use HLAE?</div>
-					<Checkbox checked={useHLAE} onChange={onHLAEChange}  />
-				</div>
+					<div className="arg-config-entry">
+						<div className="config-description">Use HLAE?</div>
+						<Checkbox checked={useHLAE} onChange={onHLAEChange} />
+					</div>
 				</div>
 				<div className="arg-config-entry">
 					<div className="config-description">Before kill</div>
@@ -225,10 +227,7 @@ const ARG = () => {
 				>
 					{isConnected ? 'DISCONNECT' : 'CONNECT'}
 				</div>
-				<div
-					className={`button green strong big wide ${isOnline ? 'empty' : ''}`}
-					onClick={toggleOnline}
-				>
+				<div className={`button green strong big wide ${isOnline ? 'empty' : ''}`} onClick={toggleOnline}>
 					{isOnline ? 'Turn off' : 'Turn on'}
 				</div>
 			</div>

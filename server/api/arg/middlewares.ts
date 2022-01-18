@@ -4,39 +4,36 @@ import { connectToARG, argSocket, sendARGStatus, sendConfigToARG } from './index
 export const setSafeband: express.RequestHandler = async (req, res) => {
 	const { preTime, postTime } = req.body;
 
-	if(argSocket){
+	if (argSocket) {
 		argSocket.postTime = postTime;
 		argSocket.preTime = preTime;
 	}
 	sendConfigToARG();
 
-	
 	return res.sendStatus(200);
-}
+};
 
 export const setHLAE: express.RequestHandler = async (req, res) => {
 	const { hlae } = req.body;
 
-	if(argSocket){
+	if (argSocket) {
 		argSocket.useHLAE = hlae;
 	}
-	
+
 	await sendARGStatus();
 
-	
 	return res.sendStatus(200);
-}
+};
 
 export const setOnline: express.RequestHandler = async (req, res) => {
 	const { online } = req.body;
 
-	if(argSocket){
+	if (argSocket) {
 		argSocket.online = online;
 	}
 
-	
 	return res.sendStatus(200);
-}
+};
 
 export const setOrder: express.RequestHandler = async (req, res) => {
 	const order = req.body;
@@ -99,7 +96,7 @@ export const saveClips: express.RequestHandler = async (req, res) => {
 	}
 
 	argSocket.saveClips = req.body.saveClips;
-	sendConfigToARG()
+	sendConfigToARG();
 	//argSocket?.socket?.send('saveClips', argSocket.saveClips);
 	await sendARGStatus();
 	return res.sendStatus(200);

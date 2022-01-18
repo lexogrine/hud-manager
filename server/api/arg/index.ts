@@ -9,16 +9,16 @@ export const argSocket: {
 	delay: number;
 	order: Item[];
 	saveClips: boolean;
-	online: boolean
-    preTime: number,
-    postTime: number,
-	useHLAE: boolean
+	online: boolean;
+	preTime: number;
+	postTime: number;
+	useHLAE: boolean;
 } = {
 	delay: 5,
 	socket: null,
 	id: null,
-    preTime: 1500,
-    postTime: 1500,
+	preTime: 1500,
+	postTime: 1500,
 	online: true,
 	useHLAE: false,
 	order: [
@@ -60,7 +60,7 @@ export const sendARGStatus = async () => {
 		useHLAE: argSocket.useHLAE,
 		saveClips: argSocket.saveClips,
 		safeBand: { preTime: argSocket.preTime, postTime: argSocket.postTime }
-	}
+	};
 	io.emit('ARGStatus', status);
 };
 
@@ -99,8 +99,8 @@ export interface ARGKillEntry {
 	round: number;
 	killerHealth: number;
 	newKills: number;
-    weapon?: string;
-    victim?: string;
+	weapon?: string;
+	victim?: string;
 	name: string;
 	teamkill: boolean;
 	headshot: boolean;
@@ -159,10 +159,10 @@ export const parseCSGOKills = (last: CSGO, csgo: CSGO) => {
 		});
 	}
 
-	if(!argSocket.useHLAE) sendKillsToARG(argKillEntries);
+	if (!argSocket.useHLAE) sendKillsToARG(argKillEntries);
 
 	setTimeout(() => {
-		if(!argSocket.online) return;
+		if (!argSocket.online) return;
 
 		if (last.round?.phase === 'freezetime' && csgo.round?.phase !== 'live' && argSocket.socket) {
 			argSocket.socket.send('clearReplay');
@@ -173,18 +173,16 @@ export const parseCSGOKills = (last: CSGO, csgo: CSGO) => {
 };
 
 export const sendKillsToARG = (kills: ARGKillEntry[]) => {
-
 	if (argSocket.socket && kills.length && argSocket.online) {
 		argSocket.socket.send('kills', kills);
 	}
-}
+};
 
 export const sendConfigToARG = (register = false) => {
 	const args = [
 		argSocket.order.map(item => ({ id: item.id, active: item.active })),
 		argSocket.saveClips,
 		{ preTime: argSocket.preTime, postTime: argSocket.postTime }
-	]
+	];
 	argSocket.socket?.send(register ? 'register' : 'config', ...args);
-}
-
+};

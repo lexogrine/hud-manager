@@ -147,7 +147,7 @@ ioPromise.then(io => {
 
 	GSI.on('kill', event => {
 		if (!argSocket.useHLAE || !GSI.current) return;
-		if(!event.killer) return;
+		if (!event.killer) return;
 		const entry: ARGKillEntry = {
 			killer: event.killer.steamid,
 			killerHealth: event.killer.state.health,
@@ -157,9 +157,9 @@ ioPromise.then(io => {
 			headshot: event.headshot,
 			timestamp: new Date().getTime() + argSocket.delay * 1000,
 			round: GSI.current.map.round
-		}
+		};
 		sendKillsToARG([entry]);
-	})
+	});
 
 	Dota2GSI.on('matchEnd', async matchSummary => {
 		const matches = await getActiveGameMatches();

@@ -131,7 +131,7 @@ export class MIRVPGL {
 						}
 						if (gameEvent.name === 'player_death') {
 							io.to('game').emit('update_mirv', gameEvent);
-							GSI.digestMIRV(gameEvent as RawKill)
+							GSI.digestMIRV(gameEvent as RawKill);
 						}
 					}
 				} catch (err) {}

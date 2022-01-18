@@ -40,11 +40,13 @@ export const getActiveAreasSorted = (mapName: string, players: Player[], bomb: B
 		return [];
 	}
 
-	if (bomb && bomb.position && (bomb?.state === "planting" || bomb?.state === "defusing")) {
+	if (bomb && bomb.position && (bomb?.state === 'planting' || bomb?.state === 'defusing')) {
 		const areasWithBomb = config.areas
 			.map(area => {
 				const cornersWithFirstAtEnd = [...area.polygonCorners, area.polygonCorners[0]];
-				const playersInside = alivePlayers.filter(player => isInPolygon(player.position, [cornersWithFirstAtEnd]));
+				const playersInside = alivePlayers.filter(player =>
+					isInPolygon(player.position, [cornersWithFirstAtEnd])
+				);
 				return {
 					...area,
 					players: playersInside
@@ -52,7 +54,10 @@ export const getActiveAreasSorted = (mapName: string, players: Player[], bomb: B
 			})
 			.filter(area => {
 				const cornersWithFirstAtEnd = [...area.polygonCorners, area.polygonCorners[0]];
-				const isBombInside = isInPolygon(bomb.position.split(', ').map(n => Number(n)), [cornersWithFirstAtEnd]);
+				const isBombInside = isInPolygon(
+					bomb.position.split(', ').map(n => Number(n)),
+					[cornersWithFirstAtEnd]
+				);
 				return !!isBombInside;
 			})
 			.sort(sortAreas);
