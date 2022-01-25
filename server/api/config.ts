@@ -37,7 +37,7 @@ export const loadConfig = async (): Promise<Config> => {
 		} catch {}
 	}
 	return new Promise(res => {
-		if(!databaseContext.databases.config) return res(defaultConfig);
+		if (!databaseContext.databases.config) return res(defaultConfig);
 		databaseContext.databases.config.find({}, async (err: any, config: Config[]) => {
 			if (err) {
 				return res(defaultConfig);
@@ -104,7 +104,7 @@ export const updateConfig: express.RequestHandler = async (req, res) => {
 
 export const setConfig = async (config: Config) =>
 	new Promise<Config>(res => {
-		if(!databaseContext.databases.config) return res(defaultConfig);
+		if (!databaseContext.databases.config) return res(defaultConfig);
 		databaseContext.databases.config.update({}, { $set: config }, { multi: true }, async err => {
 			if (err) {
 				return res(defaultConfig);

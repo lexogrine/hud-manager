@@ -9,7 +9,6 @@ import { validateCloudAbility, customer } from '..';
 import { addResource, updateResource, deleteResource, checkCloudStatus, updateLastDateLocallyOnly } from '../cloud';
 import { Workbook } from 'exceljs';
 
-
 export const getTeams: express.RequestHandler = async (req, res) => {
 	const game = customer.game;
 	const $or: any[] = [{ game }];
@@ -135,7 +134,7 @@ export const addTeamsWithExcel: express.RequestHandler = async (req, res) => {
 };
 
 export const updateTeam: express.RequestHandler = async (req, res) => {
-	if(!databaseContext.databases.teams){
+	if (!databaseContext.databases.teams) {
 		return res.sendStatus(500);
 	}
 	if (!req.params.id) {
@@ -179,7 +178,7 @@ export const updateTeam: express.RequestHandler = async (req, res) => {
 	});
 };
 export const deleteTeam: express.RequestHandler = async (req, res) => {
-	if(!databaseContext.databases.teams){
+	if (!databaseContext.databases.teams) {
 		return res.sendStatus(500);
 	}
 	if (!req.params.id) {

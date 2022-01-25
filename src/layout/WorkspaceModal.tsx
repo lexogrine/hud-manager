@@ -7,7 +7,6 @@ interface IProps {
 	workspaces: Workspace[];
 	isOpen: boolean;
 	loadUser: () => void;
-	
 }
 
 const WorkspaceModal = ({ isOpen, workspaces, loadUser }: IProps) => {
@@ -16,17 +15,17 @@ const WorkspaceModal = ({ isOpen, workspaces, loadUser }: IProps) => {
 
 	const setWorkspace = () => {
 		api.user.setWorkspace(workspaceId || null).then(res => {
-			if(!res.success){
+			if (!res.success) {
 				setError(res.message);
 				return;
 			}
 
 			loadUser();
 		});
-	}
+	};
 
 	return (
-		<Modal isOpen={isOpen} toggle={() => { }} className="veto_modal game_pick">
+		<Modal isOpen={isOpen} toggle={() => {}} className="veto_modal game_pick">
 			<ModalHeader>Pick your workspace</ModalHeader>
 			<ModalBody>
 				{error ? <p>{error}</p> : null}
@@ -36,12 +35,12 @@ const WorkspaceModal = ({ isOpen, workspaces, loadUser }: IProps) => {
 					value={workspaceId}
 					onChange={e => setWorkspaceId(Number(e.target.value))}
 				>
-						<option value="0">Your workspace</option>
-						{
-							workspaces.map(workspace => (
-								<option value={workspace.id} key={`${workspace.name}--${workspace.id}`}>{workspace.name}</option>
-							))
-						}
+					<option value="0">Your workspace</option>
+					{workspaces.map(workspace => (
+						<option value={workspace.id} key={`${workspace.name}--${workspace.id}`}>
+							{workspace.name}
+						</option>
+					))}
 				</LabeledInput>
 			</ModalBody>
 			<ModalFooter className="no-padding">

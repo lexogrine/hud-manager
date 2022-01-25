@@ -51,7 +51,7 @@ export const getPlayer: express.RequestHandler = async (req, res) => {
 	return res.json(player);
 };
 export const updatePlayer: express.RequestHandler = async (req, res) => {
-	if(!databaseContext.databases.players){
+	if (!databaseContext.databases.players) {
 		return res.sendStatus(500);
 	}
 	if (!req.params.id) {
@@ -207,7 +207,7 @@ export const addPlayersWithExcel: express.RequestHandler = async (req, res) => {
 };
 
 export const deletePlayer: express.RequestHandler = async (req, res) => {
-	if(!databaseContext.databases.players){
+	if (!databaseContext.databases.players) {
 		return res.sendStatus(500);
 	}
 	if (!req.params.id) {

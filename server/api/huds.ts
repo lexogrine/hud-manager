@@ -65,7 +65,7 @@ const getOnlineHUDs = async () => {
 	if (!customer.game) return [];
 	try {
 		let url = `storage/file/${customer.game}`;
-		
+
 		if (customer.customer && customer.workspace) {
 			url += `?&teamId=${customer.workspace.id}`;
 		}
@@ -612,7 +612,7 @@ export const downloadHUD: RequestHandler = async (req, res) => {
 	if (!customer.game || !uuid) return res.sendStatus(422);
 
 	let fileUrl = `storage/file/${customer.game}/hud/${uuid}`;
-	
+
 	if (customer.customer && customer.workspace) {
 		fileUrl += `?&teamId=${customer.workspace.id}`;
 	}
@@ -626,11 +626,10 @@ export const downloadHUD: RequestHandler = async (req, res) => {
 	}
 
 	let presignedUrl = `storage/file/url/${customer.game}/GET/${uuid}`;
-	
+
 	if (customer.customer && customer.workspace) {
 		presignedUrl += `?&teamId=${customer.workspace.id}`;
 	}
-
 
 	const presignedURLResponse = (await api(presignedUrl)) as { url: string };
 
@@ -718,7 +717,7 @@ export const uploadHUD: RequestHandler = async (req, res) => {
 	}
 
 	let uploadUrl = `storage/file/${customer.game}/hud/${hud.uuid}`;
-	
+
 	if (customer.customer && customer.workspace) {
 		uploadUrl += `?&teamId=${customer.workspace.id}`;
 	}

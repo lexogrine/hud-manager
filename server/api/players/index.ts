@@ -1,10 +1,10 @@
-import { databaseContext} from './../../../init/database';
+import { databaseContext } from './../../../init/database';
 import { Player, AvailableGames } from '../../../types/interfaces';
 import Excel from 'exceljs';
 
 export async function getPlayerById(id: string, avatar = false): Promise<Player | null> {
 	return new Promise(res => {
-		if(!databaseContext.databases.players) return res(null);
+		if (!databaseContext.databases.players) return res(null);
 		databaseContext.databases.players.findOne({ _id: id }, (err, player) => {
 			if (err) {
 				return res(null);
@@ -16,7 +16,7 @@ export async function getPlayerById(id: string, avatar = false): Promise<Player 
 }
 export async function getPlayerBySteamId(steamid: string, avatar = false): Promise<Player | null> {
 	return new Promise(res => {
-		if(!databaseContext.databases.players) return res(null);
+		if (!databaseContext.databases.players) return res(null);
 		databaseContext.databases.players.findOne({ steamid }, (err, player) => {
 			if (err) {
 				return res(null);
@@ -29,7 +29,7 @@ export async function getPlayerBySteamId(steamid: string, avatar = false): Promi
 
 export const getPlayersList = (query: any) =>
 	new Promise<Player[]>(res => {
-		if(!databaseContext.databases.players) return res([]);
+		if (!databaseContext.databases.players) return res([]);
 		databaseContext.databases.players.find(query, (err: Error, players: Player[]) => {
 			if (err) {
 				return res([]);
@@ -40,7 +40,7 @@ export const getPlayersList = (query: any) =>
 
 export const addPlayers = (newPlayers: Player[]) => {
 	return new Promise<Player[] | null>(res => {
-		if(!databaseContext.databases.players) return res(null);
+		if (!databaseContext.databases.players) return res(null);
 		databaseContext.databases.players.insert(newPlayers, (err, docs) => {
 			if (err) return res(null);
 
@@ -51,7 +51,7 @@ export const addPlayers = (newPlayers: Player[]) => {
 
 export const replaceLocalPlayers = (newPlayers: Player[], game: AvailableGames, existing: string[]) =>
 	new Promise<boolean>(res => {
-		if(!databaseContext.databases.players) return res(false);
+		if (!databaseContext.databases.players) return res(false);
 		const or: any[] = [
 			{ game, _id: { $nin: existing } },
 			{ game, _id: { $in: newPlayers.map(player => player._id) } }

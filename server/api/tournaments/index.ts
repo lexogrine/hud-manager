@@ -43,7 +43,7 @@ export const parseLegacyTournament = (tournament: I.LegacyTournament | I.Tournam
 };
 export const getTournaments = (opts: any = {}): Promise<I.Tournament[]> =>
 	new Promise(res => {
-		if(!databaseContext.databases.tournaments) return res([]);
+		if (!databaseContext.databases.tournaments) return res([]);
 		databaseContext.databases.tournaments.find(opts, (err: any, docs: I.Tournament[]) => {
 			if (err) return res([]);
 			return res(docs.map(doc => parseLegacyTournament(doc)));
@@ -142,7 +142,7 @@ export const getTournamentByMatchId = async (matchId: string) => {
 
 export const addTournament = (tournament: I.Tournament): Promise<I.Tournament | null> =>
 	new Promise(res => {
-		if(!databaseContext.databases.tournaments) return res(null);
+		if (!databaseContext.databases.tournaments) return res(null);
 		databaseContext.databases.tournaments.insert(tournament, (err, newTournament) => {
 			if (err) return res(null);
 			return res(newTournament);
@@ -151,7 +151,7 @@ export const addTournament = (tournament: I.Tournament): Promise<I.Tournament | 
 
 export const getTournament = (tournamentId: string): Promise<I.Tournament | null> =>
 	new Promise(res => {
-		if(!databaseContext.databases.tournaments) return res(null);
+		if (!databaseContext.databases.tournaments) return res(null);
 		databaseContext.databases.tournaments.findOne({ _id: tournamentId }, (err, tournament) => {
 			if (err || !tournament) return res(null);
 			return res(parseLegacyTournament(tournament));
@@ -160,7 +160,7 @@ export const getTournament = (tournamentId: string): Promise<I.Tournament | null
 
 export const updateTournament = (tournament: I.Tournament): Promise<I.Tournament | null> =>
 	new Promise(res => {
-		if(!databaseContext.databases.tournaments) return res(null);
+		if (!databaseContext.databases.tournaments) return res(null);
 		databaseContext.databases.tournaments.update({ _id: tournament._id }, tournament, {}, err => {
 			if (err) return res(null);
 			return res(tournament);
@@ -323,7 +323,7 @@ export const createNextMatch = async (matchId: string) => {
 
 export const deleteTournament = (tournamentId: string) =>
 	new Promise(res => {
-		if(!databaseContext.databases.tournaments) return res(null);
+		if (!databaseContext.databases.tournaments) return res(null);
 		databaseContext.databases.tournaments.remove({ _id: tournamentId }, err => {
 			if (err) return res(null);
 			return res(true);

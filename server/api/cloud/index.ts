@@ -29,7 +29,7 @@ const spaceLimit: SpaceLimit = {
 	free: 0
 };
 
-const cloudErrorHandler = () => { };
+const cloudErrorHandler = () => {};
 
 const getResources = (game: I.AvailableGames) => {
 	return Promise.all([
@@ -87,7 +87,7 @@ const updateLastDateLocally = (game: I.AvailableGames, resources: I.ResourceResp
 	for (const resourceInfo of resources) {
 		lastUpdateLocal[game][resourceInfo.resource] = resourceInfo.status;
 	}
-	
+
 	const database = path.join(getBasePath(customer), 'lastUpdated.lhm');
 
 	fs.writeFileSync(database, JSON.stringify(lastUpdateLocal), 'utf8');
@@ -139,7 +139,6 @@ export const addResource = async <T>(
 	if (customer.customer && customer.workspace) {
 		if (url.includes('?')) url += `&teamId=${customer.workspace.id}`;
 		else url += `?&teamId=${customer.workspace.id}`;
-
 	}
 
 	const result = (await api(url, 'POST', data)) as {
@@ -200,7 +199,6 @@ export const deleteResource = async (game: I.AvailableGames, resource: I.Availab
 		url += `?&teamId=${customer.workspace.id}`;
 	}
 
-
 	const result = (await api(url, 'DELETE')) as {
 		success: boolean;
 		lastUpdateTime: string;
@@ -223,7 +221,6 @@ export const getResource = async (game: I.AvailableGames, resource: I.AvailableR
 	if (fromDate) {
 		if (url.includes('?')) url += `&fromDate=${fromDate}`;
 		else url += `?&fromDate=${fromDate}`;
-
 	}
 	const result = (await api(url)) as I.CachedResponse;
 
@@ -425,7 +422,7 @@ export const checkCloudStatus = async (game: I.AvailableGames) => {
 				resource =>
 					!lastUpdateStatusOnline[resource] ||
 					new Date(lastUpdateStatusLocal[game][resource] as any) >
-					new Date(lastUpdateStatusOnline[resource] as any)
+						new Date(lastUpdateStatusOnline[resource] as any)
 			)
 		) {
 			// Local data found newer, show options

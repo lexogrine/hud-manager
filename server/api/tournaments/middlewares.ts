@@ -130,7 +130,7 @@ export const deleteTournament: express.RequestHandler = async (req, res) => {
 
 export const replaceLocalTournaments = (newTournaments: Tournament[], game: AvailableGames, existing: string[]) =>
 	new Promise<boolean>(res => {
-		if(!databaseContext.databases.tournaments) return res(false);
+		if (!databaseContext.databases.tournaments) return res(false);
 		const or: any[] = [
 			{ game, _id: { $nin: existing } },
 			{ game, _id: { $in: newTournaments.map(tournament => tournament._id) } }

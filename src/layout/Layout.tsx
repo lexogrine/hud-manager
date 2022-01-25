@@ -16,7 +16,6 @@ import { canUserUseCloudStorage } from '../utils';
 import WorkspaceModal from './WorkspaceModal';
 // import WindowBar from '../WindowBar';
 
-
 const isElectron = config.isElectron;
 
 interface IState {
@@ -237,7 +236,7 @@ export default class Layout extends Component<{}, IState> {
 			config
 		} = this.state;
 		const { workspace, workspaces, game, customer } = data;
-		
+
 		const available = canUserUseCloudStorage({ workspace, workspaces, game, customer: customer || null });
 		const active = Boolean(available && config?.sync);
 		// const url = new URL(window.location.href);

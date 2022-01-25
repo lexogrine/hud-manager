@@ -67,7 +67,7 @@ export default async function () {
 
 	initGameConnection();
 
-	app.route('/api/workspace').post(user.setWorkspace)
+	app.route('/api/workspace').post(user.setWorkspace);
 
 	app.route('/api/auth').get(user.getCurrent).post(user.loginHandler).delete(user.logout);
 

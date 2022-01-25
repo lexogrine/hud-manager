@@ -3,7 +3,7 @@ import { Team, AvailableGames } from '../../../types/interfaces';
 
 export async function getTeamById(id: string, logo = false): Promise<Team | null> {
 	return new Promise(res => {
-		if(!databaseContext.databases.teams) return res(null);
+		if (!databaseContext.databases.teams) return res(null);
 		databaseContext.databases.teams.findOne({ _id: id }, (err, team) => {
 			if (err) {
 				return res(null);
@@ -16,7 +16,7 @@ export async function getTeamById(id: string, logo = false): Promise<Team | null
 
 export const getTeamsList = (query: any) =>
 	new Promise<Team[]>(res => {
-		if(!databaseContext.databases.teams) return res([]);
+		if (!databaseContext.databases.teams) return res([]);
 		databaseContext.databases.teams.find(query, (err: Error, teams: Team[]) => {
 			if (err) {
 				return res([]);
@@ -27,7 +27,7 @@ export const getTeamsList = (query: any) =>
 
 export const addTeams = (newTeams: Team[]) => {
 	return new Promise<Team[] | null>(res => {
-		if(!databaseContext.databases.teams) return res(null);
+		if (!databaseContext.databases.teams) return res(null);
 		databaseContext.databases.teams.insert(newTeams, (err, docs) => {
 			if (err) return res(null);
 
@@ -37,7 +37,7 @@ export const addTeams = (newTeams: Team[]) => {
 };
 export const replaceLocalTeams = (newTeams: Team[], game: AvailableGames, existing: string[]) =>
 	new Promise<boolean>(res => {
-		if(!databaseContext.databases.teams) return res(false);
+		if (!databaseContext.databases.teams) return res(false);
 		const or: any[] = [
 			{ game, _id: { $nin: existing } },
 			{ game, _id: { $in: newTeams.map(team => team._id) } }

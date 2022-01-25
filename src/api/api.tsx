@@ -207,11 +207,12 @@ export default {
 			apiV2(`tournaments/${tournamentId}`, 'PATCH', data)
 	},
 	user: {
-		login: (username: string, password: string, token: string): Promise<{ success: boolean, message: string }> =>
+		login: (username: string, password: string, token: string): Promise<{ success: boolean; message: string }> =>
 			apiV2('auth', 'POST', { username, password, token }),
 		logout: () => apiV2('auth', 'DELETE'),
 		getCurrent: (): Promise<I.CustomerData | { message: string; success: boolean }> => apiV2('auth'),
-		setWorkspace: (workspaceId: number | null): Promise<{ success: boolean, message: string }> => apiV2('workspace', 'POST', { workspaceId })
+		setWorkspace: (workspaceId: number | null): Promise<{ success: boolean; message: string }> =>
+			apiV2('workspace', 'POST', { workspaceId })
 	},
 	ar: {
 		get: async (): Promise<I.ARModule[]> => await apiV2('ar'),

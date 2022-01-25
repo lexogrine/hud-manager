@@ -6,7 +6,7 @@ import { checkCloudStatus, addResource, updateResource, updateLastDateLocallyOnl
 
 export async function getACOByMapName(mapName: string): Promise<MapConfig | null> {
 	return new Promise(res => {
-		if(!databaseContext.databases.aco) return res(null);
+		if (!databaseContext.databases.aco) return res(null);
 		databaseContext.databases.aco.findOne({ map: mapName }, (err, acoConfig) => {
 			if (err) {
 				return res(null);
@@ -31,7 +31,7 @@ export async function getACOByMapName(mapName: string): Promise<MapConfig | null
 
 export const getACOs = () =>
 	new Promise<MapConfig[]>(res => {
-		if(!databaseContext.databases.aco) return res([]);
+		if (!databaseContext.databases.aco) return res([]);
 		databaseContext.databases.aco.find({}, (err: Error, acoConfigs: MapConfig[]) => {
 			if (err) {
 				return res([]);
@@ -47,7 +47,7 @@ export const loadNewConfigs = () => {
 };
 export const updateACO = (config: MapConfig | MapConfigID) =>
 	new Promise<MapConfig | null>(res => {
-		if(!databaseContext.databases.aco) return res(null);
+		if (!databaseContext.databases.aco) return res(null);
 		getACOByMapName(config.map).then(async oldConfig => {
 			let cloudStatus = false;
 			if (await validateCloudAbility()) {
@@ -91,7 +91,7 @@ export const updateACO = (config: MapConfig | MapConfigID) =>
 
 export const replaceLocalMapConfigs = (newMapConfigs: MapConfigID[], game: AvailableGames, existing: string[]) =>
 	new Promise<boolean>(res => {
-		if(!databaseContext.databases.aco) return res(false);
+		if (!databaseContext.databases.aco) return res(false);
 		const or: any[] = [
 			{ game, _id: { $nin: existing } },
 			{ game, _id: { $in: newMapConfigs.map(mapConfig => mapConfig._id) } }

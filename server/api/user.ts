@@ -201,7 +201,8 @@ export const api = (url: string, method = 'GET', body?: any, opts?: RequestInit)
 };
 
 const userHandlers = {
-	get: (machineId: string, workspaceId: number | null): Promise<{ token: string } | { error: string } | false> => api(workspaceId ? `auth/${machineId}?teamId=${workspaceId}` : `auth/${machineId}`),
+	get: (machineId: string, workspaceId: number | null): Promise<{ token: string } | { error: string } | false> =>
+		api(workspaceId ? `auth/${machineId}?teamId=${workspaceId}` : `auth/${machineId}`),
 	getWorkspaces: (): Promise<{ error: string } | I.Workspace[]> => api(`auth/workspaces`),
 	login: (
 		username: string,
@@ -245,7 +246,7 @@ const loadUser = async (workspace: I.Workspace | null, loggedIn = false) => {
 
 	customer.customer = userData;
 	customer.workspace = workspace;
-	
+
 	await loadUsersDatabase(customer);
 
 	return { success: true, message: '' };
@@ -253,9 +254,9 @@ const loadUser = async (workspace: I.Workspace | null, loggedIn = false) => {
 
 const loadUserWorkspaces = async () => {
 	const response = await userHandlers.getWorkspaces();
-	if (!response || "error" in response) {
-		if(!response){
-			return { "error": "Not logged in" };
+	if (!response || 'error' in response) {
+		if (!response) {
+			return { error: 'Not logged in' };
 		}
 		return response;
 	}
@@ -263,7 +264,7 @@ const loadUserWorkspaces = async () => {
 	customer.workspaces = response;
 
 	return response;
-}
+};
 
 const login = async (username: string, password: string, code = '') => {
 	const ver = app.getVersion();
@@ -278,7 +279,7 @@ const login = async (username: string, password: string, code = '') => {
 
 	const workspaces = await loadUserWorkspaces();
 
-	return { success: !("error" in workspaces) }
+	return { success: !('error' in workspaces) };
 };
 
 export const loginHandler: express.RequestHandler = async (req, res) => {
@@ -288,16 +289,16 @@ export const loginHandler: express.RequestHandler = async (req, res) => {
 
 export const getWorkspaces: express.RequestHandler = async (req, res) => {
 	return res.json({ result: customer.workspaces });
-}
+};
 
 export const setWorkspace: express.RequestHandler = async (req, res) => {
 	const { workspaceId } = req.body;
 
 	if (!customer.workspaces) {
-		return res.status(403).json({ success: false, message: "No workspaces"});
+		return res.status(403).json({ success: false, message: 'No workspaces' });
 	}
 
-	if(workspaceId === null){
+	if (workspaceId === null) {
 		const result = await loadUser(workspaceId, true);
 
 		return res.json(result);
@@ -305,22 +306,22 @@ export const setWorkspace: express.RequestHandler = async (req, res) => {
 
 	const targetWorkspace = customer.workspaces.find(workspace => workspace.id === workspaceId);
 
-	if(!targetWorkspace){
-		return res.status(403).json({ success: false, message: "Bad workspace"});
+	if (!targetWorkspace) {
+		return res.status(403).json({ success: false, message: 'Bad workspace' });
 	}
 	const result = await loadUser(targetWorkspace, true);
 
 	return res.json(result);
-}
+};
 
 export const getCurrent: express.RequestHandler = async (req, res) => {
 	if (customer.customer) {
 		return res.json(customer);
 	}
 
-	const workspaces = customer.workspaces || await loadUserWorkspaces();
+	const workspaces = customer.workspaces || (await loadUserWorkspaces());
 
-	if ("error" in workspaces) {
+	if ('error' in workspaces) {
 		return res.status(403).json({ success: false, message: workspaces.error });
 	}
 	if (workspaces.length > 0) {

@@ -13,7 +13,6 @@ import { Component } from 'react';
 import LabeledInput from '../../../LabeledInput';
 import { canUserFromContextUseCloud } from '../../../../utils';
 
-
 const { isElectron } = config;
 
 interface ConfigStatus extends I.CFGGSIObject {

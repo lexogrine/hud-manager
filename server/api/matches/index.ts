@@ -8,7 +8,7 @@ import { customer } from '..';
 
 export const getMatches = (query: any): Promise<Match[]> => {
 	return new Promise(res => {
-		if(!databaseContext.databases.matches) return res([]);
+		if (!databaseContext.databases.matches) return res([]);
 		databaseContext.databases.matches.find(query, (err: Error, matches: Match[]) => {
 			if (err) {
 				return res([]);
@@ -29,7 +29,7 @@ export const getActiveGameMatches = (): Promise<Match[]> => {
 
 export async function getMatchById(id: string): Promise<Match | null> {
 	return new Promise(res => {
-		if(!databaseContext.databases.matches) return res(null);
+		if (!databaseContext.databases.matches) return res(null);
 		databaseContext.databases.matches.findOne({ id }, (err, match) => {
 			if (err) {
 				return res(null);
@@ -41,7 +41,7 @@ export async function getMatchById(id: string): Promise<Match | null> {
 
 export const setMatches = (matches: Match[]): Promise<Match[] | null> => {
 	return new Promise(res => {
-		if(!databaseContext.databases.matches) return res(null);
+		if (!databaseContext.databases.matches) return res(null);
 		databaseContext.databases.matches.remove({}, { multi: true }, err => {
 			if (err) {
 				return res(null);
@@ -57,7 +57,7 @@ export const setMatches = (matches: Match[]): Promise<Match[] | null> => {
 };
 
 export const updateMatches = async (updateMatches: Match[]) => {
-	if(!databaseContext.databases.matches) return;
+	if (!databaseContext.databases.matches) return;
 	const currents = updateMatches.filter(match => match.current);
 	if (currents.length > 1) {
 		updateMatches = updateMatches.map(match => ({ ...match, current: false }));
@@ -99,7 +99,7 @@ export const updateMatches = async (updateMatches: Match[]) => {
 
 export const addMatch = (match: Match): Promise<Match | null> =>
 	new Promise(res => {
-		if(!databaseContext.databases.matches) return res(null);
+		if (!databaseContext.databases.matches) return res(null);
 		if (!match.id) {
 			match.id = uuidv4();
 		}
@@ -115,7 +115,7 @@ export const addMatch = (match: Match): Promise<Match | null> =>
 
 export const deleteMatch = (id: string): Promise<boolean> =>
 	new Promise(res => {
-		if(!databaseContext.databases.matches) return res(false);
+		if (!databaseContext.databases.matches) return res(false);
 		databaseContext.databases.matches.remove({ id }, async err => {
 			if (err) return res(false);
 			/* if (validateCloudAbility()) {
@@ -145,7 +145,7 @@ export const setCurrent = (id: string) =>
 */
 export const updateMatch = (match: Match) =>
 	new Promise(res => {
-		if(!databaseContext.databases.matches) return res(null);
+		if (!databaseContext.databases.matches) return res(null);
 		databaseContext.databases.matches.update({ id: match.id }, match, {}, err => {
 			if (err) return res(false);
 			if (!match.current) return res(true);
@@ -313,7 +313,7 @@ export const updateRound = async (game: CSGO) => {
 
 export const replaceLocalMatches = (newMatches: Match[], game: AvailableGames, existing: string[]) =>
 	new Promise<boolean>(res => {
-		if(!databaseContext.databases.matches) return res(false);
+		if (!databaseContext.databases.matches) return res(false);
 		const or: any[] = [
 			{ game, id: { $nin: existing } },
 			{ game, id: { $in: newMatches.map(match => match.id) } }

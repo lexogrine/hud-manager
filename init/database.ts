@@ -14,7 +14,7 @@ export const getBasePath = (customer: I.CustomerData, forceUserPath = false) => 
 	}
 
 	return path.join(directory, 'users', customer.customer.user.id.toString());
-}
+};
 
 type DatabaseStructure = {
 	players: Datastore<I.Player>;
@@ -27,39 +27,56 @@ type DatabaseStructure = {
 };
 
 const getEmptyDb = () => {
-	return ({ }) as DatabaseStructure;
-}
+	return {} as DatabaseStructure;
+};
 
 const databaseContext = {
-	databases: { } as DatabaseStructure
-}
+	databases: {} as DatabaseStructure
+};
 
 const loadDatabase = (basePath: string) => {
-	databaseContext.databases.players = new Datastore<I.Player>({ filename: path.join(basePath, 'players'), autoload: true });
+	databaseContext.databases.players = new Datastore<I.Player>({
+		filename: path.join(basePath, 'players'),
+		autoload: true
+	});
 	databaseContext.databases.teams = new Datastore<I.Team>({ filename: path.join(basePath, 'teams'), autoload: true });
-	databaseContext.databases.config = new Datastore<I.Config>({ filename: path.join(basePath, 'config'), autoload: true });
-	databaseContext.databases.matches = new Datastore<I.Match>({ filename: path.join(basePath, 'matches'), autoload: true });
-	databaseContext.databases.custom = new Datastore<I.CustomFieldStore>({ filename: path.join(basePath, 'custom'), autoload: true });
-	databaseContext.databases.tournaments = new Datastore<I.Tournament>({ filename: path.join(basePath, 'tournaments'), autoload: true });
-	databaseContext.databases.aco = new Datastore<I.MapConfig>({ filename: path.join(basePath, 'aco'), autoload: true });
-}
+	databaseContext.databases.config = new Datastore<I.Config>({
+		filename: path.join(basePath, 'config'),
+		autoload: true
+	});
+	databaseContext.databases.matches = new Datastore<I.Match>({
+		filename: path.join(basePath, 'matches'),
+		autoload: true
+	});
+	databaseContext.databases.custom = new Datastore<I.CustomFieldStore>({
+		filename: path.join(basePath, 'custom'),
+		autoload: true
+	});
+	databaseContext.databases.tournaments = new Datastore<I.Tournament>({
+		filename: path.join(basePath, 'tournaments'),
+		autoload: true
+	});
+	databaseContext.databases.aco = new Datastore<I.MapConfig>({
+		filename: path.join(basePath, 'aco'),
+		autoload: true
+	});
+};
 
 const moveDatabaseFile = (file: string, target: string) => {
 	return fs.promises.rename(path.join(directory, file), path.join(target, file));
-}
+};
 
 const moveToNewDatabaseSystem = async (target: string) => {
-	if(!fs.existsSync(path.join(directory, 'players'))) return;
+	if (!fs.existsSync(path.join(directory, 'players'))) return;
 
-	const filesToMove = ['players','teams','config','matches','custom','tournaments','aco'];
-
+	const filesToMove = ['players', 'teams', 'config', 'matches', 'custom', 'tournaments', 'aco'];
 
 	await Promise.all(filesToMove.map(file => moveDatabaseFile(file, target)));
 
-	if(!fs.existsSync(path.join(directory, 'lastUpdated.lhm'))) return;
+	if (!fs.existsSync(path.join(directory, 'lastUpdated.lhm'))) return;
 
-	await fs.promises.rename(path.join(directory, 'lastUpdated.lhm'), path.join(target, 'lastUpdated.lhm'))
-}
+	await fs.promises.rename(path.join(directory, 'lastUpdated.lhm'), path.join(target, 'lastUpdated.lhm'));
+};
 
 export const loadUsersDatabase = async (customer: I.CustomerData) => {
 	if (!customer || !customer.customer) {
@@ -68,15 +85,14 @@ export const loadUsersDatabase = async (customer: I.CustomerData) => {
 	}
 	if (customer.workspace) {
 		const workspacePath = path.join(directory, 'workspaces', customer.workspace.id.toString());
-		if(!fs.existsSync(workspacePath)){
+		if (!fs.existsSync(workspacePath)) {
 			fs.mkdirSync(workspacePath);
 		}
 	}
 	const userPath = path.join(directory, 'users', customer.customer.user.id.toString());
-	if(!fs.existsSync(userPath)){
+	if (!fs.existsSync(userPath)) {
 		fs.mkdirSync(userPath);
 	}
-
 
 	await moveToNewDatabaseSystem(getBasePath(customer, true));
 
@@ -88,6 +104,6 @@ export const loadUsersDatabase = async (customer: I.CustomerData) => {
 	}
 
 	loadDatabase(pathForDatabase);
-}
+};
 
 export { databaseContext };

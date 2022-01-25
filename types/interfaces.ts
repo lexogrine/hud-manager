@@ -393,10 +393,10 @@ export interface Customer {
 }
 
 export type Workspace = {
-	id: number,
-	name: string,
-	permissions: string[]
-}
+	id: number;
+	name: string;
+	permissions: string[];
+};
 
 export interface CustomerData {
 	customer: Customer | null;

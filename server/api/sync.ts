@@ -12,7 +12,7 @@ interface DB {
 
 async function importPlayers(players: I.Player[]) {
 	return new Promise<I.Player[]>(res => {
-		if(!databaseContext.databases.players) return res([]);
+		if (!databaseContext.databases.players) return res([]);
 		const playerIdList = players.map(player => ({ _id: player._id }));
 		databaseContext.databases.players.remove({ $or: playerIdList }, { multi: true }, err => {
 			if (err) return res([]);
@@ -25,7 +25,7 @@ async function importPlayers(players: I.Player[]) {
 }
 async function importTeams(teams: I.Team[]) {
 	return new Promise<I.Team[]>(res => {
-		if(!databaseContext.databases.teams) return res([]);
+		if (!databaseContext.databases.teams) return res([]);
 		const teamIdList = teams.map(team => ({ _id: team._id }));
 		databaseContext.databases.teams.remove({ $or: teamIdList }, { multi: true }, err => {
 			if (err) return res([]);
@@ -39,7 +39,7 @@ async function importTeams(teams: I.Team[]) {
 
 export async function exportDatabase() {
 	const pl = new Promise<I.Player[]>(res => {
-		if(!databaseContext.databases.players) return res([]);
+		if (!databaseContext.databases.players) return res([]);
 		databaseContext.databases.players.find({}, (err: any, players: I.Player[]) => {
 			if (err) {
 				return res([]);
@@ -48,7 +48,7 @@ export async function exportDatabase() {
 		});
 	});
 	const tm = new Promise<I.Team[]>(res => {
-		if(!databaseContext.databases.teams) return res([]);
+		if (!databaseContext.databases.teams) return res([]);
 		databaseContext.databases.teams.find({}, (err: any, teams: I.Team[]) => {
 			if (err) {
 				return res([]);

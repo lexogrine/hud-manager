@@ -59,24 +59,23 @@ export const canPlanUseCloudStorage = (plan?: I.LicenseType | null) => {
 };
 
 export const canUserUseCloudStorage = (customer: CustomerData) => {
-	if(!customer || !customer.customer) return false;
+	if (!customer || !customer.customer) return false;
 
-	if(customer.workspace) return true;
+	if (customer.workspace) return true;
 
 	return canPlanUseCloudStorage(customer.customer.license.type);
-}
+};
 
 export const getUserFromContext = (cxt: IContextData) => {
 	const { workspace, workspaces, game, customer } = cxt;
-	const user: CustomerData = { workspace, workspaces, game, customer: customer || null }
+	const user: CustomerData = { workspace, workspaces, game, customer: customer || null };
 
 	return user;
-}
+};
 
 export const canUserFromContextUseCloud = (cxt: IContextData) => {
-
 	return canUserUseCloudStorage(getUserFromContext(cxt));
-}
+};
 
 export const filterMatches = (match: I.Match, activeTab: string) => {
 	const boToWinsMap = {

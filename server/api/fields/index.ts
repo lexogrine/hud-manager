@@ -5,7 +5,7 @@ import { checkCloudStatus, updateLastDateLocallyOnly, updateResource } from '../
 
 export const initiateCustomFields = (game: AvailableGames = 'csgo', dontCreateOnCall = false) =>
 	new Promise<CustomFieldStore>(res => {
-		if(!databaseContext.databases.custom) return res(null as any);
+		if (!databaseContext.databases.custom) return res(null as any);
 		const or: any[] = [{ game }];
 		if (game === 'csgo') {
 			or.push({ game: { $exists: false } });
@@ -30,7 +30,7 @@ export const replaceLocalCustomFieldStores = (
 	existing: string[]
 ) =>
 	new Promise<boolean>(res => {
-		if(!databaseContext.databases.custom) return res(false);
+		if (!databaseContext.databases.custom) return res(false);
 		const or: any[] = [
 			{ game, _id: { $nin: existing } },
 			{ game, _id: { $in: stores.map(store => store._id) } }
@@ -64,7 +64,7 @@ export const getFields = async (type: keyof CustomFieldStore, game: AvailableGam
 };
 
 export const updateFields = async (fields: CustomFieldEntry[], type: keyof CustomFieldStore, game: AvailableGames) => {
-	if(!databaseContext.databases.custom) return ({ teams: [], players: []});
+	if (!databaseContext.databases.custom) return { teams: [], players: [] };
 	const store = await initiateCustomFields(game);
 
 	const deletedFields = store[type].filter(field => !fields.find(newField => newField.name === field.name));
