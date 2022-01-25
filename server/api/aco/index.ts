@@ -1,14 +1,13 @@
-import db from './../../../init/database';
+import { databaseContext } from './../../../init/database';
 import { MapConfig, AvailableGames, MapConfigID } from '../../../types/interfaces';
 import areas from '../../aco/areas';
 import { validateCloudAbility, customer } from '..';
 import { checkCloudStatus, addResource, updateResource, updateLastDateLocallyOnly } from '../cloud';
 
-const { aco } = db;
-
 export async function getACOByMapName(mapName: string): Promise<MapConfig | null> {
 	return new Promise(res => {
-		aco.findOne({ map: mapName }, (err, acoConfig) => {
+		if(!databaseContext.databases.aco) return res(null);
+		databaseContext.databases.aco.findOne({ map: mapName }, (err, acoConfig) => {
 			if (err) {
 				return res(null);
 			}
@@ -32,7 +31,8 @@ export async function getACOByMapName(mapName: string): Promise<MapConfig | null
 
 export const getACOs = () =>
 	new Promise<MapConfig[]>(res => {
-		aco.find({}, (err: Error, acoConfigs: MapConfig[]) => {
+		if(!databaseContext.databases.aco) return res([]);
+		databaseContext.databases.aco.find({}, (err: Error, acoConfigs: MapConfig[]) => {
 			if (err) {
 				return res([]);
 			}
@@ -47,6 +47,7 @@ export const loadNewConfigs = () => {
 };
 export const updateACO = (config: MapConfig | MapConfigID) =>
 	new Promise<MapConfig | null>(res => {
+		if(!databaseContext.databases.aco) return res(null);
 		getACOByMapName(config.map).then(async oldConfig => {
 			let cloudStatus = false;
 			if (await validateCloudAbility()) {
@@ -54,7 +55,7 @@ export const updateACO = (config: MapConfig | MapConfigID) =>
 			}
 
 			if (!oldConfig) {
-				aco.insert(config, async (err, newConfig) => {
+				databaseContext.databases.aco.insert(config, async (err, newConfig) => {
 					if (err) {
 						return res(null);
 					}
@@ -69,7 +70,7 @@ export const updateACO = (config: MapConfig | MapConfigID) =>
 				if (!('_id' in config)) {
 					return res(null);
 				}
-				aco.update({ _id: config._id }, config, {}, async (err, n) => {
+				databaseContext.databases.aco.update({ _id: config._id }, config, {}, async (err, n) => {
 					if (err) {
 						return res(null);
 					}
@@ -90,6 +91,7 @@ export const updateACO = (config: MapConfig | MapConfigID) =>
 
 export const replaceLocalMapConfigs = (newMapConfigs: MapConfigID[], game: AvailableGames, existing: string[]) =>
 	new Promise<boolean>(res => {
+		if(!databaseContext.databases.aco) return res(false);
 		const or: any[] = [
 			{ game, _id: { $nin: existing } },
 			{ game, _id: { $in: newMapConfigs.map(mapConfig => mapConfig._id) } }
@@ -100,11 +102,11 @@ export const replaceLocalMapConfigs = (newMapConfigs: MapConfigID[], game: Avail
 				{ game: { $exists: false }, _id: { $in: newMapConfigs.map(mapConfig => mapConfig._id) } }
 			);
 		}
-		aco.remove({ $or: or }, { multi: true }, err => {
+		databaseContext.databases.aco.remove({ $or: or }, { multi: true }, err => {
 			if (err) {
 				return res(false);
 			}
-			aco.insert(newMapConfigs, (err, docs) => {
+			databaseContext.databases.aco.insert(newMapConfigs, (err, docs) => {
 				loadNewConfigs();
 				return res(!err);
 			});

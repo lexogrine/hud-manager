@@ -12,8 +12,10 @@ import { AvailableGames, CloudSyncStatus } from '../../types/interfaces';
 import SyncModal from './SyncModal';
 import Changelog from './ChangelogModal';
 import { Component } from 'react';
-import { canPlanUseCloudStorage } from '../utils';
+import { canUserUseCloudStorage } from '../utils';
+import WorkspaceModal from './WorkspaceModal';
 // import WindowBar from '../WindowBar';
+
 
 const isElectron = config.isElectron;
 
@@ -52,7 +54,9 @@ export default class Layout extends Component<{}, IState> {
 				},
 				fields: { players: [], teams: [] },
 				hash: '',
-				game: 'csgo'
+				game: 'csgo',
+				workspaces: [],
+				workspace: null
 			},
 			loginError: '',
 			loadingLogin: false,
@@ -67,7 +71,6 @@ export default class Layout extends Component<{}, IState> {
 	}
 	getSpaceUsed = async () => {
 		const response = await api.cloud.size();
-		console.log(response);
 		if (!response) return;
 		const { data } = this.state;
 		data.spaceUsed = response.size;
@@ -155,19 +158,21 @@ export default class Layout extends Component<{}, IState> {
 			const appLoadedUser = await api.user.getCurrent();
 			if ('message' in appLoadedUser) {
 				this.setLoading(false, appLoadedUser.message);
-				this.setUser();
+				this.setUser(null);
 				return this.setState({ loading: false });
 			}
 			this.setUser(appLoadedUser);
 			return this.setState({ loading: false });
 		} catch {
-			this.setUser();
+			this.setUser(null);
 			return this.setState({ loading: false });
 		}
 	};
-	setUser = (user?: I.Customer) => {
+	setUser = (customerData: I.CustomerData | null) => {
 		const { data } = this.state;
-		data.customer = user;
+		data.customer = customerData?.customer || undefined;
+		data.workspaces = customerData?.workspaces || [];
+		data.workspace = customerData?.workspace || null;
 		this.setState({ data });
 	};
 	loadTeams = async () => {
@@ -231,9 +236,10 @@ export default class Layout extends Component<{}, IState> {
 			synchronizationStatus,
 			config
 		} = this.state;
-		const available = canPlanUseCloudStorage(data.customer?.license?.type);
+		const { workspace, workspaces, game, customer } = data;
+		
+		const available = canUserUseCloudStorage({ workspace, workspaces, game, customer: customer || null });
 		const active = Boolean(available && config?.sync);
-
 		// const url = new URL(window.location.href);
 		// const isHLAEGUI = url.searchParams.get('hlaegui');
 
@@ -258,6 +264,11 @@ export default class Layout extends Component<{}, IState> {
 						setLoading={this.setLoading}
 						loadUser={this.loadUser}
 						error={loginError}
+					/>
+					<WorkspaceModal
+						workspaces={data.workspaces}
+						isOpen={!data.customer && data.workspaces.length > 0}
+						loadUser={this.loadUser}
 					/>
 					<SyncModal
 						isOpen={isSyncModalOpen}

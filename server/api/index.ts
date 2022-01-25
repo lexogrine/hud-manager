@@ -12,14 +12,12 @@ import * as user from './user';
 import * as bakkesmod from './bakkesmod';
 import * as f1 from './f1';
 import * as I from './../../types/interfaces';
-import fs from 'fs';
 import { initGameConnection } from './huds/play';
 import TournamentHandler from './tournaments/routes';
 import MatchHandler from './matches/routes';
 import PlayerHandler from './players/routes';
 import ACOHandler from './aco/routes';
 import ARHandler from './ar/routes';
-import fetch from 'node-fetch';
 import TimelineHandler from './timeline/routes';
 import ARGHandler from './arg/routes';
 import * as match from './matches';
@@ -32,14 +30,16 @@ import { checkCloudStatus, uploadLocalToCloud, downloadCloudToLocal } from './cl
 import { getRadarConfigs } from './huds/radar';
 import { SimpleWebSocket } from 'simple-websockets';
 import { socket } from './user';
-import { canPlanUseCloudStorage } from '../../src/utils';
+import { canUserUseCloudStorage } from '../../src/utils';
 import { registerKeybind } from './keybinder';
 
 let init = true;
 
 export const customer: I.CustomerData = {
 	customer: null,
-	game: null
+	game: null,
+	workspace: null,
+	workspaces: null
 };
 
 export const registerRoomSetup = (socket: SimpleWebSocket) =>
@@ -55,8 +55,8 @@ export const validateCloudAbility = async (resource?: I.AvailableResources) => {
 	if (resource && !I.availableResources.includes(resource)) return false;
 	const cfg = await config.loadConfig();
 	if (!cfg.sync) return false;
-	canPlanUseCloudStorage;
-	if (!customer.customer || !customer.customer.license || !canPlanUseCloudStorage(customer.customer.license.type)) {
+
+	if (!customer.customer || !customer.customer.license || !canUserUseCloudStorage(customer)) {
 		return false;
 	}
 	return !!customer.game;
@@ -66,6 +66,8 @@ export default async function () {
 	const io = await ioPromise;
 
 	initGameConnection();
+
+	app.route('/api/workspace').post(user.setWorkspace)
 
 	app.route('/api/auth').get(user.getCurrent).post(user.loginHandler).delete(user.logout);
 

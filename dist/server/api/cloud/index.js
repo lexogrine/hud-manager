@@ -30,7 +30,6 @@ const players_1 = require("../players");
 const teams_1 = require("../teams");
 const aco_1 = require("../aco");
 const matches_1 = require("../matches");
-const electron_1 = require("electron");
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
 const __1 = require("..");
@@ -41,6 +40,7 @@ const tournaments_1 = require("../tournaments");
 const middlewares_2 = require("./middlewares");
 const socket_1 = require("../../socket");
 const utils_1 = require("../../../src/utils");
+const database_1 = require("../../../init/database");
 const spaceLimit = {
     enterprise: Infinity,
     professional: 1024 * 1024 * 1024,
@@ -59,8 +59,7 @@ const getResources = (game) => {
     ]);
 };
 const getLastUpdateDateLocally = () => {
-    const userData = electron_1.app.getPath('userData');
-    const database = path_1.default.join(userData, 'databases', 'lastUpdated.lhm');
+    const database = path_1.default.join((0, database_1.getBasePath)(__1.customer), 'lastUpdated.lhm');
     let lastUpdated = {};
     let saveOnFinish = true;
     try {
@@ -98,11 +97,10 @@ const updateLastDateLocally = (game, resources, blockUpdate = false) => {
     for (const resourceInfo of resources) {
         lastUpdateLocal[game][resourceInfo.resource] = resourceInfo.status;
     }
-    const userData = electron_1.app.getPath('userData');
-    const database = path_1.default.join(userData, 'databases', 'lastUpdated.lhm');
+    const database = path_1.default.join((0, database_1.getBasePath)(__1.customer), 'lastUpdated.lhm');
     fs_1.default.writeFileSync(database, JSON.stringify(lastUpdateLocal), 'utf8');
     if (user_1.socket && !blockUpdate) {
-        user_1.socket.send('init_db_update');
+        user_1.socket.send('init_db_update', __1.customer.workspace?.id || null);
     }
     return lastUpdateLocal;
 };
@@ -120,7 +118,7 @@ const verifyCloudSpace = async () => {
     const license = __1.customer.customer?.license.type;
     if (!license)
         return false;
-    if (!(0, utils_1.canPlanUseCloudStorage)(license)) {
+    if (!(0, utils_1.canUserUseCloudStorage)(__1.customer)) {
         return false;
     }
     const spaceUsed = (0, middlewares_2.getAmountOfBytesOfDatabases)();
@@ -132,6 +130,12 @@ const addResource = async (game, resource, data, replaceCurrentCloud = false) =>
     let url = `storage/${resource}/${game}`;
     if (replaceCurrentCloud) {
         url = `storage/${resource}/${game}?&replace=force`;
+    }
+    if (__1.customer.customer && __1.customer.workspace) {
+        if (url.includes('?'))
+            url += `&teamId=${__1.customer.workspace.id}`;
+        else
+            url += `?&teamId=${__1.customer.workspace.id}`;
     }
     const result = (await (0, user_1.api)(url, 'POST', data));
     if (!result) {
@@ -153,7 +157,11 @@ const updateResource = async (game, resource, data) => {
     if (status !== 'ALL_SYNCED') {
         return;
     }
-    const result = (await (0, user_1.api)(`storage/${resource}/${game}`, 'PATCH', data));
+    let url = `storage/${resource}/${game}`;
+    if (__1.customer.customer && __1.customer.workspace) {
+        url += `?&teamId=${__1.customer.workspace.id}`;
+    }
+    const result = (await (0, user_1.api)(url, 'PATCH', data));
     if (!result) {
         cloudErrorHandler();
         return null;
@@ -172,7 +180,11 @@ const deleteResource = async (game, resource, id) => {
         return;
     }
     const ids = typeof id === 'string' ? id : id.join(';');
-    const result = (await (0, user_1.api)(`storage/${resource}/${game}/${ids}`, 'DELETE'));
+    let url = `storage/${resource}/${game}/${ids}`;
+    if (__1.customer.customer && __1.customer.workspace) {
+        url += `?&teamId=${__1.customer.workspace.id}`;
+    }
+    const result = (await (0, user_1.api)(url, 'DELETE'));
     if (!result || !result.success) {
         cloudErrorHandler();
         return null;
@@ -183,8 +195,14 @@ const deleteResource = async (game, resource, id) => {
 exports.deleteResource = deleteResource;
 const getResource = async (game, resource, fromDate) => {
     let url = `storage/${resource}/${game}`;
+    if (__1.customer.customer && __1.customer.workspace) {
+        url += `?&teamId=${__1.customer.workspace.id}`;
+    }
     if (fromDate) {
-        url += `?fromDate=${fromDate}`;
+        if (url.includes('?'))
+            url += `&fromDate=${fromDate}`;
+        else
+            url += `?&fromDate=${fromDate}`;
     }
     const result = (await (0, user_1.api)(url));
     if (!result) {
@@ -243,7 +261,11 @@ const downloadCloudData = async (game, resource, fromDate) => {
 };
 const downloadCloudToLocal = async (game) => {
     try {
-        const result = (await (0, user_1.api)(`storage/${game}/status`));
+        let url = `storage/${game}/status`;
+        if (__1.customer.customer && __1.customer.workspace) {
+            url += `?&teamId=${__1.customer.workspace.id}`;
+        }
+        const result = (await (0, user_1.api)(url));
         await Promise.all(I.availableResources.map(resource => downloadCloudData(game, resource)));
         updateLastDateLocally(game, result);
         return true;
@@ -282,7 +304,7 @@ const uploadLocalToCloud = async (game, replaceCurrentCloud = false) => {
 exports.uploadLocalToCloud = uploadLocalToCloud;
 const checkCloudStatus = async (game) => {
     console.log('CHECKING CLOUD...');
-    if (!(0, utils_1.canPlanUseCloudStorage)(__1.customer.customer?.license.type)) {
+    if (!(0, utils_1.canUserUseCloudStorage)(__1.customer)) {
         return 'ALL_SYNCED';
     }
     const cfg = await (0, config_1.loadConfig)();
@@ -292,7 +314,11 @@ const checkCloudStatus = async (game) => {
         await (0, config_1.setConfig)({ ...cfg, sync: true });
     }
     try {
-        const result = (await (0, user_1.api)(`storage/${game}/status`));
+        let url = `storage/${game}/status`;
+        if (__1.customer.customer && __1.customer.workspace) {
+            url += `?&teamId=${__1.customer.workspace.id}`;
+        }
+        const result = (await (0, user_1.api)(url));
         if (!result) {
             return 'UNKNOWN_ERROR';
         }

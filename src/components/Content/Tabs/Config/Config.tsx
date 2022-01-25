@@ -11,7 +11,8 @@ import Switch from '../../../Switch/Switch';
 import { socket } from '../Live/Live';
 import { Component } from 'react';
 import LabeledInput from '../../../LabeledInput';
-import { canPlanUseCloudStorage } from '../../../../utils';
+import { canUserFromContextUseCloud } from '../../../../utils';
+
 
 const { isElectron } = config;
 
@@ -510,7 +511,7 @@ class Config extends Component<IProps, IState> {
 	};
 	toggleHandler = (event: any) => {
 		const { cxt } = this.props;
-		const available = canPlanUseCloudStorage(cxt.customer?.license?.type);
+		const available = canUserFromContextUseCloud(cxt);
 		if (!available) return;
 		const val = event.target.checked;
 		this.setState(state => {
@@ -553,7 +554,7 @@ class Config extends Component<IProps, IState> {
 		const gameInfo = this.state[(cxt.game || 'csgo') as 'dota2' | 'csgo'] as GameInfo;
 		const { gsi, cfg } = gameInfo || {};
 
-		const available = canPlanUseCloudStorage(cxt.customer?.license?.type);
+		const available = canUserFromContextUseCloud(cxt);
 		const active = Boolean(available && config.sync);
 		let maxSpace = 1024 * 1024 * 1024;
 

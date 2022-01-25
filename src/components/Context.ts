@@ -12,6 +12,8 @@ export interface IContextData {
 	hash: string;
 	spaceUsed: number;
 	game: I.AvailableGames;
+	workspaces: I.Workspace[];
+	workspace: I.Workspace | null;
 }
 
 const defaultContext: IContextData = {
@@ -23,7 +25,9 @@ const defaultContext: IContextData = {
 	matches: [],
 	fields: { players: [], teams: [] },
 	hash: '',
-	game: 'csgo'
+	game: 'csgo',
+	workspaces: [],
+	workspace: null
 };
 
 export const ContextData = React.createContext(defaultContext);

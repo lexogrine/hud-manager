@@ -59,7 +59,9 @@ const keybinder_1 = require("./keybinder");
 let init = true;
 exports.customer = {
     customer: null,
-    game: null
+    game: null,
+    workspace: null,
+    workspaces: null
 };
 const registerRoomSetup = (socket) => new Promise((res, rej) => {
     socket.send('registerAsProxy', user.room.uuid);
@@ -76,8 +78,7 @@ const validateCloudAbility = async (resource) => {
     const cfg = await config.loadConfig();
     if (!cfg.sync)
         return false;
-    utils_1.canPlanUseCloudStorage;
-    if (!exports.customer.customer || !exports.customer.customer.license || !(0, utils_1.canPlanUseCloudStorage)(exports.customer.customer.license.type)) {
+    if (!exports.customer.customer || !exports.customer.customer.license || !(0, utils_1.canUserUseCloudStorage)(exports.customer)) {
         return false;
     }
     return !!exports.customer.game;
@@ -86,6 +87,7 @@ exports.validateCloudAbility = validateCloudAbility;
 async function default_1() {
     const io = await socket_1.ioPromise;
     (0, play_1.initGameConnection)();
+    __1.app.route('/api/workspace').post(user.setWorkspace);
     __1.app.route('/api/auth').get(user.getCurrent).post(user.loginHandler).delete(user.logout);
     __1.app.route('/api/config').get(config.getConfig).patch(config.updateConfig);
     __1.app.route('/api/version').get((req, res) => res.json({ version: electron_1.app.getVersion() }));

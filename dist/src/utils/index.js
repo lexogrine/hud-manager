@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.filterMatches = exports.canPlanUseCloudStorage = exports.getMissingFields = exports.getMatchName = void 0;
+exports.filterMatches = exports.canUserFromContextUseCloud = exports.getUserFromContext = exports.canUserUseCloudStorage = exports.canPlanUseCloudStorage = exports.getMissingFields = exports.getMatchName = void 0;
 const moment_1 = __importDefault(require("moment"));
 const getMatchName = (match, teams, longNames = false) => {
     if (!match)
@@ -57,6 +57,24 @@ const canPlanUseCloudStorage = (plan) => {
     return true;
 };
 exports.canPlanUseCloudStorage = canPlanUseCloudStorage;
+const canUserUseCloudStorage = (customer) => {
+    if (!customer || !customer.customer)
+        return false;
+    if (customer.workspace)
+        return true;
+    return (0, exports.canPlanUseCloudStorage)(customer.customer.license.type);
+};
+exports.canUserUseCloudStorage = canUserUseCloudStorage;
+const getUserFromContext = (cxt) => {
+    const { workspace, workspaces, game, customer } = cxt;
+    const user = { workspace, workspaces, game, customer: customer || null };
+    return user;
+};
+exports.getUserFromContext = getUserFromContext;
+const canUserFromContextUseCloud = (cxt) => {
+    return (0, exports.canUserUseCloudStorage)((0, exports.getUserFromContext)(cxt));
+};
+exports.canUserFromContextUseCloud = canUserFromContextUseCloud;
 const filterMatches = (match, activeTab) => {
     const boToWinsMap = {
         1: 1,

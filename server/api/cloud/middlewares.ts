@@ -2,10 +2,10 @@ import express from 'express';
 //import path from 'path';
 //import fs from 'fs';
 //import { app } from 'electron';
-import databases from '../../../init/database';
+import { databaseContext } from '../../../init/database';
 
 export const getAmountOfBytesOfDatabases = () => {
-	const size = Object.values(databases)
+	const size = Object.values(databaseContext.databases)
 		.map(db => Buffer.byteLength(JSON.stringify(db.getAllData()), 'utf8'))
 		.reduce((a, b) => a + b, 0);
 

@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendPlayersToRoom = exports.setNewRoomUUID = exports.logout = exports.getCurrent = exports.loginHandler = exports.api = exports.verifyGame = exports.room = exports.USE_LOCAL_BACKEND = exports.socket = exports.fetch = void 0;
+exports.sendPlayersToRoom = exports.setNewRoomUUID = exports.logout = exports.getCurrent = exports.setWorkspace = exports.getWorkspaces = exports.loginHandler = exports.api = exports.verifyGame = exports.room = exports.USE_LOCAL_BACKEND = exports.socket = exports.fetch = void 0;
 const electron_1 = require("electron");
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const node_fetch_1 = __importDefault(require("node-fetch"));
@@ -18,11 +18,12 @@ const simple_websockets_1 = require("simple-websockets");
 const socket_1 = require("../socket");
 const cloud_1 = require("./cloud");
 const uuid_1 = require("uuid");
+const database_1 = require("../../init/database");
 const cookiePath = path_1.default.join(electron_1.app.getPath('userData'), 'cookie.json');
 const cookieJar = new tough_cookie_1.CookieJar(new tough_cookie_file_store_1.FileCookieStore(cookiePath));
 exports.fetch = (0, fetch_cookie_1.default)(node_fetch_1.default, cookieJar);
 exports.socket = null;
-exports.USE_LOCAL_BACKEND = false;
+exports.USE_LOCAL_BACKEND = true;
 const domain = exports.USE_LOCAL_BACKEND ? 'localhost:5000' : 'api.lhm.gg';
 let cameraSupportInit = false;
 const getSocket = () => {
@@ -170,7 +171,8 @@ const api = (url, method = 'GET', body, opts) => {
 };
 exports.api = api;
 const userHandlers = {
-    get: (machineId) => (0, exports.api)(`auth/${machineId}`),
+    get: (machineId, workspaceId) => (0, exports.api)(workspaceId ? `auth/${machineId}?teamId=${workspaceId}` : `auth/${machineId}`),
+    getWorkspaces: () => (0, exports.api)(`auth/workspaces`),
     login: (username, password, ver, code) => (0, exports.api)('auth', 'POST', { username, password, ver, code }),
     logout: () => (0, exports.api)('auth', 'DELETE')
 };
@@ -187,9 +189,9 @@ const verifyToken = (token) => {
         return false;
     }
 };
-const loadUser = async (loggedIn = false) => {
+const loadUser = async (workspace, loggedIn = false) => {
     const machineId = (0, machine_1.getMachineId)();
-    const userToken = await userHandlers.get(machineId);
+    const userToken = await userHandlers.get(machineId, workspace?.id || null);
     if (!userToken) {
         return { success: false, message: loggedIn ? 'Your session has expired - try restarting the application' : '' };
     }
@@ -202,7 +204,20 @@ const loadUser = async (loggedIn = false) => {
     }
     connectSocket();
     api_1.customer.customer = userData;
+    api_1.customer.workspace = workspace;
+    await (0, database_1.loadUsersDatabase)(api_1.customer);
     return { success: true, message: '' };
+};
+const loadUserWorkspaces = async () => {
+    const response = await userHandlers.getWorkspaces();
+    if (!response || "error" in response) {
+        if (!response) {
+            return { "error": "Not logged in" };
+        }
+        return response;
+    }
+    api_1.customer.workspaces = response;
+    return response;
 };
 const login = async (username, password, code = '') => {
     const ver = electron_1.app.getVersion();
@@ -213,28 +228,58 @@ const login = async (username, password, code = '') => {
     if (typeof response !== 'boolean' && 'error' in response) {
         return { success: false, message: response.error };
     }
-    return await loadUser(true);
+    const workspaces = await loadUserWorkspaces();
+    return { success: !("error" in workspaces) };
 };
 const loginHandler = async (req, res) => {
     const response = await login(req.body.username, req.body.password, req.body.token);
     res.json(response);
 };
 exports.loginHandler = loginHandler;
+const getWorkspaces = async (req, res) => {
+    return res.json({ result: api_1.customer.workspaces });
+};
+exports.getWorkspaces = getWorkspaces;
+const setWorkspace = async (req, res) => {
+    const { workspaceId } = req.body;
+    if (!api_1.customer.workspaces) {
+        return res.status(403).json({ success: false, message: "No workspaces" });
+    }
+    if (workspaceId === null) {
+        const result = await loadUser(workspaceId, true);
+        return res.json(result);
+    }
+    const targetWorkspace = api_1.customer.workspaces.find(workspace => workspace.id === workspaceId);
+    if (!targetWorkspace) {
+        return res.status(403).json({ success: false, message: "Bad workspace" });
+    }
+    const result = await loadUser(targetWorkspace, true);
+    return res.json(result);
+};
+exports.setWorkspace = setWorkspace;
 const getCurrent = async (req, res) => {
     if (api_1.customer.customer) {
-        return res.json(api_1.customer.customer);
+        return res.json(api_1.customer);
     }
-    const response = await loadUser();
-    if (api_1.customer.customer) {
-        if (api_1.customer.customer.license.type === 'professional') {
-        }
-        return res.json(api_1.customer.customer);
+    const workspaces = api_1.customer.workspaces || await loadUserWorkspaces();
+    if ("error" in workspaces) {
+        return res.status(403).json({ success: false, message: workspaces.error });
     }
-    return res.status(403).json(response);
+    if (workspaces.length > 0) {
+        return res.json(api_1.customer);
+    }
+    const result = await loadUser(null, true);
+    if (result.success) {
+        return res.json(api_1.customer);
+    }
+    return res.json(result);
 };
 exports.getCurrent = getCurrent;
 const logout = async (req, res) => {
     api_1.customer.customer = null;
+    api_1.customer.workspaces = null;
+    api_1.customer.workspace = null;
+    await loadUserWorkspaces();
     if (exports.socket) {
         exports.socket._socket.close();
     }

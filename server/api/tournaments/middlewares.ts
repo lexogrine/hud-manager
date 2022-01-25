@@ -1,12 +1,10 @@
 import express from 'express';
 import * as T from './';
-import db from './../../../init/database';
+import { databaseContext } from './../../../init/database';
 import { getActiveGameMatches } from '../matches';
 import { AvailableGames, Tournament } from '../../../types/interfaces';
 import { validateCloudAbility, customer } from '..';
 import { checkCloudStatus, addResource, updateResource, deleteResource, updateLastDateLocallyOnly } from '../cloud';
-
-const tournamentsDb = db.tournaments;
 
 export const getCurrentTournament: express.RequestHandler = async (req, res) => {
 	const matches = await getActiveGameMatches();
@@ -132,6 +130,7 @@ export const deleteTournament: express.RequestHandler = async (req, res) => {
 
 export const replaceLocalTournaments = (newTournaments: Tournament[], game: AvailableGames, existing: string[]) =>
 	new Promise<boolean>(res => {
+		if(!databaseContext.databases.tournaments) return res(false);
 		const or: any[] = [
 			{ game, _id: { $nin: existing } },
 			{ game, _id: { $in: newTournaments.map(tournament => tournament._id) } }
@@ -142,11 +141,11 @@ export const replaceLocalTournaments = (newTournaments: Tournament[], game: Avai
 				{ game: { $exists: false }, id: { $in: newTournaments.map(tournament => tournament._id) } }
 			);
 		}
-		tournamentsDb.remove({ $or: or }, { multi: true }, err => {
+		databaseContext.databases.tournaments.remove({ $or: or }, { multi: true }, err => {
 			if (err) {
 				return res(false);
 			}
-			tournamentsDb.insert(newTournaments, (err, docs) => {
+			databaseContext.databases.tournaments.insert(newTournaments, (err, docs) => {
 				return res(!err);
 			});
 		});

@@ -1,11 +1,10 @@
-import db from './../../../init/database';
+import { databaseContext } from './../../../init/database';
 import { Team, AvailableGames } from '../../../types/interfaces';
-
-const { teams } = db;
 
 export async function getTeamById(id: string, logo = false): Promise<Team | null> {
 	return new Promise(res => {
-		teams.findOne({ _id: id }, (err, team) => {
+		if(!databaseContext.databases.teams) return res(null);
+		databaseContext.databases.teams.findOne({ _id: id }, (err, team) => {
 			if (err) {
 				return res(null);
 			}
@@ -17,7 +16,8 @@ export async function getTeamById(id: string, logo = false): Promise<Team | null
 
 export const getTeamsList = (query: any) =>
 	new Promise<Team[]>(res => {
-		teams.find(query, (err: Error, teams: Team[]) => {
+		if(!databaseContext.databases.teams) return res([]);
+		databaseContext.databases.teams.find(query, (err: Error, teams: Team[]) => {
 			if (err) {
 				return res([]);
 			}
@@ -27,7 +27,8 @@ export const getTeamsList = (query: any) =>
 
 export const addTeams = (newTeams: Team[]) => {
 	return new Promise<Team[] | null>(res => {
-		teams.insert(newTeams, (err, docs) => {
+		if(!databaseContext.databases.teams) return res(null);
+		databaseContext.databases.teams.insert(newTeams, (err, docs) => {
 			if (err) return res(null);
 
 			return res(docs);
@@ -36,6 +37,7 @@ export const addTeams = (newTeams: Team[]) => {
 };
 export const replaceLocalTeams = (newTeams: Team[], game: AvailableGames, existing: string[]) =>
 	new Promise<boolean>(res => {
+		if(!databaseContext.databases.teams) return res(false);
 		const or: any[] = [
 			{ game, _id: { $nin: existing } },
 			{ game, _id: { $in: newTeams.map(team => team._id) } }
@@ -46,11 +48,11 @@ export const replaceLocalTeams = (newTeams: Team[], game: AvailableGames, existi
 				{ game: { $exists: false }, _id: { $in: newTeams.map(team => team._id) } }
 			);
 		}
-		teams.remove({ $or: or }, { multi: true }, err => {
+		databaseContext.databases.teams.remove({ $or: or }, { multi: true }, err => {
 			if (err) {
 				return res(false);
 			}
-			teams.insert(newTeams, (err, docs) => {
+			databaseContext.databases.teams.insert(newTeams, (err, docs) => {
 				return res(!err);
 			});
 		});

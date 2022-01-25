@@ -1,5 +1,5 @@
 import express from 'express';
-import db from './../../init/database';
+import { databaseContext } from './../../init/database';
 import fs from 'fs';
 import ip from 'ip';
 import { Config, ExtendedConfig } from '../../types/interfaces';
@@ -8,8 +8,6 @@ import internalIp from 'internal-ip';
 import { isDev } from '../../electron';
 import { ioPromise } from '../socket';
 import { customer } from '.';
-
-const configs = db.config;
 
 export let publicIP: string | null = null;
 export const internalIP = internalIp.v4.sync() || ip.address();
@@ -39,7 +37,8 @@ export const loadConfig = async (): Promise<Config> => {
 		} catch {}
 	}
 	return new Promise(res => {
-		configs.find({}, async (err: any, config: Config[]) => {
+		if(!databaseContext.databases.config) return res(defaultConfig);
+		databaseContext.databases.config.find({}, async (err: any, config: Config[]) => {
 			if (err) {
 				return res(defaultConfig);
 			}
@@ -60,7 +59,7 @@ export const loadConfig = async (): Promise<Config> => {
 
 				return res(await setConfig(config[0]));
 			}
-			configs.insert(defaultConfig, (err, config) => {
+			databaseContext.databases.config.insert(defaultConfig, (err, config) => {
 				if (err) {
 					return res(defaultConfig);
 				}
@@ -105,7 +104,8 @@ export const updateConfig: express.RequestHandler = async (req, res) => {
 
 export const setConfig = async (config: Config) =>
 	new Promise<Config>(res => {
-		configs.update({}, { $set: config }, { multi: true }, async err => {
+		if(!databaseContext.databases.config) return res(defaultConfig);
+		databaseContext.databases.config.update({}, { $set: config }, { multi: true }, async err => {
 			if (err) {
 				return res(defaultConfig);
 			}

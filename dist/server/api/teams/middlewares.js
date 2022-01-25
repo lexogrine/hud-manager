@@ -23,7 +23,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateFields = exports.getFields = exports.getLogoFile = exports.deleteTeam = exports.updateTeam = exports.addTeamsWithExcel = exports.addTeam = exports.getTeam = exports.getTeams = void 0;
-const database_1 = __importDefault(require("./../../../init/database"));
+const database_1 = require("./../../../init/database");
 const interfaces_1 = require("../../../types/interfaces");
 const config_1 = require("./../config");
 const isSvg_1 = __importDefault(require("./../../../src/isSvg"));
@@ -32,8 +32,6 @@ const F = __importStar(require("./../fields"));
 const __1 = require("..");
 const cloud_1 = require("../cloud");
 const exceljs_1 = require("exceljs");
-const teams = database_1.default.teams;
-const players = database_1.default.players;
 const getTeams = async (req, res) => {
     const game = __1.customer.game;
     const $or = [{ game }];
@@ -140,6 +138,9 @@ const addTeamsWithExcel = async (req, res) => {
 };
 exports.addTeamsWithExcel = addTeamsWithExcel;
 const updateTeam = async (req, res) => {
+    if (!database_1.databaseContext.databases.teams) {
+        return res.sendStatus(500);
+    }
     if (!req.params.id) {
         return res.sendStatus(422);
     }
@@ -162,7 +163,7 @@ const updateTeam = async (req, res) => {
     if (req.body.logo === undefined) {
         updated.logo = team.logo;
     }
-    teams.update({ _id: req.params.id }, { $set: updated }, {}, async (err) => {
+    database_1.databaseContext.databases.teams.update({ _id: req.params.id }, { $set: updated }, {}, async (err) => {
         if (err) {
             return res.sendStatus(500);
         }
@@ -178,6 +179,9 @@ const updateTeam = async (req, res) => {
 };
 exports.updateTeam = updateTeam;
 const deleteTeam = async (req, res) => {
+    if (!database_1.databaseContext.databases.teams) {
+        return res.sendStatus(500);
+    }
     if (!req.params.id) {
         return res.sendStatus(422);
     }
@@ -193,7 +197,7 @@ const deleteTeam = async (req, res) => {
         cloudStatus = (await (0, cloud_1.checkCloudStatus)(__1.customer.game)) === 'ALL_SYNCED';
     }
     //players.update({team:})
-    teams.remove({ _id: { $in: ids } }, { multi: true }, async (err, n) => {
+    database_1.databaseContext.databases.teams.remove({ _id: { $in: ids } }, { multi: true }, async (err, n) => {
         if (err) {
             return res.sendStatus(500);
         }

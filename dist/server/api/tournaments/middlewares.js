@@ -18,17 +18,13 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.replaceLocalTournaments = exports.deleteTournament = exports.updateTournament = exports.bindMatchToMatchup = exports.addTournament = exports.getTournaments = exports.getCurrentTournament = void 0;
 const T = __importStar(require("./"));
-const database_1 = __importDefault(require("./../../../init/database"));
+const database_1 = require("./../../../init/database");
 const matches_1 = require("../matches");
 const __1 = require("..");
 const cloud_1 = require("../cloud");
-const tournamentsDb = database_1.default.tournaments;
 const getCurrentTournament = async (req, res) => {
     const matches = await (0, matches_1.getActiveGameMatches)();
     const current = matches.find(match => match.current);
@@ -130,6 +126,8 @@ const deleteTournament = async (req, res) => {
 };
 exports.deleteTournament = deleteTournament;
 const replaceLocalTournaments = (newTournaments, game, existing) => new Promise(res => {
+    if (!database_1.databaseContext.databases.tournaments)
+        return res(false);
     const or = [
         { game, _id: { $nin: existing } },
         { game, _id: { $in: newTournaments.map(tournament => tournament._id) } }
@@ -137,11 +135,11 @@ const replaceLocalTournaments = (newTournaments, game, existing) => new Promise(
     if (game === 'csgo') {
         or.push({ game: { $exists: false }, id: { $nin: existing } }, { game: { $exists: false }, id: { $in: newTournaments.map(tournament => tournament._id) } });
     }
-    tournamentsDb.remove({ $or: or }, { multi: true }, err => {
+    database_1.databaseContext.databases.tournaments.remove({ $or: or }, { multi: true }, err => {
         if (err) {
             return res(false);
         }
-        tournamentsDb.insert(newTournaments, (err, docs) => {
+        database_1.databaseContext.databases.tournaments.insert(newTournaments, (err, docs) => {
             return res(!err);
         });
     });

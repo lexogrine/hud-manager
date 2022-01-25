@@ -5,14 +5,15 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.replaceLocalMatches = exports.updateRound = exports.reverseSide = exports.updateMatch = exports.getCurrent = exports.deleteMatch = exports.addMatch = exports.updateMatches = exports.setMatches = exports.getMatchById = exports.getActiveGameMatches = exports.getMatches = void 0;
 const socket_1 = require("./../../socket");
-const database_1 = __importDefault(require("./../../../init/database"));
+const database_1 = require("./../../../init/database");
 const teams_1 = require("./../teams");
 const v4_1 = __importDefault(require("uuid/v4"));
 const __1 = require("..");
-const matchesDb = database_1.default.matches;
 const getMatches = (query) => {
     return new Promise(res => {
-        matchesDb.find(query, (err, matches) => {
+        if (!database_1.databaseContext.databases.matches)
+            return res([]);
+        database_1.databaseContext.databases.matches.find(query, (err, matches) => {
             if (err) {
                 return res([]);
             }
@@ -32,7 +33,9 @@ const getActiveGameMatches = () => {
 exports.getActiveGameMatches = getActiveGameMatches;
 async function getMatchById(id) {
     return new Promise(res => {
-        matchesDb.findOne({ id }, (err, match) => {
+        if (!database_1.databaseContext.databases.matches)
+            return res(null);
+        database_1.databaseContext.databases.matches.findOne({ id }, (err, match) => {
             if (err) {
                 return res(null);
             }
@@ -43,11 +46,13 @@ async function getMatchById(id) {
 exports.getMatchById = getMatchById;
 const setMatches = (matches) => {
     return new Promise(res => {
-        matchesDb.remove({}, { multi: true }, err => {
+        if (!database_1.databaseContext.databases.matches)
+            return res(null);
+        database_1.databaseContext.databases.matches.remove({}, { multi: true }, err => {
             if (err) {
                 return res(null);
             }
-            matchesDb.insert(matches, (err, added) => {
+            database_1.databaseContext.databases.matches.insert(matches, (err, added) => {
                 if (err) {
                     return res(null);
                 }
@@ -58,6 +63,8 @@ const setMatches = (matches) => {
 };
 exports.setMatches = setMatches;
 const updateMatches = async (updateMatches) => {
+    if (!database_1.databaseContext.databases.matches)
+        return;
     const currents = updateMatches.filter(match => match.current);
     if (currents.length > 1) {
         updateMatches = updateMatches.map(match => ({ ...match, current: false }));
@@ -96,11 +103,13 @@ const updateMatches = async (updateMatches) => {
 };
 exports.updateMatches = updateMatches;
 const addMatch = (match) => new Promise(res => {
+    if (!database_1.databaseContext.databases.matches)
+        return res(null);
     if (!match.id) {
         match.id = (0, v4_1.default)();
     }
     match.current = false;
-    matchesDb.insert(match, async (err, doc) => {
+    database_1.databaseContext.databases.matches.insert(match, async (err, doc) => {
         if (err)
             return res(null);
         /* if (validateCloudAbility()) {
@@ -111,7 +120,9 @@ const addMatch = (match) => new Promise(res => {
 });
 exports.addMatch = addMatch;
 const deleteMatch = (id) => new Promise(res => {
-    matchesDb.remove({ id }, async (err) => {
+    if (!database_1.databaseContext.databases.matches)
+        return res(false);
+    database_1.databaseContext.databases.matches.remove({ id }, async (err) => {
         if (err)
             return res(false);
         /* if (validateCloudAbility()) {
@@ -139,12 +150,14 @@ export const setCurrent = (id: string) =>
     });
 */
 const updateMatch = (match) => new Promise(res => {
-    matchesDb.update({ id: match.id }, match, {}, err => {
+    if (!database_1.databaseContext.databases.matches)
+        return res(null);
+    database_1.databaseContext.databases.matches.update({ id: match.id }, match, {}, err => {
         if (err)
             return res(false);
         if (!match.current)
             return res(true);
-        matchesDb.update({
+        database_1.databaseContext.databases.matches.update({
             $where: function () {
                 return (this.current &&
                     this.id !== match.id &&
@@ -290,6 +303,8 @@ const updateRound = async (game) => {
 };
 exports.updateRound = updateRound;
 const replaceLocalMatches = (newMatches, game, existing) => new Promise(res => {
+    if (!database_1.databaseContext.databases.matches)
+        return res(false);
     const or = [
         { game, id: { $nin: existing } },
         { game, id: { $in: newMatches.map(match => match.id) } }
@@ -297,11 +312,11 @@ const replaceLocalMatches = (newMatches, game, existing) => new Promise(res => {
     if (game === 'csgo') {
         or.push({ game: { $exists: false }, id: { $nin: existing } }, { game: { $exists: false }, id: { $in: newMatches.map(team => team.id) } });
     }
-    matchesDb.remove({ $or: or }, { multi: true }, err => {
+    database_1.databaseContext.databases.matches.remove({ $or: or }, { multi: true }, err => {
         if (err) {
             return res(false);
         }
-        matchesDb.insert(newMatches, (err, docs) => {
+        database_1.databaseContext.databases.matches.insert(newMatches, (err, docs) => {
             return res(!err);
         });
     });

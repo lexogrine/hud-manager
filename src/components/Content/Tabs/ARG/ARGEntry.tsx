@@ -28,7 +28,6 @@ export const Card: FC<CardProps> = ({ id, text, index, moveCard, toggle, active,
 			};
 		},
 		drop: () => {
-			console.log('dropeped');
 			save();
 		},
 		hover(item: DragItem, monitor: DropTargetMonitor) {

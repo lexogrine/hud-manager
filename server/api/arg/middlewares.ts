@@ -86,7 +86,6 @@ export const saveDelay: express.RequestHandler = async (req, res) => {
 
 	argSocket.delay = req.body.delay;
 
-	console.log(argSocket.delay);
 	await sendARGStatus();
 	return res.sendStatus(200);
 };

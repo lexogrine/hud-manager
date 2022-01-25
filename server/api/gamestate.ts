@@ -73,8 +73,6 @@ export const checkGSIFile: express.RequestHandler = async (req, res) => {
 		} else {
 			if (JSON.stringify(GSITemplateDota2.HUDMANAGERGSI.data) !== JSON.stringify(content.data)) {
 				// wrong settings, dota2
-				console.log(JSON.stringify(GSITemplateDota2.HUDMANAGERGSI.data));
-				console.log(JSON.stringify(content.data));
 				return res.json({ success: false, message: 'Wrong configuration', accessible: true });
 			}
 		}

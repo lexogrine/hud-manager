@@ -26,9 +26,8 @@ exports.deleteTournament = exports.createNextMatch = exports.fillNextMatches = e
 const Formats = __importStar(require("./formats"));
 const M = __importStar(require("./../matches"));
 const v4_1 = __importDefault(require("uuid/v4"));
-const database_1 = __importDefault(require("./../../../init/database"));
+const database_1 = require("./../../../init/database");
 const __1 = require("..");
-const { tournaments } = database_1.default;
 const parseLegacyMatchups = (matchup) => {
     if ('stage' in matchup)
         return matchup;
@@ -65,7 +64,9 @@ const parseLegacyTournament = (tournament) => {
 };
 exports.parseLegacyTournament = parseLegacyTournament;
 const getTournaments = (opts = {}) => new Promise(res => {
-    tournaments.find(opts, (err, docs) => {
+    if (!database_1.databaseContext.databases.tournaments)
+        return res([]);
+    database_1.databaseContext.databases.tournaments.find(opts, (err, docs) => {
         if (err)
             return res([]);
         return res(docs.map(doc => (0, exports.parseLegacyTournament)(doc)));
@@ -146,7 +147,9 @@ const getTournamentByMatchId = async (matchId) => {
 };
 exports.getTournamentByMatchId = getTournamentByMatchId;
 const addTournament = (tournament) => new Promise(res => {
-    tournaments.insert(tournament, (err, newTournament) => {
+    if (!database_1.databaseContext.databases.tournaments)
+        return res(null);
+    database_1.databaseContext.databases.tournaments.insert(tournament, (err, newTournament) => {
         if (err)
             return res(null);
         return res(newTournament);
@@ -154,7 +157,9 @@ const addTournament = (tournament) => new Promise(res => {
 });
 exports.addTournament = addTournament;
 const getTournament = (tournamentId) => new Promise(res => {
-    tournaments.findOne({ _id: tournamentId }, (err, tournament) => {
+    if (!database_1.databaseContext.databases.tournaments)
+        return res(null);
+    database_1.databaseContext.databases.tournaments.findOne({ _id: tournamentId }, (err, tournament) => {
         if (err || !tournament)
             return res(null);
         return res((0, exports.parseLegacyTournament)(tournament));
@@ -162,7 +167,9 @@ const getTournament = (tournamentId) => new Promise(res => {
 });
 exports.getTournament = getTournament;
 const updateTournament = (tournament) => new Promise(res => {
-    tournaments.update({ _id: tournament._id }, tournament, {}, err => {
+    if (!database_1.databaseContext.databases.tournaments)
+        return res(null);
+    database_1.databaseContext.databases.tournaments.update({ _id: tournament._id }, tournament, {}, err => {
         if (err)
             return res(null);
         return res(tournament);
@@ -309,7 +316,9 @@ const createNextMatch = async (matchId) => {
 };
 exports.createNextMatch = createNextMatch;
 const deleteTournament = (tournamentId) => new Promise(res => {
-    tournaments.remove({ _id: tournamentId }, err => {
+    if (!database_1.databaseContext.databases.tournaments)
+        return res(null);
+    database_1.databaseContext.databases.tournaments.remove({ _id: tournamentId }, err => {
         if (err)
             return res(null);
         return res(true);

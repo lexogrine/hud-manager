@@ -1,6 +1,7 @@
 import moment from 'moment';
-import { RequiredFields } from '../../types/interfaces';
+import { CustomerData, RequiredFields } from '../../types/interfaces';
 import * as I from '../api/interfaces';
+import { IContextData } from '../components/Context';
 
 export const getMatchName = (match: I.Match | undefined | null, teams: I.Team[], longNames = false) => {
 	if (!match) return '';
@@ -56,6 +57,26 @@ export const canPlanUseCloudStorage = (plan?: I.LicenseType | null) => {
 	if (!plan || plan === 'free') return false;
 	return true;
 };
+
+export const canUserUseCloudStorage = (customer: CustomerData) => {
+	if(!customer || !customer.customer) return false;
+
+	if(customer.workspace) return true;
+
+	return canPlanUseCloudStorage(customer.customer.license.type);
+}
+
+export const getUserFromContext = (cxt: IContextData) => {
+	const { workspace, workspaces, game, customer } = cxt;
+	const user: CustomerData = { workspace, workspaces, game, customer: customer || null }
+
+	return user;
+}
+
+export const canUserFromContextUseCloud = (cxt: IContextData) => {
+
+	return canUserUseCloudStorage(getUserFromContext(cxt));
+}
 
 export const filterMatches = (match: I.Match, activeTab: string) => {
 	const boToWinsMap = {

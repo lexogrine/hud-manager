@@ -64,7 +64,12 @@ type OnlineHUDEntry = {
 const getOnlineHUDs = async () => {
 	if (!customer.game) return [];
 	try {
-		const onlineHUDData = ((await api(`storage/file/${customer.game}`)) || []) as OnlineHUDEntry[];
+		let url = `storage/file/${customer.game}`;
+		
+		if (customer.customer && customer.workspace) {
+			url += `?&teamId=${customer.workspace.id}`;
+		}
+		const onlineHUDData = ((await api(url)) || []) as OnlineHUDEntry[];
 		const huds = onlineHUDData.map(data => {
 			const hud = {
 				...data.extra,
@@ -605,7 +610,14 @@ type APIFileResponse = {
 export const downloadHUD: RequestHandler = async (req, res) => {
 	const uuid = req.params.uuid;
 	if (!customer.game || !uuid) return res.sendStatus(422);
-	const hudData = ((await api(`storage/file/${customer.game}/hud/${uuid}`)) || null) as APIFileResponse | null;
+
+	let fileUrl = `storage/file/${customer.game}/hud/${uuid}`;
+	
+	if (customer.customer && customer.workspace) {
+		fileUrl += `?&teamId=${customer.workspace.id}`;
+	}
+
+	const hudData = ((await api(fileUrl)) || null) as APIFileResponse | null;
 
 	const name = hudData?.data?.extra?.name;
 
@@ -613,7 +625,14 @@ export const downloadHUD: RequestHandler = async (req, res) => {
 		return res.sendStatus(404);
 	}
 
-	const presignedURLResponse = (await api(`storage/file/url/${customer.game}/GET/${uuid}`)) as { url: string };
+	let presignedUrl = `storage/file/url/${customer.game}/GET/${uuid}`;
+	
+	if (customer.customer && customer.workspace) {
+		presignedUrl += `?&teamId=${customer.workspace.id}`;
+	}
+
+
+	const presignedURLResponse = (await api(presignedUrl)) as { url: string };
 
 	if (!presignedURLResponse || !presignedURLResponse.url) {
 		return res.sendStatus(404);
@@ -640,7 +659,13 @@ export const deleteHUDFromCloud: RequestHandler = async (req, res) => {
 
 	const io = await ioPromise;
 
-	const response = (await api(`storage/file/${customer.game}/hud/${uuid}`, 'DELETE')) as { success: boolean };
+	let url = `storage/file/${customer.game}/hud/${uuid}`;
+
+	if (customer.customer && customer.workspace) {
+		url += `?&teamId=${customer.workspace.id}`;
+	}
+
+	const response = (await api(url, 'DELETE')) as { success: boolean };
 
 	if (response.success) {
 		io.emit('reloadHUDs');
@@ -680,13 +705,25 @@ export const uploadHUD: RequestHandler = async (req, res) => {
 
 	if (!hud || !hud.uuid || hud.game === 'all') return res.sendStatus(422);
 
-	const presignedURLResponse = (await api(`storage/file/url/${customer.game}/PUT/${hud.uuid}`)) as { url: string };
+	let presignedUrl = `storage/file/url/${customer.game}/PUT/${hud.uuid}`;
+
+	if (customer.customer && customer.workspace) {
+		presignedUrl += `?&teamId=${customer.workspace.id}`;
+	}
+
+	const presignedURLResponse = (await api(presignedUrl)) as { url: string };
 
 	if (!presignedURLResponse || !presignedURLResponse.url) {
 		return res.sendStatus(404);
 	}
 
-	const hudUploadResponse = await api(`storage/file/${customer.game}/hud/${hud.uuid}`, 'POST', {
+	let uploadUrl = `storage/file/${customer.game}/hud/${hud.uuid}`;
+	
+	if (customer.customer && customer.workspace) {
+		uploadUrl += `?&teamId=${customer.workspace.id}`;
+	}
+
+	const hudUploadResponse = await api(uploadUrl, 'POST', {
 		extra: hud
 	});
 	if (!hudUploadResponse || !hudUploadResponse.result) {

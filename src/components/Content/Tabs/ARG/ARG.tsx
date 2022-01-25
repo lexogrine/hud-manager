@@ -143,7 +143,6 @@ const ARG = () => {
 		};
 
 		socket.on('ARGStatus', (status: Status) => {
-			console.log('update');
 			setIsConnected(!!status.pcID);
 			setDelay(status.delay);
 			if (status.pcID) {
@@ -165,7 +164,6 @@ const ARG = () => {
 				.catch(() => {});
 		}, 100);
 	}, []);
-	console.log(useHLAE);
 	return (
 		<>
 			{/*<div className="tab-title-container arg-title">

@@ -77,7 +77,6 @@ const saveDelay = async (req, res) => {
         return res.sendStatus(422);
     }
     index_1.argSocket.delay = req.body.delay;
-    console.log(index_1.argSocket.delay);
     await (0, index_1.sendARGStatus)();
     return res.sendStatus(200);
 };

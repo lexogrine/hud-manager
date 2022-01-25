@@ -4,7 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.verifyUrl = exports.setConfig = exports.updateConfig = exports.getConfig = exports.loadConfig = exports.internalIP = exports.publicIP = void 0;
-const database_1 = __importDefault(require("./../../init/database"));
+const database_1 = require("./../../init/database");
 const fs_1 = __importDefault(require("fs"));
 const ip_1 = __importDefault(require("ip"));
 const public_ip_1 = __importDefault(require("public-ip"));
@@ -12,7 +12,6 @@ const internal_ip_1 = __importDefault(require("internal-ip"));
 const electron_1 = require("../../electron");
 const socket_1 = require("../socket");
 const _1 = require(".");
-const configs = database_1.default.config;
 exports.publicIP = null;
 exports.internalIP = internal_ip_1.default.v4.sync() || ip_1.default.address();
 public_ip_1.default
@@ -39,7 +38,9 @@ const loadConfig = async () => {
         catch { }
     }
     return new Promise(res => {
-        configs.find({}, async (err, config) => {
+        if (!database_1.databaseContext.databases.config)
+            return res(defaultConfig);
+        database_1.databaseContext.databases.config.find({}, async (err, config) => {
             if (err) {
                 return res(defaultConfig);
             }
@@ -56,7 +57,7 @@ const loadConfig = async () => {
                 }
                 return res(await (0, exports.setConfig)(config[0]));
             }
-            configs.insert(defaultConfig, (err, config) => {
+            database_1.databaseContext.databases.config.insert(defaultConfig, (err, config) => {
                 if (err) {
                     return res(defaultConfig);
                 }
@@ -98,7 +99,9 @@ const updateConfig = async (req, res) => {
 };
 exports.updateConfig = updateConfig;
 const setConfig = async (config) => new Promise(res => {
-    configs.update({}, { $set: config }, { multi: true }, async (err) => {
+    if (!database_1.databaseContext.databases.config)
+        return res(defaultConfig);
+    database_1.databaseContext.databases.config.update({}, { $set: config }, { multi: true }, async (err) => {
         if (err) {
             return res(defaultConfig);
         }

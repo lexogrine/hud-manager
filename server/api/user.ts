@@ -16,6 +16,7 @@ import { SimpleWebSocket } from 'simple-websockets';
 import { ioPromise } from '../socket';
 import { checkCloudStatus } from './cloud';
 import { v4 as uuidv4 } from 'uuid';
+import { loadUsersDatabase } from '../../init/database';
 
 const cookiePath = path.join(app.getPath('userData'), 'cookie.json');
 const cookieJar = new CookieJar(new FileCookieStore(cookiePath));
@@ -24,7 +25,7 @@ export const fetch = fetchHandler(nodeFetch, cookieJar);
 
 export let socket: SimpleWebSocket | null = null;
 
-export const USE_LOCAL_BACKEND = false;
+export const USE_LOCAL_BACKEND = true;
 
 const domain = USE_LOCAL_BACKEND ? 'localhost:5000' : 'api.lhm.gg';
 
@@ -193,7 +194,6 @@ export const api = (url: string, method = 'GET', body?: any, opts?: RequestInit)
 		options.body = JSON.stringify(body);
 	}
 	let data: any = null;
-
 	return fetch(USE_LOCAL_BACKEND ? `http://${domain}/${url}` : `https://${domain}/${url}`, options).then(res => {
 		data = res;
 		return res.json().catch(() => data && data.status < 300);
@@ -201,7 +201,8 @@ export const api = (url: string, method = 'GET', body?: any, opts?: RequestInit)
 };
 
 const userHandlers = {
-	get: (machineId: string): Promise<{ token: string } | { error: string } | false> => api(`auth/${machineId}`),
+	get: (machineId: string, workspaceId: number | null): Promise<{ token: string } | { error: string } | false> => api(workspaceId ? `auth/${machineId}?teamId=${workspaceId}` : `auth/${machineId}`),
+	getWorkspaces: (): Promise<{ error: string } | I.Workspace[]> => api(`auth/workspaces`),
 	login: (
 		username: string,
 		password: string,
@@ -224,9 +225,10 @@ const verifyToken = (token: string) => {
 	}
 };
 
-const loadUser = async (loggedIn = false) => {
+const loadUser = async (workspace: I.Workspace | null, loggedIn = false) => {
 	const machineId = getMachineId();
-	const userToken = await userHandlers.get(machineId);
+
+	const userToken = await userHandlers.get(machineId, workspace?.id || null);
 
 	if (!userToken) {
 		return { success: false, message: loggedIn ? 'Your session has expired - try restarting the application' : '' };
@@ -242,8 +244,26 @@ const loadUser = async (loggedIn = false) => {
 	connectSocket();
 
 	customer.customer = userData;
+	customer.workspace = workspace;
+	
+	await loadUsersDatabase(customer);
+
 	return { success: true, message: '' };
 };
+
+const loadUserWorkspaces = async () => {
+	const response = await userHandlers.getWorkspaces();
+	if (!response || "error" in response) {
+		if(!response){
+			return { "error": "Not logged in" };
+		}
+		return response;
+	}
+
+	customer.workspaces = response;
+
+	return response;
+}
 
 const login = async (username: string, password: string, code = '') => {
 	const ver = app.getVersion();
@@ -255,7 +275,10 @@ const login = async (username: string, password: string, code = '') => {
 	if (typeof response !== 'boolean' && 'error' in response) {
 		return { success: false, message: (response as any).error };
 	}
-	return await loadUser(true);
+
+	const workspaces = await loadUserWorkspaces();
+
+	return { success: !("error" in workspaces) }
 };
 
 export const loginHandler: express.RequestHandler = async (req, res) => {
@@ -263,21 +286,60 @@ export const loginHandler: express.RequestHandler = async (req, res) => {
 	res.json(response);
 };
 
+export const getWorkspaces: express.RequestHandler = async (req, res) => {
+	return res.json({ result: customer.workspaces });
+}
+
+export const setWorkspace: express.RequestHandler = async (req, res) => {
+	const { workspaceId } = req.body;
+
+	if (!customer.workspaces) {
+		return res.status(403).json({ success: false, message: "No workspaces"});
+	}
+
+	if(workspaceId === null){
+		const result = await loadUser(workspaceId, true);
+
+		return res.json(result);
+	}
+
+	const targetWorkspace = customer.workspaces.find(workspace => workspace.id === workspaceId);
+
+	if(!targetWorkspace){
+		return res.status(403).json({ success: false, message: "Bad workspace"});
+	}
+	const result = await loadUser(targetWorkspace, true);
+
+	return res.json(result);
+}
+
 export const getCurrent: express.RequestHandler = async (req, res) => {
 	if (customer.customer) {
-		return res.json(customer.customer);
+		return res.json(customer);
 	}
-	const response = await loadUser();
 
-	if (customer.customer) {
-		if ((customer.customer as any).license.type === 'professional') {
-		}
-		return res.json(customer.customer);
+	const workspaces = customer.workspaces || await loadUserWorkspaces();
+
+	if ("error" in workspaces) {
+		return res.status(403).json({ success: false, message: workspaces.error });
 	}
-	return res.status(403).json(response);
+	if (workspaces.length > 0) {
+		return res.json(customer);
+	}
+
+	const result = await loadUser(null, true);
+
+	if (result.success) {
+		return res.json(customer);
+	}
+
+	return res.json(result);
 };
 export const logout: express.RequestHandler = async (req, res) => {
 	customer.customer = null;
+	customer.workspaces = null;
+	customer.workspace = null;
+	await loadUserWorkspaces();
 	if (socket) {
 		socket._socket.close();
 	}

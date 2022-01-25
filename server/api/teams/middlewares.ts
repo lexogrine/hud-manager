@@ -1,5 +1,5 @@
 import express from 'express';
-import db from './../../../init/database';
+import { databaseContext } from './../../../init/database';
 import { Team, AvailableGames, availableGames } from '../../../types/interfaces';
 import { loadConfig, internalIP } from './../config';
 import isSvg from './../../../src/isSvg';
@@ -9,8 +9,6 @@ import { validateCloudAbility, customer } from '..';
 import { addResource, updateResource, deleteResource, checkCloudStatus, updateLastDateLocallyOnly } from '../cloud';
 import { Workbook } from 'exceljs';
 
-const teams = db.teams;
-const players = db.players;
 
 export const getTeams: express.RequestHandler = async (req, res) => {
 	const game = customer.game;
@@ -137,6 +135,9 @@ export const addTeamsWithExcel: express.RequestHandler = async (req, res) => {
 };
 
 export const updateTeam: express.RequestHandler = async (req, res) => {
+	if(!databaseContext.databases.teams){
+		return res.sendStatus(500);
+	}
 	if (!req.params.id) {
 		return res.sendStatus(422);
 	}
@@ -163,7 +164,7 @@ export const updateTeam: express.RequestHandler = async (req, res) => {
 		updated.logo = team.logo;
 	}
 
-	teams.update({ _id: req.params.id }, { $set: updated }, {}, async err => {
+	databaseContext.databases.teams.update({ _id: req.params.id }, { $set: updated }, {}, async err => {
 		if (err) {
 			return res.sendStatus(500);
 		}
@@ -178,6 +179,9 @@ export const updateTeam: express.RequestHandler = async (req, res) => {
 	});
 };
 export const deleteTeam: express.RequestHandler = async (req, res) => {
+	if(!databaseContext.databases.teams){
+		return res.sendStatus(500);
+	}
 	if (!req.params.id) {
 		return res.sendStatus(422);
 	}
@@ -196,7 +200,7 @@ export const deleteTeam: express.RequestHandler = async (req, res) => {
 		cloudStatus = (await checkCloudStatus(customer.game as AvailableGames)) === 'ALL_SYNCED';
 	}
 	//players.update({team:})
-	teams.remove({ _id: { $in: ids } }, { multi: true }, async (err, n) => {
+	databaseContext.databases.teams.remove({ _id: { $in: ids } }, { multi: true }, async (err, n) => {
 		if (err) {
 			return res.sendStatus(500);
 		}

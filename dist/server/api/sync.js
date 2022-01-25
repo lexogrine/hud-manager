@@ -18,22 +18,21 @@ var __importStar = (this && this.__importStar) || function (mod) {
     __setModuleDefault(result, mod);
     return result;
 };
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.checkForConflicts = exports.importDb = exports.exportDatabase = void 0;
-const database_1 = __importDefault(require("./../../init/database"));
+const database_1 = require("./../../init/database");
 const players = __importStar(require("./players"));
 const teams = __importStar(require("./teams"));
-const { teams: teamsDb, players: playersDb } = database_1.default;
+const { teams: teamsDb, players: playersDb } = database_1.databaseContext.databases;
 async function importPlayers(players) {
     return new Promise(res => {
+        if (!database_1.databaseContext.databases.players)
+            return res([]);
         const playerIdList = players.map(player => ({ _id: player._id }));
-        playersDb.remove({ $or: playerIdList }, { multi: true }, err => {
+        database_1.databaseContext.databases.players.remove({ $or: playerIdList }, { multi: true }, err => {
             if (err)
                 return res([]);
-            playersDb.insert(players, (err, newDocs) => {
+            database_1.databaseContext.databases.players.insert(players, (err, newDocs) => {
                 if (err)
                     return res([]);
                 return res(newDocs);
@@ -43,11 +42,13 @@ async function importPlayers(players) {
 }
 async function importTeams(teams) {
     return new Promise(res => {
+        if (!database_1.databaseContext.databases.teams)
+            return res([]);
         const teamIdList = teams.map(team => ({ _id: team._id }));
-        teamsDb.remove({ $or: teamIdList }, { multi: true }, err => {
+        database_1.databaseContext.databases.teams.remove({ $or: teamIdList }, { multi: true }, err => {
             if (err)
                 return res([]);
-            teamsDb.insert(teams, (err, newDocs) => {
+            database_1.databaseContext.databases.teams.insert(teams, (err, newDocs) => {
                 if (err)
                     return res([]);
                 return res(newDocs);
@@ -57,7 +58,9 @@ async function importTeams(teams) {
 }
 async function exportDatabase() {
     const pl = new Promise(res => {
-        playersDb.find({}, (err, players) => {
+        if (!database_1.databaseContext.databases.players)
+            return res([]);
+        database_1.databaseContext.databases.players.find({}, (err, players) => {
             if (err) {
                 return res([]);
             }
@@ -65,7 +68,9 @@ async function exportDatabase() {
         });
     });
     const tm = new Promise(res => {
-        teamsDb.find({}, (err, teams) => {
+        if (!database_1.databaseContext.databases.teams)
+            return res([]);
+        database_1.databaseContext.databases.teams.find({}, (err, teams) => {
             if (err) {
                 return res([]);
             }

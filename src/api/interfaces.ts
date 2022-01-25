@@ -39,7 +39,9 @@ export type {
 	RocketLeagueVeto,
 	Item,
 	RocketLeagueMatch,
-	ARModule
+	CustomerData,
+	ARModule,
+	Workspace
 } from './../../types/interfaces';
 
 export type HeaderHandler = (onBackClick: null | (() => void), header?: string | null) => void;

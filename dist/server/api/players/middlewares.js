@@ -23,7 +23,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.updateFields = exports.getFields = exports.getAvatarURLBySteamID = exports.getAvatarFile = exports.deletePlayer = exports.addPlayersWithExcel = exports.addPlayer = exports.updatePlayer = exports.getPlayer = exports.getPlayers = void 0;
-const database_1 = __importDefault(require("./../../../init/database"));
+const database_1 = require("./../../../init/database");
 const interfaces_1 = require("../../../types/interfaces");
 const config_1 = require("./../config");
 const node_fetch_1 = __importDefault(require("node-fetch"));
@@ -34,7 +34,6 @@ const __1 = require("..");
 const cloud_1 = require("../cloud");
 const exceljs_1 = require("exceljs");
 const teams_1 = require("../teams");
-const players = database_1.default.players;
 const getPlayers = async (req, res) => {
     const game = __1.customer.game;
     const $or = [{ game }];
@@ -70,6 +69,9 @@ const getPlayer = async (req, res) => {
 };
 exports.getPlayer = getPlayer;
 const updatePlayer = async (req, res) => {
+    if (!database_1.databaseContext.databases.players) {
+        return res.sendStatus(500);
+    }
     if (!req.params.id) {
         return res.sendStatus(422);
     }
@@ -95,7 +97,7 @@ const updatePlayer = async (req, res) => {
     if (await (0, __1.validateCloudAbility)()) {
         cloudStatus = (await (0, cloud_1.checkCloudStatus)(__1.customer.game)) === 'ALL_SYNCED';
     }
-    players.update({ _id: req.params.id }, { $set: updated }, {}, async (err) => {
+    database_1.databaseContext.databases.players.update({ _id: req.params.id }, { $set: updated }, {}, async (err) => {
         if (err) {
             return res.sendStatus(500);
         }
@@ -203,6 +205,9 @@ const addPlayersWithExcel = async (req, res) => {
 };
 exports.addPlayersWithExcel = addPlayersWithExcel;
 const deletePlayer = async (req, res) => {
+    if (!database_1.databaseContext.databases.players) {
+        return res.sendStatus(500);
+    }
     if (!req.params.id) {
         return res.sendStatus(422);
     }
@@ -217,7 +222,7 @@ const deletePlayer = async (req, res) => {
     if (await (0, __1.validateCloudAbility)()) {
         cloudStatus = (await (0, cloud_1.checkCloudStatus)(__1.customer.game)) === 'ALL_SYNCED';
     }
-    players.remove({ _id: { $in: ids } }, { multi: true }, async (err, n) => {
+    database_1.databaseContext.databases.players.remove({ _id: { $in: ids } }, { multi: true }, async (err, n) => {
         if (err) {
             return res.sendStatus(500);
         }

@@ -389,10 +389,20 @@ export interface Customer {
 	license: License;
 	iat: number;
 	exp: number;
+	//teams: WorkspaceTeam[];
 }
+
+export type Workspace = {
+	id: number,
+	name: string,
+	permissions: string[]
+}
+
 export interface CustomerData {
 	customer: Customer | null;
 	game: AvailableGames | null;
+	workspace: Workspace | null;
+	workspaces: Workspace[] | null;
 }
 
 export interface CloudStorageData<T> {

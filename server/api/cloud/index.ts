@@ -15,7 +15,8 @@ import { replaceLocalTournaments } from '../tournaments/middlewares';
 import { getTournaments } from '../tournaments';
 import { getAmountOfBytesOfDatabases } from './middlewares';
 import { ioPromise } from '../../socket';
-import { canPlanUseCloudStorage } from '../../../src/utils';
+import { canUserUseCloudStorage } from '../../../src/utils';
+import { getBasePath } from '../../../init/database';
 
 type SpaceLimit = {
 	[license in I.LicenseType]: number;
@@ -28,7 +29,7 @@ const spaceLimit: SpaceLimit = {
 	free: 0
 };
 
-const cloudErrorHandler = () => {};
+const cloudErrorHandler = () => { };
 
 const getResources = (game: I.AvailableGames) => {
 	return Promise.all([
@@ -42,8 +43,7 @@ const getResources = (game: I.AvailableGames) => {
 };
 
 const getLastUpdateDateLocally = () => {
-	const userData = app.getPath('userData');
-	const database = path.join(userData, 'databases', 'lastUpdated.lhm');
+	const database = path.join(getBasePath(customer), 'lastUpdated.lhm');
 
 	let lastUpdated = {} as I.LastUpdated;
 	let saveOnFinish = true;
@@ -87,13 +87,12 @@ const updateLastDateLocally = (game: I.AvailableGames, resources: I.ResourceResp
 	for (const resourceInfo of resources) {
 		lastUpdateLocal[game][resourceInfo.resource] = resourceInfo.status;
 	}
-
-	const userData = app.getPath('userData');
-	const database = path.join(userData, 'databases', 'lastUpdated.lhm');
+	
+	const database = path.join(getBasePath(customer), 'lastUpdated.lhm');
 
 	fs.writeFileSync(database, JSON.stringify(lastUpdateLocal), 'utf8');
 	if (socket && !blockUpdate) {
-		socket.send('init_db_update');
+		socket.send('init_db_update', customer.workspace?.id || null);
 	}
 	return lastUpdateLocal;
 };
@@ -114,7 +113,7 @@ export const getSize = <T>(resource: T | T[]) => {
 const verifyCloudSpace = async () => {
 	const license = customer.customer?.license.type;
 	if (!license) return false;
-	if (!canPlanUseCloudStorage(license)) {
+	if (!canUserUseCloudStorage(customer)) {
 		return false;
 	}
 	const spaceUsed = getAmountOfBytesOfDatabases();
@@ -135,6 +134,12 @@ export const addResource = async <T>(
 
 	if (replaceCurrentCloud) {
 		url = `storage/${resource}/${game}?&replace=force`;
+	}
+
+	if (customer.customer && customer.workspace) {
+		if (url.includes('?')) url += `&teamId=${customer.workspace.id}`;
+		else url += `?&teamId=${customer.workspace.id}`;
+
 	}
 
 	const result = (await api(url, 'POST', data)) as {
@@ -160,7 +165,14 @@ export const updateResource = async <T>(game: I.AvailableGames, resource: I.Avai
 	if (status !== 'ALL_SYNCED') {
 		return;
 	}
-	const result = (await api(`storage/${resource}/${game}`, 'PATCH', data)) as I.CloudStorageData<T> & {
+
+	let url = `storage/${resource}/${game}`;
+
+	if (customer.customer && customer.workspace) {
+		url += `?&teamId=${customer.workspace.id}`;
+	}
+
+	const result = (await api(url, 'PATCH', data)) as I.CloudStorageData<T> & {
 		lastUpdateTime: string | null;
 	};
 	if (!result) {
@@ -180,10 +192,16 @@ export const deleteResource = async (game: I.AvailableGames, resource: I.Availab
 	if (status !== 'ALL_SYNCED') {
 		return;
 	}
-
 	const ids = typeof id === 'string' ? id : id.join(';');
 
-	const result = (await api(`storage/${resource}/${game}/${ids}`, 'DELETE')) as {
+	let url = `storage/${resource}/${game}/${ids}`;
+
+	if (customer.customer && customer.workspace) {
+		url += `?&teamId=${customer.workspace.id}`;
+	}
+
+
+	const result = (await api(url, 'DELETE')) as {
 		success: boolean;
 		lastUpdateTime: string;
 	};
@@ -197,8 +215,15 @@ export const deleteResource = async (game: I.AvailableGames, resource: I.Availab
 
 export const getResource = async (game: I.AvailableGames, resource: I.AvailableResources, fromDate?: string | null) => {
 	let url = `storage/${resource}/${game}`;
+
+	if (customer.customer && customer.workspace) {
+		url += `?&teamId=${customer.workspace.id}`;
+	}
+
 	if (fromDate) {
-		url += `?fromDate=${fromDate}`;
+		if (url.includes('?')) url += `&fromDate=${fromDate}`;
+		else url += `?&fromDate=${fromDate}`;
+
 	}
 	const result = (await api(url)) as I.CachedResponse;
 
@@ -266,7 +291,12 @@ const downloadCloudData = async (game: I.AvailableGames, resource: I.AvailableRe
 
 export const downloadCloudToLocal = async (game: I.AvailableGames) => {
 	try {
-		const result = (await api(`storage/${game}/status`)) as I.ResourceResponseStatus[];
+		let url = `storage/${game}/status`;
+
+		if (customer.customer && customer.workspace) {
+			url += `?&teamId=${customer.workspace.id}`;
+		}
+		const result = (await api(url)) as I.ResourceResponseStatus[];
 		await Promise.all(I.availableResources.map(resource => downloadCloudData(game, resource)));
 
 		updateLastDateLocally(game, result);
@@ -305,7 +335,7 @@ export const uploadLocalToCloud = async (game: I.AvailableGames, replaceCurrentC
 
 export const checkCloudStatus = async (game: I.AvailableGames) => {
 	console.log('CHECKING CLOUD...');
-	if (!canPlanUseCloudStorage(customer.customer?.license.type)) {
+	if (!canUserUseCloudStorage(customer)) {
 		return 'ALL_SYNCED';
 	}
 	const cfg = await loadConfig();
@@ -317,7 +347,12 @@ export const checkCloudStatus = async (game: I.AvailableGames) => {
 	}
 
 	try {
-		const result = (await api(`storage/${game}/status`)) as I.ResourceResponseStatus[];
+		let url = `storage/${game}/status`;
+
+		if (customer.customer && customer.workspace) {
+			url += `?&teamId=${customer.workspace.id}`;
+		}
+		const result = (await api(url)) as I.ResourceResponseStatus[];
 		if (!result) {
 			return 'UNKNOWN_ERROR';
 		}
@@ -390,7 +425,7 @@ export const checkCloudStatus = async (game: I.AvailableGames) => {
 				resource =>
 					!lastUpdateStatusOnline[resource] ||
 					new Date(lastUpdateStatusLocal[game][resource] as any) >
-						new Date(lastUpdateStatusOnline[resource] as any)
+					new Date(lastUpdateStatusOnline[resource] as any)
 			)
 		) {
 			// Local data found newer, show options
