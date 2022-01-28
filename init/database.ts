@@ -21,7 +21,7 @@ const listeners: ((() => void) | (() => Promise<void>))[] = [];
 
 export const onDatabaseLoad = (listener: () => void) => {
 	listeners.push(listener);
-}
+};
 
 type DatabaseStructure = {
 	players: Datastore<I.Player>;
@@ -41,7 +41,7 @@ const databaseContext = {
 	databases: {} as DatabaseStructure
 };
 
-const loadDatabase = async(basePath: string) => {
+const loadDatabase = async (basePath: string) => {
 	databaseContext.databases.players = new Datastore<I.Player>({
 		filename: path.join(basePath, 'players'),
 		autoload: true
@@ -67,12 +67,12 @@ const loadDatabase = async(basePath: string) => {
 		filename: path.join(basePath, 'aco'),
 		autoload: true
 	});
-	for(const listener of listeners){
+	for (const listener of listeners) {
 		await listener();
 	}
 	ioPromise.then(io => {
-		io.emit("config");
-	})
+		io.emit('config');
+	});
 };
 
 const moveDatabaseFile = (file: string, target: string) => {

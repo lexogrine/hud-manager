@@ -277,7 +277,6 @@ export default class Layout extends Component<{}, IState> {
 					{version !== '-' ? <Changelog version={version} customer={data.customer} /> : null}
 					<GamePicker isOpen={Boolean(data.customer && !this.state.picked)} setGame={this.setGame} />
 					<Content
-					
 						active={active}
 						available={available}
 						toggleSync={this.toggleSync}

@@ -116,7 +116,10 @@ const ACO = ({ cxt }: IProps) => {
 	const config = 'config' in activeMapConfig ? activeMapConfig.config : activeMapConfig.configs[0].config;
 	const areas = acos.find(aco => aco.map === activeMap)?.areas || [];
 
-	const isAddingDisabled = !cxt.customer || !canUserFromContextUseCloud(cxt) || (cxt.customer.license.type === 'personal' && areas.length >= 4 && cxt.workspace === null);
+	const isAddingDisabled =
+		!cxt.customer ||
+		!canUserFromContextUseCloud(cxt) ||
+		(cxt.customer.license.type === 'personal' && areas.length >= 4 && cxt.workspace === null);
 
 	const addArea = () => {
 		if (isAddingDisabled) return;

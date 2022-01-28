@@ -37,15 +37,14 @@ const Tabs = ({ activeTab, data, toggle, gsiCheck, setOnBackClick, search }: IPr
 	}, []);
 
 	const getClassForTab = (tab: string, cxt: IContextData) => {
-		if(!cxt.workspace || !cxt.customer) return '';
+		if (!cxt.workspace || !cxt.customer) return '';
 
-		if(cxt.workspace.id === 0 || cxt.customer.user.id === cxt.workspace.ownerId) return '';
+		if (cxt.workspace.id === 0 || cxt.customer.user.id === cxt.workspace.ownerId) return '';
 
-		if(cxt.workspace.permissions.includes(tab)) return '';
-
+		if (cxt.workspace.permissions.includes(tab)) return '';
 
 		return 'unavailable';
-	}
+	};
 	return (
 		<ContextData.Consumer>
 			{cxt => (

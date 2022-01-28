@@ -397,7 +397,7 @@ export type Workspace = {
 	name: string;
 	permissions: string[];
 	available: boolean;
-	ownerId: number
+	ownerId: number;
 };
 
 export interface CustomerData {

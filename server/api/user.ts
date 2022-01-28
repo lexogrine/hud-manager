@@ -66,7 +66,7 @@ const connectSocket = (forceReconnect = false) => {
 		console.log('CAMERA ROOM:', room.uuid);
 	}
 	if (socket) {
-		if(forceReconnect){
+		if (forceReconnect) {
 			socket._socket.close();
 		}
 		return;
@@ -91,7 +91,7 @@ const connectSocket = (forceReconnect = false) => {
 		});
 	});
 	socket.on('db_update', async () => {
-		console.log("DB UPDATE INCOMING")
+		console.log('DB UPDATE INCOMING');
 		if (!customer.game) return;
 		const io = await ioPromise;
 		const result = await checkCloudStatus(customer.game);
@@ -212,7 +212,8 @@ export const api = (url: string, method = 'GET', body?: any, opts?: RequestInit)
 const userHandlers = {
 	get: (machineId: string, workspaceId: number | null): Promise<{ token: string } | { error: string } | false> =>
 		api(workspaceId ? `auth/${machineId}?teamId=${workspaceId}` : `auth/${machineId}?version=${app.getVersion()}`),
-	getWorkspaces: (): Promise<{ error: string } | I.Workspace[]> => api(`auth/workspaces?machineId=${getMachineId()}&version=${app.getVersion()}`),
+	getWorkspaces: (): Promise<{ error: string } | I.Workspace[]> =>
+		api(`auth/workspaces?machineId=${getMachineId()}&version=${app.getVersion()}`),
 	login: (
 		username: string,
 		password: string,
@@ -257,12 +258,12 @@ const loadUser = async (workspace: I.Workspace | null, loggedIn = false) => {
 	customer.workspace = workspace;
 
 	await loadUsersDatabase(customer);
-	if(customer.game){
+	if (customer.game) {
 		await checkCloudStatus(customer.game);
 	}
 	ioPromise.then(io => {
-		io.emit("reload_acocs");
-	})
+		io.emit('reload_acocs');
+	});
 	return { success: true, message: '' };
 };
 

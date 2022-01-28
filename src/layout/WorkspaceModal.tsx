@@ -14,10 +14,10 @@ const WorkspaceModal = ({ isOpen, workspaces, loadUser }: IProps) => {
 	const [error, setError] = useState<string | null>(null);
 
 	const picked = workspaces.find(workspace => workspace.id === workspaceId);
-	const isPickedValid = !!(picked && picked.available); 
+	const isPickedValid = !!(picked && picked.available);
 
 	const setWorkspace = () => {
-		if(!isPickedValid) return;
+		if (!isPickedValid) return;
 		api.user.setWorkspace(workspaceId || null).then(res => {
 			if (!res.success) {
 				setError(res.message);
@@ -27,7 +27,6 @@ const WorkspaceModal = ({ isOpen, workspaces, loadUser }: IProps) => {
 			loadUser();
 		});
 	};
-
 
 	return (
 		<Modal isOpen={isOpen} toggle={() => {}} className="veto_modal game_pick">
@@ -41,7 +40,11 @@ const WorkspaceModal = ({ isOpen, workspaces, loadUser }: IProps) => {
 					onChange={e => setWorkspaceId(Number(e.target.value))}
 				>
 					{workspaces.map(workspace => (
-						<option disabled={!workspace.available} value={workspace.id} key={`${workspace.name}--${workspace.id}`}>
+						<option
+							disabled={!workspace.available}
+							value={workspace.id}
+							key={`${workspace.name}--${workspace.id}`}
+						>
 							{workspace.name}
 						</option>
 					))}
