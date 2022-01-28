@@ -25,9 +25,9 @@ export const fetch = fetchHandler(nodeFetch, cookieJar);
 
 export let socket: SimpleWebSocket | null = null;
 
-export const USE_LOCAL_BACKEND = true;
+export const USE_LOCAL_BACKEND = false;
 
-const domain = USE_LOCAL_BACKEND ? 'localhost:5000' : 'api.lhm.gg';
+const domain = USE_LOCAL_BACKEND ? '192.168.50.71:5000' : 'api.lhm.gg';
 
 let cameraSupportInit = false;
 
@@ -60,12 +60,17 @@ setInterval(() => {
 	socket.send('ping');
 }, 45000);
 
-const connectSocket = () => {
+const connectSocket = (forceReconnect = false) => {
 	if (!room.uuid) {
 		room.uuid = uuidv4();
 		console.log('CAMERA ROOM:', room.uuid);
 	}
-	if (socket) return;
+	if (socket) {
+		if(forceReconnect){
+			socket._socket.close();
+		}
+		return;
+	}
 	socket = new SimpleWebSocket(USE_LOCAL_BACKEND ? `ws://${domain}` : `wss://${domain}/`, {
 		headers: {
 			Cookie: cookieJar.getCookieStringSync(USE_LOCAL_BACKEND ? `http://${domain}/` : `https://${domain}/`)
@@ -86,6 +91,7 @@ const connectSocket = () => {
 		});
 	});
 	socket.on('db_update', async () => {
+		console.log("DB UPDATE INCOMING")
 		if (!customer.game) return;
 		const io = await ioPromise;
 		const result = await checkCloudStatus(customer.game);
@@ -97,7 +103,10 @@ const connectSocket = () => {
 	});
 	socket.on('disconnect', () => {
 		socket = null;
-		setTimeout(connectSocket, 2000);
+		room.uuid = null;
+		room.password = '';
+		room.availablePlayers = [];
+		setTimeout(connectSocket, 500);
 	});
 
 	registerRoomSetup(socket);
@@ -202,8 +211,8 @@ export const api = (url: string, method = 'GET', body?: any, opts?: RequestInit)
 
 const userHandlers = {
 	get: (machineId: string, workspaceId: number | null): Promise<{ token: string } | { error: string } | false> =>
-		api(workspaceId ? `auth/${machineId}?teamId=${workspaceId}` : `auth/${machineId}`),
-	getWorkspaces: (): Promise<{ error: string } | I.Workspace[]> => api(`auth/workspaces`),
+		api(workspaceId ? `auth/${machineId}?teamId=${workspaceId}` : `auth/${machineId}?version=${app.getVersion()}`),
+	getWorkspaces: (): Promise<{ error: string } | I.Workspace[]> => api(`auth/workspaces?machineId=${getMachineId()}&version=${app.getVersion()}`),
 	login: (
 		username: string,
 		password: string,
@@ -242,13 +251,18 @@ const loadUser = async (workspace: I.Workspace | null, loggedIn = false) => {
 		return { success: false, message: 'Your session has expired - try restarting the application' };
 	}
 
-	connectSocket();
+	connectSocket(true);
 
 	customer.customer = userData;
 	customer.workspace = workspace;
 
 	await loadUsersDatabase(customer);
-
+	if(customer.game){
+		await checkCloudStatus(customer.game);
+	}
+	ioPromise.then(io => {
+		io.emit("reload_acocs");
+	})
 	return { success: true, message: '' };
 };
 
@@ -324,7 +338,7 @@ export const getCurrent: express.RequestHandler = async (req, res) => {
 	if ('error' in workspaces) {
 		return res.status(403).json({ success: false, message: workspaces.error });
 	}
-	if (workspaces.length > 0) {
+	if (workspaces.length > 1) {
 		return res.json(customer);
 	}
 
@@ -340,11 +354,11 @@ export const logout: express.RequestHandler = async (req, res) => {
 	customer.customer = null;
 	customer.workspaces = null;
 	customer.workspace = null;
-	await loadUserWorkspaces();
+	await userHandlers.logout();
 	if (socket) {
 		socket._socket.close();
 	}
-	await userHandlers.logout();
+	await loadUserWorkspaces();
 	return res.sendStatus(200);
 };
 

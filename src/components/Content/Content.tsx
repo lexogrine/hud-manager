@@ -27,6 +27,7 @@ const Content = ({
 	game,
 	logout,
 	version,
+	loadUser,
 	customer
 }: {
 	available: boolean;
@@ -34,6 +35,7 @@ const Content = ({
 	toggleSync: () => void;
 	clearGame: () => void;
 	logout: () => void;
+	loadUser: () => void;
 	game: AvailableGames;
 	customer?: Customer;
 	version: string;
@@ -214,6 +216,7 @@ const Content = ({
 					close={() => setShowProfile(false)}
 					customer={customer}
 					logout={logout}
+					loadUser={loadUser}
 				/>
 			) : null}
 			<HUDDropArea show={!!customer && show} />

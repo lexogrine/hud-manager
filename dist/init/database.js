@@ -3,11 +3,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.databaseContext = exports.loadUsersDatabase = exports.getBasePath = void 0;
+exports.databaseContext = exports.loadUsersDatabase = exports.onDatabaseLoad = exports.getBasePath = void 0;
 const nedb_1 = __importDefault(require("nedb"));
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
 const electron_1 = require("electron");
+const socket_1 = require("../server/socket");
 const directory = path_1.default.join(electron_1.app.getPath('userData'), 'databases');
 const getBasePath = (customer, forceUserPath = false) => {
     if (!customer.customer)
@@ -18,21 +19,50 @@ const getBasePath = (customer, forceUserPath = false) => {
     return path_1.default.join(directory, 'users', customer.customer.user.id.toString());
 };
 exports.getBasePath = getBasePath;
+const listeners = [];
+const onDatabaseLoad = (listener) => {
+    listeners.push(listener);
+};
+exports.onDatabaseLoad = onDatabaseLoad;
 const getEmptyDb = () => {
-    return ({});
+    return {};
 };
 const databaseContext = {
     databases: {}
 };
 exports.databaseContext = databaseContext;
-const loadDatabase = (basePath) => {
-    databaseContext.databases.players = new nedb_1.default({ filename: path_1.default.join(basePath, 'players'), autoload: true });
+const loadDatabase = async (basePath) => {
+    databaseContext.databases.players = new nedb_1.default({
+        filename: path_1.default.join(basePath, 'players'),
+        autoload: true
+    });
     databaseContext.databases.teams = new nedb_1.default({ filename: path_1.default.join(basePath, 'teams'), autoload: true });
-    databaseContext.databases.config = new nedb_1.default({ filename: path_1.default.join(basePath, 'config'), autoload: true });
-    databaseContext.databases.matches = new nedb_1.default({ filename: path_1.default.join(basePath, 'matches'), autoload: true });
-    databaseContext.databases.custom = new nedb_1.default({ filename: path_1.default.join(basePath, 'custom'), autoload: true });
-    databaseContext.databases.tournaments = new nedb_1.default({ filename: path_1.default.join(basePath, 'tournaments'), autoload: true });
-    databaseContext.databases.aco = new nedb_1.default({ filename: path_1.default.join(basePath, 'aco'), autoload: true });
+    databaseContext.databases.config = new nedb_1.default({
+        filename: path_1.default.join(basePath, 'config'),
+        autoload: true
+    });
+    databaseContext.databases.matches = new nedb_1.default({
+        filename: path_1.default.join(basePath, 'matches'),
+        autoload: true
+    });
+    databaseContext.databases.custom = new nedb_1.default({
+        filename: path_1.default.join(basePath, 'custom'),
+        autoload: true
+    });
+    databaseContext.databases.tournaments = new nedb_1.default({
+        filename: path_1.default.join(basePath, 'tournaments'),
+        autoload: true
+    });
+    databaseContext.databases.aco = new nedb_1.default({
+        filename: path_1.default.join(basePath, 'aco'),
+        autoload: true
+    });
+    for (const listener of listeners) {
+        await listener();
+    }
+    socket_1.ioPromise.then(io => {
+        io.emit("config");
+    });
 };
 const moveDatabaseFile = (file, target) => {
     return fs_1.default.promises.rename(path_1.default.join(directory, file), path_1.default.join(target, file));
@@ -64,9 +94,9 @@ const loadUsersDatabase = async (customer) => {
     await moveToNewDatabaseSystem((0, exports.getBasePath)(customer, true));
     const pathForDatabase = (0, exports.getBasePath)(customer);
     if (customer.workspace) {
-        loadDatabase(pathForDatabase);
+        await loadDatabase(pathForDatabase);
         return;
     }
-    loadDatabase(pathForDatabase);
+    await loadDatabase(pathForDatabase);
 };
 exports.loadUsersDatabase = loadUsersDatabase;

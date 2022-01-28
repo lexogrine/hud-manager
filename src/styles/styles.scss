@@ -363,8 +363,20 @@ body {
 	flex-direction: column;
 	transition: right 0.5s;
 	padding-top: 50px;
+	.workspace-select {
+		font-family: Montserrat;
+	}
 	&.show {
 		right: 0;
+	}
+	.change-workspace {
+		background-repeat: no-repeat;
+		background-image: url('./logout.png');
+		background-position: left 1px;
+		padding-left: 31px;
+		margin-top: auto;
+		margin-bottom: 31px;
+		cursor: pointer;
 	}
 	.logout {
 		background-repeat: no-repeat;
@@ -461,6 +473,9 @@ body {
 	.tab-pane {
 		flex: 1;
 
+		&.unavailable {
+			display: none !important;
+		}
 		&.active {
 			display: flex;
 			flex-direction: column;
@@ -842,6 +857,10 @@ img.smallLogo {
 .hover-pointer {
 	&:hover {
 		cursor: pointer;
+	}
+
+	&.unavailable {
+		display: none !important;
 	}
 }
 .hover-pointer.hide {

@@ -11,6 +11,7 @@ import { socket } from '../Live/Live';
 import Switch from '../../../Switch/Switch';
 import { useTranslation } from 'react-i18next';
 import { IContextData } from '../../../Context';
+import { canUserFromContextUseCloud } from '../../../../utils';
 
 interface IProps {
 	cxt: IContextData;
@@ -108,16 +109,14 @@ const ACO = ({ cxt }: IProps) => {
 		});
 		socket.emit('getDirectorStatus');
 		socket.on('db_update', loadACOs);
+		socket.on('reload_acocs', loadACOs);
 	}, []);
 
 	const activeMapConfig = maps[activeMap];
 	const config = 'config' in activeMapConfig ? activeMapConfig.config : activeMapConfig.configs[0].config;
 	const areas = acos.find(aco => aco.map === activeMap)?.areas || [];
 
-	const isAddingDisabled =
-		!cxt.customer ||
-		cxt.customer.license.type === 'free' ||
-		(cxt.customer.license.type === 'personal' && areas.length >= 4);
+	const isAddingDisabled = !cxt.customer || !canUserFromContextUseCloud(cxt) || (cxt.customer.license.type === 'personal' && areas.length >= 4 && cxt.workspace === null);
 
 	const addArea = () => {
 		if (isAddingDisabled) return;

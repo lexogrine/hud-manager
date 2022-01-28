@@ -61,7 +61,7 @@ const getFields = async (type, game) => {
 exports.getFields = getFields;
 const updateFields = async (fields, type, game) => {
     if (!database_1.databaseContext.databases.custom)
-        return ({ teams: [], players: [] });
+        return { teams: [], players: [] };
     const store = await (0, exports.initiateCustomFields)(game);
     const deletedFields = store[type].filter(field => !fields.find(newField => newField.name === field.name));
     const createdFields = fields.filter(newField => !store[type].find(field => field.name === newField.name));

@@ -1,4 +1,4 @@
-import { databaseContext } from './../../../init/database';
+import { databaseContext, onDatabaseLoad } from './../../../init/database';
 import { MapConfig, AvailableGames, MapConfigID } from '../../../types/interfaces';
 import areas from '../../aco/areas';
 import { validateCloudAbility, customer } from '..';
@@ -16,11 +16,11 @@ export async function getACOByMapName(mapName: string): Promise<MapConfig | null
 				return res(null);
 			}
 
-			if (!customer.customer || customer.customer.license.type === 'free') {
+			if (!customer.customer || (customer.customer.license.type === 'free' && !customer.workspace)) {
 				return res(null);
 			}
 
-			if (customer.customer.license.type === 'personal') {
+			if (customer.customer.license.type === 'personal' && !customer.workspace) {
 				return res({ ...acoConfig, areas: acoConfig.areas.slice(0, 4) });
 			}
 
@@ -41,7 +41,7 @@ export const getACOs = () =>
 	});
 
 export const loadNewConfigs = () => {
-	getACOs().then(acos => {
+	return getACOs().then(acos => {
 		areas.areas = acos;
 	});
 };
@@ -113,4 +113,5 @@ export const replaceLocalMapConfigs = (newMapConfigs: MapConfigID[], game: Avail
 		});
 	});
 
+onDatabaseLoad(loadNewConfigs);
 loadNewConfigs();

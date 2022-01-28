@@ -19,10 +19,10 @@ async function getACOByMapName(mapName) {
             if (!acoConfig) {
                 return res(null);
             }
-            if (!__1.customer.customer || __1.customer.customer.license.type === 'free') {
+            if (!__1.customer.customer || (__1.customer.customer.license.type === 'free' && !__1.customer.workspace)) {
                 return res(null);
             }
-            if (__1.customer.customer.license.type === 'personal') {
+            if (__1.customer.customer.license.type === 'personal' && !__1.customer.workspace) {
                 return res({ ...acoConfig, areas: acoConfig.areas.slice(0, 4) });
             }
             return res(acoConfig);
@@ -42,7 +42,7 @@ const getACOs = () => new Promise(res => {
 });
 exports.getACOs = getACOs;
 const loadNewConfigs = () => {
-    (0, exports.getACOs)().then(acos => {
+    return (0, exports.getACOs)().then(acos => {
         areas_1.default.areas = acos;
     });
 };
@@ -114,4 +114,5 @@ const replaceLocalMapConfigs = (newMapConfigs, game, existing) => new Promise(re
     });
 });
 exports.replaceLocalMapConfigs = replaceLocalMapConfigs;
+(0, database_1.onDatabaseLoad)(exports.loadNewConfigs);
 (0, exports.loadNewConfigs)();

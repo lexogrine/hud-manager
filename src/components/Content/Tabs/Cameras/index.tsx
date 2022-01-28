@@ -94,6 +94,11 @@ const Cameras = ({ cxt }: IProps) => {
 		socket.on('playersOnline', (data: string[]) => {
 			loadPlayers(data);
 		});
+		socket.on('reload_acocs', () => {
+			setTimeout(() => {
+				socket.emit('getConnectedPlayers');
+			}, 750);
+		});
 		socket.emit('getConnectedPlayers');
 	}, []);
 

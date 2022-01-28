@@ -107,6 +107,7 @@ const updateLastDateLocally = (game, resources, blockUpdate = false) => {
 const updateLastDateLocallyOnly = (game, resources) => {
     if (!game || !resources.length)
         return;
+    console.log("UPDATING LAST DATE LOCALLY ONLY OF", game, resources);
     updateLastDateLocally(game, resources.map(resource => ({ resource, status: new Date().toISOString() })), true);
 };
 exports.updateLastDateLocallyOnly = updateLastDateLocallyOnly;
@@ -267,7 +268,7 @@ const downloadCloudToLocal = async (game) => {
         }
         const result = (await (0, user_1.api)(url));
         await Promise.all(I.availableResources.map(resource => downloadCloudData(game, resource)));
-        updateLastDateLocally(game, result);
+        updateLastDateLocally(game, result, true);
         return true;
     }
     catch (e) {
@@ -338,7 +339,7 @@ const checkCloudStatus = async (game) => {
             // download db
             console.log('NO LOCAL RESOURCES, DOWNLOADING...');
             await Promise.all(I.availableResources.map(resource => downloadCloudData(game, resource)));
-            updateLastDateLocally(game, result);
+            updateLastDateLocally(game, result, true);
             return 'ALL_SYNCED';
         }
         const mappedResources = {
@@ -378,6 +379,7 @@ const checkCloudStatus = async (game) => {
         return 'ALL_SYNCED';
     }
     catch (e) {
+        console.log(e);
         Sentry.captureException(e);
         return 'UNKNOWN_ERROR';
     }

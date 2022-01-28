@@ -3,6 +3,7 @@ import path from 'path';
 import fs from 'fs';
 import { app } from 'electron';
 import * as I from './../types/interfaces';
+import { ioPromise } from '../server/socket';
 
 const directory = path.join(app.getPath('userData'), 'databases');
 
@@ -15,6 +16,12 @@ export const getBasePath = (customer: I.CustomerData, forceUserPath = false) => 
 
 	return path.join(directory, 'users', customer.customer.user.id.toString());
 };
+
+const listeners: ((() => void) | (() => Promise<void>))[] = [];
+
+export const onDatabaseLoad = (listener: () => void) => {
+	listeners.push(listener);
+}
 
 type DatabaseStructure = {
 	players: Datastore<I.Player>;
@@ -34,7 +41,7 @@ const databaseContext = {
 	databases: {} as DatabaseStructure
 };
 
-const loadDatabase = (basePath: string) => {
+const loadDatabase = async(basePath: string) => {
 	databaseContext.databases.players = new Datastore<I.Player>({
 		filename: path.join(basePath, 'players'),
 		autoload: true
@@ -60,6 +67,12 @@ const loadDatabase = (basePath: string) => {
 		filename: path.join(basePath, 'aco'),
 		autoload: true
 	});
+	for(const listener of listeners){
+		await listener();
+	}
+	ioPromise.then(io => {
+		io.emit("config");
+	})
 };
 
 const moveDatabaseFile = (file: string, target: string) => {
@@ -99,11 +112,11 @@ export const loadUsersDatabase = async (customer: I.CustomerData) => {
 	const pathForDatabase = getBasePath(customer);
 
 	if (customer.workspace) {
-		loadDatabase(pathForDatabase);
+		await loadDatabase(pathForDatabase);
 		return;
 	}
 
-	loadDatabase(pathForDatabase);
+	await loadDatabase(pathForDatabase);
 };
 
 export { databaseContext };

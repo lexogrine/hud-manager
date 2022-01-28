@@ -1,5 +1,6 @@
 import { ContextData } from './Context';
 import * as I from './../api/interfaces';
+import { canUserFromContextUseCloud } from '../utils';
 
 const Blocker = ({ children, plan }: { children: any; plan: I.LicenseType }) => (
 	<div className="blocker">
@@ -22,7 +23,7 @@ const Blocker = ({ children, plan }: { children: any; plan: I.LicenseType }) => 
 export const ForPlansOnly = ({ required, children }: { children: any; required: I.LicenseType }) => (
 	<ContextData.Consumer>
 		{cxt => {
-			if (required === 'free') return children;
+			if (required === 'free' || canUserFromContextUseCloud(cxt)) return children;
 			if (!cxt.customer) {
 				return <Blocker plan={required}>{null}</Blocker>;
 			}

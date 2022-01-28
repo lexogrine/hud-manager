@@ -12,7 +12,7 @@ const getACOByMap = async (req, res) => {
     if (!req.params.mapName) {
         return res.sendStatus(422);
     }
-    if (!__1.customer.customer || __1.customer.customer.license.type === 'free') {
+    if (!__1.customer.customer || (__1.customer.customer.license.type === 'free' && !__1.customer.workspace)) {
         return res.sendStatus(422);
     }
     const aco = await (0, index_1.getACOByMapName)(req.params.mapName);

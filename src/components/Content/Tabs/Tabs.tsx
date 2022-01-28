@@ -7,7 +7,7 @@ import Config from './Config/Config';
 import AR from './AR/AR';
 import Credits from './Credits/Credits';
 import Live from './Live/Live';
-import { ContextData } from './../../Context';
+import { ContextData, IContextData } from './../../Context';
 import ACO from './ACO/ACO';
 import CG from './CG/CG';
 import ARG from './ARG/ARG';
@@ -35,6 +35,17 @@ const Tabs = ({ activeTab, data, toggle, gsiCheck, setOnBackClick, search }: IPr
 			setMaps(maps);
 		});
 	}, []);
+
+	const getClassForTab = (tab: string, cxt: IContextData) => {
+		if(!cxt.workspace || !cxt.customer) return '';
+
+		if(cxt.workspace.id === 0 || cxt.customer.user.id === cxt.workspace.ownerId) return '';
+
+		if(cxt.workspace.permissions.includes(tab)) return '';
+
+
+		return 'unavailable';
+	}
 	return (
 		<ContextData.Consumer>
 			{cxt => (
@@ -44,22 +55,22 @@ const Tabs = ({ activeTab, data, toggle, gsiCheck, setOnBackClick, search }: IPr
 							<CG cxt={cxt}></CG>
 						</ForPlansOnly>
 					</TabPane>
-					<TabPane tabId="teams">
+					<TabPane tabId="teams" className={getClassForTab('Teams', cxt)}>
 						<Teams cxt={cxt} search={search}></Teams>
 					</TabPane>
-					<TabPane tabId="players">
+					<TabPane tabId="players" className={getClassForTab('Players', cxt)}>
 						<Players cxt={cxt} data={data} search={search}></Players>
 					</TabPane>
-					<TabPane tabId="matches">
+					<TabPane tabId="matches" className={getClassForTab('Matches', cxt)}>
 						<Matches maps={maps} cxt={cxt} setOnBackClick={setOnBackClick}></Matches>
 					</TabPane>
-					<TabPane tabId="huds">
+					<TabPane tabId="huds" className={getClassForTab('HUDs', cxt)}>
 						<Huds cxt={cxt} toggle={toggle} setOnBackClick={setOnBackClick}></Huds>
 					</TabPane>
-					<TabPane tabId="tournaments">
+					<TabPane tabId="tournaments" className={getClassForTab('Tournaments', cxt)}>
 						<Tournamentss maps={maps} cxt={cxt} setOnBackClick={setOnBackClick}></Tournamentss>
 					</TabPane>
-					<TabPane tabId="arg">
+					<TabPane tabId="arg" className={getClassForTab('ARG', cxt)}>
 						<ForPlansOnly required="personal">
 							<ARG></ARG>
 						</ForPlansOnly>
@@ -70,15 +81,15 @@ const Tabs = ({ activeTab, data, toggle, gsiCheck, setOnBackClick, search }: IPr
 					<TabPane tabId="settings">
 						<Config cxt={cxt} toggle={toggle} gsiCheck={gsiCheck}></Config>
 					</TabPane>
-					<TabPane tabId="ar">
+					<TabPane tabId="ar" className={getClassForTab('AR', cxt)}>
 						<AR cxt={cxt} toggle={toggle} setOnBackClick={setOnBackClick}></AR>
 					</TabPane>
-					<TabPane tabId="aco">
+					<TabPane tabId="aco" className={getClassForTab('ACO', cxt)}>
 						<ForPlansOnly required="personal">
 							<ACO cxt={cxt}></ACO>
 						</ForPlansOnly>
 					</TabPane>
-					<TabPane tabId="cameras">
+					<TabPane tabId="cameras" className={getClassForTab('Cameras', cxt)}>
 						<ForPlansOnly required="personal">
 							<Cameras cxt={cxt} />
 						</ForPlansOnly>

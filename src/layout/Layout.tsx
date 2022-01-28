@@ -241,7 +241,6 @@ export default class Layout extends Component<{}, IState> {
 		const active = Boolean(available && config?.sync);
 		// const url = new URL(window.location.href);
 		// const isHLAEGUI = url.searchParams.get('hlaegui');
-
 		return (
 			<Provider value={this.state.data}>
 				{/*isHLAEGUI === null ? <WindowBar /> : null*/}
@@ -266,7 +265,7 @@ export default class Layout extends Component<{}, IState> {
 					/>
 					<WorkspaceModal
 						workspaces={data.workspaces}
-						isOpen={!data.customer && data.workspaces.length > 0}
+						isOpen={!data.customer && data.workspaces.length > 1}
 						loadUser={this.loadUser}
 					/>
 					<SyncModal
@@ -278,10 +277,12 @@ export default class Layout extends Component<{}, IState> {
 					{version !== '-' ? <Changelog version={version} customer={data.customer} /> : null}
 					<GamePicker isOpen={Boolean(data.customer && !this.state.picked)} setGame={this.setGame} />
 					<Content
+					
 						active={active}
 						available={available}
 						toggleSync={this.toggleSync}
 						clearGame={this.clearGame}
+						loadUser={this.loadUser}
 						game={this.state.data.game}
 						customer={data.customer}
 						logout={this.logout}

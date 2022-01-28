@@ -23,8 +23,8 @@ const cookiePath = path_1.default.join(electron_1.app.getPath('userData'), 'cook
 const cookieJar = new tough_cookie_1.CookieJar(new tough_cookie_file_store_1.FileCookieStore(cookiePath));
 exports.fetch = (0, fetch_cookie_1.default)(node_fetch_1.default, cookieJar);
 exports.socket = null;
-exports.USE_LOCAL_BACKEND = true;
-const domain = exports.USE_LOCAL_BACKEND ? 'localhost:5000' : 'api.lhm.gg';
+exports.USE_LOCAL_BACKEND = false;
+const domain = exports.USE_LOCAL_BACKEND ? '192.168.50.71:5000' : 'api.lhm.gg';
 let cameraSupportInit = false;
 const getSocket = () => {
     return exports.socket;
@@ -49,13 +49,17 @@ setInterval(() => {
         return;
     exports.socket.send('ping');
 }, 45000);
-const connectSocket = () => {
+const connectSocket = (forceReconnect = false) => {
     if (!exports.room.uuid) {
         exports.room.uuid = (0, uuid_1.v4)();
         console.log('CAMERA ROOM:', exports.room.uuid);
     }
-    if (exports.socket)
+    if (exports.socket) {
+        if (forceReconnect) {
+            exports.socket._socket.close();
+        }
         return;
+    }
     exports.socket = new simple_websockets_1.SimpleWebSocket(exports.USE_LOCAL_BACKEND ? `ws://${domain}` : `wss://${domain}/`, {
         headers: {
             Cookie: cookieJar.getCookieStringSync(exports.USE_LOCAL_BACKEND ? `http://${domain}/` : `https://${domain}/`)
@@ -74,6 +78,7 @@ const connectSocket = () => {
         });
     });
     exports.socket.on('db_update', async () => {
+        console.log("DB UPDATE INCOMING");
         if (!api_1.customer.game)
             return;
         const io = await socket_1.ioPromise;
@@ -86,7 +91,10 @@ const connectSocket = () => {
     });
     exports.socket.on('disconnect', () => {
         exports.socket = null;
-        setTimeout(connectSocket, 2000);
+        exports.room.uuid = null;
+        exports.room.password = '';
+        exports.room.availablePlayers = [];
+        setTimeout(connectSocket, 500);
     });
     (0, api_1.registerRoomSetup)(exports.socket);
     socket_1.ioPromise.then(io => {
@@ -171,8 +179,8 @@ const api = (url, method = 'GET', body, opts) => {
 };
 exports.api = api;
 const userHandlers = {
-    get: (machineId, workspaceId) => (0, exports.api)(workspaceId ? `auth/${machineId}?teamId=${workspaceId}` : `auth/${machineId}`),
-    getWorkspaces: () => (0, exports.api)(`auth/workspaces`),
+    get: (machineId, workspaceId) => (0, exports.api)(workspaceId ? `auth/${machineId}?teamId=${workspaceId}` : `auth/${machineId}?version=${electron_1.app.getVersion()}`),
+    getWorkspaces: () => (0, exports.api)(`auth/workspaces?machineId=${(0, machine_1.getMachineId)()}&version=${electron_1.app.getVersion()}`),
     login: (username, password, ver, code) => (0, exports.api)('auth', 'POST', { username, password, ver, code }),
     logout: () => (0, exports.api)('auth', 'DELETE')
 };
@@ -202,17 +210,23 @@ const loadUser = async (workspace, loggedIn = false) => {
     if (!userData) {
         return { success: false, message: 'Your session has expired - try restarting the application' };
     }
-    connectSocket();
+    connectSocket(true);
     api_1.customer.customer = userData;
     api_1.customer.workspace = workspace;
     await (0, database_1.loadUsersDatabase)(api_1.customer);
+    if (api_1.customer.game) {
+        await (0, cloud_1.checkCloudStatus)(api_1.customer.game);
+    }
+    socket_1.ioPromise.then(io => {
+        io.emit("reload_acocs");
+    });
     return { success: true, message: '' };
 };
 const loadUserWorkspaces = async () => {
     const response = await userHandlers.getWorkspaces();
-    if (!response || "error" in response) {
+    if (!response || 'error' in response) {
         if (!response) {
-            return { "error": "Not logged in" };
+            return { error: 'Not logged in' };
         }
         return response;
     }
@@ -229,7 +243,7 @@ const login = async (username, password, code = '') => {
         return { success: false, message: response.error };
     }
     const workspaces = await loadUserWorkspaces();
-    return { success: !("error" in workspaces) };
+    return { success: !('error' in workspaces) };
 };
 const loginHandler = async (req, res) => {
     const response = await login(req.body.username, req.body.password, req.body.token);
@@ -243,7 +257,7 @@ exports.getWorkspaces = getWorkspaces;
 const setWorkspace = async (req, res) => {
     const { workspaceId } = req.body;
     if (!api_1.customer.workspaces) {
-        return res.status(403).json({ success: false, message: "No workspaces" });
+        return res.status(403).json({ success: false, message: 'No workspaces' });
     }
     if (workspaceId === null) {
         const result = await loadUser(workspaceId, true);
@@ -251,7 +265,7 @@ const setWorkspace = async (req, res) => {
     }
     const targetWorkspace = api_1.customer.workspaces.find(workspace => workspace.id === workspaceId);
     if (!targetWorkspace) {
-        return res.status(403).json({ success: false, message: "Bad workspace" });
+        return res.status(403).json({ success: false, message: 'Bad workspace' });
     }
     const result = await loadUser(targetWorkspace, true);
     return res.json(result);
@@ -261,11 +275,11 @@ const getCurrent = async (req, res) => {
     if (api_1.customer.customer) {
         return res.json(api_1.customer);
     }
-    const workspaces = api_1.customer.workspaces || await loadUserWorkspaces();
-    if ("error" in workspaces) {
+    const workspaces = api_1.customer.workspaces || (await loadUserWorkspaces());
+    if ('error' in workspaces) {
         return res.status(403).json({ success: false, message: workspaces.error });
     }
-    if (workspaces.length > 0) {
+    if (workspaces.length > 1) {
         return res.json(api_1.customer);
     }
     const result = await loadUser(null, true);
@@ -279,11 +293,11 @@ const logout = async (req, res) => {
     api_1.customer.customer = null;
     api_1.customer.workspaces = null;
     api_1.customer.workspace = null;
-    await loadUserWorkspaces();
+    await userHandlers.logout();
     if (exports.socket) {
         exports.socket._socket.close();
     }
-    await userHandlers.logout();
+    await loadUserWorkspaces();
     return res.sendStatus(200);
 };
 exports.logout = logout;
