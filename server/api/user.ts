@@ -211,7 +211,11 @@ export const api = (url: string, method = 'GET', body?: any, opts?: RequestInit)
 
 const userHandlers = {
 	get: (machineId: string, workspaceId: number | null): Promise<{ token: string } | { error: string } | false> =>
-		api(workspaceId ? `auth/${machineId}?teamId=${workspaceId}&version=${app.getVersion()}` : `auth/${machineId}?version=${app.getVersion()}`),
+		api(
+			workspaceId
+				? `auth/${machineId}?teamId=${workspaceId}&version=${app.getVersion()}`
+				: `auth/${machineId}?version=${app.getVersion()}`
+		),
 	getWorkspaces: (): Promise<{ error: string } | I.Workspace[]> =>
 		api(`auth/workspaces?machineId=${getMachineId()}&version=${app.getVersion()}`),
 	login: (
