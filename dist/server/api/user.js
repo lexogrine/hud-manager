@@ -78,7 +78,7 @@ const connectSocket = (forceReconnect = false) => {
         });
     });
     exports.socket.on('db_update', async () => {
-        console.log("DB UPDATE INCOMING");
+        console.log('DB UPDATE INCOMING');
         if (!api_1.customer.game)
             return;
         const io = await socket_1.ioPromise;
@@ -179,7 +179,7 @@ const api = (url, method = 'GET', body, opts) => {
 };
 exports.api = api;
 const userHandlers = {
-    get: (machineId, workspaceId) => (0, exports.api)(workspaceId ? `auth/${machineId}?teamId=${workspaceId}` : `auth/${machineId}?version=${electron_1.app.getVersion()}`),
+    get: (machineId, workspaceId) => (0, exports.api)(workspaceId ? `auth/${machineId}?teamId=${workspaceId}&version=${electron_1.app.getVersion()}` : `auth/${machineId}?version=${electron_1.app.getVersion()}`),
     getWorkspaces: () => (0, exports.api)(`auth/workspaces?machineId=${(0, machine_1.getMachineId)()}&version=${electron_1.app.getVersion()}`),
     login: (username, password, ver, code) => (0, exports.api)('auth', 'POST', { username, password, ver, code }),
     logout: () => (0, exports.api)('auth', 'DELETE')
@@ -218,7 +218,7 @@ const loadUser = async (workspace, loggedIn = false) => {
         await (0, cloud_1.checkCloudStatus)(api_1.customer.game);
     }
     socket_1.ioPromise.then(io => {
-        io.emit("reload_acocs");
+        io.emit('reload_acocs');
     });
     return { success: true, message: '' };
 };

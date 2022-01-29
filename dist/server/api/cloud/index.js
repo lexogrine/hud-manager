@@ -107,7 +107,7 @@ const updateLastDateLocally = (game, resources, blockUpdate = false) => {
 const updateLastDateLocallyOnly = (game, resources) => {
     if (!game || !resources.length)
         return;
-    console.log("UPDATING LAST DATE LOCALLY ONLY OF", game, resources);
+    console.log('UPDATING LAST DATE LOCALLY ONLY OF', game, resources);
     updateLastDateLocally(game, resources.map(resource => ({ resource, status: new Date().toISOString() })), true);
 };
 exports.updateLastDateLocallyOnly = updateLastDateLocallyOnly;
