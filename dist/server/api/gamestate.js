@@ -164,7 +164,16 @@ exports.createGSIFile = createGSIFile;
 const saveFile = (name, content, base64 = false) => async (_req, res) => {
     res.sendStatus(200);
     const result = await electron_1.dialog.showSaveDialog({ defaultPath: name });
-    const text = typeof content === 'string' ? content : await content;
+    let text = '';
+    if (typeof content === 'string') {
+        text = content;
+    }
+    else if (typeof content === "function") {
+        text = await content();
+    }
+    else {
+        text = await content;
+    }
     if (result.filePath) {
         fs_1.default.writeFileSync(result.filePath, text, { encoding: base64 ? 'base64' : 'utf-8' });
     }

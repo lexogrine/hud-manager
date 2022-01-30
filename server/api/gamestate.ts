@@ -150,11 +150,19 @@ export const createGSIFile: express.RequestHandler = async (req, res) => {
 };
 
 export const saveFile =
-	(name: string, content: string | Promise<string>, base64 = false): express.RequestHandler =>
+	(name: string, content: string | Promise<string> | (() => Promise<string>), base64 = false): express.RequestHandler =>
 	async (_req, res) => {
 		res.sendStatus(200);
 		const result = await dialog.showSaveDialog({ defaultPath: name });
-		const text = typeof content === 'string' ? content : await content;
+		let text = '';
+
+		if(typeof content === 'string'){
+			text = content;
+		} else if(typeof content === "function"){
+			text = await content();
+		} else {
+			text = await content;
+		}
 		if (result.filePath) {
 			fs.writeFileSync(result.filePath, text, { encoding: base64 ? 'base64' : 'utf-8' });
 		}

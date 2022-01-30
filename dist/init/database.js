@@ -61,7 +61,7 @@ const loadDatabase = async (basePath) => {
         await listener();
     }
     socket_1.ioPromise.then(io => {
-        io.emit("config");
+        io.emit('config');
     });
 };
 const moveDatabaseFile = (file, target) => {

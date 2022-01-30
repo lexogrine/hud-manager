@@ -4,7 +4,6 @@ import express from 'express';
 import * as players from './players';
 import * as teams from './teams';
 
-const { teams: teamsDb, players: playersDb } = databaseContext.databases;
 interface DB {
 	teams: I.Team[];
 	players: I.Player[];

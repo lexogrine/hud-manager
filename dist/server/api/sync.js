@@ -23,7 +23,6 @@ exports.checkForConflicts = exports.importDb = exports.exportDatabase = void 0;
 const database_1 = require("./../../init/database");
 const players = __importStar(require("./players"));
 const teams = __importStar(require("./teams"));
-const { teams: teamsDb, players: playersDb } = database_1.databaseContext.databases;
 async function importPlayers(players) {
     return new Promise(res => {
         if (!database_1.databaseContext.databases.players)
@@ -58,10 +57,13 @@ async function importTeams(teams) {
 }
 async function exportDatabase() {
     const pl = new Promise(res => {
+        console.log(database_1.databaseContext.databases);
         if (!database_1.databaseContext.databases.players)
             return res([]);
+        console.log('it exists');
         database_1.databaseContext.databases.players.find({}, (err, players) => {
             if (err) {
+                console.log(err);
                 return res([]);
             }
             return res(players);

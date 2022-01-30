@@ -179,7 +179,9 @@ const api = (url, method = 'GET', body, opts) => {
 };
 exports.api = api;
 const userHandlers = {
-    get: (machineId, workspaceId) => (0, exports.api)(workspaceId ? `auth/${machineId}?teamId=${workspaceId}&version=${electron_1.app.getVersion()}` : `auth/${machineId}?version=${electron_1.app.getVersion()}`),
+    get: (machineId, workspaceId) => (0, exports.api)(workspaceId
+        ? `auth/${machineId}?teamId=${workspaceId}&version=${electron_1.app.getVersion()}`
+        : `auth/${machineId}?version=${electron_1.app.getVersion()}`),
     getWorkspaces: () => (0, exports.api)(`auth/workspaces?machineId=${(0, machine_1.getMachineId)()}&version=${electron_1.app.getVersion()}`),
     login: (username, password, ver, code) => (0, exports.api)('auth', 'POST', { username, password, ver, code }),
     logout: () => (0, exports.api)('auth', 'DELETE')

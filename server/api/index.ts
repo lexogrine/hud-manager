@@ -194,7 +194,7 @@ export default async function () {
 		gsi.saveFile('gamestate_integration_hudmanager.cfg', gsi.generateGSIFile(customer.game))
 	);
 
-	app.route('/api/db/download').get(gsi.saveFile('hudmanagerdb.json', sync.exportDatabase()));
+	app.route('/api/db/download').get(gsi.saveFile('hudmanagerdb.json', sync.exportDatabase));
 
 	//router.route('/api/events')
 	//    .get(game.getEvents);
