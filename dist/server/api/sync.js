@@ -57,13 +57,10 @@ async function importTeams(teams) {
 }
 async function exportDatabase() {
     const pl = new Promise(res => {
-        console.log(database_1.databaseContext.databases);
         if (!database_1.databaseContext.databases.players)
             return res([]);
-        console.log('it exists');
         database_1.databaseContext.databases.players.find({}, (err, players) => {
             if (err) {
-                console.log(err);
                 return res([]);
             }
             return res(players);

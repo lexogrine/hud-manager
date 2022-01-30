@@ -168,7 +168,7 @@ const saveFile = (name, content, base64 = false) => async (_req, res) => {
     if (typeof content === 'string') {
         text = content;
     }
-    else if (typeof content === "function") {
+    else if (typeof content === 'function') {
         text = await content();
     }
     else {
