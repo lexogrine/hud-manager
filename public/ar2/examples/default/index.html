@@ -7,10 +7,10 @@ Launch CS:GO from HLAE with -afxInteropLight.
 The game must run with at least 2 queues (which is the case for mat_queueu_mode 2, and on almost all CPUs also for mat_queue_mode -1 (recommended))!
 
 Execute (will log warings / errors to debug.log in current directoy):
-afx-cefhud-interop.exe "--url=afx://file/C:/source/afx-cefhud-interop/afx-cefhud-interop/assets/examples/default/index.html" "--enable-experimental-web-platform-features" "--enable-logging" "--log-severity=error"
+afx-cefhud-interop.exe "--url=afx://file/C:/source/afx-cefhud-interop/afx-cefhud-interop/assets/examples/default/index.html" "--enable-experimental-web-platform-features" "--enable-logging" "--log-severity=info"
 
 For live execute:
-afx-cefhud-interop.exe "--url=afx://file/C:/source/afx-cefhud-interop/afx-cefhud-interop/assets/examples/default/index.html" "--enable-experimental-web-platform-features" "--disable-logging" "--log-severity=error"
+./afx-cefhud-interop.exe "--url=afx://file/N:/AR/assets/examples/default/index.html" "--enable-experimental-web-platform-features" "--disable-logging" "--log-severity=error"
 
 Optional arguments:
 --afx-no-window
@@ -33,17 +33,13 @@ afx_interop send cefhud [...]
 <h2>Settings</h2>
 <form>
 	<div>
-		<input type="checkbox" id="sync" name="sync" value="1" checked="checked">
-		<label for="sync"> <b>Enable perfect sync</b> (lower FPS).</label>
-	</div>
-	<div>
 		<input type="checkbox" id="bg" name="bg" value="1" checked="checked">
 		<label for="bg"> <b>Draw game background</b> (for background effects, lower FPS).</label>
 	</div>
 </form>
 <script type="module">
 
-import * as Utils from './modules/utils.js';	
+import * as Utils from '../../js/modules/utils.js';	
 
 function AfxInterop(interop, args) {
 	
@@ -66,16 +62,12 @@ function AfxInterop(interop, args) {
 	this.elDrawingStatus = document.getElementById('drawingStatus');
 	
 	function updateSettings(e) {
-		if(e.target == self.elSync && !e.target.checked) self.elBg.checked = false;
-		else if(e.target == self.elBg && e.target.checked) self.elSync.checked = true;
-	
 		if(!self.engineConnected) return;
 		
 		let settings = {};
 		
 		//settings[e.target.name.toString()] = e.target.checked;
 			settings = {
-				"sync": self.elSync.checked,
 				"bg": self.elBg.checked
 			};
 			
@@ -84,9 +76,7 @@ function AfxInterop(interop, args) {
 				"args": [settings]
 			}));
 	}
-	this.elSync = document.getElementById('sync');
 	this.elBg = document.getElementById('bg');
-	this.elSync.addEventListener("change", updateSettings);
 	this.elBg.addEventListener("change", updateSettings);
 	
 	this.messageHandlers = {
@@ -109,7 +99,6 @@ function AfxInterop(interop, args) {
 			this.engineInteropId = engineInteropId;
 			
 			let settings = {
-				"sync": this.elSync.checked,
 				"bg": this.elBg.checked
 			};
 			
@@ -141,40 +130,18 @@ function AfxInterop(interop, args) {
 	};
 	
 	interop.onMessage = function(senderId, message){
-		
-		function processMessages(port)
-		{
-			let messages = self.messages[port]
-			let jMessage = messages[0];
-			
-			self.messageHandlers[jMessage.id].apply(self, jMessage.args).then(()=>{
-				messages.shift();
-				if(0 < messages.length) queueMicrotask(function(){ processMessages(port); });
-			}).catch((e)=>{
-				Utils.logError(e);
-				if(!(e && e.soft)) {
-					return Utils.toPromise(self, "disconnect");
-				}
-				messages.shift();
-				if(0 < messages.length) queueMicrotask(function(){ processMessages(port); });
-			});
-		}
-		
-		function queueMessage(jMessage)
-		{
-			const port = jMessage.port || "0";
-			
-			var messages = self.messages[port];
-			if(undefined === messages) self.messages[port] = messages = [];
-			
-			messages.push(jMessage);
-			
-			if(1 === messages.length) queueMicrotask(function(){ processMessages(port); });
-		}
-		
 		const jMessage = JSON.parse(message);
+		const port = jMessage.port || "0";
 		
-		queueMessage(jMessage);
+		let queues = self.messageQueues;
+		if(!queues) queues = self.messageQueues = [];
+		
+		let queue = queues[port];
+		if(!queue) queue = queues[port] = Promise.resolve();
+		
+		queue.then(()=>{
+			queues[port] = self.messageHandlers[jMessage.id].apply(self, jMessage.args);
+		});
 	}
 
 	interop.onError = function(senderId, message){

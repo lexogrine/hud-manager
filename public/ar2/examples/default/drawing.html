@@ -5,19 +5,31 @@
 		overflow: hidden;
 	}
 
+	body {
+		background: transparent;
+	}
+
 	html,
 	body,
 	div {
 		margin: 0;
-		color: white;
-		text-shadow: 0 0 2px black;
 		padding: 0;
 	}
 
-	#clientTime {
-		opacity: 0.1;
-		text-shadow: none;
-		color: rgba(255, 255, 255, 0.1);
+	.main {
+		margin: 3rem;
+		padding: 1.5rem;
+		color: #fff;
+		/*backdrop-filter: contrast(50%) brightness(50%) blur(10px);*/
+	}
+
+	.indicator {
+		clear: right;
+		float: right;
+		width: 3rem;
+		height: 3rem;
+		border: 3px solid red;
+		background: #000;
 	}
 
 	canvas,
@@ -25,6 +37,15 @@
 		position: absolute;
 		left: 0;
 		top: 0;
+		z-index: 10;
+	}
+
+	.indicator.white {
+		background: #fff;
+	}
+
+	.hidden {
+		display: none;
 	}
 
 	iframe {
@@ -32,23 +53,25 @@
 		background-color: rgba(0, 0, 0, 0);
 		width: 100vw;
 		overflow: hidden;
+		z-index:9999;
+		position: absolute;
 	}
 </style>
 
 <body id="body">
-	<span id="clientTime"></span>
 	<iframe src="/?hlaegui" style="border: none; overflow:hidden;"></iframe>
-	<script type="text/javascript" src="./../lhm/three.min.js"></script>
-	<script type="text/javascript" src="./../lhm/css3drenderer.js"></script>
+	<div style="clear: both"></div>
+	<script type="text/javascript" src="./three.min.js"></script>
+	<script type="text/javascript" src="./css3drenderer.js"></script>
 	<script type="text/javascript" src="/socket.io/socket.io.min.js"></script>
 	<script type="module">
-		import { CSGOGSI } from './../lhm/csgogsi.js';
-		import { ActionManager } from './../lhm/actions.js';
-		import { addARModule, removeARModule, setActiveModules } from './../lhm/utils.js';
+		import { CSGOGSI } from './csgogsi.js';
+		import { ActionManager } from './actions.js';
+		import { addARModule, removeARModule, setActiveModules } from './utils.js';
 
-		import * as Utils from './modules/utils.js';
-		import * as Windows from './modules/windows.js';
-		import * as D3d9 from './modules/d3d9.js';
+		import * as Utils from '../../js/modules/utils.js';
+		import * as Windows from '../../js/modules/windows.js';
+		import * as D3d9 from '../../js/modules/d3d9.js';
 
 		var actions = new ActionManager();
 
@@ -59,7 +82,7 @@
 		let currentARModule = null;
 
 		const GSI = new CSGOGSI();
-		//console.log("STARTING")
+
 		const socketio = io('/');
 		socketio.on('update', GSI.digest);
 
@@ -69,6 +92,7 @@
 		socketio.on('keybindAction', (action) => {
 			actions.execute(action);
 		});
+
 
 		const horToVert = hFov => {
 			const hRadians = hFov * Math.PI / 180;
@@ -95,6 +119,7 @@
 		const WEBGL = new THREE.WebGLRenderer({ alpha: true, powerPreference: 'high-performance', antialias: true });
 		const CSS3D = new THREE.CSS3DRenderer();
 
+
 		CSS3D.domElement.id = 'css3drenderer';
 
 		WEBGL.setSize(1920, 1080);
@@ -102,6 +127,22 @@
 
 		document.body.appendChild(WEBGL.domElement);
 		document.body.appendChild(CSS3D.domElement);
+
+
+		// TO REMOVE
+		const geometry = new THREE.BoxGeometry(10, 10, 10);
+		const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+		const cube = new THREE.Mesh(geometry, material);
+
+		cube.position.x = -2169
+		cube.position.z = -1482;
+		cube.position.y = -182;
+
+		// !TO REMOVE
+
+
+		scene.add(cube);
+
 
 		const renderers = {
 			CSS3D,
@@ -117,6 +158,7 @@
 		};
 
 		socketio.on('active_modules', activeModules => {
+			console.log('aaa')
 			setActiveModules(activeModules, arSettings);
 		});
 
@@ -173,17 +215,6 @@
 		socketio.emit('get_active_modules');
 
 
-
-
-
-
-
-
-
-
-
-
-
 		////////////////////////////////////////////////////////////////////////////////
 
 		function AfxDrawingInterop(interop, args) {
@@ -197,7 +228,9 @@
 
 			this.cefTextureHandle = null;
 			this.cefTextures = {};
-			this.elClientTime = document.getElementById('clientTime');
+			//this.elIndicator = document.getElementById('indicator');
+			//this.elIndicator2 = document.getElementById('indicator2');
+			this.elGif = document.getElementById('gif');
 
 			this.engineInteropId = null;
 
@@ -232,8 +265,8 @@
 				o.pos = float4(i.pos, 1);
 				o.pos = mul( o.pos, World );
     			o.pos = mul( o.pos, View );
-    			o.pos = mul( o.pos, Projection );	
-				o.pos /= o.pos.w;			
+    			o.pos = mul( o.pos, Projection );
+				o.pos /= o.pos.w;
 				o.c = float4(o.pos.x,0,o.pos.y,1);
 				o.t0 = i.t0;
 				
@@ -261,6 +294,13 @@
 			};
 
 			this.messageHandlers = {
+				"ping": async function (i) {
+					console.log("PING: " + i);
+					await Utils.toPromise(this.interop, "sendMessage", this.engineInteropId, JSON.stringify({
+						"id": "pong",
+						"args": [i]
+					}));
+				},
 				"connect": async function (senderId) {
 					this.engineInteropId = senderId;
 					await this.connect(senderId);
@@ -272,41 +312,39 @@
 
 					this.indexSettings = Object.assign({}, this.indexSettings, settings);
 
+					//this.elIndicator2.classList.toggle("white");
 
-					/*var width = renderInfo.view.width - renderInfo.view.x;
-					var height = renderInfo.view.height - renderInfo.view.y;
-
-					self.resized = width != this.width || height != this.height;
-
-					this.width = width;
-					this.height = height;*/
 					this.renderInfo = renderInfo;
-					this.elClientTime.innerText = renderInfo.curTime;
 				},
 				"onGameEvent": async function (e) {
-					/*while(this.elGameEvents.childNodes.length > 10) this.elGameEvents.lastElementChild.remove();
-		
+					/*while (this.elGameEvents.childNodes.length > 10) this.elGameEvents.lastElementChild.remove();
+
 					var docP = document.createElement('p');
 					docP.appendChild(document.createTextNode(JSON.stringify(e)));
 					this.elGameEvents.insertBefore(docP, this.elGameEvents.firstElementChild);*/
 				},
 				"onHudEnd": async function (frameCount, pass) {
-					// this.elIndicator.classList.toggle("white", (frameCount % 2) == 0);
+					//this.elIndicator.classList.toggle("white",(frameCount % 2) == 0);
 
 					//console.log(frameCount+", "+pass);
 					await self.renderScreen(frameCount, pass, self.renderInfo.view.x, self.renderInfo.view.y, self.renderInfo.view.width, self.renderInfo.view.height);
 				},
 				"onViewOverride": async function (positionInfo) {
 					const { tX, tY, tZ, rX, rY, rZ, fov } = positionInfo;
-
 					const realX = -rX;
 					let realY = rY + 180;
+
+					//this.elGameEvents.innerHTML = `X: ${tY} Z: ${tX} Y: ${tZ}\n ROTATE - Y: ${degreeToRadian(realY)} X: ${degreeToRadian(realX)}`;
+
+
+
 
 					const gameFov = gameFovToVert(fov, this.width, this.height);
 					if (camera.fov !== gameFov) {
 						camera.fov = gameFov;
 						camera.updateProjectionMatrix();
 					}
+
 					camera.rotation.x = 0;
 					camera.rotation.y = 0;
 					camera.rotation.z = 0;
@@ -321,45 +359,24 @@
 				},
 				"onForceEndQueue": async function () {
 					// The engine expects us to finish rendering, so we have to push out the last frame instantly:
+					//console.log("onForceEndQueue");
 					await self.render(null);
 				}
 			};
 
 			interop.onMessage = function (senderId, message) {
-
-				function processMessages(port) {
-					let messages = self.messages[port]
-					let jMessage = messages[0];
-
-					//console.log(JSON.stringify(jMessage));
-
-					self.messageHandlers[jMessage.id].apply(self, jMessage.args).then(() => {
-						messages.shift();
-						if (0 < messages.length) queueMicrotask(function () { processMessages(port); });
-					}).catch((e) => {
-						Utils.logError(e);
-						if (!(e && e.soft)) {
-							return Utils.toPromise(self, "disconnect");
-						}
-						messages.shift();
-						if (0 < messages.length) queueMicrotask(function () { processMessages(port); });
-					});
-				}
-
-				function queueMessage(jMessage) {
-					const port = jMessage.port || "0";
-
-					var messages = self.messages[port];
-					if (undefined === messages) self.messages[port] = messages = [];
-
-					messages.push(jMessage);
-
-					if (1 === messages.length) queueMicrotask(function () { processMessages(port); });
-				}
-
 				const jMessage = JSON.parse(message);
+				const port = jMessage.port || "0";
 
-				queueMessage(jMessage);
+				let queues = self.messageQueues;
+				if (!queues) queues = self.messageQueues = [];
+
+				let queue = queues[port];
+				if (!queue) queue = queues[port] = Promise.resolve();
+
+				queue.then(() => {
+					queues[port] = self.messageHandlers[jMessage.id].apply(self, jMessage.args);
+				});
 			}
 
 			interop.onDeviceReset = function () {
@@ -397,10 +414,16 @@
 				"rect": null
 			};
 
-			Utils.toPromise(self.interop, "sendMessage", self.args.indexInteropId, JSON.stringify({
-				"id": "drawingCreated",
-				"args": [interop.id]
-			}));
+			let interval = setInterval(function () {
+				Utils.toPromise(self.interop, "waitForCefFrame").then(() => {
+					console.log("Waiting for first frame ...");
+					clearInterval(interval);
+					Utils.toPromise(self.interop, "sendMessage", self.args.indexInteropId, JSON.stringify({
+						"id": "drawingCreated",
+						"args": [interop.id]
+					}));
+				});
+			}, 1000);
 		}
 
 		AfxDrawingInterop.prototype.onDeviceReset = async function () {
@@ -693,12 +716,12 @@
 				"args": [this.interop.id]
 			}));
 
-			this.interop.setFrameRate(60);
+			//this.interop.setFrameRate(60);
 		}
 
 		AfxDrawingInterop.prototype.disconnect = async function () {
 
-			this.interop.setFrameRate(1);
+			//this.interop.setFrameRate(1);
 
 			this.interop.cancel();
 			this.messages = {}
@@ -778,8 +801,7 @@
 				// paint last frame (if wanted):
 				if (lastRender && lastRender.onPaint) {
 
-					if (lastRender.sync)
-						await self.waitForCefFrame;
+					await Utils.toPromise(self.interop, "waitForCefFrame");
 
 					if (self.lastShareHandle) {
 						if (
@@ -794,6 +816,7 @@
 					try {
 						await lastRender.onPaint(self.interop.cefTextureShareHandle);
 					} catch (e) {
+						Utils.logError(e);
 						if (!(e && e.soft)) throw e;
 					}
 				}
@@ -803,10 +826,10 @@
 					try {
 						await lastRender.onEnd();
 					} catch (e) {
+						Utils.logError(e);
 						if (!(e && e.soft)) throw e;
 					}
 				}
-
 
 				// Handle resizing:
 				if (newRender && (self.width !== newRender.width || self.height !== newRender.height)) {
@@ -817,13 +840,7 @@
 
 					self.interop.setSize(newRender.width, newRender.height);
 
-					let timestamp = await new Promise((resolve, reject) => {
-						window.requestAnimationFrame(function (timestamp) {
-							if (newRender.sync) self.waitForCefFrame = Utils.toPromise(self.interop, "waitForCefFrame");
-							resolve(timestamp);
-						});
-					});
-					if (newRender.sync) await self.waitForCefFrame;
+					await Utils.toPromise(self.interop, "waitForCefFrame");
 				}
 
 				let queued = false;
@@ -833,12 +850,13 @@
 					try {
 						queued = await newRender.onBegin();
 					} catch (e) {
+						Utils.logError(e);
 						if (!(e && e.soft)) throw e;
 						queued = false;
 					}
-
 				}
 
+				queued = false;
 
 				async function doClear() {
 					// clear new frame (if wanted):
@@ -867,17 +885,7 @@
 					}
 				}
 
-				let timestamp = await new Promise((resolve, reject) => {
-					window.requestAnimationFrame(function (timestamp) {
-						let onAnimationFrame = doClear();
-						if (newRender && newRender.onAnimationFrame)
-							onAnimationFrame = onAnimationFrame.then(() => newRender.onAnimationFrame(timestamp));
-						onAnimationFrame.then(() => {
-							if (newRender && newRender.sync) self.waitForCefFrame = Utils.toPromise(self.interop, "waitForCefFrame");
-							resolve(timestamp);
-						}).catch((e) => { reject(e); });
-					});
-				});
+				await doClear();
 
 				self.lastRender = newRender;
 
@@ -901,7 +909,6 @@
 				// Ensure resources:
 
 				let renderSettings = {
-					"sync": this.indexSettings.sync,
 					"x": x,
 					"y": y,
 					"width": width,
@@ -909,7 +916,6 @@
 					"frameCount": frameCount,
 					"pass": pass,
 					"retry": false,
-					// optional: // "onAnimationFrame": async function(timestamp) {}
 					"onBegin": async function () {
 						let queued = false;
 
@@ -1005,87 +1011,88 @@
 							await Utils.toPromise(self.interop, "pumpRetry");
 						else
 							await Utils.toPromise(self.interop, "pumpFinish");
-						}
-					};
+					}
+				};
 
-					if (this.indexSettings.bg) renderSettings["onClear"] = async function (rootTextureHandle) {
+				if (this.indexSettings.bg) renderSettings["onClear"] = async function (rootTextureHandle) {
 
-						if (this.retry) return;
+					if (this.retry) return;
 
-						//console.log("doPaintGameToCef BEGIN");
+					//console.log("doPaintGameToCef BEGIN");
 
-						if (rootTextureHandle.invalid) throw Utils.toSoftError(new Error("rootTextureHandle.invalid"));
+					if (rootTextureHandle.invalid) throw Utils.toSoftError(new Error("rootTextureHandle.invalid"));
 
-						var cefTexture = self.getCefTexture(rootTextureHandle);
+					var cefTexture = self.getCefTexture(rootTextureHandle);
 
-						if (!cefTexture) {
-							console.log("New texture for rootTextureHandle: (" + rootTextureHandle.hi + ", " + rootTextureHandle.lo + ")");
-							var refTexture = [undefined];
-							const D3DFMT_A8R8G8B8 = 21;
-							var hr = await Utils.toPromise(self.interop, "d3d9CreateTexture", this.width, this.height, 1, D3d9.D3DUSAGE.D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3d9.D3DPOOL.D3DPOOL_DEFAULT, refTexture, [rootTextureHandle]);
-							if (Utils.FAILED(hr)) throw Utils.toSoftError(Utils.failedHResultToError(hr, "CreateTexture failed for rootTextureHandle: (" + rootTextureHandle.hi + ", " + rootTextureHandle.lo + ")"));
-							cefTexture = refTexture[0];
-							self.setCefTexture(rootTextureHandle, cefTexture);
-						}
+					if (!cefTexture) {
+						console.log("New texture for rootTextureHandle: (" + rootTextureHandle.hi + ", " + rootTextureHandle.lo + ")");
+						var refTexture = [undefined];
+						const D3DFMT_A8R8G8B8 = 21;
+						var hr = await Utils.toPromise(self.interop, "d3d9CreateTexture", this.width, this.height, 1, D3d9.D3DUSAGE.D3DUSAGE_RENDERTARGET, D3DFMT_A8R8G8B8, D3d9.D3DPOOL.D3DPOOL_DEFAULT, refTexture, [rootTextureHandle]);
+						if (Utils.FAILED(hr)) throw Utils.toSoftError(Utils.failedHResultToError(hr, "CreateTexture failed for rootTextureHandle: (" + rootTextureHandle.hi + ", " + rootTextureHandle.lo + ")"));
+						cefTexture = refTexture[0];
+						self.setCefTexture(rootTextureHandle, cefTexture);
+					}
 
-						var cefTextureSuraceLevel0Ref = [undefined];
-						var gameSurfaceRef = [undefined];
+					var cefTextureSuraceLevel0Ref = [undefined];
+					var gameSurfaceRef = [undefined];
 
-						//console.log("doPaintGameToCef BEGIN 2");
+					//console.log("doPaintGameToCef BEGIN 2");
 
-						try {
-							var hr = await Utils.toPromise(cefTexture, "getSurfaceLevel", 0, cefTextureSuraceLevel0Ref);
-							if (Utils.FAILED(hr)) throw Utils.toSoftError(Utils.failedHResultToError(hr));
+					try {
+						var hr = await Utils.toPromise(cefTexture, "getSurfaceLevel", 0, cefTextureSuraceLevel0Ref);
+						if (Utils.FAILED(hr)) throw Utils.toSoftError(Utils.failedHResultToError(hr));
 
-							//console.log("doPaintGameToCef BEGIN 3");
+						//console.log("doPaintGameToCef BEGIN 3");
 
-							var hr = await Utils.toPromise(self.interop, "getRenderTarget", 0, gameSurfaceRef);
-							if (Utils.FAILED(hr)) throw Utils.toSoftError(Utils.failedHResultToError(hr));
+						var hr = await Utils.toPromise(self.interop, "getRenderTarget", 0, gameSurfaceRef);
+						if (Utils.FAILED(hr)) throw Utils.toSoftError(Utils.failedHResultToError(hr));
 
-							//console.log("doPaintGameToCef BEGIN 4");
+						//console.log("doPaintGameToCef BEGIN 4");
 
-							await Utils.toPromise(self.interop, "beginCleanState");
+						await Utils.toPromise(self.interop, "beginCleanState");
 
-							//console.log("doPaintGameToCef BEGIN 5");
+						//console.log("doPaintGameToCef BEGIN 5");
 
-							var hr = await Utils.toPromise(self.interop, "d3d9StretchRect", gameSurfaceRef[0], null, cefTextureSuraceLevel0Ref[0], null, D3d9.D3DTEXTUREFILTERTYPE.D3DTEXF_NONE);
-							if (Utils.FAILED(hr)) throw Utils.toSoftError(Utils.failedHResultToError(hr));
+						var hr = await Utils.toPromise(self.interop, "d3d9StretchRect", gameSurfaceRef[0], null, cefTextureSuraceLevel0Ref[0], null, D3d9.D3DTEXTUREFILTERTYPE.D3DTEXF_NONE);
+						if (Utils.FAILED(hr)) throw Utils.toSoftError(Utils.failedHResultToError(hr));
 
-							//console.log("doPaintGameToCef BEGIN 6");
+						//console.log("doPaintGameToCef BEGIN 6");
 
-							await Utils.toPromise(self.interop, "endCleanState");
+						await Utils.toPromise(self.interop, "endCleanState");
 
-							//console.log("doPaintGameToCef BEGIN 7");
+						//console.log("doPaintGameToCef BEGIN 7");
 
-							await Utils.toPromise(self.interop, "waitForClientGpu");
+						await Utils.toPromise(self.interop, "waitForClientGpu");
 
-							//console.log("doPaintGameToCef BEGIN 8");
-						}
-						catch (e) {
-							if (e && e.soft) {
-								if (gameSurfaceRef[0]) await Utils.toPromise(gameSurfaceRef[0], "release");
-								if (cefTextureSuraceLevel0Ref[0]) await Utils.toPromise(cefTextureSuraceLevel0Ref[0], "release");
-							}
-
-							throw e;
+						//console.log("doPaintGameToCef BEGIN 8");
+					}
+					catch (e) {
+						Utils.logError(e);
+						if (e && e.soft) {
+							if (gameSurfaceRef[0]) await Utils.toPromise(gameSurfaceRef[0], "release");
+							if (cefTextureSuraceLevel0Ref[0]) await Utils.toPromise(cefTextureSuraceLevel0Ref[0], "release");
 						}
 
-						//console.log("doPaintGameToCef BEGIN 9");
+						throw e;
+					}
 
-						if (gameSurfaceRef[0]) await Utils.toPromise(gameSurfaceRef[0], "release");
+					//console.log("doPaintGameToCef BEGIN 9");
 
-						//console.log("doPaintGameToCef BEGIN 10");
+					if (gameSurfaceRef[0]) await Utils.toPromise(gameSurfaceRef[0], "release");
 
-						if (cefTextureSuraceLevel0Ref[0]) await Utils.toPromise(cefTextureSuraceLevel0Ref[0], "release");
+					//console.log("doPaintGameToCef BEGIN 10");
 
-						//console.log("doPaintGameToCef END");
+					if (cefTextureSuraceLevel0Ref[0]) await Utils.toPromise(cefTextureSuraceLevel0Ref[0], "release");
 
-						return true;
-					};
+					//console.log("doPaintGameToCef END");
 
-					await this.render(renderSettings);
+					return true;
+				};
+
+				await this.render(renderSettings);
 			} catch (e) {
-				console.log(e);
+				Utils.logError(e);
 				if (e && e.soft) {
 					Utils.logError(e);
 					self.lastRender = null;

@@ -58,7 +58,7 @@ function overlay(hud) {
     </head>
     <body>
         <iframe id="hud-container" src="${hud}"></iframe>
-        ${!_1.customer.customer || _1.customer.customer.license.type === 'free'
+        ${!_1.customer.customer || (_1.customer.customer.license.type === 'free' && !_1.customer.workspace)
         ? `<div style="
                     position: fixed !important;
                     bottom: unset !important;

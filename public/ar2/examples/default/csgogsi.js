@@ -1,4 +1,4 @@
-import { mapSteamIDToPlayer, parseTeam } from './utils.js';
+import { getRoundWin, mapSteamIDToPlayer, parseTeam, getHalfFromRound, didTeamWinThatRound } from './utils.js';
 class CSGOGSI {
     constructor() {
         this.eventNames = () => {
@@ -87,12 +87,24 @@ class CSGOGSI {
         };
         this.maxListeners = 10;
         this.players = [];
+        this.MR = 3;
+        this.damage = [];
     }
     digest = (raw) => {
         if (!raw.allplayers || !raw.map || !raw.phase_countdowns) {
             return null;
         }
-        const isCTLeft = Object.values(raw.allplayers).filter(({ observer_slot, team }) => observer_slot !== undefined && observer_slot > 1 && observer_slot <= 5 && team === 'CT').length > 2;
+        let isCTLeft = true;
+        const examplePlayerT = Object.values(raw.allplayers).find(({ observer_slot, team }) => observer_slot !== undefined && team === 'T');
+        const examplePlayerCT = Object.values(raw.allplayers).find(({ observer_slot, team }) => observer_slot !== undefined && team === 'CT');
+        if (examplePlayerCT &&
+            examplePlayerCT.observer_slot !== undefined &&
+            examplePlayerT &&
+            examplePlayerT.observer_slot !== undefined) {
+            if ((examplePlayerCT.observer_slot || 10) > (examplePlayerT.observer_slot || 10)) {
+                isCTLeft = false;
+            }
+        }
         const bomb = raw.bomb;
         const teamCT = parseTeam(raw.map.team_ct, isCTLeft ? 'left' : 'right', 'CT', isCTLeft ? this.teams.left : this.teams.right);
         const teamT = parseTeam(raw.map.team_t, isCTLeft ? 'right' : 'left', 'T', isCTLeft ? this.teams.right : this.teams.left);
@@ -105,6 +117,53 @@ class CSGOGSI {
             position: raw.player.position.split(', ').map(n => Number(n)),
             forward: raw.player.forward.split(', ').map(n => Number(n))
         };
+        const rounds = [];
+        if (raw.round && raw.map && raw.map.round_wins) {
+            let currentRound = raw.map.round + 1;
+            if (raw.round && raw.round.phase === 'over') {
+                currentRound = raw.map.round;
+            }
+            for (let i = 1; i <= currentRound; i++) {
+                const result = getRoundWin(currentRound, { ct: teamCT, t: teamT }, raw.map.round_wins, i, this.MR);
+                if (!result)
+                    continue;
+                rounds.push(result);
+            }
+        }
+        if (this.last && this.last.map.name !== raw.map.name) {
+            this.damage = [];
+        }
+        let currentRoundForDamage = raw.map.round + 1;
+        if (raw.round && raw.round.phase === 'over') {
+            currentRoundForDamage = raw.map.round;
+        }
+        let currentRoundDamage = this.damage.find(damage => damage.round === currentRoundForDamage);
+        if (!currentRoundDamage) {
+            currentRoundDamage = {
+                round: currentRoundForDamage,
+                players: []
+            };
+            this.damage.push(currentRoundDamage);
+        }
+        currentRoundDamage.players = players.map(player => ({
+            steamid: player.steamid,
+            damage: player.state.round_totaldmg
+        }));
+        for (const player of players) {
+            const { current, damage } = this;
+            if (!current)
+                continue;
+            const damageForRound = damage.filter(damageEntry => damageEntry.round <= current.map.round);
+            if (damageForRound.length === 0)
+                continue;
+            //damagex.players.find(player => player.steamid === steamid).damage
+            const damageEntries = damageForRound.map(damageEntry => {
+                const playerDamageEntry = damageEntry.players.find(playerDamage => playerDamage.steamid === player.steamid);
+                return playerDamageEntry ? playerDamageEntry.damage : 0;
+            });
+            const adr = damageEntries.reduce((a, b) => a + b, 0) / (current.map.round || 1);
+            player.state.adr = Math.floor(adr);
+        }
         const data = {
             provider: raw.provider,
             observer,
@@ -144,9 +203,11 @@ class CSGOGSI {
                 num_matches_to_win_series: raw.map.num_matches_to_win_series,
                 current_spectators: raw.map.current_spectators,
                 souvenirs_total: raw.map.souvenirs_total,
-                round_wins: raw.map.round_wins
+                round_wins: raw.map.round_wins,
+                rounds
             }
         };
+        this.current = data;
         if (!this.last) {
             this.last = data;
             this.emit('data', data);
@@ -230,37 +291,63 @@ class CSGOGSI {
         if (mvp) {
             this.emit('mvp', mvp);
         }
-        this.last = data;
         this.emit('data', data);
+        this.last = data;
         return data;
     }
-    digestMIRV(raw) {
+    digestMIRV(raw, eventType = 'player_death') {
+        if (eventType === 'player_death') {
+            const rawKill = raw;
+            if (!this.last) {
+                return null;
+            }
+            const data = rawKill.keys;
+            const killer = this.last.players.find(player => player.steamid === data.attacker.xuid);
+            const victim = this.last.players.find(player => player.steamid === data.userid.xuid);
+            const assister = this.last.players.find(player => player.steamid === data.assister.xuid && data.assister.xuid !== '0');
+            if (!victim) {
+                return null;
+            }
+            const kill = {
+                killer: killer || null,
+                victim,
+                assister: assister || null,
+                flashed: data.assistedflash,
+                headshot: data.headshot,
+                weapon: data.weapon,
+                wallbang: data.penetrated > 0,
+                attackerblind: data.attackerblind,
+                thrusmoke: data.thrusmoke,
+                noscope: data.noscope
+            };
+            this.emit('kill', kill);
+            return kill;
+        }
+        const rawHurt = raw;
         if (!this.last) {
             return null;
         }
-        const data = raw.keys;
-        const killer = this.last.players.find(player => player.steamid === data.attacker.xuid);
+        const data = rawHurt.keys;
+        const attacker = this.last.players.find(player => player.steamid === data.attacker.xuid);
         const victim = this.last.players.find(player => player.steamid === data.userid.xuid);
-        const assister = this.last.players.find(player => player.steamid === data.assister.xuid && data.assister.xuid !== '0');
-        if (!killer || !victim) {
+        if (!attacker || !victim) {
             return null;
         }
         const kill = {
-            killer,
+            attacker,
             victim,
-            assister: assister || null,
-            flashed: data.assistedflash,
-            headshot: data.headshot,
+            health: data.health,
+            armor: data.armor,
             weapon: data.weapon,
-            wallbang: data.penetrated > 0,
-            attackerblind: data.attackerblind,
-            thrusmoke: data.thrusmoke,
-            noscope: data.noscope
+            dmg_health: data.dmg_health,
+            dmg_armor: data.dmg_armor,
+            hitgroup: data.hitgroup
         };
-        this.emit('kill', kill);
+        this.emit('hurt', kill);
         return kill;
     }
     static findSite(mapName, position) {
+        const realMapName = mapName.substr(mapName.lastIndexOf('/') + 1);
         const mapReference = {
             de_mirage: position => (position[1] < -600 ? 'A' : 'B'),
             de_cache: position => (position[1] > 0 ? 'A' : 'B'),
@@ -271,10 +358,10 @@ class CSGOGSI {
             de_vertigo: position => (position[0] > -1400 ? 'A' : 'B'),
             de_train: position => (position[1] > -450 ? 'A' : 'B')
         };
-        if (mapName in mapReference) {
-            return mapReference[mapName](position);
+        if (realMapName in mapReference) {
+            return mapReference[realMapName](position);
         }
         return null;
     }
 }
-export { CSGOGSI };
+export { CSGOGSI, mapSteamIDToPlayer, parseTeam, getHalfFromRound, didTeamWinThatRound };

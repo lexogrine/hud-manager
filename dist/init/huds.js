@@ -82,7 +82,16 @@ class HUD {
             if (this.hud && this.hud.keybinds) {
                 for (const keybind of this.hud.keybinds) {
                     //globalShortcut.unregister(keybind.bind);
-                    (0, keybinder_1.unregisterKeybind)(keybind.bind, hud.dir);
+                    const keybinds = [];
+                    if (Array.isArray(keybind.action)) {
+                        keybinds.push(...keybind.action.map(ar => typeof ar.action === "string" ? ar.action : ar.action.action || ''));
+                    }
+                    else {
+                        keybinds.push(typeof keybind.action === "string" ? keybind.action : keybind.action.action || "");
+                    }
+                    for (const keybindShort of keybinds) {
+                        (0, keybinder_1.unregisterKeybind)(keybindShort, hud.dir);
+                    }
                 }
             }
             (0, keybinder_1.unregisterKeybind)('Left Alt+F');
@@ -113,7 +122,32 @@ class HUD {
         if (hud.keybinds) {
             for (const bind of hud.keybinds) {
                 (0, keybinder_1.registerKeybind)(bind.bind, () => {
-                    io.to(hud.dir).emit('keybindAction', bind.action);
+                    let action = '';
+                    let exec = '';
+                    if (typeof bind.action === 'string') {
+                        action = bind.action;
+                    }
+                    else if (Array.isArray(bind.action)) {
+                        if (!socket_1.GSI.current?.map)
+                            return;
+                        const mapName = socket_1.GSI.current.map.name.substr(socket_1.GSI.current.map.name.lastIndexOf('/') + 1);
+                        const actionForMap = bind.action.find(keybindAction => keybindAction.map === mapName);
+                        if (actionForMap) {
+                            action = typeof actionForMap.action === 'string' ? actionForMap.action : (actionForMap.action.action || '');
+                            if (typeof actionForMap.action !== 'string') {
+                                exec = actionForMap.action.exec || '';
+                            }
+                        }
+                    }
+                    else {
+                        action = bind.action.action || '';
+                        exec = bind.action.exec || '';
+                    }
+                    if (action)
+                        io.to(hud.dir).emit('keybindAction', action);
+                    if (!exec)
+                        return;
+                    socket_1.mirvPgl.execute(exec);
                 }, hud.dir);
                 /*globalShortcut.register(bind.bind, () => {
                     io.to(hud.dir).emit('keybindAction', bind.action);

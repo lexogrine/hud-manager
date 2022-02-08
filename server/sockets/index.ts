@@ -1,7 +1,7 @@
 import { verifyUrl } from '../api/config';
 import { HUDStateManager } from '../api/huds/hudstatemanager';
 import { reverseSide } from '../api/matches';
-import { GSI, HUDState, ioPromise, runtimeConfig } from '../socket';
+import { GSI, HUDState, ioPromise, mirvPgl, runtimeConfig } from '../socket';
 import { playTesting } from './../api/huds/play';
 import { availableGames } from '../../types/interfaces';
 import { unregisterAllKeybinds, registerKeybind } from '../api/keybinder';
@@ -89,7 +89,31 @@ ioPromise.then(io => {
 						registerKeybind(
 							bind.bind,
 							() => {
-								io.to(dir).emit('keybindAction', bind.action);
+								let action = '';
+								let exec = '';
+								
+								if(typeof bind.action === 'string'){
+									action = bind.action
+								} else if(Array.isArray(bind.action)){
+									if(!GSI.current?.map) return;
+									const mapName = GSI.current.map.name.substr(GSI.current.map.name.lastIndexOf('/')+1);
+									const actionForMap = bind.action.find(keybindAction => keybindAction.map === mapName);
+		
+									if(actionForMap){
+										action = typeof actionForMap.action === 'string' ? actionForMap.action : (actionForMap.action.action || '');
+										if(typeof actionForMap.action !== 'string'){
+											exec = actionForMap.action.exec || '';
+										}
+									}
+								} else {
+									action = bind.action.action || '';
+									exec = bind.action.exec || '';
+								}
+								if(action) io.to(dir).emit('keybindAction', action);
+		
+								if(!exec) return;
+		
+								mirvPgl.execute(exec);
 							},
 							dir
 						);
@@ -131,7 +155,31 @@ ioPromise.then(io => {
 					registerKeybind(
 						bind.bind,
 						() => {
-							io.emit('keybindAction', bind.action);
+							let action = '';
+							let exec = '';
+
+							if(typeof bind.action === 'string'){
+								action = bind.action
+							} else if(Array.isArray(bind.action)){
+								if(!GSI.current?.map) return;
+								const mapName = GSI.current.map.name.substr(GSI.current.map.name.lastIndexOf('/')+1);
+								const actionForMap = bind.action.find(keybindAction => keybindAction.map === mapName);
+	
+								if(actionForMap){
+									action = typeof actionForMap.action === 'string' ? actionForMap.action : (actionForMap.action.action || '');
+									if(typeof actionForMap.action !== 'string'){
+										exec = actionForMap.action.exec || '';
+									}
+								}
+							} else {
+								action = bind.action.action || '';
+								exec = bind.action.exec || '';
+							}
+							if(action) io.emit('keybindAction', action);
+	
+							if(!exec) return;
+	
+							mirvPgl.execute(exec);
 						},
 						moduleDir
 					);

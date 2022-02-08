@@ -226,6 +226,7 @@ const loadUser = async (workspace, loggedIn = false) => {
 };
 const loadUserWorkspaces = async () => {
     const response = await userHandlers.getWorkspaces();
+    console.log(response);
     if (!response || 'error' in response) {
         if (!response) {
             return { error: 'Not logged in' };

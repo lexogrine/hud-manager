@@ -62,11 +62,14 @@ async function mainProcess(server: Server, forceDev = false, gui = true) {
 async function startManager() {
 	app.setAppUserModelId('com.lexogrine.hudmanager');
 	if (process.argv.includes('--renderer')) {
+		console.log('d',new Date().getTime())
 		createMainWindow(process.argv.includes('--dev'));
 		return;
 	}
 	directories.checkDirectories();
+	console.log('b',new Date().getTime())
 	const server = await init();
+	console.log('c',new Date().getTime())
 	const argv = args(process.argv);
 	mainProcess(server, argv.dev || isDev, !argv.noGUI);
 }
@@ -75,5 +78,6 @@ const lock = app.requestSingleInstanceLock();
 if (!lock && !process.argv.includes('--renderer')) {
 	app.quit();
 } else {
+	console.log('a',new Date().getTime())
 	app.on('ready', startManager);
 }

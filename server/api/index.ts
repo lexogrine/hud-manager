@@ -32,6 +32,8 @@ import { SimpleWebSocket } from 'simple-websockets';
 import { socket } from './user';
 import { canUserUseCloudStorage } from '../../src/utils';
 import { registerKeybind } from './keybinder';
+//import { Server } from 'socket.io';
+//import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 
 let init = true;
 
@@ -62,9 +64,9 @@ export const validateCloudAbility = async (resource?: I.AvailableResources) => {
 	return !!customer.game;
 };
 
-export default async function () {
+export default async function (/*io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap>*/) {
 	const io = await ioPromise;
-
+	
 	initGameConnection();
 
 	app.route('/api/workspace').post(user.setWorkspace);

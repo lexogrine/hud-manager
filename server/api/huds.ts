@@ -265,7 +265,7 @@ export const getHUDKeyBinds = (dirName: string) => {
 	}
 	try {
 		const keybindsFile = fs.readFileSync(keybindsFileDir, { encoding: 'utf8' });
-		const keybinds = JSON.parse(keybindsFile);
+		const keybinds = JSON.parse(keybindsFile) as I.KeyBind[];
 		return keybinds;
 	} catch (e) {
 		return null;

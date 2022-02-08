@@ -291,9 +291,14 @@ export interface CheckboxInput {
 
 export type PanelInput = GeneralInput | SelectActionInput | CheckboxInput;
 
+export type KeyBindAction = string | {
+	action?: string
+	exec?: string
+}
+
 export type KeyBind = {
 	bind: string;
-	action: string;
+	action: KeyBindAction | { map: string, action: KeyBindAction}[]
 };
 
 export type PanelTemplate = {

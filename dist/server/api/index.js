@@ -56,6 +56,8 @@ const radar_1 = require("./huds/radar");
 const user_1 = require("./user");
 const utils_1 = require("../../src/utils");
 const keybinder_1 = require("./keybinder");
+//import { Server } from 'socket.io';
+//import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 let init = true;
 exports.customer = {
     customer: null,
@@ -84,7 +86,7 @@ const validateCloudAbility = async (resource) => {
     return !!exports.customer.game;
 };
 exports.validateCloudAbility = validateCloudAbility;
-async function default_1() {
+async function default_1( /*io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap>*/) {
     const io = await socket_1.ioPromise;
     (0, play_1.initGameConnection)();
     __1.app.route('/api/workspace').post(user.setWorkspace);

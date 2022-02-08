@@ -90,7 +90,6 @@ export function transposeMatrix(matrix) {
 }
 
 export function coalesce(lhs,rhs) {
-	let lhsType = typeof lhs;
-	if(lhsType === "undefined" || lhs === null) return rhs;
+	if((typeof lhs) === "undefined" || lhs === null) return rhs;
 	return lhs;
 }

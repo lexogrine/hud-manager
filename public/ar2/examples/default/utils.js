@@ -1,13 +1,14 @@
-/* eslint-disable no-undef */
 const parsePlayer = (basePlayer, steamid, team, extensions) => {
     const extension = extensions.find(player => player.steamid === steamid);
     const player = {
         steamid,
         name: (extension && extension.name) || basePlayer.name,
+        defaultName: basePlayer.name,
+        clan: basePlayer.clan,
         observer_slot: basePlayer.observer_slot,
         stats: basePlayer.match_stats,
         weapons: basePlayer.weapons,
-        state: { ...basePlayer.state, smoked: basePlayer.state.smoked || 0 },
+        state: { ...basePlayer.state, smoked: basePlayer.state.smoked || 0, adr: 0 },
         position: basePlayer.position.split(', ').map(pos => Number(pos)),
         forward: basePlayer.forward.split(', ').map(pos => Number(pos)),
         team,
@@ -92,3 +93,46 @@ export const setActiveModules = async (dirs, arSettings) => {
         }
     }
 }
+export const getHalfFromRound = (round, mr) => {
+    let currentRoundHalf = 1;
+    if (round <= 30) {
+        currentRoundHalf = round <= 15 ? 1 : 2;
+    }
+    else {
+        const roundInOT = ((round - 31) % (mr * 2)) + 1;
+        currentRoundHalf = roundInOT <= mr ? 1 : 2;
+    }
+    return currentRoundHalf;
+};
+export const didTeamWinThatRound = (team, round, wonBy, currentRound, mr) => {
+    // czy round i currentRound są w tej samej połowie === (czy team jest === wonBy)
+    const currentRoundHalf = getHalfFromRound(currentRound, mr);
+    const roundToCheckHalf = getHalfFromRound(round, mr);
+    return (team.side === wonBy) === (currentRoundHalf === roundToCheckHalf);
+};
+export const getRoundWin = (mapRound, teams, roundWins, round, mr) => {
+    let indexRound = round;
+    if (mapRound > 30) {
+        const maxOvertimeRounds = 6 * Math.floor((mapRound - 31) / 6) + 30;
+        if (round <= maxOvertimeRounds) {
+            return null;
+        }
+        const roundInOT = ((round - 31) % (mr * 2)) + 1;
+        indexRound = roundInOT;
+    }
+    const roundOutcome = roundWins[indexRound];
+    if (!roundOutcome)
+        return null;
+    const winSide = roundOutcome.substr(0, roundOutcome.indexOf('_')).toUpperCase();
+    const result = {
+        team: teams.ct,
+        round,
+        side: winSide,
+        outcome: roundOutcome
+    };
+    if (didTeamWinThatRound(teams.ct, round, winSide, mapRound, mr)) {
+        return result;
+    }
+    result.team = teams.t;
+    return result;
+};

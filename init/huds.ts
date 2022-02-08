@@ -4,7 +4,7 @@ import * as path from 'path';
 //import ip from 'ip';
 import socketio from 'socket.io';
 import * as I from './../types/interfaces';
-import { ioPromise } from '../server/socket';
+import { GSI, ioPromise, mirvPgl } from '../server/socket';
 import { registerKeybind, unregisterKeybind } from '../server/api/keybinder';
 
 class HUD {
@@ -71,7 +71,15 @@ class HUD {
 			if (this.hud && this.hud.keybinds) {
 				for (const keybind of this.hud.keybinds) {
 					//globalShortcut.unregister(keybind.bind);
-					unregisterKeybind(keybind.bind, hud.dir);
+					const keybinds: string[] = [];
+					if(Array.isArray(keybind.action)){
+						keybinds.push(...keybind.action.map(ar => typeof ar.action === "string" ? ar.action : ar.action.action || ''));
+					} else {
+						keybinds.push(typeof keybind.action === "string" ? keybind.action : keybind.action.action || "");
+					}
+					for(const keybindShort of keybinds){
+						unregisterKeybind(keybindShort, hud.dir);
+					}
 				}
 			}
 			unregisterKeybind('Left Alt+F');
@@ -108,7 +116,31 @@ class HUD {
 				registerKeybind(
 					bind.bind,
 					() => {
-						io.to(hud.dir).emit('keybindAction', bind.action);
+						let action = '';
+						let exec = '';
+						
+						if(typeof bind.action === 'string'){
+							action = bind.action
+						} else if(Array.isArray(bind.action)){
+							if(!GSI.current?.map) return;
+							const mapName = GSI.current.map.name.substr(GSI.current.map.name.lastIndexOf('/')+1);
+							const actionForMap = bind.action.find(keybindAction => keybindAction.map === mapName);
+
+							if(actionForMap){
+								action = typeof actionForMap.action === 'string' ? actionForMap.action : (actionForMap.action.action || '');
+								if(typeof actionForMap.action !== 'string'){
+									exec = actionForMap.action.exec || '';
+								}
+							}
+						} else {
+							action = bind.action.action || '';
+							exec = bind.action.exec || '';
+						}
+						if(action) io.to(hud.dir).emit('keybindAction', action);
+
+						if(!exec) return;
+
+						mirvPgl.execute(exec);
 					},
 					hud.dir
 				);

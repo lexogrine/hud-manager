@@ -80,6 +80,7 @@ export const createMainWindow = async (forceDev = false) => {
 		shell.openExternal(url);
 	});
 
+	console.log('g',new Date().getTime())
 	win.loadURL(`${isDev ? `http://localhost:3000/?port=${config.port}` : startUrl}`);
 	win.on('close', () => {
 		win = null;

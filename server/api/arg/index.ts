@@ -163,8 +163,7 @@ export const parseCSGOKills = (last: CSGO, csgo: CSGO) => {
 
 	setTimeout(() => {
 		if (!argSocket.online) return;
-
-		if (last.round?.phase === 'freezetime' && csgo.round?.phase !== 'live' && argSocket.socket) {
+		if (last.round?.phase === 'freezetime' && csgo.round?.phase === 'live' && argSocket.socket) {
 			argSocket.socket.send('clearReplay');
 		} else if (csgo.round?.phase === 'freezetime' && last.round?.phase !== 'freezetime' && argSocket.socket) {
 			argSocket.socket.send('showReplay');

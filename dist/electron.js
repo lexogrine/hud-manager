@@ -73,11 +73,14 @@ async function mainProcess(server, forceDev = false, gui = true) {
 async function startManager() {
     electron_1.app.setAppUserModelId('com.lexogrine.hudmanager');
     if (process.argv.includes('--renderer')) {
+        console.log('d', new Date().getTime());
         (0, renderer_1.createMainWindow)(process.argv.includes('--dev'));
         return;
     }
     directories.checkDirectories();
+    console.log('b', new Date().getTime());
     const server = await (0, server_1.default)();
+    console.log('c', new Date().getTime());
     const argv = (0, args_1.default)(process.argv);
     mainProcess(server, argv.dev || exports.isDev, !argv.noGUI);
 }
@@ -86,5 +89,6 @@ if (!lock && !process.argv.includes('--renderer')) {
     electron_1.app.quit();
 }
 else {
+    console.log('a', new Date().getTime());
     electron_1.app.on('ready', startManager);
 }
