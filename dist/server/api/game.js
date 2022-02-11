@@ -196,7 +196,7 @@ const run = async (req, res) => {
     }
     // http://localhost:${config.port}/ar2/examples/default/index.html
     const args = [];
-    const afxURL = !cfgData.ar ? `http://localhost:${config.port}/hlae.html` : `http://localhost:${config.port}/ar2/examples/default/index.html`;
+    const afxURL = `http://localhost:${config.port}/ar2/examples/default/index.html`;
     if (!isHLAE) {
         args.push('-applaunch 730');
         if (exec) {
@@ -222,7 +222,13 @@ const run = async (req, res) => {
         const steam = (0, child_process_1.spawn)(`"${exePath}"`, args, { detached: true, shell: true, stdio: 'ignore' });
         steam.unref();
         if (cfgData.afx && !electron_1.AFXInterop.process) {
-            const process = (0, child_process_1.spawn)(`${config.afxCEFHudInteropPath}`, [`--url=${afxURL}`, '--enable-experimental-web-platform-features', '--disable-logging', '--afx-no-window', '--logging-severity=error'], { stdio: 'ignore' });
+            const process = (0, child_process_1.spawn)(`${config.afxCEFHudInteropPath}`, [
+                `--url=${afxURL}`,
+                '--enable-experimental-web-platform-features',
+                '--disable-logging',
+                '--afx-no-window',
+                '--logging-severity=error'
+            ], { stdio: 'ignore' });
             electron_1.AFXInterop.process = process;
         }
     }

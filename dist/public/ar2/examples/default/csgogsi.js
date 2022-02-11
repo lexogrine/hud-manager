@@ -97,7 +97,7 @@ class CSGOGSI {
         this.MR = 3;
         this.damage = [];
     }
-    digest(raw) {
+    digest = (raw) => {
         if (!raw.allplayers || !raw.map || !raw.phase_countdowns) {
             return null;
         }
@@ -301,7 +301,7 @@ class CSGOGSI {
         this.emit('data', data);
         this.last = data;
         return data;
-    }
+    };
     digestMIRV(raw, eventType = 'player_death') {
         if (eventType === 'player_death') {
             const rawKill = raw;

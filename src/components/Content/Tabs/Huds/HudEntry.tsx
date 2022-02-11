@@ -220,7 +220,11 @@ const HudEntry = ({
 										>
 											{t('huds.actions.overlay')}
 										</Tip>
-										{isNotRemote && isCloudAvailable && !hud.isDev && hud.game !== 'all' ? (
+										{isNotRemote &&
+										isCloudAvailable &&
+										!hud.isDev &&
+										hud.game !== 'all' &&
+										hud.dir !== 'premiumhud' ? (
 											!isLoading ? (
 												<Tip
 													id={`hud_upload_button_${hashCode(hud.dir)}`}
@@ -240,19 +244,21 @@ const HudEntry = ({
 												<Loading height={15} />
 											)
 										) : null}
-										<Tip
-											id={`hud_delete_button_${hashCode(hud.dir)}`}
-											label={
-												<img
-													src={trash}
-													onClick={toggleModal}
-													className="action"
-													alt="Delete HUD"
-												/>
-											}
-										>
-											{t('huds.actions.deleteLocally')}
-										</Tip>
+										{hud.dir !== 'premiumhud' ? (
+											<Tip
+												id={`hud_delete_button_${hashCode(hud.dir)}`}
+												label={
+													<img
+														src={trash}
+														onClick={toggleModal}
+														className="action"
+														alt="Delete HUD"
+													/>
+												}
+											>
+												{t('huds.actions.deleteLocally')}
+											</Tip>
+										) : null}
 									</ElectronOnly>
 									<GameOnly game="csgo">
 										<ElectronOnly>

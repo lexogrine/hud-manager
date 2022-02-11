@@ -39,7 +39,7 @@ class HUD {
         const io = await socket_1.ioPromise;
         if (this.current !== null || this.hud !== null)
             return null;
-        const hud = await (0, huds_1.getHUDData)(dirName);
+        const hud = await (0, huds_1.getHUDData)(dirName, dirName === 'premiumhud');
         if (hud === null)
             return null;
         const hudWindow = new electron_1.BrowserWindow({
@@ -84,10 +84,10 @@ class HUD {
                     //globalShortcut.unregister(keybind.bind);
                     const keybinds = [];
                     if (Array.isArray(keybind.action)) {
-                        keybinds.push(...keybind.action.map(ar => typeof ar.action === "string" ? ar.action : ar.action.action || ''));
+                        keybinds.push(...keybind.action.map(ar => typeof ar.action === 'string' ? ar.action : ar.action.action || ''));
                     }
                     else {
-                        keybinds.push(typeof keybind.action === "string" ? keybind.action : keybind.action.action || "");
+                        keybinds.push(typeof keybind.action === 'string' ? keybind.action : keybind.action.action || '');
                     }
                     for (const keybindShort of keybinds) {
                         (0, keybinder_1.unregisterKeybind)(keybindShort, hud.dir);
@@ -133,7 +133,10 @@ class HUD {
                         const mapName = socket_1.GSI.current.map.name.substr(socket_1.GSI.current.map.name.lastIndexOf('/') + 1);
                         const actionForMap = bind.action.find(keybindAction => keybindAction.map === mapName);
                         if (actionForMap) {
-                            action = typeof actionForMap.action === 'string' ? actionForMap.action : (actionForMap.action.action || '');
+                            action =
+                                typeof actionForMap.action === 'string'
+                                    ? actionForMap.action
+                                    : actionForMap.action.action || '';
                             if (typeof actionForMap.action !== 'string') {
                                 exec = actionForMap.action.exec || '';
                             }

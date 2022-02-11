@@ -87,7 +87,7 @@ socket_1.ioPromise.then(io => {
             }
             else {
                 if (hudUrl) {
-                    const hudData = await (0, huds_1.getHUDData)(dir);
+                    const hudData = await (0, huds_1.getHUDData)(dir, dir === 'premiumhud');
                     const keybinds = hudData?.keybinds || [];
                     for (const bind of keybinds) {
                         (0, keybinder_1.registerKeybind)(bind.bind, () => {
@@ -102,7 +102,10 @@ socket_1.ioPromise.then(io => {
                                 const mapName = socket_1.GSI.current.map.name.substr(socket_1.GSI.current.map.name.lastIndexOf('/') + 1);
                                 const actionForMap = bind.action.find(keybindAction => keybindAction.map === mapName);
                                 if (actionForMap) {
-                                    action = typeof actionForMap.action === 'string' ? actionForMap.action : (actionForMap.action.action || '');
+                                    action =
+                                        typeof actionForMap.action === 'string'
+                                            ? actionForMap.action
+                                            : actionForMap.action.action || '';
                                     if (typeof actionForMap.action !== 'string') {
                                         exec = actionForMap.action.exec || '';
                                     }
@@ -162,7 +165,10 @@ socket_1.ioPromise.then(io => {
                             const mapName = socket_1.GSI.current.map.name.substr(socket_1.GSI.current.map.name.lastIndexOf('/') + 1);
                             const actionForMap = bind.action.find(keybindAction => keybindAction.map === mapName);
                             if (actionForMap) {
-                                action = typeof actionForMap.action === 'string' ? actionForMap.action : (actionForMap.action.action || '');
+                                action =
+                                    typeof actionForMap.action === 'string'
+                                        ? actionForMap.action
+                                        : actionForMap.action.action || '';
                                 if (typeof actionForMap.action !== 'string') {
                                     exec = actionForMap.action.exec || '';
                                 }

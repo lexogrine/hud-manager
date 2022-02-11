@@ -67,7 +67,7 @@ function AfxEngineInterop(interop, args) {
 			await this.connect();
 		},
 		"disconnect" : async function(senderId) {
-			await Utils.toPromise(this, "disconnect");
+			await this.disconnect();
 		},
 		"drawingConnected": async function(senderId) {
 
@@ -88,26 +88,7 @@ function AfxEngineInterop(interop, args) {
 		"drawingDisconnected": async function(senderId) {
 			console.log("drawingDisconnected: "+senderId);
 			this.drawingConnectRequested = false;
-			await Utils.toPromise(this, "disconnect");
-		},
-		"pump": async function() {
-		
-			try {
-				await Utils.toPromise(this.interop, "pump", this.pumpEvents);
-			}
-			catch(e) {
-				Utils.logError(e);
-
-				if(!(e && e.soft)) {
-					await Utils.toPromise(this, "disconnect");
-					return;
-				}
-			}
-
-			if(this.connected) this.interop.onMessage(this.interop.id, JSON.stringify({
-				"id": "pump",
-				"args": []
-			}));
+			await this.disconnect();
 		}
 	};
 	
@@ -121,9 +102,9 @@ function AfxEngineInterop(interop, args) {
 		let queue = queues[port];
 		if(!queue) queue = queues[port] = Promise.resolve();
 		
-		queue.then(()=>{
-			queues[port] = self.messageHandlers[jMessage.id].apply(self, jMessage.args);
-		});
+		queues[port] = queue.finally(()=>{
+			return self.messageHandlers[jMessage.id].apply(self, jMessage.args);
+		}).finally();
 	}
 	
 	// GameEvents:
@@ -368,15 +349,6 @@ function AfxEngineInterop(interop, args) {
 			//	fov: 90, // optional
 			//};
 		},
-		// required if you want to do queued rendering optimizations,
-		// ohterwise optional.
-		"onForceEndQueue": async function() {
-			//console.log("SEND onForceEndQueue");
-			await Utils.toPromise(this.interop, "sendMessage", this.args.drawingInteropId, JSON.stringify({
-				"id": "onForceEndQueue",
-				"args": []
-			}));
-		}
 	};
 
 	this.pumpEvents = this.makePumpEvents();
@@ -407,10 +379,18 @@ AfxEngineInterop.prototype.connect = async function() {
 		"args": [self.interop.id]
 	}));
 	
-	self.interop.onMessage(self.interop.id, JSON.stringify({
-		"id": "pump",
-		"args": []
-	}));
+	function pump() {
+		if(self.connected) {
+			Utils.toPromise(self.interop, "pump", self.pumpEvents).then(()=>{
+				queueMicrotask(pump);
+			}).catch((e)=>{
+				Utils.logError(e);
+				return self.disconnect();
+			});
+		}
+	}
+
+	queueMicrotask(pump);
 }
 
 AfxEngineInterop.prototype.disconnect = async function() {

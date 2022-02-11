@@ -221,12 +221,12 @@ const loadUser = async (workspace, loggedIn = false) => {
     }
     socket_1.ioPromise.then(io => {
         io.emit('reload_acocs');
+        io.emit('reloadHUDs');
     });
     return { success: true, message: '' };
 };
 const loadUserWorkspaces = async () => {
     const response = await userHandlers.getWorkspaces();
-    console.log(response);
     if (!response || 'error' in response) {
         if (!response) {
             return { error: 'Not logged in' };

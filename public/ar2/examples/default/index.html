@@ -139,9 +139,9 @@ function AfxInterop(interop, args) {
 		let queue = queues[port];
 		if(!queue) queue = queues[port] = Promise.resolve();
 		
-		queue.then(()=>{
-			queues[port] = self.messageHandlers[jMessage.id].apply(self, jMessage.args);
-		});
+		queues[port] = queue.then(()=>{
+			return self.messageHandlers[jMessage.id].apply(self, jMessage.args);
+		}).finally();
 	}
 
 	interop.onError = function(senderId, message){

@@ -83,7 +83,7 @@ ioPromise.then(io => {
 				unregisterAllKeybinds(dir);
 			} else {
 				if (hudUrl) {
-					const hudData = await getHUDData(dir);
+					const hudData = await getHUDData(dir, dir === 'premiumhud');
 					const keybinds = hudData?.keybinds || [];
 					for (const bind of keybinds) {
 						registerKeybind(
@@ -91,17 +91,24 @@ ioPromise.then(io => {
 							() => {
 								let action = '';
 								let exec = '';
-								
-								if(typeof bind.action === 'string'){
-									action = bind.action
-								} else if(Array.isArray(bind.action)){
-									if(!GSI.current?.map) return;
-									const mapName = GSI.current.map.name.substr(GSI.current.map.name.lastIndexOf('/')+1);
-									const actionForMap = bind.action.find(keybindAction => keybindAction.map === mapName);
-		
-									if(actionForMap){
-										action = typeof actionForMap.action === 'string' ? actionForMap.action : (actionForMap.action.action || '');
-										if(typeof actionForMap.action !== 'string'){
+
+								if (typeof bind.action === 'string') {
+									action = bind.action;
+								} else if (Array.isArray(bind.action)) {
+									if (!GSI.current?.map) return;
+									const mapName = GSI.current.map.name.substr(
+										GSI.current.map.name.lastIndexOf('/') + 1
+									);
+									const actionForMap = bind.action.find(
+										keybindAction => keybindAction.map === mapName
+									);
+
+									if (actionForMap) {
+										action =
+											typeof actionForMap.action === 'string'
+												? actionForMap.action
+												: actionForMap.action.action || '';
+										if (typeof actionForMap.action !== 'string') {
 											exec = actionForMap.action.exec || '';
 										}
 									}
@@ -109,10 +116,10 @@ ioPromise.then(io => {
 									action = bind.action.action || '';
 									exec = bind.action.exec || '';
 								}
-								if(action) io.to(dir).emit('keybindAction', action);
-		
-								if(!exec) return;
-		
+								if (action) io.to(dir).emit('keybindAction', action);
+
+								if (!exec) return;
+
 								mirvPgl.execute(exec);
 							},
 							dir
@@ -158,16 +165,19 @@ ioPromise.then(io => {
 							let action = '';
 							let exec = '';
 
-							if(typeof bind.action === 'string'){
-								action = bind.action
-							} else if(Array.isArray(bind.action)){
-								if(!GSI.current?.map) return;
-								const mapName = GSI.current.map.name.substr(GSI.current.map.name.lastIndexOf('/')+1);
+							if (typeof bind.action === 'string') {
+								action = bind.action;
+							} else if (Array.isArray(bind.action)) {
+								if (!GSI.current?.map) return;
+								const mapName = GSI.current.map.name.substr(GSI.current.map.name.lastIndexOf('/') + 1);
 								const actionForMap = bind.action.find(keybindAction => keybindAction.map === mapName);
-	
-								if(actionForMap){
-									action = typeof actionForMap.action === 'string' ? actionForMap.action : (actionForMap.action.action || '');
-									if(typeof actionForMap.action !== 'string'){
+
+								if (actionForMap) {
+									action =
+										typeof actionForMap.action === 'string'
+											? actionForMap.action
+											: actionForMap.action.action || '';
+									if (typeof actionForMap.action !== 'string') {
 										exec = actionForMap.action.exec || '';
 									}
 								}
@@ -175,10 +185,10 @@ ioPromise.then(io => {
 								action = bind.action.action || '';
 								exec = bind.action.exec || '';
 							}
-							if(action) io.emit('keybindAction', action);
-	
-							if(!exec) return;
-	
+							if (action) io.emit('keybindAction', action);
+
+							if (!exec) return;
+
 							mirvPgl.execute(exec);
 						},
 						moduleDir

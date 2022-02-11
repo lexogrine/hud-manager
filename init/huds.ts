@@ -22,7 +22,7 @@ class HUD {
 	async open(dirName: string) {
 		const io = await ioPromise;
 		if (this.current !== null || this.hud !== null) return null;
-		const hud = await getHUDData(dirName);
+		const hud = await getHUDData(dirName, dirName === 'premiumhud');
 		if (hud === null) return null;
 		const hudWindow = new BrowserWindow({
 			fullscreen: true,
@@ -72,12 +72,18 @@ class HUD {
 				for (const keybind of this.hud.keybinds) {
 					//globalShortcut.unregister(keybind.bind);
 					const keybinds: string[] = [];
-					if(Array.isArray(keybind.action)){
-						keybinds.push(...keybind.action.map(ar => typeof ar.action === "string" ? ar.action : ar.action.action || ''));
+					if (Array.isArray(keybind.action)) {
+						keybinds.push(
+							...keybind.action.map(ar =>
+								typeof ar.action === 'string' ? ar.action : ar.action.action || ''
+							)
+						);
 					} else {
-						keybinds.push(typeof keybind.action === "string" ? keybind.action : keybind.action.action || "");
+						keybinds.push(
+							typeof keybind.action === 'string' ? keybind.action : keybind.action.action || ''
+						);
 					}
-					for(const keybindShort of keybinds){
+					for (const keybindShort of keybinds) {
 						unregisterKeybind(keybindShort, hud.dir);
 					}
 				}
@@ -118,17 +124,20 @@ class HUD {
 					() => {
 						let action = '';
 						let exec = '';
-						
-						if(typeof bind.action === 'string'){
-							action = bind.action
-						} else if(Array.isArray(bind.action)){
-							if(!GSI.current?.map) return;
-							const mapName = GSI.current.map.name.substr(GSI.current.map.name.lastIndexOf('/')+1);
+
+						if (typeof bind.action === 'string') {
+							action = bind.action;
+						} else if (Array.isArray(bind.action)) {
+							if (!GSI.current?.map) return;
+							const mapName = GSI.current.map.name.substr(GSI.current.map.name.lastIndexOf('/') + 1);
 							const actionForMap = bind.action.find(keybindAction => keybindAction.map === mapName);
 
-							if(actionForMap){
-								action = typeof actionForMap.action === 'string' ? actionForMap.action : (actionForMap.action.action || '');
-								if(typeof actionForMap.action !== 'string'){
+							if (actionForMap) {
+								action =
+									typeof actionForMap.action === 'string'
+										? actionForMap.action
+										: actionForMap.action.action || '';
+								if (typeof actionForMap.action !== 'string') {
 									exec = actionForMap.action.exec || '';
 								}
 							}
@@ -136,9 +145,9 @@ class HUD {
 							action = bind.action.action || '';
 							exec = bind.action.exec || '';
 						}
-						if(action) io.to(hud.dir).emit('keybindAction', action);
+						if (action) io.to(hud.dir).emit('keybindAction', action);
 
-						if(!exec) return;
+						if (!exec) return;
 
 						mirvPgl.execute(exec);
 					},

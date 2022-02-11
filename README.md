@@ -24,7 +24,7 @@ If you are in the business of broadcasting professional CS:GO matches, the Lexog
 * [Supported games](#supported-games)
 * [Signing HUDs](#signing-huds)
 * [Settings](#settings)
-* [AFX Mode](#embedded-hud)
+* [Embedded Mode](#embedded-hud)
 * [HUD API](#hud-api)
   * [Structure](#structure)
     * [hud.json](#hudjson)
@@ -157,12 +157,7 @@ In case usual database structure is not enough, from 1.10 it is possible to expa
 
 ## AR
 
-AR (Augmented Reality) is an option to add models / screens / objects in 3D space to the game. This is currently very experimental, and requires different setup.
- - Download and unzip HLAE
- - Replace AfxHookSource.dll with the one from here ( https://github.com/advancedfx/afx-cefhud-interop/releases/tag/v7.0.0-48e3c55 ) or newer version from release page
- - Download afx-cefhud-interop from https://github.com/advancedfx/afx-cefhud-interop/releases/tag/v7.0.0-1530590 (version recommended as of 26th of May)
- - Set HLAE's and AFX's path in LHM
- - Toggle AR in HUDs tab and start game
+AR (Augmented Reality) is an option to add models / screens / objects in 3D space to the game. This is currently very experimental, and requires you to follow steps from [Embedded Mode](#embedded-hud).
 
 To see which HUDs have AR elements, click on AR button or go to AR tab to filter them out. Important - for HUDs to load correctly you need to toggle them once in game, not before.
 
@@ -170,7 +165,6 @@ For HUD to be considered AR-compatible it needs to have `ar` property in `hud.js
 
 `ar.js` module file must expose `startARModule(scene, camera, renderer, GSI)` and `cleanUpARModule(scene, GSI)` functions, where all arguments beside GSI are THREEJS objects. `startARModule` primary goal is to create listeners for data and handle updating scene and objects on it. `cleanUpARModule` should remove all objects added to scene.
 
-In the future we will allow for external AR modules, which will work independently from HUDs.
 
 
 ## ACO 
@@ -232,7 +226,7 @@ Signing HUDs is first step towards helping developers feel safe about their crea
 
 At this point there is an option to embedd any HUD in CS:GO using HLAE and afx_interop. It gives the advantage of being able to use CS:GO in fullscreen mode while using the custom HUDs. It must be noted however, that this mode may affect the framerate.
 
-If you want to use this mode, you need to get HLAE, Release.7z and Release-Base.7z archive from here: https://drive.google.com/drive/folders/1CQFGMYhmz4x9DxunmwhWMp37ow6YOBON and set path to the afx-cefhud-interop.exe in the Lexogrine HUD Manager's settings. At this point the setup is completed - you just need to switch to the embedded mode in HUDs tab, toggle which HUD you intend to use and click RUN GAME (if you already have installed the config files of course).
+If you want to use this mode, you need to get latest HLAE, and latest afx-cefhud-interop. Download the newest Release.7z from https://github.com/advancedfx/afx-cefhud-interop/releases and unpack it. and set path to the afx-cefhud-interop.exe in the Lexogrine HUD Manager's settings. At this point the setup is completed - you just need to switch to the embedded mode in HUDs tab, toggle which HUD you intend to use and click RUN GAME (if you already have installed the config files of course).
 
 
 ## HUD API

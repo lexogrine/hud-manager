@@ -66,7 +66,7 @@ export const validateCloudAbility = async (resource?: I.AvailableResources) => {
 
 export default async function (/*io: Server<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap>*/) {
 	const io = await ioPromise;
-	
+
 	initGameConnection();
 
 	app.route('/api/workspace').post(user.setWorkspace);
