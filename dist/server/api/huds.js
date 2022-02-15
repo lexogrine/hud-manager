@@ -110,7 +110,9 @@ const listHUDs = async () => {
             .filter(dirent => /^[0-9a-zA-Z-_]+$/g.test(dirent.name))
         : [];
     const huds = (await Promise.all(filtered.map(async (dirent) => await (0, exports.getHUDData)(dirent.name)))).filter(hud => hud !== null);
-    if (_1.customer.workspace || (_1.customer.customer && (_1.customer.customer.license.type === "professional" || _1.customer.customer.license.type === "enterprise"))) {
+    if (_1.customer.workspace ||
+        (_1.customer.customer &&
+            (_1.customer.customer.license.type === 'professional' || _1.customer.customer.license.type === 'enterprise'))) {
         const premiumCSGOHUD = await (0, exports.getHUDData)('premiumhud', true);
         if (premiumCSGOHUD)
             huds.unshift(premiumCSGOHUD);
@@ -202,7 +204,9 @@ const getHUDARSettings = (dirName) => {
 };
 exports.getHUDARSettings = getHUDARSettings;
 const getHUDPublicKey = (dirName) => {
-    const dir = dirName === 'premiumhud' ? path.join(electron_1.app.getPath('userData'), 'premium', 'csgo') : path.join(electron_1.app.getPath('home'), 'HUDs', dirName);
+    const dir = dirName === 'premiumhud'
+        ? path.join(electron_1.app.getPath('userData'), 'premium', 'csgo')
+        : path.join(electron_1.app.getPath('home'), 'HUDs', dirName);
     const keyFile = path.join(dir, 'key');
     if (!fs.existsSync(keyFile)) {
         return null;
@@ -220,83 +224,83 @@ const getHUDData = async (dirName, isPremium) => {
     if (!globalConfig)
         return null;
     if (isPremium) {
-        return ({
-            name: "CS:GO Premium HUD",
-            version: "1.0.0",
-            author: "Lexogrine",
+        return {
+            name: 'CS:GO Premium HUD',
+            version: '1.0.0',
+            author: 'Lexogrine',
             legacy: false,
-            dir: "premiumhud",
+            dir: 'premiumhud',
             radar: true,
-            game: "csgo",
+            game: 'csgo',
             publicKey: getHUDPublicKey(dirName),
             killfeed: true,
             keybinds: [
                 {
-                    "bind": "Alt+S",
-                    "action": "setScoreboard"
+                    bind: 'Alt+S',
+                    action: 'setScoreboard'
                 },
                 {
-                    "bind": "Alt+Y",
-                    "action": "toggleCameraBoard"
+                    bind: 'Alt+Y',
+                    action: 'toggleCameraBoard'
                 },
                 {
-                    "bind": "Alt+W",
-                    "action": "setFunGraph"
+                    bind: 'Alt+W',
+                    action: 'setFunGraph'
                 },
                 {
-                    "bind": "Alt+C",
-                    "action": "toggleCams"
+                    bind: 'Alt+C',
+                    action: 'toggleCams'
                 },
                 {
-                    "bind": "Alt+T",
-                    "action": [
+                    bind: 'Alt+T',
+                    action: [
                         {
-                            "map": "de_vertigo",
-                            "action": {
-                                "action": "toggleMainScoreboard",
-                                "exec": "spec_mode 5;spec_mode 6;spec_goto 41.3 -524.8 12397.0 -0.1 153.8; spec_lerpto -24.1 335.8 12391.3 -4.0 -149.9 12 12"
+                            map: 'de_vertigo',
+                            action: {
+                                action: 'toggleMainScoreboard',
+                                exec: 'spec_mode 5;spec_mode 6;spec_goto 41.3 -524.8 12397.0 -0.1 153.8; spec_lerpto -24.1 335.8 12391.3 -4.0 -149.9 12 12'
                             }
                         },
                         {
-                            "map": "de_mirage",
-                            "action": {
-                                "action": "toggleMainScoreboard",
-                                "exec": "spec_mode 5;spec_mode 6;spec_goto -731.6 -734.9 129.5 7.2 60.7; spec_lerpto -42.5 -655.3 146.7 4.0 119.3 12 12"
+                            map: 'de_mirage',
+                            action: {
+                                action: 'toggleMainScoreboard',
+                                exec: 'spec_mode 5;spec_mode 6;spec_goto -731.6 -734.9 129.5 7.2 60.7; spec_lerpto -42.5 -655.3 146.7 4.0 119.3 12 12'
                             }
                         },
                         {
-                            "map": "de_inferno",
-                            "action": {
-                                "action": "toggleMainScoreboard",
-                                "exec": "spec_mode 5;spec_mode 6;spec_goto -1563.1 -179.4 302.1 9.8 134.7; spec_lerpto -1573.8 536.6 248.3 6.1 -157.5 12 12"
+                            map: 'de_inferno',
+                            action: {
+                                action: 'toggleMainScoreboard',
+                                exec: 'spec_mode 5;spec_mode 6;spec_goto -1563.1 -179.4 302.1 9.8 134.7; spec_lerpto -1573.8 536.6 248.3 6.1 -157.5 12 12'
                             }
                         },
                         {
-                            "map": "de_dust2",
-                            "action": {
-                                "action": "toggleMainScoreboard",
-                                "exec": "spec_mode 5;spec_mode 6;spec_goto 373.8 203.8 154.8 -17.6 -25.3; spec_lerpto 422.6 -315.0 106.0 -31.1 16.7 12 12"
+                            map: 'de_dust2',
+                            action: {
+                                action: 'toggleMainScoreboard',
+                                exec: 'spec_mode 5;spec_mode 6;spec_goto 373.8 203.8 154.8 -17.6 -25.3; spec_lerpto 422.6 -315.0 106.0 -31.1 16.7 12 12'
                             }
                         },
                         {
-                            "map": "de_overpass",
-                            "action": {
-                                "action": "toggleMainScoreboard",
-                                "exec": "spec_mode 5;spec_mode 6;spec_goto -781.2 44.4 745.5 15.7 -101.3; spec_lerpto -1541.2 -1030.6 541.9 2.9 -35.8 12 12"
+                            map: 'de_overpass',
+                            action: {
+                                action: 'toggleMainScoreboard',
+                                exec: 'spec_mode 5;spec_mode 6;spec_goto -781.2 44.4 745.5 15.7 -101.3; spec_lerpto -1541.2 -1030.6 541.9 2.9 -35.8 12 12'
                             }
                         },
                         {
-                            "map": "de_nuke",
-                            "action": {
-                                "action": "toggleMainScoreboard",
-                                "exec": "spec_mode 5;spec_mode 6;spec_goto 800.0 -2236.4 -170.9 -1.0 -123.3; spec_lerpto -161.2 -2584.0 -127.2 -0.1 -60.4 12 12"
+                            map: 'de_nuke',
+                            action: {
+                                action: 'toggleMainScoreboard',
+                                exec: 'spec_mode 5;spec_mode 6;spec_goto 800.0 -2236.4 -170.9 -1.0 -123.3; spec_lerpto -161.2 -2584.0 -127.2 -0.1 -60.4 12 12'
                             }
                         },
                         {
-                            "map": "de_ancient",
-                            "action": {
-                                "action": "toggleMainScoreboard",
-                                "exec": "spec_mode 5;spec_mode 6;spec_goto -813.4 -38.8 547.7 8.7 -21.2; spec_lerpto -723.9 -748.6 385.0 -14.3 17.4 12 12"
+                            map: 'de_ancient',
+                            action: {
+                                action: 'toggleMainScoreboard',
+                                exec: 'spec_mode 5;spec_mode 6;spec_goto -813.4 -38.8 547.7 8.7 -21.2; spec_lerpto -723.9 -748.6 385.0 -14.3 17.4 12 12'
                             }
                         }
                     ]
@@ -306,7 +310,7 @@ const getHUDData = async (dirName, isPremium) => {
             status: 'SYNCED',
             uuid: 'premium-turbo-hud1.0.0.',
             isDev: false
-        });
+        };
     }
     const dir = path.join(electron_1.app.getPath('home'), 'HUDs', dirName);
     const configFileDir = path.join(dir, 'hud.json');
@@ -459,7 +463,9 @@ const verifyOverlay = async (req, res, next) => {
 };
 exports.verifyOverlay = verifyOverlay;
 const render = (req, res) => {
-    const dir = req.params.dir === 'premiumhud' ? path.join(electron_1.app.getPath('userData'), 'premium', 'csgo') : path.join(electron_1.app.getPath('home'), 'HUDs', req.params.dir);
+    const dir = req.params.dir === 'premiumhud'
+        ? path.join(electron_1.app.getPath('userData'), 'premium', 'csgo')
+        : path.join(electron_1.app.getPath('home'), 'HUDs', req.params.dir);
     return res.sendFile(path.join(dir, 'index.html'));
 };
 exports.render = render;
@@ -479,7 +485,9 @@ const renderThumbnail = (req, res) => {
 };
 exports.renderThumbnail = renderThumbnail;
 const getThumbPath = (dir) => {
-    const thumbPath = dir === 'premiumhud' ? path.join(electron_1.app.getPath('userData'), 'premium', 'csgo', 'thumb.png') : path.join(electron_1.app.getPath('home'), 'HUDs', dir, 'thumb.png');
+    const thumbPath = dir === 'premiumhud'
+        ? path.join(electron_1.app.getPath('userData'), 'premium', 'csgo', 'thumb.png')
+        : path.join(electron_1.app.getPath('home'), 'HUDs', dir, 'thumb.png');
     if (fs.existsSync(thumbPath)) {
         return thumbPath;
     }
@@ -494,8 +502,12 @@ const renderAssets = async (req, res, next) => {
     if (!data) {
         return res.sendStatus(404);
     }
-    const filePath = req.params.dir === 'premiumhud' ? path.join(electron_1.app.getPath('userData'), 'premium', 'csgo', req.path) : path.join(electron_1.app.getPath('home'), 'HUDs', data.dir, req.path);
-    const staticUrl = req.params.dir === 'premiumhud' ? path.join(electron_1.app.getPath('userData'), 'premium', 'csgo') : path.join(electron_1.app.getPath('home'), 'HUDs', req.params.dir);
+    const filePath = req.params.dir === 'premiumhud'
+        ? path.join(electron_1.app.getPath('userData'), 'premium', 'csgo', req.path)
+        : path.join(electron_1.app.getPath('home'), 'HUDs', data.dir, req.path);
+    const staticUrl = req.params.dir === 'premiumhud'
+        ? path.join(electron_1.app.getPath('userData'), 'premium', 'csgo')
+        : path.join(electron_1.app.getPath('home'), 'HUDs', req.params.dir);
     if ((!req.path.endsWith('.js') && !req.path.endsWith('.css')) || !data.publicKey || !fs.existsSync(filePath)) {
         return express_1.default.static(staticUrl)(req, res, next);
     }

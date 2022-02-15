@@ -72,7 +72,7 @@ const remove = (pathToRemove) => {
 async function loadHUDPremium() {
     removeArchives();
     return new Promise(res => {
-        let hudPath = path.join(electron_1.app.getPath('userData'), 'premium', 'csgo');
+        const hudPath = path.join(electron_1.app.getPath('userData'), 'premium', 'csgo');
         if (!fs.existsSync(hudPath)) {
             return res(null);
         }
