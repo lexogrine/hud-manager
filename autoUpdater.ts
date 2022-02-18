@@ -12,6 +12,9 @@ export default (window: BrowserWindow) => {
 			title: 'Update available',
 			body: `You can install the newest Lexogrine HUD Manager update in the Settings tab`
 		});
+		notification.on('click', () => {
+			window.webContents.send('switchTab', 'config')
+		})
 		notification.show();
 	});
 	autoUpdater.on('update-not-available', () => {

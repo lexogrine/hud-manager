@@ -1,8 +1,11 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { app } from 'electron';
-import { getHUDData } from '../server/api/huds';
 const DecompressZip = require('decompress-zip');
+
+export const LHMP = {
+	CSGO: '1.1.0'
+}
 
 function createIfMissing(directory: string) {
 	if (!fs.existsSync(directory)) {
@@ -30,7 +33,7 @@ const removeArchives = () => {
 	});
 };
 
-const remove = (pathToRemove: string) => {
+const remove = (pathToRemove: string, leaveRoot = false) => {
 	if (!fs.existsSync(pathToRemove)) {
 		return;
 	}
@@ -46,7 +49,7 @@ const remove = (pathToRemove: string) => {
 			if (fs.existsSync(current)) fs.unlinkSync(current);
 		}
 	});
-	fs.rmdirSync(pathToRemove);
+	if(!leaveRoot) fs.rmdirSync(pathToRemove);
 };
 export async function loadHUDPremium(): Promise<any> {
 	removeArchives();
@@ -55,6 +58,27 @@ export async function loadHUDPremium(): Promise<any> {
 		if (!fs.existsSync(hudPath)) {
 			return res(null);
 		}
+		
+		const versionFile = path.join(hudPath, 'version');
+
+		const doVersionFileExist = fs.existsSync(versionFile);
+
+		let shouldUpdate = false;
+
+		if(!doVersionFileExist){
+			shouldUpdate = true;
+		} else {
+			const content = fs.readFileSync(versionFile, 'utf-8');
+			if(LHMP.CSGO !== content){
+				shouldUpdate = true;
+			}
+		}
+
+		if(!shouldUpdate){
+			return res(null);
+		}
+		remove(hudPath, true);
+		fs.writeFileSync(versionFile, LHMP.CSGO);
 		try {
 			const fileString = fs.readFileSync(path.join(__dirname, './lhmp.zip'), 'base64');
 

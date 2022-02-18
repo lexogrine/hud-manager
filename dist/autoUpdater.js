@@ -12,10 +12,21 @@ exports.default = (window) => {
             title: 'Update available',
             body: `You can install the newest Lexogrine HUD Manager update in the Settings tab`
         });
+        notification.on('click', () => {
+            window.webContents.send('switchTab', 'config');
+        });
         notification.show();
     });
     electron_updater_1.autoUpdater.on('update-not-available', () => {
         window.webContents.send('updateStatus', false, version);
+        const notification = new electron_1.Notification({
+            title: 'Update available',
+            body: `You can install the newest Lexogrine HUD Manager update in the Settings tab`
+        });
+        notification.on('click', () => {
+            window.webContents.send('switchTab', 'settings');
+        });
+        notification.show();
     });
     electron_updater_1.autoUpdater.on('update-downloaded', () => electron_updater_1.autoUpdater.quitAndInstall(true, true));
     electron_1.ipcMain.on('updateApp', () => {

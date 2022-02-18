@@ -19,11 +19,14 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.checkDirectories = exports.loadHUDPremium = void 0;
+exports.checkDirectories = exports.loadHUDPremium = exports.LHMP = void 0;
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
 const electron_1 = require("electron");
 const DecompressZip = require('decompress-zip');
+exports.LHMP = {
+    CSGO: '1.1.0'
+};
 function createIfMissing(directory) {
     if (!fs.existsSync(directory)) {
         fs.mkdirSync(directory);
@@ -48,7 +51,7 @@ const removeArchives = () => {
         catch { }
     });
 };
-const remove = (pathToRemove) => {
+const remove = (pathToRemove, leaveRoot = false) => {
     if (!fs.existsSync(pathToRemove)) {
         return;
     }
@@ -67,7 +70,8 @@ const remove = (pathToRemove) => {
                 fs.unlinkSync(current);
         }
     });
-    fs.rmdirSync(pathToRemove);
+    if (!leaveRoot)
+        fs.rmdirSync(pathToRemove);
 };
 async function loadHUDPremium() {
     removeArchives();
@@ -76,6 +80,23 @@ async function loadHUDPremium() {
         if (!fs.existsSync(hudPath)) {
             return res(null);
         }
+        const versionFile = path.join(hudPath, 'version');
+        const doVersionFileExist = fs.existsSync(versionFile);
+        let shouldUpdate = false;
+        if (!doVersionFileExist) {
+            shouldUpdate = true;
+        }
+        else {
+            const content = fs.readFileSync(versionFile, 'utf-8');
+            if (exports.LHMP.CSGO !== content) {
+                shouldUpdate = true;
+            }
+        }
+        if (!shouldUpdate) {
+            return res(null);
+        }
+        remove(hudPath, true);
+        fs.writeFileSync(versionFile, exports.LHMP.CSGO);
         try {
             const fileString = fs.readFileSync(path.join(__dirname, './lhmp.zip'), 'base64');
             if (!fileString) {

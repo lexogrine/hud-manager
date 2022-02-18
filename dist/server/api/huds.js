@@ -39,6 +39,7 @@ const isSvg_1 = __importDefault(require("../../src/isSvg"));
 const node_fetch_1 = __importDefault(require("node-fetch"));
 const crypto_1 = __importDefault(require("crypto"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
+const directories_1 = require("../../init/directories");
 const DecompressZip = require('decompress-zip');
 const getRandomString = () => (Math.random() * 1000 + 1)
     .toString(36)
@@ -226,7 +227,7 @@ const getHUDData = async (dirName, isPremium) => {
     if (isPremium) {
         return {
             name: 'CS:GO Premium HUD',
-            version: '1.0.0',
+            version: directories_1.LHMP.CSGO,
             author: 'Lexogrine',
             legacy: false,
             dir: 'premiumhud',

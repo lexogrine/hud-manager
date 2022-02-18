@@ -15,6 +15,7 @@ import isSvg from '../../src/isSvg';
 import fetch from 'node-fetch';
 import crypto from 'crypto';
 import jwt from 'jsonwebtoken';
+import { LHMP } from '../../init/directories';
 const DecompressZip = require('decompress-zip');
 
 export const getRandomString = () =>
@@ -220,7 +221,7 @@ export const getHUDData = async (dirName: string, isPremium?: boolean): Promise<
 	if (isPremium) {
 		return {
 			name: 'CS:GO Premium HUD',
-			version: '1.0.0',
+			version: LHMP.CSGO,
 			author: 'Lexogrine',
 			legacy: false,
 			dir: 'premiumhud',

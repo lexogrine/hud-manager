@@ -150,6 +150,12 @@ const Content = ({
 	};
 
 	useEffect(() => {
+		window.ipcApi?.receive?.('switchTab', (tab: string) => {
+			toggle(tab);
+		});
+	}, []);
+
+	useEffect(() => {
 		checkFiles();
 	}, [game]);
 
@@ -192,7 +198,7 @@ const Content = ({
 								if (!available) return;
 								toggleSync();
 							}}
-							href={!available ? 'https://lexogrine.com/manager/register' : undefined}
+							href={!available ? 'https://lexogrine.com/manager/login' : undefined}
 							rel={'noopener noreferrer'}
 							target={!available ? '_blank' : undefined}
 						>
