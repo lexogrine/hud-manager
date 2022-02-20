@@ -5,7 +5,7 @@ const DecompressZip = require('decompress-zip');
 
 export const LHMP = {
 	CSGO: '1.1.0'
-}
+};
 
 function createIfMissing(directory: string) {
 	if (!fs.existsSync(directory)) {
@@ -49,7 +49,7 @@ const remove = (pathToRemove: string, leaveRoot = false) => {
 			if (fs.existsSync(current)) fs.unlinkSync(current);
 		}
 	});
-	if(!leaveRoot) fs.rmdirSync(pathToRemove);
+	if (!leaveRoot) fs.rmdirSync(pathToRemove);
 };
 export async function loadHUDPremium(): Promise<any> {
 	removeArchives();
@@ -58,23 +58,23 @@ export async function loadHUDPremium(): Promise<any> {
 		if (!fs.existsSync(hudPath)) {
 			return res(null);
 		}
-		
+
 		const versionFile = path.join(hudPath, 'version');
 
 		const doVersionFileExist = fs.existsSync(versionFile);
 
 		let shouldUpdate = false;
 
-		if(!doVersionFileExist){
+		if (!doVersionFileExist) {
 			shouldUpdate = true;
 		} else {
 			const content = fs.readFileSync(versionFile, 'utf-8');
-			if(LHMP.CSGO !== content){
+			if (LHMP.CSGO !== content) {
 				shouldUpdate = true;
 			}
 		}
 
-		if(!shouldUpdate){
+		if (!shouldUpdate) {
 			return res(null);
 		}
 		remove(hudPath, true);

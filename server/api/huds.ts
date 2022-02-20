@@ -18,6 +18,8 @@ import jwt from 'jsonwebtoken';
 import { LHMP } from '../../init/directories';
 const DecompressZip = require('decompress-zip');
 
+const HUDSDIRECTORY = path.join(app.getPath('home'), 'HUDs');
+
 export const getRandomString = () =>
 	(Math.random() * 1000 + 1)
 		.toString(36)
@@ -44,7 +46,7 @@ export const remove = (pathToRemove: string) => {
 };
 
 const verifyUniqueID = (hudDir: string) => {
-	const dir = path.join(app.getPath('home'), 'HUDs', hudDir, 'uuid.lhm');
+	const dir = path.join(HUDSDIRECTORY, hudDir, 'uuid.lhm');
 	if (fs.existsSync(dir)) {
 		return fs.readFileSync(dir, 'utf8');
 	}
@@ -88,13 +90,13 @@ export const listHUDs = async () => {
 	if (!customer || !customer.game) return [];
 	const onlineHUDs = await getOnlineHUDs();
 
-	const dir = path.join(app.getPath('home'), 'HUDs');
+	const dir = HUDSDIRECTORY;
 
 	const filtered = fs.existsSync(dir)
 		? fs
-				.readdirSync(dir, { withFileTypes: true })
-				.filter(dirent => dirent.isDirectory())
-				.filter(dirent => /^[0-9a-zA-Z-_]+$/g.test(dirent.name))
+			.readdirSync(dir, { withFileTypes: true })
+			.filter(dirent => dirent.isDirectory())
+			.filter(dirent => /^[0-9a-zA-Z-_]+$/g.test(dirent.name))
 		: [];
 
 	const huds = (await Promise.all(filtered.map(async dirent => await getHUDData(dirent.name)))).filter(
@@ -103,7 +105,7 @@ export const listHUDs = async () => {
 	if (
 		customer.workspace ||
 		(customer.customer &&
-			(customer.customer.license.type === 'professional' || customer.customer.license.type === 'enterprise'))
+			(customer.customer.license.type === "personal" || customer.customer.license.type === 'professional' || customer.customer.license.type === 'enterprise'))
 	) {
 		const premiumCSGOHUD = await getHUDData('premiumhud', true);
 		if (premiumCSGOHUD) huds.unshift(premiumCSGOHUD);
@@ -129,7 +131,12 @@ export const listHUDs = async () => {
 		.map(mapHUDStatus)
 		.filter(hud => customer.game === hud.game || (customer.game === 'csgo' && !hud.game) || hud.game === 'all');
 };
-
+export const getHUDDirectory = (dir: string, isPremium = false) => {
+	const filePath = isPremium
+		? path.join(app.getPath('userData'), 'premium', 'csgo')
+		: path.join(HUDSDIRECTORY, dir);
+	return filePath;
+}
 export const getHUDs: express.RequestHandler = async (req, res) => {
 	return res.json(await listHUDs());
 };
@@ -183,7 +190,7 @@ export const getHUDCustomAsset: express.RequestHandler = async (req, res) => {
 };
 
 export const getHUDARSettings = (dirName: string) => {
-	const dir = path.join(app.getPath('home'), 'HUDs', dirName);
+	const dir = path.join(HUDSDIRECTORY, dirName);
 	const arFileDir = path.join(dir, 'ar.json');
 	if (!fs.existsSync(arFileDir)) {
 		return null;
@@ -198,10 +205,7 @@ export const getHUDARSettings = (dirName: string) => {
 };
 
 const getHUDPublicKey = (dirName: string) => {
-	const dir =
-		dirName === 'premiumhud'
-			? path.join(app.getPath('userData'), 'premium', 'csgo')
-			: path.join(app.getPath('home'), 'HUDs', dirName);
+	const dir = getHUDDirectory(dirName, dirName === "premiumhud");
 
 	const keyFile = path.join(dir, 'key');
 	if (!fs.existsSync(keyFile)) {
@@ -229,7 +233,7 @@ export const getHUDData = async (dirName: string, isPremium?: boolean): Promise<
 			game: 'csgo',
 			publicKey: getHUDPublicKey(dirName),
 			killfeed: true,
-			keybinds: [
+			keybinds: !customer.customer || (customer.customer.license.type === "personal" || customer.customer.license.type === "free") ? [] : [
 				{
 					bind: 'Alt+S',
 					action: 'setScoreboard'
@@ -308,7 +312,7 @@ export const getHUDData = async (dirName: string, isPremium?: boolean): Promise<
 		};
 	}
 
-	const dir = path.join(app.getPath('home'), 'HUDs', dirName);
+	const dir = getHUDDirectory(dirName);
 	const configFileDir = path.join(dir, 'hud.json');
 	if (!fs.existsSync(configFileDir)) {
 		if (!HUDState.devHUD) return null;
@@ -361,7 +365,7 @@ export const getHUDData = async (dirName: string, isPremium?: boolean): Promise<
 };
 
 export const getHUDKeyBinds = (dirName: string) => {
-	const dir = path.join(app.getPath('home'), 'HUDs', dirName);
+	const dir = getHUDDirectory(dirName);
 	const keybindsFileDir = path.join(dir, 'keybinds.json');
 	if (!fs.existsSync(keybindsFileDir)) {
 		return null;
@@ -376,7 +380,7 @@ export const getHUDKeyBinds = (dirName: string) => {
 };
 
 export const getHUDPanelSetting = (dirName: string) => {
-	const dir = path.join(app.getPath('home'), 'HUDs', dirName);
+	const dir = getHUDDirectory(dirName);
 	const panelFileDir = path.join(dir, 'panel.json');
 	if (!fs.existsSync(panelFileDir)) {
 		return null;
@@ -392,7 +396,7 @@ export const getHUDPanelSetting = (dirName: string) => {
 };
 
 export const openHUDsDirectory: express.RequestHandler = async (_req, res) => {
-	const dir = path.join(app.getPath('home'), 'HUDs');
+	const dir = HUDSDIRECTORY;
 	shell.openPath(dir);
 	return res.sendStatus(200);
 };
@@ -466,35 +470,29 @@ export const verifyOverlay: express.RequestHandler = async (req, res, next) => {
 };
 
 export const render: express.RequestHandler = (req, res) => {
-	const dir =
-		req.params.dir === 'premiumhud'
-			? path.join(app.getPath('userData'), 'premium', 'csgo')
-			: path.join(app.getPath('home'), 'HUDs', req.params.dir);
+	const dir = getHUDDirectory(req.params.dir, req.params.dir === 'premiumhud');
 	return res.sendFile(path.join(dir, 'index.html'));
 };
 
 export const renderOverlay =
 	(devHUD = false): express.RequestHandler =>
-	async (req, res) => {
-		const cfg = await loadConfig();
-		if (!cfg) {
-			return res.sendStatus(500);
-		}
-		if (!devHUD) {
-			return res.send(overlay(`/huds/${req.params.dir}/?port=${cfg.port}&isProd=true`));
-		}
-		return res.send(overlay(`/dev/?port=${cfg.port}`));
-	};
+		async (req, res) => {
+			const cfg = await loadConfig();
+			if (!cfg) {
+				return res.sendStatus(500);
+			}
+			if (!devHUD) {
+				return res.send(overlay(`/huds/${req.params.dir}/?port=${cfg.port}&isProd=true`));
+			}
+			return res.send(overlay(`/dev/?port=${cfg.port}`));
+		};
 
 export const renderThumbnail: express.RequestHandler = (req, res) => {
 	return res.sendFile(getThumbPath(req.params.dir));
 };
 
 export const getThumbPath = (dir: string) => {
-	const thumbPath =
-		dir === 'premiumhud'
-			? path.join(app.getPath('userData'), 'premium', 'csgo', 'thumb.png')
-			: path.join(app.getPath('home'), 'HUDs', dir, 'thumb.png');
+	const thumbPath = path.join(getHUDDirectory(dir, dir === 'premiumhud'), 'thumb.png');
 	if (fs.existsSync(thumbPath)) {
 		return thumbPath;
 	}
@@ -505,19 +503,19 @@ export const renderAssets: express.RequestHandler = async (req, res, next) => {
 	if (!req.params.dir) {
 		return res.sendStatus(404);
 	}
+
+
 	const data = await getHUDData(req.params.dir, req.params.dir === 'premiumhud');
 	if (!data) {
 		return res.sendStatus(404);
 	}
-	const filePath =
-		req.params.dir === 'premiumhud'
-			? path.join(app.getPath('userData'), 'premium', 'csgo', req.path)
-			: path.join(app.getPath('home'), 'HUDs', data.dir, req.path);
+	const staticUrl = getHUDDirectory(req.params.dir, req.params.dir === 'premiumhud');
+	const filePath = path.join(staticUrl, req.path);
 
-	const staticUrl =
-		req.params.dir === 'premiumhud'
-			? path.join(app.getPath('userData'), 'premium', 'csgo')
-			: path.join(app.getPath('home'), 'HUDs', req.params.dir);
+	if(filePath.includes('ar/ar.js') && req.params.dir === 'premiumhud' && (!customer.customer || (customer.customer.license.type !== "enterprise" && customer.customer.license.type !== "professional"))){
+		return res.sendStatus(404);
+	}
+
 	if ((!req.path.endsWith('.js') && !req.path.endsWith('.css')) || !data.publicKey || !fs.existsSync(filePath)) {
 		return express.static(staticUrl)(req, res, next);
 	}
@@ -541,7 +539,7 @@ export const renderLegacy: express.RequestHandler = async (req, res) => {
 	if (!cfg) {
 		return res.sendStatus(500);
 	}
-	const dir = path.join(app.getPath('home'), 'HUDs', req.params.dir);
+	const dir = getHUDDirectory(req.params.dir);
 	return res.render(path.join(dir, 'template.pug'), {
 		ip: 'localhost',
 		port: cfg.port,
@@ -553,7 +551,7 @@ export const renderLegacy: express.RequestHandler = async (req, res) => {
 };
 
 export const legacyJS: express.RequestHandler = (req, res) => {
-	const dir = path.join(app.getPath('home'), 'HUDs', req.params.hudName, 'index.js');
+	const dir = path.join(HUDSDIRECTORY, req.params.hudName, 'index.js');
 	if (!fs.existsSync(dir)) {
 		return res.sendStatus(404);
 	}
@@ -566,7 +564,7 @@ export const legacyJS: express.RequestHandler = (req, res) => {
 	}
 };
 export const legacyCSS: express.RequestHandler = (req, res) => {
-	const dir = path.join(app.getPath('home'), 'HUDs', req.params.hudName, 'style.css');
+	const dir = path.join(HUDSDIRECTORY, req.params.hudName, 'style.css');
 	if (!fs.existsSync(dir)) {
 		return res.sendStatus(404);
 	}
@@ -612,7 +610,7 @@ export const sendHUD: express.RequestHandler = async (req, res) => {
 export const deleteHUD: express.RequestHandler = async (req, res) => {
 	const io = await ioPromise;
 	if (!req.query.hudDir || typeof req.query.hudDir !== 'string' || HUDWindow.current) return res.sendStatus(422);
-	const hudPath = path.join(app.getPath('home'), 'HUDs', req.query.hudDir);
+	const hudPath = getHUDDirectory(req.query.hudDir);
 	if (!fs.existsSync(hudPath)) {
 		return res.sendStatus(200);
 	}
@@ -654,7 +652,7 @@ export const removeArchives = () => {
 				return;
 			}
 			if (fs.existsSync(file)) fs.unlinkSync(file);
-		} catch {}
+		} catch { }
 	});
 };
 
@@ -662,10 +660,10 @@ async function loadHUD(base64: string, name: string, existingUUID?: string): Pro
 	removeArchives();
 	return new Promise(res => {
 		let hudDirName = name.replace(/[^a-zA-Z0-9-_]/g, '');
-		let hudPath = path.join(app.getPath('home'), 'HUDs', hudDirName);
+		let hudPath = getHUDDirectory(hudDirName);
 		if (fs.existsSync(hudPath)) {
 			hudDirName = `${hudDirName}-${getRandomString()}`;
-			hudPath = path.join(app.getPath('home'), 'HUDs', hudDirName);
+			hudPath = getHUDDirectory(hudDirName);
 		}
 		try {
 			const fileString = base64.split(';base64,').pop();
@@ -791,7 +789,7 @@ export const deleteHUDFromCloud: RequestHandler = async (req, res) => {
 
 const archiveHUD = (hudDir: string) =>
 	new Promise<string>((res, rej) => {
-		const dir = path.join(app.getPath('home'), 'HUDs', hudDir);
+		const dir = getHUDDirectory(hudDir);
 
 		const fileName = `${uuidv4()}.zip`;
 
@@ -799,7 +797,7 @@ const archiveHUD = (hudDir: string) =>
 			zlib: { level: 9 } // Sets the compression level.
 		});
 
-		const outputFilePath = path.join(app.getPath('home'), 'HUDs', fileName);
+		const outputFilePath = path.join(HUDSDIRECTORY, fileName);
 
 		const output = fs.createWriteStream(outputFilePath);
 
@@ -880,7 +878,7 @@ const getAllFilesToSign = (hudDir: string) => {
 };
 
 export const signHUD = async (hudDir: string) => {
-	const dir = path.join(app.getPath('home'), 'HUDs', hudDir);
+	const dir = path.join(HUDSDIRECTORY, hudDir);
 
 	const keyFile = path.join(dir, 'key');
 

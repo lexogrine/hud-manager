@@ -22,7 +22,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.singHUDByDir = exports.signHUD = exports.uploadHUD = exports.deleteHUDFromCloud = exports.downloadHUD = exports.removeArchives = exports.sendActionByHTTP = exports.deleteHUD = exports.sendHUD = exports.closeHUD = exports.showHUD = exports.legacyCSS = exports.legacyJS = exports.renderLegacy = exports.renderAssets = exports.getThumbPath = exports.renderThumbnail = exports.renderOverlay = exports.render = exports.verifyOverlay = exports.renderHUD = exports.openHUDsDirectory = exports.getHUDPanelSetting = exports.getHUDKeyBinds = exports.getHUDData = exports.getHUDARSettings = exports.getHUDCustomAsset = exports.getHUDs = exports.listHUDs = exports.remove = exports.getRandomString = void 0;
+exports.singHUDByDir = exports.signHUD = exports.uploadHUD = exports.deleteHUDFromCloud = exports.downloadHUD = exports.removeArchives = exports.sendActionByHTTP = exports.deleteHUD = exports.sendHUD = exports.closeHUD = exports.showHUD = exports.legacyCSS = exports.legacyJS = exports.renderLegacy = exports.renderAssets = exports.getThumbPath = exports.renderThumbnail = exports.renderOverlay = exports.render = exports.verifyOverlay = exports.renderHUD = exports.openHUDsDirectory = exports.getHUDPanelSetting = exports.getHUDKeyBinds = exports.getHUDData = exports.getHUDARSettings = exports.getHUDCustomAsset = exports.getHUDs = exports.getHUDDirectory = exports.listHUDs = exports.remove = exports.getRandomString = void 0;
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
 const electron_1 = require("electron");
@@ -41,6 +41,7 @@ const crypto_1 = __importDefault(require("crypto"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const directories_1 = require("../../init/directories");
 const DecompressZip = require('decompress-zip');
+const HUDSDIRECTORY = path.join(electron_1.app.getPath('home'), 'HUDs');
 const getRandomString = () => (Math.random() * 1000 + 1)
     .toString(36)
     .replace(/[^a-z]+/g, '')
@@ -69,7 +70,7 @@ const remove = (pathToRemove) => {
 };
 exports.remove = remove;
 const verifyUniqueID = (hudDir) => {
-    const dir = path.join(electron_1.app.getPath('home'), 'HUDs', hudDir, 'uuid.lhm');
+    const dir = path.join(HUDSDIRECTORY, hudDir, 'uuid.lhm');
     if (fs.existsSync(dir)) {
         return fs.readFileSync(dir, 'utf8');
     }
@@ -103,7 +104,7 @@ const listHUDs = async () => {
     if (!_1.customer || !_1.customer.game)
         return [];
     const onlineHUDs = await getOnlineHUDs();
-    const dir = path.join(electron_1.app.getPath('home'), 'HUDs');
+    const dir = HUDSDIRECTORY;
     const filtered = fs.existsSync(dir)
         ? fs
             .readdirSync(dir, { withFileTypes: true })
@@ -113,7 +114,7 @@ const listHUDs = async () => {
     const huds = (await Promise.all(filtered.map(async (dirent) => await (0, exports.getHUDData)(dirent.name)))).filter(hud => hud !== null);
     if (_1.customer.workspace ||
         (_1.customer.customer &&
-            (_1.customer.customer.license.type === 'professional' || _1.customer.customer.license.type === 'enterprise'))) {
+            (_1.customer.customer.license.type === "personal" || _1.customer.customer.license.type === 'professional' || _1.customer.customer.license.type === 'enterprise'))) {
         const premiumCSGOHUD = await (0, exports.getHUDData)('premiumhud', true);
         if (premiumCSGOHUD)
             huds.unshift(premiumCSGOHUD);
@@ -138,6 +139,13 @@ const listHUDs = async () => {
         .filter(hud => _1.customer.game === hud.game || (_1.customer.game === 'csgo' && !hud.game) || hud.game === 'all');
 };
 exports.listHUDs = listHUDs;
+const getHUDDirectory = (dir, isPremium = false) => {
+    const filePath = isPremium
+        ? path.join(electron_1.app.getPath('userData'), 'premium', 'csgo')
+        : path.join(HUDSDIRECTORY, dir);
+    return filePath;
+};
+exports.getHUDDirectory = getHUDDirectory;
 const getHUDs = async (req, res) => {
     return res.json(await (0, exports.listHUDs)());
 };
@@ -189,7 +197,7 @@ const getHUDCustomAsset = async (req, res) => {
 };
 exports.getHUDCustomAsset = getHUDCustomAsset;
 const getHUDARSettings = (dirName) => {
-    const dir = path.join(electron_1.app.getPath('home'), 'HUDs', dirName);
+    const dir = path.join(HUDSDIRECTORY, dirName);
     const arFileDir = path.join(dir, 'ar.json');
     if (!fs.existsSync(arFileDir)) {
         return null;
@@ -205,9 +213,7 @@ const getHUDARSettings = (dirName) => {
 };
 exports.getHUDARSettings = getHUDARSettings;
 const getHUDPublicKey = (dirName) => {
-    const dir = dirName === 'premiumhud'
-        ? path.join(electron_1.app.getPath('userData'), 'premium', 'csgo')
-        : path.join(electron_1.app.getPath('home'), 'HUDs', dirName);
+    const dir = (0, exports.getHUDDirectory)(dirName, dirName === "premiumhud");
     const keyFile = path.join(dir, 'key');
     if (!fs.existsSync(keyFile)) {
         return null;
@@ -235,7 +241,7 @@ const getHUDData = async (dirName, isPremium) => {
             game: 'csgo',
             publicKey: getHUDPublicKey(dirName),
             killfeed: true,
-            keybinds: [
+            keybinds: !_1.customer.customer || (_1.customer.customer.license.type === "personal" || _1.customer.customer.license.type === "free") ? [] : [
                 {
                     bind: 'Alt+S',
                     action: 'setScoreboard'
@@ -313,7 +319,7 @@ const getHUDData = async (dirName, isPremium) => {
             isDev: false
         };
     }
-    const dir = path.join(electron_1.app.getPath('home'), 'HUDs', dirName);
+    const dir = (0, exports.getHUDDirectory)(dirName);
     const configFileDir = path.join(dir, 'hud.json');
     if (!fs.existsSync(configFileDir)) {
         if (!socket_1.HUDState.devHUD)
@@ -365,7 +371,7 @@ const getHUDData = async (dirName, isPremium) => {
 };
 exports.getHUDData = getHUDData;
 const getHUDKeyBinds = (dirName) => {
-    const dir = path.join(electron_1.app.getPath('home'), 'HUDs', dirName);
+    const dir = (0, exports.getHUDDirectory)(dirName);
     const keybindsFileDir = path.join(dir, 'keybinds.json');
     if (!fs.existsSync(keybindsFileDir)) {
         return null;
@@ -381,7 +387,7 @@ const getHUDKeyBinds = (dirName) => {
 };
 exports.getHUDKeyBinds = getHUDKeyBinds;
 const getHUDPanelSetting = (dirName) => {
-    const dir = path.join(electron_1.app.getPath('home'), 'HUDs', dirName);
+    const dir = (0, exports.getHUDDirectory)(dirName);
     const panelFileDir = path.join(dir, 'panel.json');
     if (!fs.existsSync(panelFileDir)) {
         return null;
@@ -398,7 +404,7 @@ const getHUDPanelSetting = (dirName) => {
 };
 exports.getHUDPanelSetting = getHUDPanelSetting;
 const openHUDsDirectory = async (_req, res) => {
-    const dir = path.join(electron_1.app.getPath('home'), 'HUDs');
+    const dir = HUDSDIRECTORY;
     electron_1.shell.openPath(dir);
     return res.sendStatus(200);
 };
@@ -464,9 +470,7 @@ const verifyOverlay = async (req, res, next) => {
 };
 exports.verifyOverlay = verifyOverlay;
 const render = (req, res) => {
-    const dir = req.params.dir === 'premiumhud'
-        ? path.join(electron_1.app.getPath('userData'), 'premium', 'csgo')
-        : path.join(electron_1.app.getPath('home'), 'HUDs', req.params.dir);
+    const dir = (0, exports.getHUDDirectory)(req.params.dir, req.params.dir === 'premiumhud');
     return res.sendFile(path.join(dir, 'index.html'));
 };
 exports.render = render;
@@ -486,9 +490,7 @@ const renderThumbnail = (req, res) => {
 };
 exports.renderThumbnail = renderThumbnail;
 const getThumbPath = (dir) => {
-    const thumbPath = dir === 'premiumhud'
-        ? path.join(electron_1.app.getPath('userData'), 'premium', 'csgo', 'thumb.png')
-        : path.join(electron_1.app.getPath('home'), 'HUDs', dir, 'thumb.png');
+    const thumbPath = path.join((0, exports.getHUDDirectory)(dir, dir === 'premiumhud'), 'thumb.png');
     if (fs.existsSync(thumbPath)) {
         return thumbPath;
     }
@@ -503,12 +505,11 @@ const renderAssets = async (req, res, next) => {
     if (!data) {
         return res.sendStatus(404);
     }
-    const filePath = req.params.dir === 'premiumhud'
-        ? path.join(electron_1.app.getPath('userData'), 'premium', 'csgo', req.path)
-        : path.join(electron_1.app.getPath('home'), 'HUDs', data.dir, req.path);
-    const staticUrl = req.params.dir === 'premiumhud'
-        ? path.join(electron_1.app.getPath('userData'), 'premium', 'csgo')
-        : path.join(electron_1.app.getPath('home'), 'HUDs', req.params.dir);
+    const staticUrl = (0, exports.getHUDDirectory)(req.params.dir, req.params.dir === 'premiumhud');
+    const filePath = path.join(staticUrl, req.path);
+    if (filePath.includes('ar/ar.js') && req.params.dir === 'premiumhud' && (!_1.customer.customer || (_1.customer.customer.license.type !== "enterprise" && _1.customer.customer.license.type !== "professional"))) {
+        return res.sendStatus(404);
+    }
     if ((!req.path.endsWith('.js') && !req.path.endsWith('.css')) || !data.publicKey || !fs.existsSync(filePath)) {
         return express_1.default.static(staticUrl)(req, res, next);
     }
@@ -530,7 +531,7 @@ const renderLegacy = async (req, res) => {
     if (!cfg) {
         return res.sendStatus(500);
     }
-    const dir = path.join(electron_1.app.getPath('home'), 'HUDs', req.params.dir);
+    const dir = (0, exports.getHUDDirectory)(req.params.dir);
     return res.render(path.join(dir, 'template.pug'), {
         ip: 'localhost',
         port: cfg.port,
@@ -542,7 +543,7 @@ const renderLegacy = async (req, res) => {
 };
 exports.renderLegacy = renderLegacy;
 const legacyJS = (req, res) => {
-    const dir = path.join(electron_1.app.getPath('home'), 'HUDs', req.params.hudName, 'index.js');
+    const dir = path.join(HUDSDIRECTORY, req.params.hudName, 'index.js');
     if (!fs.existsSync(dir)) {
         return res.sendStatus(404);
     }
@@ -557,7 +558,7 @@ const legacyJS = (req, res) => {
 };
 exports.legacyJS = legacyJS;
 const legacyCSS = (req, res) => {
-    const dir = path.join(electron_1.app.getPath('home'), 'HUDs', req.params.hudName, 'style.css');
+    const dir = path.join(HUDSDIRECTORY, req.params.hudName, 'style.css');
     if (!fs.existsSync(dir)) {
         return res.sendStatus(404);
     }
@@ -606,7 +607,7 @@ const deleteHUD = async (req, res) => {
     const io = await socket_1.ioPromise;
     if (!req.query.hudDir || typeof req.query.hudDir !== 'string' || huds_1.default.current)
         return res.sendStatus(422);
-    const hudPath = path.join(electron_1.app.getPath('home'), 'HUDs', req.query.hudDir);
+    const hudPath = (0, exports.getHUDDirectory)(req.query.hudDir);
     if (!fs.existsSync(hudPath)) {
         return res.sendStatus(200);
     }
@@ -657,10 +658,10 @@ async function loadHUD(base64, name, existingUUID) {
     (0, exports.removeArchives)();
     return new Promise(res => {
         let hudDirName = name.replace(/[^a-zA-Z0-9-_]/g, '');
-        let hudPath = path.join(electron_1.app.getPath('home'), 'HUDs', hudDirName);
+        let hudPath = (0, exports.getHUDDirectory)(hudDirName);
         if (fs.existsSync(hudPath)) {
             hudDirName = `${hudDirName}-${(0, exports.getRandomString)()}`;
-            hudPath = path.join(electron_1.app.getPath('home'), 'HUDs', hudDirName);
+            hudPath = (0, exports.getHUDDirectory)(hudDirName);
         }
         try {
             const fileString = base64.split(';base64,').pop();
@@ -758,12 +759,12 @@ const deleteHUDFromCloud = async (req, res) => {
 };
 exports.deleteHUDFromCloud = deleteHUDFromCloud;
 const archiveHUD = (hudDir) => new Promise((res, rej) => {
-    const dir = path.join(electron_1.app.getPath('home'), 'HUDs', hudDir);
+    const dir = (0, exports.getHUDDirectory)(hudDir);
     const fileName = `${(0, v4_1.default)()}.zip`;
     const archive = (0, archiver_1.default)('zip', {
         zlib: { level: 9 } // Sets the compression level.
     });
-    const outputFilePath = path.join(electron_1.app.getPath('home'), 'HUDs', fileName);
+    const outputFilePath = path.join(HUDSDIRECTORY, fileName);
     const output = fs.createWriteStream(outputFilePath);
     output.on('close', () => res(outputFilePath));
     archive.pipe(output);
@@ -827,7 +828,7 @@ const getAllFilesToSign = (hudDir) => {
     return files;
 };
 const signHUD = async (hudDir) => {
-    const dir = path.join(electron_1.app.getPath('home'), 'HUDs', hudDir);
+    const dir = path.join(HUDSDIRECTORY, hudDir);
     const keyFile = path.join(dir, 'key');
     if (fs.existsSync(keyFile)) {
         return true;
