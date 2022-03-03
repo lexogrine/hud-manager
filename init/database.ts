@@ -24,8 +24,8 @@ export const onDatabaseLoad = (listener: () => void) => {
 };
 
 type SessionStore = {
-	workspace: number | null,
-	game: I.AvailableGames | null
+	workspace: number | null;
+	game: I.AvailableGames | null;
 };
 
 const sessionStorePath = path.join(directory, 'sessionStore');
@@ -44,28 +44,28 @@ type DatabaseStructure = {
 
 const saveSessionStore = () => {
 	fs.writeFileSync(sessionStorePath, JSON.stringify(sessionStoreContext.session), 'utf8');
-}
+};
 
 const loadSessionStore = () => {
-	if(!fs.existsSync(sessionStorePath)){
+	if (!fs.existsSync(sessionStorePath)) {
 		saveSessionStore();
 		return;
 	}
 	sessionStoreContext.session = JSON.parse(fs.readFileSync(sessionStorePath, 'utf-8'));
-}
+};
 
 loadSessionStore();
 
-export const setSessionStore = (session: { workspace?: number | null, game?: I.AvailableGames | null }) => {
-	if(session.workspace !== undefined){
+export const setSessionStore = (session: { workspace?: number | null; game?: I.AvailableGames | null }) => {
+	if (session.workspace !== undefined) {
 		sessionStoreContext.session.workspace = session.workspace;
 	}
-	if(session.game !== undefined){
+	if (session.game !== undefined) {
 		sessionStoreContext.session.game = session.game;
 	}
 
 	saveSessionStore();
-}
+};
 
 const getEmptyDb = () => {
 	return {} as DatabaseStructure;

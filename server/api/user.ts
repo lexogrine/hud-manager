@@ -321,7 +321,7 @@ export const setWorkspace: express.RequestHandler = async (req, res) => {
 	if (workspaceId === null) {
 		const result = await loadUser(workspaceId, true);
 
-		if(result.success && customer.customer){
+		if (result.success && customer.customer) {
 			setSessionStore({ workspace: null });
 		}
 
@@ -335,7 +335,7 @@ export const setWorkspace: express.RequestHandler = async (req, res) => {
 	}
 	const result = await loadUser(targetWorkspace, true);
 
-	if(result.success && customer.customer){
+	if (result.success && customer.customer) {
 		setSessionStore({ workspace: targetWorkspace.id });
 	}
 

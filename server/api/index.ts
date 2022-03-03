@@ -126,7 +126,7 @@ export default async function (/*io: Server<DefaultEventsMap, DefaultEventsMap, 
 
 		const result = await checkCloudStatus(game);
 
-		if(customer?.customer?.user) setSessionStore({ game });
+		if (customer?.customer?.user) setSessionStore({ game });
 
 		io.emit('reloadHUDs');
 

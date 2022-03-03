@@ -135,7 +135,7 @@ export default class Layout extends Component<{}, IState> {
 			this.setSyncOpen(response.result !== 'ALL_SYNCED');
 			if (response.result === 'ALL_SYNCED') {
 				this.state.data.reload();
-				if(init) this.loadUser();
+				if (init) this.loadUser();
 			}
 		});
 	};
@@ -163,10 +163,10 @@ export default class Layout extends Component<{}, IState> {
 			this.setUser(user);
 
 			return this.setState({ loading: false }, async () => {
-				if(!init) return;
+				if (!init) return;
 				if (session.game !== null) {
 					const workspaceResult = await api.user.setWorkspace(session.workspace);
-					if(!workspaceResult.success) return;
+					if (!workspaceResult.success) return;
 
 					this.setGame(session.game, true);
 				}
@@ -233,16 +233,8 @@ export default class Layout extends Component<{}, IState> {
 	};
 	render() {
 		const { Provider } = ContextData;
-		const {
-			loading,
-			data,
-			loadingLogin,
-			loginError,
-			version,
-			isSyncModalOpen,
-			synchronizationStatus,
-			config
-		} = this.state;
+		const { loading, data, loadingLogin, loginError, version, isSyncModalOpen, synchronizationStatus, config } =
+			this.state;
 		const { workspace, workspaces, game, customer } = data;
 
 		const available = canUserUseCloudStorage({ workspace, workspaces, game, customer: customer || null });

@@ -9,8 +9,8 @@ interface DB {
 	players: I.Player[];
 }
 type SessionStore = {
-	workspace: number | null,
-	game: I.AvailableGames | null
+	workspace: number | null;
+	game: I.AvailableGames | null;
 };
 function arrayBufferToBase64(buffer: any) {
 	let binary = '';
@@ -214,7 +214,8 @@ export default {
 		login: (username: string, password: string, token: string): Promise<{ success: boolean; message: string }> =>
 			apiV2('auth', 'POST', { username, password, token }),
 		logout: () => apiV2('auth', 'DELETE'),
-		getCurrent: (): Promise<I.CustomerData & { session: SessionStore } | { message: string; success: boolean }> => apiV2('auth'),
+		getCurrent: (): Promise<(I.CustomerData & { session: SessionStore }) | { message: string; success: boolean }> =>
+			apiV2('auth'),
 		setWorkspace: (workspaceId: number | null): Promise<{ success: boolean; message: string }> =>
 			apiV2('workspace', 'POST', { workspaceId })
 	},
