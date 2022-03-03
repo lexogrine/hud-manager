@@ -13,7 +13,7 @@ exports.default = (window) => {
             body: `You can install the newest Lexogrine HUD Manager update in the Settings tab`
         });
         notification.on('click', () => {
-            window.webContents.send('switchTab', 'config');
+            window.webContents.send('switchTab', 'settings');
         });
         notification.show();
     });
@@ -21,6 +21,8 @@ exports.default = (window) => {
         window.webContents.send('updateStatus', false, version);
     });
     electron_updater_1.autoUpdater.on('update-downloaded', () => electron_updater_1.autoUpdater.quitAndInstall(true, true));
+    electron_updater_1.autoUpdater.on("download-progress", event => {
+    });
     electron_1.ipcMain.on('updateApp', () => {
         electron_updater_1.autoUpdater.downloadUpdate();
     });

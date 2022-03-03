@@ -23,6 +23,10 @@ export default (window: BrowserWindow) => {
 
 	autoUpdater.on('update-downloaded', () => autoUpdater.quitAndInstall(true, true));
 
+	autoUpdater.on("download-progress", event => {
+		
+	})
+	
 	ipcMain.on('updateApp', () => {
 		autoUpdater.downloadUpdate();
 	});

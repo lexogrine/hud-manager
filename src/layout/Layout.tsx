@@ -22,7 +22,6 @@ interface IState {
 	data: IContextData;
 	loading: boolean;
 	loadingLogin: boolean;
-	loadingGame: boolean;
 	loginError: string;
 	version: string;
 	picked: null | AvailableGames;
@@ -60,7 +59,6 @@ export default class Layout extends Component<{}, IState> {
 			loginError: '',
 			loadingLogin: false,
 			loading: true,
-			loadingGame: true,
 			version: '-',
 			picked: null,
 			synchronizationStatus: null,
@@ -77,8 +75,8 @@ export default class Layout extends Component<{}, IState> {
 	};
 	async componentDidMount() {
 		//const socket = io.connect(`${config.isDev ? config.apiAddress : '/'}`);
-		await this.loadUser();
-		api.games.getCurrent().then(result => {
+		await this.loadUser(true);
+		/*api.games.getCurrent().then(result => {
 			const { data } = this.state;
 			data.game = result.game;
 			this.setState(
@@ -93,7 +91,7 @@ export default class Layout extends Component<{}, IState> {
 					}
 				}
 			);
-		});
+		});*/
 		await this.getVersion();
 		socket.on('match', (fromVeto?: boolean) => {
 			if (fromVeto) this.loadMatch();
@@ -122,21 +120,22 @@ export default class Layout extends Component<{}, IState> {
 			return state;
 		});
 	};
-	setGame = (game: AvailableGames) => {
+	setGame = (game: AvailableGames, init = false) => {
 		const { data } = this.state;
 		data.game = game;
-		this.setState({ picked: game, data }, this.sync);
+		this.setState({ picked: game, data }, () => this.sync(init));
 	};
 	clearGame = () => {
 		this.setState({ picked: null });
 	};
-	sync = () => {
+	sync = (init = false) => {
 		if (!this.state.picked) return;
 		api.games.startServices(this.state.picked).then(response => {
 			this.setState({ synchronizationStatus: response.result });
 			this.setSyncOpen(response.result !== 'ALL_SYNCED');
 			if (response.result === 'ALL_SYNCED') {
 				this.state.data.reload();
+				if(init) this.loadUser();
 			}
 		});
 	};
@@ -152,7 +151,7 @@ export default class Layout extends Component<{}, IState> {
 		this.setState({ version: response.version });
 		return response.version;
 	};
-	loadUser = async () => {
+	loadUser = async (init = false) => {
 		try {
 			const appLoadedUser = await api.user.getCurrent();
 			if ('message' in appLoadedUser) {
@@ -160,8 +159,18 @@ export default class Layout extends Component<{}, IState> {
 				this.setUser(null);
 				return this.setState({ loading: false });
 			}
-			this.setUser(appLoadedUser);
-			return this.setState({ loading: false });
+			const { session, ...user } = appLoadedUser;
+			this.setUser(user);
+
+			return this.setState({ loading: false }, async () => {
+				if(!init) return;
+				if (session.game !== null) {
+					const workspaceResult = await api.user.setWorkspace(session.workspace);
+					if(!workspaceResult.success) return;
+
+					this.setGame(session.game, true);
+				}
+			});
 		} catch {
 			this.setUser(null);
 			return this.setState({ loading: false });
@@ -230,7 +239,6 @@ export default class Layout extends Component<{}, IState> {
 			loadingLogin,
 			loginError,
 			version,
-			loadingGame,
 			isSyncModalOpen,
 			synchronizationStatus,
 			config
@@ -255,7 +263,7 @@ export default class Layout extends Component<{}, IState> {
 							</ElectronOnly>
 						</div>
 					) : null*/}
-					{<div className={`loading-container ${loading || loadingGame ? '' : 'hide'}`}>Loading...</div>}
+					{<div className={`loading-container ${loading ? '' : 'hide'}`}>Loading...</div>}
 					<LoginRegisterModal
 						isOpen={!data.customer}
 						loading={loadingLogin}

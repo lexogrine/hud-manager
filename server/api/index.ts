@@ -32,6 +32,7 @@ import { SimpleWebSocket } from 'simple-websockets';
 import { socket } from './user';
 import { canUserUseCloudStorage } from '../../src/utils';
 import { registerKeybind } from './keybinder';
+import { setSessionStore } from '../../init/database';
 //import { Server } from 'socket.io';
 //import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 
@@ -124,6 +125,8 @@ export default async function (/*io: Server<DefaultEventsMap, DefaultEventsMap, 
 		customer.game = game;
 
 		const result = await checkCloudStatus(game);
+
+		if(customer?.customer?.user) setSessionStore({ game });
 
 		io.emit('reloadHUDs');
 
