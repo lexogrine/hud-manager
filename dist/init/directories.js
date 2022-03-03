@@ -19,13 +19,17 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.checkDirectories = exports.loadHUDPremium = exports.LHMP = void 0;
+exports.checkDirectories = exports.loadHUDPremium = exports.loadAllPremiumHUDs = exports.LHMP = void 0;
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
 const electron_1 = require("electron");
+const interfaces_1 = require("../types/interfaces");
 const DecompressZip = require('decompress-zip');
 exports.LHMP = {
-    CSGO: '1.1.0'
+    csgo: '1.1.0',
+    rocketleague: null,
+    dota2: null,
+    f1: null
 };
 function createIfMissing(directory) {
     if (!fs.existsSync(directory)) {
@@ -73,11 +77,16 @@ const remove = (pathToRemove, leaveRoot = false) => {
     if (!leaveRoot)
         fs.rmdirSync(pathToRemove);
 };
-async function loadHUDPremium() {
+const loadAllPremiumHUDs = () => {
+    return Promise.all(interfaces_1.availableGames.map(game => loadHUDPremium(game)));
+};
+exports.loadAllPremiumHUDs = loadAllPremiumHUDs;
+async function loadHUDPremium(game) {
     removeArchives();
     return new Promise(res => {
-        const hudPath = path.join(electron_1.app.getPath('userData'), 'premium', 'csgo');
-        if (!fs.existsSync(hudPath)) {
+        const hudPath = path.join(electron_1.app.getPath('userData'), 'premium', game);
+        const hudVersion = exports.LHMP[game];
+        if (!fs.existsSync(hudPath) || !hudVersion) {
             return res(null);
         }
         const versionFile = path.join(hudPath, 'version');
@@ -88,7 +97,7 @@ async function loadHUDPremium() {
         }
         else {
             const content = fs.readFileSync(versionFile, 'utf-8');
-            if (exports.LHMP.CSGO !== content) {
+            if (hudVersion && hudVersion !== content) {
                 shouldUpdate = true;
             }
         }
@@ -96,7 +105,7 @@ async function loadHUDPremium() {
             return res(null);
         }
         remove(hudPath, true);
-        fs.writeFileSync(versionFile, exports.LHMP.CSGO);
+        fs.writeFileSync(versionFile, hudVersion);
         try {
             const fileString = fs.readFileSync(path.join(__dirname, './lhmp.zip'), 'base64');
             if (!fileString) {
@@ -136,14 +145,19 @@ exports.loadHUDPremium = loadHUDPremium;
 function checkDirectories() {
     const hudsData = path.join(electron_1.app.getPath('home'), 'HUDs');
     const userData = electron_1.app.getPath('userData');
-    const userDataPr = path.join(electron_1.app.getPath('userData'), 'premium');
-    const userDataPrCSGO = path.join(electron_1.app.getPath('userData'), 'premium', 'csgo');
+    const premiumHUDsDirectory = path.join(electron_1.app.getPath('userData'), 'premium');
+    const premiumHUDsGames = [];
+    for (const premiumHUD of Object.entries(exports.LHMP)) {
+        const [game, version] = premiumHUD;
+        if (version)
+            premiumHUDsGames.push(path.join(electron_1.app.getPath('userData'), 'premium', game));
+    }
     const database = path.join(userData, 'databases');
     const arData = path.join(userData, 'ARs');
     const errors = path.join(userData, 'errors');
     const userDatabases = path.join(database, 'users');
     const teamDatabases = path.join(database, 'workspaces');
-    [hudsData, userData, database, arData, errors, userDatabases, teamDatabases, userDataPr, userDataPrCSGO].forEach(createIfMissing);
+    [hudsData, userData, database, arData, errors, userDatabases, teamDatabases, premiumHUDsDirectory, ...premiumHUDsGames].forEach(createIfMissing);
     const mapFile = path.join(electron_1.app.getPath('userData'), 'maps.json');
     if (!fs.existsSync(mapFile)) {
         const maps = [

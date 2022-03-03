@@ -13,7 +13,7 @@ exports.default = (window) => {
             body: `You can install the newest Lexogrine HUD Manager update in the Settings tab`
         });
         notification.on('click', () => {
-            window.webContents.send('switchTab', 'config');
+            window.webContents.send('switchTab', 'settings');
         });
         notification.show();
     });

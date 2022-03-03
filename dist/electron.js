@@ -78,7 +78,7 @@ async function startManager() {
         return;
     }
     directories.checkDirectories();
-    await directories.loadHUDPremium();
+    await directories.loadAllPremiumHUDs();
     //console.log('b', new Date().getTime());
     const server = await (0, server_1.default)();
     //console.log('c', new Date().getTime());

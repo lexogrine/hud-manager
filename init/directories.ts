@@ -1,10 +1,14 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { app } from 'electron';
+import { availableGames, AvailableGames } from '../types/interfaces';
 const DecompressZip = require('decompress-zip');
 
-export const LHMP = {
-	CSGO: '1.1.0'
+export const LHMP: Record<AvailableGames, string | null> = {
+	csgo: '1.1.0',
+	rocketleague: null,
+	dota2: null,
+	f1: null
 };
 
 function createIfMissing(directory: string) {
@@ -51,11 +55,17 @@ const remove = (pathToRemove: string, leaveRoot = false) => {
 	});
 	if (!leaveRoot) fs.rmdirSync(pathToRemove);
 };
-export async function loadHUDPremium(): Promise<any> {
+
+export const loadAllPremiumHUDs = () => {
+	return Promise.all(availableGames.map(game => loadHUDPremium(game)));
+}
+
+export async function loadHUDPremium(game: AvailableGames): Promise<any> {
 	removeArchives();
 	return new Promise(res => {
-		const hudPath = path.join(app.getPath('userData'), 'premium', 'csgo');
-		if (!fs.existsSync(hudPath)) {
+		const hudPath = path.join(app.getPath('userData'), 'premium', game);
+		const hudVersion = LHMP[game];
+		if (!fs.existsSync(hudPath) || !hudVersion) {
 			return res(null);
 		}
 
@@ -69,7 +79,7 @@ export async function loadHUDPremium(): Promise<any> {
 			shouldUpdate = true;
 		} else {
 			const content = fs.readFileSync(versionFile, 'utf-8');
-			if (LHMP.CSGO !== content) {
+			if (hudVersion && hudVersion !== content) {
 				shouldUpdate = true;
 			}
 		}
@@ -78,7 +88,7 @@ export async function loadHUDPremium(): Promise<any> {
 			return res(null);
 		}
 		remove(hudPath, true);
-		fs.writeFileSync(versionFile, LHMP.CSGO);
+		fs.writeFileSync(versionFile, hudVersion);
 		try {
 			const fileString = fs.readFileSync(path.join(__dirname, './lhmp.zip'), 'base64');
 
@@ -119,8 +129,15 @@ export async function loadHUDPremium(): Promise<any> {
 export function checkDirectories() {
 	const hudsData = path.join(app.getPath('home'), 'HUDs');
 	const userData = app.getPath('userData');
-	const userDataPr = path.join(app.getPath('userData'), 'premium');
-	const userDataPrCSGO = path.join(app.getPath('userData'), 'premium', 'csgo');
+	const premiumHUDsDirectory = path.join(app.getPath('userData'), 'premium');
+
+	const premiumHUDsGames: string[] = [];
+
+	for(const premiumHUD of Object.entries(LHMP)){
+		const [ game, version ] = premiumHUD;
+		if(version) premiumHUDsGames.push(path.join(app.getPath('userData'), 'premium', game))
+	}
+
 	const database = path.join(userData, 'databases');
 	const arData = path.join(userData, 'ARs');
 	const errors = path.join(userData, 'errors');
@@ -128,7 +145,7 @@ export function checkDirectories() {
 	const userDatabases = path.join(database, 'users');
 	const teamDatabases = path.join(database, 'workspaces');
 
-	[hudsData, userData, database, arData, errors, userDatabases, teamDatabases, userDataPr, userDataPrCSGO].forEach(
+	[hudsData, userData, database, arData, errors, userDatabases, teamDatabases, premiumHUDsDirectory, ...premiumHUDsGames].forEach(
 		createIfMissing
 	);
 	const mapFile = path.join(app.getPath('userData'), 'maps.json');
