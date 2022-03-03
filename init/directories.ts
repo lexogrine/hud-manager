@@ -58,7 +58,7 @@ const remove = (pathToRemove: string, leaveRoot = false) => {
 
 export const loadAllPremiumHUDs = () => {
 	return Promise.all(availableGames.map(game => loadHUDPremium(game)));
-}
+};
 
 export async function loadHUDPremium(game: AvailableGames): Promise<any> {
 	removeArchives();
@@ -133,9 +133,9 @@ export function checkDirectories() {
 
 	const premiumHUDsGames: string[] = [];
 
-	for(const premiumHUD of Object.entries(LHMP)){
-		const [ game, version ] = premiumHUD;
-		if(version) premiumHUDsGames.push(path.join(app.getPath('userData'), 'premium', game))
+	for (const premiumHUD of Object.entries(LHMP)) {
+		const [game, version] = premiumHUD;
+		if (version) premiumHUDsGames.push(path.join(app.getPath('userData'), 'premium', game));
 	}
 
 	const database = path.join(userData, 'databases');
@@ -145,9 +145,17 @@ export function checkDirectories() {
 	const userDatabases = path.join(database, 'users');
 	const teamDatabases = path.join(database, 'workspaces');
 
-	[hudsData, userData, database, arData, errors, userDatabases, teamDatabases, premiumHUDsDirectory, ...premiumHUDsGames].forEach(
-		createIfMissing
-	);
+	[
+		hudsData,
+		userData,
+		database,
+		arData,
+		errors,
+		userDatabases,
+		teamDatabases,
+		premiumHUDsDirectory,
+		...premiumHUDsGames
+	].forEach(createIfMissing);
 	const mapFile = path.join(app.getPath('userData'), 'maps.json');
 
 	if (!fs.existsSync(mapFile)) {

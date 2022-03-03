@@ -136,13 +136,15 @@ export const listHUDs = async () => {
 export const getHUDDirectory = (dir: string, isPremium = false) => {
 	let premiumHUDDir = '';
 
-	if(isPremium){
+	if (isPremium) {
 		premiumHUDDir = customer.game || 'csgo';
-		if(customer.game === 'rocketleague' && (customer.customer.license.type === 'personal' && !customer.workspace)){
-			premiumHUDDir += '-basic'
+		if (customer.game === 'rocketleague' && customer.customer.license.type === 'personal' && !customer.workspace) {
+			premiumHUDDir += '-basic';
 		}
 	}
-	const filePath = isPremium ? path.join(app.getPath('userData'), 'premium', premiumHUDDir) : path.join(HUDSDIRECTORY, dir);
+	const filePath = isPremium
+		? path.join(app.getPath('userData'), 'premium', premiumHUDDir)
+		: path.join(HUDSDIRECTORY, dir);
 	return filePath;
 };
 export const getHUDs: express.RequestHandler = async (req, res) => {
@@ -231,7 +233,7 @@ export const getHUDData = async (dirName: string, isPremium?: boolean): Promise<
 	const globalConfig = await loadConfig();
 	if (!globalConfig) return null;
 	if (isPremium) {
-		if(customer.game === null) return null;
+		if (customer.game === null) return null;
 		return getPremiumHUDData(customer.game, globalConfig);
 	}
 
