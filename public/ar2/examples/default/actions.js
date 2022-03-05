@@ -24,4 +24,31 @@ class ActionManager {
     }
 }
 
-export { ActionManager };
+class ConfigManager {
+    constructor(){
+        this.listeners = [];
+        this.data = {};
+    }
+    save = (data) => {
+        this.data = data;
+        this.execute();
+    }
+
+    execute = () => {
+        const listeners = this.listeners;
+        if(!listeners || !listeners.length) return false;
+        listeners.forEach(listener => {
+            listener(this.data);
+        });
+        return true;
+    }
+
+    onChange = (listener) => {
+        const listOfListeners = this.listeners || [];
+        listOfListeners.push(listener);
+        this.listeners = listOfListeners;
+
+        return true;
+    }
+}
+export { ActionManager, ConfigManager };

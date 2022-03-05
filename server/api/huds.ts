@@ -138,8 +138,8 @@ export const getHUDDirectory = (dir: string, isPremium = false) => {
 
 	if (isPremium) {
 		premiumHUDDir = customer.game || 'csgo';
-		if (customer.game === 'rocketleague' && customer.customer.license.type === 'personal' && !customer.workspace) {
-			premiumHUDDir += '-basic';
+		if(customer.game === "rocketleague"){
+			premiumHUDDir += customer.customer?.license.type === 'personal' && !customer.workspace ? '2':'1';
 		}
 	}
 	const filePath = isPremium
@@ -648,7 +648,6 @@ type APIFileResponse = {
 	data: OnlineHUDEntry | null;
 };
 
-// const wait = (ms: number) => new Promise(r => setTimeout(r, ms));
 
 export const downloadHUD: RequestHandler = async (req, res) => {
 	const uuid = req.params.uuid;

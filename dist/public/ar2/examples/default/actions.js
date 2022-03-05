@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.ActionManager = void 0;
+exports.ConfigManager = exports.ActionManager = void 0;
 class ActionManager {
     constructor() {
         this.listeners = new Map();
@@ -27,3 +27,29 @@ class ActionManager {
     };
 }
 exports.ActionManager = ActionManager;
+class ConfigManager {
+    constructor() {
+        this.listeners = [];
+        this.data = {};
+    }
+    save = (data) => {
+        this.data = data;
+        this.execute();
+    };
+    execute = () => {
+        const listeners = this.listeners;
+        if (!listeners || !listeners.length)
+            return false;
+        listeners.forEach(listener => {
+            listener(this.data);
+        });
+        return true;
+    };
+    onChange = (listener) => {
+        const listOfListeners = this.listeners || [];
+        listOfListeners.push(listener);
+        this.listeners = listOfListeners;
+        return true;
+    };
+}
+exports.ConfigManager = ConfigManager;

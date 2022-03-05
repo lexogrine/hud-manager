@@ -142,7 +142,16 @@ const listHUDs = async () => {
 };
 exports.listHUDs = listHUDs;
 const getHUDDirectory = (dir, isPremium = false) => {
-    const filePath = isPremium ? path.join(electron_1.app.getPath('userData'), 'premium', _1.customer.game || 'csgo') : path.join(HUDSDIRECTORY, dir);
+    let premiumHUDDir = '';
+    if (isPremium) {
+        premiumHUDDir = _1.customer.game || 'csgo';
+        if (_1.customer.game === "rocketleague") {
+            premiumHUDDir += _1.customer.customer?.license.type === 'personal' && !_1.customer.workspace ? '2' : '1';
+        }
+    }
+    const filePath = isPremium
+        ? path.join(electron_1.app.getPath('userData'), 'premium', premiumHUDDir)
+        : path.join(HUDSDIRECTORY, dir);
     return filePath;
 };
 exports.getHUDDirectory = getHUDDirectory;
@@ -630,7 +639,6 @@ async function loadHUD(base64, name, existingUUID) {
         }
     });
 }
-// const wait = (ms: number) => new Promise(r => setTimeout(r, ms));
 const downloadHUD = async (req, res) => {
     const uuid = req.params.uuid;
     if (!_1.customer.game || !uuid)

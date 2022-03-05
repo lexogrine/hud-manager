@@ -34,6 +34,7 @@ exports.AFXInterop = {
     process: null
 };
 exports.isDev = process.env.DEV === 'true';
+const wait = (ms) => new Promise(r => setTimeout(r, ms));
 async function mainProcess(server, forceDev = false, gui = true) {
     const RMTPServer = (0, child_process_1.fork)(require.resolve('./RMTPServer.js'));
     const closeManager = () => {
@@ -78,6 +79,7 @@ async function startManager() {
         return;
     }
     directories.checkDirectories();
+    //await wait(3000);
     await directories.loadAllPremiumHUDs();
     //console.log('b', new Date().getTime());
     const server = await (0, server_1.default)();

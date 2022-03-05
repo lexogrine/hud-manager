@@ -4,9 +4,11 @@ import { app } from 'electron';
 import { availableGames, AvailableGames } from '../types/interfaces';
 const DecompressZip = require('decompress-zip');
 
+const temporaryFilesArchive = path.join(app.getPath('userData'), 'archives');
+
 export const LHMP: Record<AvailableGames, string | null> = {
-	csgo: '1.1.0',
-	rocketleague: null,
+	csgo: '1.2.0',
+	rocketleague: '1.0.0',
 	dota2: null,
 	f1: null
 };
@@ -24,15 +26,15 @@ const getRandomString = () =>
 
 const removeArchives = () => {
 	const files = fs
-		.readdirSync('./')
+		.readdirSync(temporaryFilesArchive)
 		.filter(file => (file.startsWith('hud_temp_') || file.startsWith('ar_temp_')) && file.endsWith('.zip'));
 
 	files.forEach(file => {
 		try {
-			if (fs.lstatSync(file).isDirectory()) {
+			if (fs.lstatSync(path.join(temporaryFilesArchive, file)).isDirectory()) {
 				return;
 			}
-			if (fs.existsSync(file)) fs.unlinkSync(file);
+			if (fs.existsSync(path.join(temporaryFilesArchive, file))) fs.unlinkSync(path.join(temporaryFilesArchive, file));
 		} catch {}
 	});
 };
@@ -57,13 +59,20 @@ const remove = (pathToRemove: string, leaveRoot = false) => {
 };
 
 export const loadAllPremiumHUDs = () => {
-	return Promise.all(availableGames.map(game => loadHUDPremium(game)));
+	return Promise.all(
+		[
+			loadHUDPremium('csgo', 'csgo'),
+			loadHUDPremium('rocketleague', 'rocketleague1'),
+			loadHUDPremium('rocketleague', 'rocketleague2'),
+
+		]
+	);
 };
 
-export async function loadHUDPremium(game: AvailableGames): Promise<any> {
+export async function loadHUDPremium(game: AvailableGames, dir: string): Promise<any> {
 	removeArchives();
 	return new Promise(res => {
-		const hudPath = path.join(app.getPath('userData'), 'premium', game);
+		const hudPath = path.join(app.getPath('userData'), 'premium', dir);
 		const hudVersion = LHMP[game];
 		if (!fs.existsSync(hudPath) || !hudVersion) {
 			return res(null);
@@ -89,25 +98,38 @@ export async function loadHUDPremium(game: AvailableGames): Promise<any> {
 		}
 		remove(hudPath, true);
 		fs.writeFileSync(versionFile, hudVersion);
-		try {
-			const fileString = fs.readFileSync(path.join(__dirname, './lhmp.zip'), 'base64');
+		
+		let archiveFilename = './lhmp';
 
-			if (!fileString) {
+		if(game !== "csgo"){
+			archiveFilename += dir;
+		}
+
+		archiveFilename += '.zip';
+		
+
+		try {
+			/*const fileBuffer = fs.readFileSync(path.join(__dirname, archiveFilename));
+
+			if (!fileBuffer) {
 				res(null);
 				throw new Error();
 			}
 
 			const tempArchiveName = `./hud_temp_archive_${getRandomString()}.zip`;
-			fs.writeFileSync(tempArchiveName, fileString, { encoding: 'base64', mode: 777 });
+			const archiveFilepath = path.join(temporaryFilesArchive, tempArchiveName);
+			//const tempArchivePath = path.join(app.getPath('userData'), tempArchiveName);
+			fs.writeFileSync(archiveFilepath, fileBuffer, { mode: 777 });*/
 
-			const tempUnzipper: any = new DecompressZip(tempArchiveName);
+			const tempUnzipper: any = new DecompressZip(path.join(__dirname, archiveFilename));
 			tempUnzipper.on('extract', async () => {
 				removeArchives();
 				res(null);
 			});
-			tempUnzipper.on('error', () => {
+			tempUnzipper.on('error', (err: any) => {
+				console.log(err)
 				if (fs.existsSync(hudPath)) {
-					remove(hudPath);
+					remove(hudPath, true);
 				}
 				removeArchives();
 				res(null);
@@ -119,7 +141,7 @@ export async function loadHUDPremium(game: AvailableGames): Promise<any> {
 		} catch (e) {
 			console.log(e);
 			if (fs.existsSync(hudPath)) {
-				remove(hudPath);
+				remove(hudPath, true);
 			}
 			removeArchives();
 			res(null);
@@ -131,12 +153,7 @@ export function checkDirectories() {
 	const userData = app.getPath('userData');
 	const premiumHUDsDirectory = path.join(app.getPath('userData'), 'premium');
 
-	const premiumHUDsGames: string[] = [];
-
-	for (const premiumHUD of Object.entries(LHMP)) {
-		const [game, version] = premiumHUD;
-		if (version) premiumHUDsGames.push(path.join(app.getPath('userData'), 'premium', game));
-	}
+	const premiumHUDsGames = ["csgo/", "rocketleague1/", "rocketleague2/",].map(dir => path.join(premiumHUDsDirectory, dir));
 
 	const database = path.join(userData, 'databases');
 	const arData = path.join(userData, 'ARs');
@@ -151,6 +168,7 @@ export function checkDirectories() {
 		database,
 		arData,
 		errors,
+		temporaryFilesArchive,
 		userDatabases,
 		teamDatabases,
 		premiumHUDsDirectory,

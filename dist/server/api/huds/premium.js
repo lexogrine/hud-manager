@@ -6,9 +6,9 @@ const directories_1 = require("../../../init/directories");
 const config_1 = require("../config");
 const huds_1 = require("../huds");
 const getPremiumHUDData = (game, config) => {
-    if (game === "dota2" || game === "f1")
+    if (game === 'dota2' || game === 'f1')
         return null;
-    if (game === "csgo")
+    if (game === 'csgo')
         return {
             name: 'CS:GO Premium HUD',
             version: directories_1.LHMP[game],
@@ -16,6 +16,37 @@ const getPremiumHUDData = (game, config) => {
             legacy: false,
             dir: 'premiumhud',
             radar: true,
+            panel: [
+                {
+                    "label": "Themes",
+                    "name": "theme",
+                    "inputs": [
+                        {
+                            "type": "select",
+                            "name": "theme_select",
+                            "label": "Select HUD Theme",
+                            "values": [
+                                {
+                                    "name": "csgo2",
+                                    "label": "Sunset"
+                                },
+                                {
+                                    "name": "redblue",
+                                    "label": "Red & Blue"
+                                },
+                                {
+                                    "name": "dune",
+                                    "label": "Dune"
+                                },
+                                {
+                                    "name": "power",
+                                    "label": "Energy"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
             game,
             publicKey: (0, huds_1.getHUDPublicKey)('premiumhud'),
             killfeed: true,
@@ -100,6 +131,22 @@ const getPremiumHUDData = (game, config) => {
             uuid: 'premium-turbo-hud1.0.0.',
             isDev: false
         };
+    return {
+        name: 'Rocket League Premium HUD',
+        version: directories_1.LHMP[game],
+        author: 'Lexogrine',
+        legacy: false,
+        dir: 'premiumhud',
+        radar: true,
+        game,
+        publicKey: (0, huds_1.getHUDPublicKey)('premiumhud'),
+        killfeed: true,
+        keybinds: [],
+        url: `http://${config_1.internalIP}:${config.port}/hud/premiumhud/`,
+        status: 'SYNCED',
+        uuid: 'premium-turbo-hud-rl1.0.0.',
+        isDev: false
+    };
     return null;
 };
 exports.getPremiumHUDData = getPremiumHUDData;

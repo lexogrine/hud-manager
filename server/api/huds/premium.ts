@@ -14,6 +14,37 @@ export const getPremiumHUDData = (game: AvailableGames, config: Config) => {
 			legacy: false,
 			dir: 'premiumhud',
 			radar: true,
+			panel: [
+				{
+					"label": "Themes",
+					"name":"theme",
+					"inputs": [
+						{
+							"type": "select",
+							"name": "theme_select",
+							"label": "Select HUD Theme",
+							"values": [
+								{
+									"name": "csgo2",
+									"label": "Sunset"
+								},
+								{
+									"name": "redblue",
+									"label": "Red & Blue"
+								},
+								{
+									"name": "dune",
+									"label": "Dune"
+								},
+								{
+									"name": "power",
+									"label": "Energy"
+								}
+							]
+						}
+					]
+				}
+			],
 			game,
 			publicKey: getHUDPublicKey('premiumhud'),
 			killfeed: true,
@@ -99,6 +130,22 @@ export const getPremiumHUDData = (game: AvailableGames, config: Config) => {
 			uuid: 'premium-turbo-hud1.0.0.',
 			isDev: false
 		} as HUD;
-
+	
+	return {
+		name: 'Rocket League Premium HUD',
+		version: LHMP[game],
+		author: 'Lexogrine',
+		legacy: false,
+		dir: 'premiumhud',
+		radar: true,
+		game,
+		publicKey: getHUDPublicKey('premiumhud'),
+		killfeed: true,
+		keybinds: [],
+		url: `http://${internalIP}:${config.port}/hud/premiumhud/`,
+		status: 'SYNCED',
+		uuid: 'premium-turbo-hud-rl1.0.0.',
+		isDev: false
+	} as HUD;
 	return null;
 };
