@@ -66,7 +66,7 @@
 	<script type="text/javascript" src="/socket.io/socket.io.min.js"></script>
 	<script type="module">
 		import { CSGOGSI } from './csgogsi.js';
-		import { ActionManager } from './actions.js';
+		import { ActionManager, ConfigManager } from './actions.js';
 		import { addARModule, removeARModule, setActiveModules } from './utils.js';
 
 		import * as Utils from '../../js/modules/utils.js';
@@ -74,6 +74,7 @@
 		import * as D3d9 from '../../js/modules/d3d9.js';
 
 		var actions = new ActionManager();
+		var configs = new ConfigManager();
 
 		if (globalThis && !globalThis.actions) {
 			globalThis.actions = actions;
@@ -86,11 +87,18 @@
 		const socketio = io('/');
 		socketio.on('update', GSI.digest);
 
+		configs.onChange(data => {
+			console.log(data);
+		})
+
 		socketio.on(`hud_action`, (data) => {
 			actions.execute(data.action, data.data);
 		});
 		socketio.on('keybindAction', (action) => {
 			actions.execute(action);
+		});
+		socketio.on(`hud_config`, (data) => {
+			configs.save(data);
 		});
 
 
@@ -147,7 +155,8 @@
 			camera,
 			renderers,
 			GSI,
-			actions
+			actions,
+			configs
 		};
 
 		socketio.on('active_modules', activeModules => {
@@ -165,7 +174,7 @@
 			}
 
 			if (currentARModule && currentARModule.cleanUpARModule) {
-				currentARModule.cleanUpARModule(scene, GSI);
+				currentARModule.cleanUpARModule(scene, GSI, configs);
 			}
 			if (!url) return;
 
@@ -201,7 +210,7 @@
 			const arModule = await import(arModuleURL);
 			currentARModule = arModule;
 			const { startARModule } = arModule;
-			startARModule(scene, camera, renderers, GSI, actions);
+			startARModule(scene, camera, renderers, GSI, actions, configs);
 		});
 		socketio.emit('get_active_hlae_hud');
 		socketio.emit('get_active_modules');

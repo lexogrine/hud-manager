@@ -24,3 +24,8 @@ yarn-error.log*
 lexogrineHUDManagerCertificate.pfx
 /dist/init/lhmp.zip
 /init/lhmp.zip
+
+/dist/init/lhmprocketleague1.zip
+/init/lhmprocketleague1.zip
+/dist/init/lhmprocketleague2.zip
+/init/lhmprocketleague2.zip

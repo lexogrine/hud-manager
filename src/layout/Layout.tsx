@@ -1,6 +1,6 @@
 import Content from '../components/Content/Content';
 import { ContextData, IContextData } from './../components/Context';
-import api from './../api/api';
+import api, { layoutEvents } from './../api/api';
 import * as I from './../api/interfaces';
 import config from './../api/config';
 import { socket } from './../components/Content/Tabs/Live/Live';
@@ -123,7 +123,10 @@ export default class Layout extends Component<{}, IState> {
 	setGame = (game: AvailableGames, init = false) => {
 		const { data } = this.state;
 		data.game = game;
-		this.setState({ picked: game, data }, () => this.sync(init));
+		this.setState({ picked: game, data }, () => {
+			this.sync(init);
+			layoutEvents.emit('gameChange');
+		});
 	};
 	clearGame = () => {
 		this.setState({ picked: null });

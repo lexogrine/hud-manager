@@ -1,10 +1,16 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { app } from 'electron';
+import { availableGames, AvailableGames } from '../types/interfaces';
 const DecompressZip = require('decompress-zip');
 
-export const LHMP = {
-	CSGO: '1.1.0'
+const temporaryFilesArchive = path.join(app.getPath('userData'), 'archives');
+
+export const LHMP: Record<AvailableGames, string | null> = {
+	csgo: '1.2.1',
+	rocketleague: '1.1.1',
+	dota2: null,
+	f1: null
 };
 
 function createIfMissing(directory: string) {
@@ -20,15 +26,16 @@ const getRandomString = () =>
 
 const removeArchives = () => {
 	const files = fs
-		.readdirSync('./')
+		.readdirSync(temporaryFilesArchive)
 		.filter(file => (file.startsWith('hud_temp_') || file.startsWith('ar_temp_')) && file.endsWith('.zip'));
 
 	files.forEach(file => {
 		try {
-			if (fs.lstatSync(file).isDirectory()) {
+			if (fs.lstatSync(path.join(temporaryFilesArchive, file)).isDirectory()) {
 				return;
 			}
-			if (fs.existsSync(file)) fs.unlinkSync(file);
+			if (fs.existsSync(path.join(temporaryFilesArchive, file)))
+				fs.unlinkSync(path.join(temporaryFilesArchive, file));
 		} catch {}
 	});
 };
@@ -51,11 +58,21 @@ const remove = (pathToRemove: string, leaveRoot = false) => {
 	});
 	if (!leaveRoot) fs.rmdirSync(pathToRemove);
 };
-export async function loadHUDPremium(): Promise<any> {
+
+export const loadAllPremiumHUDs = () => {
+	return Promise.all([
+		loadHUDPremium('csgo', 'csgo'),
+		loadHUDPremium('rocketleague', 'rocketleague1'),
+		loadHUDPremium('rocketleague', 'rocketleague2')
+	]);
+};
+
+export async function loadHUDPremium(game: AvailableGames, dir: string): Promise<any> {
 	removeArchives();
 	return new Promise(res => {
-		const hudPath = path.join(app.getPath('userData'), 'premium', 'csgo');
-		if (!fs.existsSync(hudPath)) {
+		const hudPath = path.join(app.getPath('userData'), 'premium', dir);
+		const hudVersion = LHMP[game];
+		if (!fs.existsSync(hudPath) || !hudVersion) {
 			return res(null);
 		}
 
@@ -69,7 +86,7 @@ export async function loadHUDPremium(): Promise<any> {
 			shouldUpdate = true;
 		} else {
 			const content = fs.readFileSync(versionFile, 'utf-8');
-			if (LHMP.CSGO !== content) {
+			if (hudVersion && hudVersion !== content) {
 				shouldUpdate = true;
 			}
 		}
@@ -78,26 +95,38 @@ export async function loadHUDPremium(): Promise<any> {
 			return res(null);
 		}
 		remove(hudPath, true);
-		fs.writeFileSync(versionFile, LHMP.CSGO);
-		try {
-			const fileString = fs.readFileSync(path.join(__dirname, './lhmp.zip'), 'base64');
+		fs.writeFileSync(versionFile, hudVersion);
 
-			if (!fileString) {
+		let archiveFilename = './lhmp';
+
+		if (game !== 'csgo') {
+			archiveFilename += dir;
+		}
+
+		archiveFilename += '.zip';
+
+		try {
+			/*const fileBuffer = fs.readFileSync(path.join(__dirname, archiveFilename));
+
+			if (!fileBuffer) {
 				res(null);
 				throw new Error();
 			}
 
 			const tempArchiveName = `./hud_temp_archive_${getRandomString()}.zip`;
-			fs.writeFileSync(tempArchiveName, fileString, { encoding: 'base64', mode: 777 });
+			const archiveFilepath = path.join(temporaryFilesArchive, tempArchiveName);
+			//const tempArchivePath = path.join(app.getPath('userData'), tempArchiveName);
+			fs.writeFileSync(archiveFilepath, fileBuffer, { mode: 777 });*/
 
-			const tempUnzipper: any = new DecompressZip(tempArchiveName);
+			const tempUnzipper: any = new DecompressZip(path.join(__dirname, archiveFilename));
 			tempUnzipper.on('extract', async () => {
 				removeArchives();
 				res(null);
 			});
-			tempUnzipper.on('error', () => {
+			tempUnzipper.on('error', (err: any) => {
+				console.log(err);
 				if (fs.existsSync(hudPath)) {
-					remove(hudPath);
+					remove(hudPath, true);
 				}
 				removeArchives();
 				res(null);
@@ -109,7 +138,7 @@ export async function loadHUDPremium(): Promise<any> {
 		} catch (e) {
 			console.log(e);
 			if (fs.existsSync(hudPath)) {
-				remove(hudPath);
+				remove(hudPath, true);
 			}
 			removeArchives();
 			res(null);
@@ -119,8 +148,12 @@ export async function loadHUDPremium(): Promise<any> {
 export function checkDirectories() {
 	const hudsData = path.join(app.getPath('home'), 'HUDs');
 	const userData = app.getPath('userData');
-	const userDataPr = path.join(app.getPath('userData'), 'premium');
-	const userDataPrCSGO = path.join(app.getPath('userData'), 'premium', 'csgo');
+	const premiumHUDsDirectory = path.join(app.getPath('userData'), 'premium');
+
+	const premiumHUDsGames = ['csgo/', 'rocketleague1/', 'rocketleague2/'].map(dir =>
+		path.join(premiumHUDsDirectory, dir)
+	);
+
 	const database = path.join(userData, 'databases');
 	const arData = path.join(userData, 'ARs');
 	const errors = path.join(userData, 'errors');
@@ -128,9 +161,18 @@ export function checkDirectories() {
 	const userDatabases = path.join(database, 'users');
 	const teamDatabases = path.join(database, 'workspaces');
 
-	[hudsData, userData, database, arData, errors, userDatabases, teamDatabases, userDataPr, userDataPrCSGO].forEach(
-		createIfMissing
-	);
+	[
+		hudsData,
+		userData,
+		database,
+		arData,
+		errors,
+		temporaryFilesArchive,
+		userDatabases,
+		teamDatabases,
+		premiumHUDsDirectory,
+		...premiumHUDsGames
+	].forEach(createIfMissing);
 	const mapFile = path.join(app.getPath('userData'), 'maps.json');
 
 	if (!fs.existsSync(mapFile)) {

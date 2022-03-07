@@ -1953,6 +1953,25 @@ form {
 	align-items: center;
 	justify-content: center;
 	margin-top: 0;
+	.close-modal {
+		position: absolute;
+		top:10px;
+		right: 10px;
+		border-radius: 50%;
+		width: 20px;
+		height: 20px;
+		background-color: #6B1CFF;
+		cursor: pointer;
+		background-image: url('./modalClose.png');
+		background-repeat: no-repeat;
+		background-position: center;
+	}
+	.change-info {
+		margin-top: 10px;
+		font-size: 12px;
+		opacity: 0.6;
+		margin-bottom: 0;
+	}
 	&.game_pick {
 		width: 750px;
 	}

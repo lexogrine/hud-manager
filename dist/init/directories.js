@@ -19,13 +19,17 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.checkDirectories = exports.loadHUDPremium = exports.LHMP = void 0;
+exports.checkDirectories = exports.loadHUDPremium = exports.loadAllPremiumHUDs = exports.LHMP = void 0;
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
 const electron_1 = require("electron");
 const DecompressZip = require('decompress-zip');
+const temporaryFilesArchive = path.join(electron_1.app.getPath('userData'), 'archives');
 exports.LHMP = {
-    CSGO: '1.1.0'
+    csgo: '1.2.1',
+    rocketleague: '1.1.1',
+    dota2: null,
+    f1: null
 };
 function createIfMissing(directory) {
     if (!fs.existsSync(directory)) {
@@ -38,15 +42,15 @@ const getRandomString = () => (Math.random() * 1000 + 1)
     .substr(0, 15);
 const removeArchives = () => {
     const files = fs
-        .readdirSync('./')
+        .readdirSync(temporaryFilesArchive)
         .filter(file => (file.startsWith('hud_temp_') || file.startsWith('ar_temp_')) && file.endsWith('.zip'));
     files.forEach(file => {
         try {
-            if (fs.lstatSync(file).isDirectory()) {
+            if (fs.lstatSync(path.join(temporaryFilesArchive, file)).isDirectory()) {
                 return;
             }
-            if (fs.existsSync(file))
-                fs.unlinkSync(file);
+            if (fs.existsSync(path.join(temporaryFilesArchive, file)))
+                fs.unlinkSync(path.join(temporaryFilesArchive, file));
         }
         catch { }
     });
@@ -73,11 +77,20 @@ const remove = (pathToRemove, leaveRoot = false) => {
     if (!leaveRoot)
         fs.rmdirSync(pathToRemove);
 };
-async function loadHUDPremium() {
+const loadAllPremiumHUDs = () => {
+    return Promise.all([
+        loadHUDPremium('csgo', 'csgo'),
+        loadHUDPremium('rocketleague', 'rocketleague1'),
+        loadHUDPremium('rocketleague', 'rocketleague2')
+    ]);
+};
+exports.loadAllPremiumHUDs = loadAllPremiumHUDs;
+async function loadHUDPremium(game, dir) {
     removeArchives();
     return new Promise(res => {
-        const hudPath = path.join(electron_1.app.getPath('userData'), 'premium', 'csgo');
-        if (!fs.existsSync(hudPath)) {
+        const hudPath = path.join(electron_1.app.getPath('userData'), 'premium', dir);
+        const hudVersion = exports.LHMP[game];
+        if (!fs.existsSync(hudPath) || !hudVersion) {
             return res(null);
         }
         const versionFile = path.join(hudPath, 'version');
@@ -88,7 +101,7 @@ async function loadHUDPremium() {
         }
         else {
             const content = fs.readFileSync(versionFile, 'utf-8');
-            if (exports.LHMP.CSGO !== content) {
+            if (hudVersion && hudVersion !== content) {
                 shouldUpdate = true;
             }
         }
@@ -96,23 +109,33 @@ async function loadHUDPremium() {
             return res(null);
         }
         remove(hudPath, true);
-        fs.writeFileSync(versionFile, exports.LHMP.CSGO);
+        fs.writeFileSync(versionFile, hudVersion);
+        let archiveFilename = './lhmp';
+        if (game !== 'csgo') {
+            archiveFilename += dir;
+        }
+        archiveFilename += '.zip';
         try {
-            const fileString = fs.readFileSync(path.join(__dirname, './lhmp.zip'), 'base64');
-            if (!fileString) {
+            /*const fileBuffer = fs.readFileSync(path.join(__dirname, archiveFilename));
+
+            if (!fileBuffer) {
                 res(null);
                 throw new Error();
             }
+
             const tempArchiveName = `./hud_temp_archive_${getRandomString()}.zip`;
-            fs.writeFileSync(tempArchiveName, fileString, { encoding: 'base64', mode: 777 });
-            const tempUnzipper = new DecompressZip(tempArchiveName);
+            const archiveFilepath = path.join(temporaryFilesArchive, tempArchiveName);
+            //const tempArchivePath = path.join(app.getPath('userData'), tempArchiveName);
+            fs.writeFileSync(archiveFilepath, fileBuffer, { mode: 777 });*/
+            const tempUnzipper = new DecompressZip(path.join(__dirname, archiveFilename));
             tempUnzipper.on('extract', async () => {
                 removeArchives();
                 res(null);
             });
-            tempUnzipper.on('error', () => {
+            tempUnzipper.on('error', (err) => {
+                console.log(err);
                 if (fs.existsSync(hudPath)) {
-                    remove(hudPath);
+                    remove(hudPath, true);
                 }
                 removeArchives();
                 res(null);
@@ -125,7 +148,7 @@ async function loadHUDPremium() {
         catch (e) {
             console.log(e);
             if (fs.existsSync(hudPath)) {
-                remove(hudPath);
+                remove(hudPath, true);
             }
             removeArchives();
             res(null);
@@ -136,14 +159,25 @@ exports.loadHUDPremium = loadHUDPremium;
 function checkDirectories() {
     const hudsData = path.join(electron_1.app.getPath('home'), 'HUDs');
     const userData = electron_1.app.getPath('userData');
-    const userDataPr = path.join(electron_1.app.getPath('userData'), 'premium');
-    const userDataPrCSGO = path.join(electron_1.app.getPath('userData'), 'premium', 'csgo');
+    const premiumHUDsDirectory = path.join(electron_1.app.getPath('userData'), 'premium');
+    const premiumHUDsGames = ['csgo/', 'rocketleague1/', 'rocketleague2/'].map(dir => path.join(premiumHUDsDirectory, dir));
     const database = path.join(userData, 'databases');
     const arData = path.join(userData, 'ARs');
     const errors = path.join(userData, 'errors');
     const userDatabases = path.join(database, 'users');
     const teamDatabases = path.join(database, 'workspaces');
-    [hudsData, userData, database, arData, errors, userDatabases, teamDatabases, userDataPr, userDataPrCSGO].forEach(createIfMissing);
+    [
+        hudsData,
+        userData,
+        database,
+        arData,
+        errors,
+        temporaryFilesArchive,
+        userDatabases,
+        teamDatabases,
+        premiumHUDsDirectory,
+        ...premiumHUDsGames
+    ].forEach(createIfMissing);
     const mapFile = path.join(electron_1.app.getPath('userData'), 'maps.json');
     if (!fs.existsSync(mapFile)) {
         const maps = [

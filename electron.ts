@@ -16,6 +16,7 @@ export const AFXInterop: HLAEChild = {
 };
 
 export const isDev = process.env.DEV === 'true';
+const wait = (ms: number) => new Promise(r => setTimeout(r, ms));
 
 async function mainProcess(server: Server, forceDev = false, gui = true) {
 	const RMTPServer = fork(require.resolve('./RMTPServer.js'));
@@ -67,7 +68,8 @@ async function startManager() {
 		return;
 	}
 	directories.checkDirectories();
-	await directories.loadHUDPremium();
+	//await wait(3000);
+	await directories.loadAllPremiumHUDs();
 	//console.log('b', new Date().getTime());
 	const server = await init();
 	//console.log('c', new Date().getTime());

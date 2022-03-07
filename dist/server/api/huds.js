@@ -22,7 +22,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.singHUDByDir = exports.signHUD = exports.uploadHUD = exports.deleteHUDFromCloud = exports.downloadHUD = exports.removeArchives = exports.sendActionByHTTP = exports.deleteHUD = exports.sendHUD = exports.closeHUD = exports.showHUD = exports.legacyCSS = exports.legacyJS = exports.renderLegacy = exports.renderAssets = exports.getThumbPath = exports.renderThumbnail = exports.renderOverlay = exports.render = exports.verifyOverlay = exports.renderHUD = exports.openHUDsDirectory = exports.getHUDPanelSetting = exports.getHUDKeyBinds = exports.getHUDData = exports.getHUDARSettings = exports.getHUDCustomAsset = exports.getHUDs = exports.getHUDDirectory = exports.listHUDs = exports.remove = exports.getRandomString = void 0;
+exports.singHUDByDir = exports.signHUD = exports.uploadHUD = exports.deleteHUDFromCloud = exports.downloadHUD = exports.removeArchives = exports.sendActionByHTTP = exports.deleteHUD = exports.sendHUD = exports.closeHUD = exports.showHUD = exports.legacyCSS = exports.legacyJS = exports.renderLegacy = exports.renderAssets = exports.getThumbPath = exports.renderThumbnail = exports.renderOverlay = exports.render = exports.verifyOverlay = exports.renderHUD = exports.openHUDsDirectory = exports.getHUDPanelSetting = exports.getHUDKeyBinds = exports.getHUDData = exports.getHUDPublicKey = exports.getHUDARSettings = exports.getHUDCustomAsset = exports.getHUDs = exports.getHUDDirectory = exports.listHUDs = exports.remove = exports.getRandomString = void 0;
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
 const electron_1 = require("electron");
@@ -39,7 +39,7 @@ const isSvg_1 = __importDefault(require("../../src/isSvg"));
 const node_fetch_1 = __importDefault(require("node-fetch"));
 const crypto_1 = __importDefault(require("crypto"));
 const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
-const directories_1 = require("../../init/directories");
+const premium_1 = require("./huds/premium");
 const DecompressZip = require('decompress-zip');
 const HUDSDIRECTORY = path.join(electron_1.app.getPath('home'), 'HUDs');
 const getRandomString = () => (Math.random() * 1000 + 1)
@@ -142,7 +142,16 @@ const listHUDs = async () => {
 };
 exports.listHUDs = listHUDs;
 const getHUDDirectory = (dir, isPremium = false) => {
-    const filePath = isPremium ? path.join(electron_1.app.getPath('userData'), 'premium', 'csgo') : path.join(HUDSDIRECTORY, dir);
+    let premiumHUDDir = '';
+    if (isPremium) {
+        premiumHUDDir = _1.customer.game || 'csgo';
+        if (_1.customer.game === 'rocketleague') {
+            premiumHUDDir += _1.customer.customer?.license.type === 'personal' && !_1.customer.workspace ? '2' : '1';
+        }
+    }
+    const filePath = isPremium
+        ? path.join(electron_1.app.getPath('userData'), 'premium', premiumHUDDir)
+        : path.join(HUDSDIRECTORY, dir);
     return filePath;
 };
 exports.getHUDDirectory = getHUDDirectory;
@@ -226,102 +235,15 @@ const getHUDPublicKey = (dirName) => {
         return null;
     }
 };
+exports.getHUDPublicKey = getHUDPublicKey;
 const getHUDData = async (dirName, isPremium) => {
     const globalConfig = await (0, config_1.loadConfig)();
     if (!globalConfig)
         return null;
     if (isPremium) {
-        return {
-            name: 'CS:GO Premium HUD',
-            version: directories_1.LHMP.CSGO,
-            author: 'Lexogrine',
-            legacy: false,
-            dir: 'premiumhud',
-            radar: true,
-            game: 'csgo',
-            publicKey: getHUDPublicKey(dirName),
-            killfeed: true,
-            keybinds: !_1.customer.customer ||
-                _1.customer.customer.license.type === 'personal' ||
-                _1.customer.customer.license.type === 'free'
-                ? []
-                : [
-                    {
-                        bind: 'Alt+S',
-                        action: 'setScoreboard'
-                    },
-                    {
-                        bind: 'Alt+Y',
-                        action: 'toggleCameraBoard'
-                    },
-                    {
-                        bind: 'Alt+W',
-                        action: 'setFunGraph'
-                    },
-                    {
-                        bind: 'Alt+C',
-                        action: 'toggleCams'
-                    },
-                    {
-                        bind: 'Alt+T',
-                        action: [
-                            {
-                                map: 'de_vertigo',
-                                action: {
-                                    action: 'toggleMainScoreboard',
-                                    exec: 'spec_mode 5;spec_mode 6;spec_goto 41.3 -524.8 12397.0 -0.1 153.8; spec_lerpto -24.1 335.8 12391.3 -4.0 -149.9 12 12'
-                                }
-                            },
-                            {
-                                map: 'de_mirage',
-                                action: {
-                                    action: 'toggleMainScoreboard',
-                                    exec: 'spec_mode 5;spec_mode 6;spec_goto -731.6 -734.9 129.5 7.2 60.7; spec_lerpto -42.5 -655.3 146.7 4.0 119.3 12 12'
-                                }
-                            },
-                            {
-                                map: 'de_inferno',
-                                action: {
-                                    action: 'toggleMainScoreboard',
-                                    exec: 'spec_mode 5;spec_mode 6;spec_goto -1563.1 -179.4 302.1 9.8 134.7; spec_lerpto -1573.8 536.6 248.3 6.1 -157.5 12 12'
-                                }
-                            },
-                            {
-                                map: 'de_dust2',
-                                action: {
-                                    action: 'toggleMainScoreboard',
-                                    exec: 'spec_mode 5;spec_mode 6;spec_goto 373.8 203.8 154.8 -17.6 -25.3; spec_lerpto 422.6 -315.0 106.0 -31.1 16.7 12 12'
-                                }
-                            },
-                            {
-                                map: 'de_overpass',
-                                action: {
-                                    action: 'toggleMainScoreboard',
-                                    exec: 'spec_mode 5;spec_mode 6;spec_goto -781.2 44.4 745.5 15.7 -101.3; spec_lerpto -1541.2 -1030.6 541.9 2.9 -35.8 12 12'
-                                }
-                            },
-                            {
-                                map: 'de_nuke',
-                                action: {
-                                    action: 'toggleMainScoreboard',
-                                    exec: 'spec_mode 5;spec_mode 6;spec_goto 800.0 -2236.4 -170.9 -1.0 -123.3; spec_lerpto -161.2 -2584.0 -127.2 -0.1 -60.4 12 12'
-                                }
-                            },
-                            {
-                                map: 'de_ancient',
-                                action: {
-                                    action: 'toggleMainScoreboard',
-                                    exec: 'spec_mode 5;spec_mode 6;spec_goto -813.4 -38.8 547.7 8.7 -21.2; spec_lerpto -723.9 -748.6 385.0 -14.3 17.4 12 12'
-                                }
-                            }
-                        ]
-                    }
-                ],
-            url: `http://${config_1.internalIP}:${globalConfig.port}/hud/premiumhud/`,
-            status: 'SYNCED',
-            uuid: 'premium-turbo-hud1.0.0.',
-            isDev: false
-        };
+        if (_1.customer.game === null)
+            return null;
+        return (0, premium_1.getPremiumHUDData)(_1.customer.game, globalConfig);
     }
     const dir = (0, exports.getHUDDirectory)(dirName);
     const configFileDir = path.join(dir, 'hud.json');
@@ -335,7 +257,7 @@ const getHUDData = async (dirName, isPremium) => {
     }
     try {
         let configFile = fs.readFileSync(configFileDir, { encoding: 'utf8' });
-        const publicKey = getHUDPublicKey(dirName);
+        const publicKey = (0, exports.getHUDPublicKey)(dirName);
         if (publicKey) {
             const content = jsonwebtoken_1.default.verify(configFile, publicKey, { algorithms: ['RS256'] });
             if (typeof content !== 'string' && !content.name && !content.version)
@@ -345,7 +267,7 @@ const getHUDData = async (dirName, isPremium) => {
         const config = typeof configFile === 'string' ? JSON.parse(configFile) : configFile;
         config.dir = dirName;
         config.game = config.game || 'csgo';
-        config.publicKey = getHUDPublicKey(dirName);
+        config.publicKey = (0, exports.getHUDPublicKey)(dirName);
         const panel = (0, exports.getHUDPanelSetting)(dirName);
         const keybinds = (0, exports.getHUDKeyBinds)(dirName);
         const ar = (0, exports.getHUDARSettings)(dirName);
@@ -717,7 +639,6 @@ async function loadHUD(base64, name, existingUUID) {
         }
     });
 }
-// const wait = (ms: number) => new Promise(r => setTimeout(r, ms));
 const downloadHUD = async (req, res) => {
     const uuid = req.params.uuid;
     if (!_1.customer.game || !uuid)
