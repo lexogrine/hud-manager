@@ -16,43 +16,47 @@ const getPremiumHUDData = (game, config) => {
             legacy: false,
             dir: 'premiumhud',
             radar: true,
-            panel: [
-                {
-                    "label": "Themes",
-                    "name": "theme",
-                    "inputs": [
-                        {
-                            "type": "select",
-                            "name": "theme_select",
-                            "label": "Select HUD Theme",
-                            "values": [
-                                {
-                                    "name": "csgo2",
-                                    "label": "Sunset"
-                                },
-                                {
-                                    "name": "redblue",
-                                    "label": "Red & Blue"
-                                },
-                                {
-                                    "name": "dune",
-                                    "label": "Dune"
-                                },
-                                {
-                                    "name": "power",
-                                    "label": "Energy"
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ],
+            panel: (!__1.customer.customer ||
+                __1.customer.customer.license.type === 'personal' ||
+                __1.customer.customer.license.type === 'free') && !__1.customer.workspace
+                ? []
+                : [
+                    {
+                        label: 'Themes',
+                        name: 'theme',
+                        inputs: [
+                            {
+                                type: 'select',
+                                name: 'theme_select',
+                                label: 'Select HUD Theme',
+                                values: [
+                                    {
+                                        name: 'csgo2',
+                                        label: 'Sunset'
+                                    },
+                                    {
+                                        name: 'redblue',
+                                        label: 'Saber'
+                                    },
+                                    {
+                                        name: 'dune',
+                                        label: 'Dune'
+                                    },
+                                    {
+                                        name: 'power',
+                                        label: 'Energy'
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+                ],
             game,
             publicKey: (0, huds_1.getHUDPublicKey)('premiumhud'),
             killfeed: true,
-            keybinds: !__1.customer.customer ||
+            keybinds: (!__1.customer.customer ||
                 __1.customer.customer.license.type === 'personal' ||
-                __1.customer.customer.license.type === 'free'
+                __1.customer.customer.license.type === 'free') && !__1.customer.workspace
                 ? []
                 : [
                     {
@@ -140,6 +144,41 @@ const getPremiumHUDData = (game, config) => {
         radar: true,
         game,
         publicKey: (0, huds_1.getHUDPublicKey)('premiumhud'),
+        panel: (!__1.customer.customer ||
+            __1.customer.customer.license.type === 'personal' ||
+            __1.customer.customer.license.type === 'free') && !__1.customer.workspace
+            ? []
+            : [
+                {
+                    "label": "Theme settings",
+                    "name": "theme",
+                    "inputs": [
+                        {
+                            "type": "select",
+                            "name": "select_theme",
+                            "label": "Select alternative theme",
+                            "values": [
+                                {
+                                    "name": "greenViolet",
+                                    "label": "Toxic"
+                                },
+                                {
+                                    "name": "neon",
+                                    "label": "Neon"
+                                },
+                                {
+                                    "name": "denji",
+                                    "label": "Rio"
+                                },
+                                {
+                                    "name": "akira",
+                                    "label": "Dimension"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
         killfeed: true,
         keybinds: [],
         url: `http://${config_1.internalIP}:${config.port}/hud/premiumhud/`,

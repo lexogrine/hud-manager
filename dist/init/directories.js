@@ -26,8 +26,8 @@ const electron_1 = require("electron");
 const DecompressZip = require('decompress-zip');
 const temporaryFilesArchive = path.join(electron_1.app.getPath('userData'), 'archives');
 exports.LHMP = {
-    csgo: '1.2.0',
-    rocketleague: '1.0.0',
+    csgo: '1.2.1',
+    rocketleague: '1.1.1',
     dota2: null,
     f1: null
 };
@@ -81,7 +81,7 @@ const loadAllPremiumHUDs = () => {
     return Promise.all([
         loadHUDPremium('csgo', 'csgo'),
         loadHUDPremium('rocketleague', 'rocketleague1'),
-        loadHUDPremium('rocketleague', 'rocketleague2'),
+        loadHUDPremium('rocketleague', 'rocketleague2')
     ]);
 };
 exports.loadAllPremiumHUDs = loadAllPremiumHUDs;
@@ -111,7 +111,7 @@ async function loadHUDPremium(game, dir) {
         remove(hudPath, true);
         fs.writeFileSync(versionFile, hudVersion);
         let archiveFilename = './lhmp';
-        if (game !== "csgo") {
+        if (game !== 'csgo') {
             archiveFilename += dir;
         }
         archiveFilename += '.zip';
@@ -160,7 +160,7 @@ function checkDirectories() {
     const hudsData = path.join(electron_1.app.getPath('home'), 'HUDs');
     const userData = electron_1.app.getPath('userData');
     const premiumHUDsDirectory = path.join(electron_1.app.getPath('userData'), 'premium');
-    const premiumHUDsGames = ["csgo/", "rocketleague1/", "rocketleague2/",].map(dir => path.join(premiumHUDsDirectory, dir));
+    const premiumHUDsGames = ['csgo/', 'rocketleague1/', 'rocketleague2/'].map(dir => path.join(premiumHUDsDirectory, dir));
     const database = path.join(userData, 'databases');
     const arData = path.join(userData, 'ARs');
     const errors = path.join(userData, 'errors');

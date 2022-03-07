@@ -7,8 +7,8 @@ const DecompressZip = require('decompress-zip');
 const temporaryFilesArchive = path.join(app.getPath('userData'), 'archives');
 
 export const LHMP: Record<AvailableGames, string | null> = {
-	csgo: '1.2.0',
-	rocketleague: '1.0.0',
+	csgo: '1.2.1',
+	rocketleague: '1.1.1',
 	dota2: null,
 	f1: null
 };
@@ -34,7 +34,8 @@ const removeArchives = () => {
 			if (fs.lstatSync(path.join(temporaryFilesArchive, file)).isDirectory()) {
 				return;
 			}
-			if (fs.existsSync(path.join(temporaryFilesArchive, file))) fs.unlinkSync(path.join(temporaryFilesArchive, file));
+			if (fs.existsSync(path.join(temporaryFilesArchive, file)))
+				fs.unlinkSync(path.join(temporaryFilesArchive, file));
 		} catch {}
 	});
 };
@@ -59,14 +60,11 @@ const remove = (pathToRemove: string, leaveRoot = false) => {
 };
 
 export const loadAllPremiumHUDs = () => {
-	return Promise.all(
-		[
-			loadHUDPremium('csgo', 'csgo'),
-			loadHUDPremium('rocketleague', 'rocketleague1'),
-			loadHUDPremium('rocketleague', 'rocketleague2'),
-
-		]
-	);
+	return Promise.all([
+		loadHUDPremium('csgo', 'csgo'),
+		loadHUDPremium('rocketleague', 'rocketleague1'),
+		loadHUDPremium('rocketleague', 'rocketleague2')
+	]);
 };
 
 export async function loadHUDPremium(game: AvailableGames, dir: string): Promise<any> {
@@ -98,15 +96,14 @@ export async function loadHUDPremium(game: AvailableGames, dir: string): Promise
 		}
 		remove(hudPath, true);
 		fs.writeFileSync(versionFile, hudVersion);
-		
+
 		let archiveFilename = './lhmp';
 
-		if(game !== "csgo"){
+		if (game !== 'csgo') {
 			archiveFilename += dir;
 		}
 
 		archiveFilename += '.zip';
-		
 
 		try {
 			/*const fileBuffer = fs.readFileSync(path.join(__dirname, archiveFilename));
@@ -127,7 +124,7 @@ export async function loadHUDPremium(game: AvailableGames, dir: string): Promise
 				res(null);
 			});
 			tempUnzipper.on('error', (err: any) => {
-				console.log(err)
+				console.log(err);
 				if (fs.existsSync(hudPath)) {
 					remove(hudPath, true);
 				}
@@ -153,7 +150,9 @@ export function checkDirectories() {
 	const userData = app.getPath('userData');
 	const premiumHUDsDirectory = path.join(app.getPath('userData'), 'premium');
 
-	const premiumHUDsGames = ["csgo/", "rocketleague1/", "rocketleague2/",].map(dir => path.join(premiumHUDsDirectory, dir));
+	const premiumHUDsGames = ['csgo/', 'rocketleague1/', 'rocketleague2/'].map(dir =>
+		path.join(premiumHUDsDirectory, dir)
+	);
 
 	const database = path.join(userData, 'databases');
 	const arData = path.join(userData, 'ARs');

@@ -145,7 +145,7 @@ const getHUDDirectory = (dir, isPremium = false) => {
     let premiumHUDDir = '';
     if (isPremium) {
         premiumHUDDir = _1.customer.game || 'csgo';
-        if (_1.customer.game === "rocketleague") {
+        if (_1.customer.game === 'rocketleague') {
             premiumHUDDir += _1.customer.customer?.license.type === 'personal' && !_1.customer.workspace ? '2' : '1';
         }
     }
