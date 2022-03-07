@@ -127,7 +127,7 @@ export default class Layout extends Component<{}, IState> {
 		data.game = game;
 		this.setState({ picked: game, data }, () => {
 			this.sync();
-			layoutEvents.emit("gameChange");
+			layoutEvents.emit('gameChange');
 		});
 	};
 	clearGame = () => {

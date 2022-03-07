@@ -97,7 +97,7 @@ const PlayerForm = ({ cxt }: Props) => {
 	};
 
 	useEffect(() => {
-		layoutEvents.on("gameChange", () => {
+		layoutEvents.on('gameChange', () => {
 			setPlayerForm(clone(emptyPlayer));
 		});
 	}, []);

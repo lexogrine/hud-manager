@@ -87,9 +87,9 @@ const TeamForm = ({ cxt }: Props) => {
 			cxt.reload();
 		}
 	};
-	
+
 	useEffect(() => {
-		layoutEvents.on("gameChange", () => {
+		layoutEvents.on('gameChange', () => {
 			setTeamForm(clone(emptyTeam));
 		});
 	}, []);
