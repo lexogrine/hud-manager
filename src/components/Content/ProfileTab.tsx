@@ -86,7 +86,7 @@ const ProfileTab = ({
 								onChange={e =>
 									setToNewWorkspace(Number(e.target.value), cxt).then(() => {
 										cxt.reload();
-										layoutEvents.emit("workspaceChange");
+										layoutEvents.emit('workspaceChange');
 									})
 								}
 							>
