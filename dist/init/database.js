@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.databaseContext = exports.loadUsersDatabase = exports.onDatabaseLoad = exports.getBasePath = void 0;
+exports.databaseContext = exports.loadUsersDatabase = exports.setSessionStore = exports.sessionStoreContext = exports.onDatabaseLoad = exports.getBasePath = void 0;
 const nedb_1 = __importDefault(require("nedb"));
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
@@ -24,6 +24,29 @@ const onDatabaseLoad = (listener) => {
     listeners.push(listener);
 };
 exports.onDatabaseLoad = onDatabaseLoad;
+const sessionStorePath = path_1.default.join(directory, 'sessionStore');
+exports.sessionStoreContext = { session: { workspace: null, game: null } };
+const saveSessionStore = () => {
+    fs_1.default.writeFileSync(sessionStorePath, JSON.stringify(exports.sessionStoreContext.session), 'utf8');
+};
+const loadSessionStore = () => {
+    if (!fs_1.default.existsSync(sessionStorePath)) {
+        saveSessionStore();
+        return;
+    }
+    exports.sessionStoreContext.session = JSON.parse(fs_1.default.readFileSync(sessionStorePath, 'utf-8'));
+};
+loadSessionStore();
+const setSessionStore = (session) => {
+    if (session.workspace !== undefined) {
+        exports.sessionStoreContext.session.workspace = session.workspace;
+    }
+    if (session.game !== undefined) {
+        exports.sessionStoreContext.session.game = session.game;
+    }
+    saveSessionStore();
+};
+exports.setSessionStore = setSessionStore;
 const getEmptyDb = () => {
     return {};
 };
@@ -81,6 +104,7 @@ const loadUsersDatabase = async (customer) => {
         databaseContext.databases = getEmptyDb();
         return;
     }
+    (0, exports.setSessionStore)({ workspace: customer.workspace?.id, game: customer.game });
     if (customer.workspace) {
         const workspacePath = path_1.default.join(directory, 'workspaces', customer.workspace.id.toString());
         if (!fs_1.default.existsSync(workspacePath)) {

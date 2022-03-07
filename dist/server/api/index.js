@@ -56,6 +56,7 @@ const radar_1 = require("./huds/radar");
 const user_1 = require("./user");
 const utils_1 = require("../../src/utils");
 const keybinder_1 = require("./keybinder");
+const database_1 = require("../../init/database");
 //import { Server } from 'socket.io';
 //import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 let init = true;
@@ -124,6 +125,8 @@ async function default_1( /*io: Server<DefaultEventsMap, DefaultEventsMap, Defau
         await config.setConfig(cfg);
         exports.customer.game = game;
         const result = await (0, cloud_1.checkCloudStatus)(game);
+        if (exports.customer?.customer?.user)
+            (0, database_1.setSessionStore)({ game });
         io.emit('reloadHUDs');
         res.json({ result });
         const registerGame = () => {

@@ -264,6 +264,9 @@ const setWorkspace = async (req, res) => {
     }
     if (workspaceId === null) {
         const result = await loadUser(workspaceId, true);
+        if (result.success && api_1.customer.customer) {
+            (0, database_1.setSessionStore)({ workspace: null });
+        }
         return res.json(result);
     }
     const targetWorkspace = api_1.customer.workspaces.find(workspace => workspace.id === workspaceId);
@@ -271,23 +274,26 @@ const setWorkspace = async (req, res) => {
         return res.status(403).json({ success: false, message: 'Bad workspace' });
     }
     const result = await loadUser(targetWorkspace, true);
+    if (result.success && api_1.customer.customer) {
+        (0, database_1.setSessionStore)({ workspace: targetWorkspace.id });
+    }
     return res.json(result);
 };
 exports.setWorkspace = setWorkspace;
 const getCurrent = async (req, res) => {
     if (api_1.customer.customer) {
-        return res.json(api_1.customer);
+        return res.json({ ...api_1.customer, session: database_1.sessionStoreContext.session });
     }
     const workspaces = api_1.customer.workspaces || (await loadUserWorkspaces());
     if ('error' in workspaces) {
         return res.status(403).json({ success: false, message: workspaces.error });
     }
     if (workspaces.length > 1) {
-        return res.json(api_1.customer);
+        return res.json({ ...api_1.customer, session: database_1.sessionStoreContext.session });
     }
     const result = await loadUser(null, true);
     if (result.success) {
-        return res.json(api_1.customer);
+        return res.json({ ...api_1.customer, session: database_1.sessionStoreContext.session });
     }
     return res.json(result);
 };
@@ -301,6 +307,7 @@ const logout = async (req, res) => {
         exports.socket._socket.close();
     }
     await loadUserWorkspaces();
+    (0, database_1.setSessionStore)({ workspace: null, game: null });
     return res.sendStatus(200);
 };
 exports.logout = logout;

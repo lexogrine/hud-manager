@@ -16,7 +16,7 @@ import { SimpleWebSocket } from 'simple-websockets';
 import { ioPromise } from '../socket';
 import { checkCloudStatus } from './cloud';
 import { v4 as uuidv4 } from 'uuid';
-import { loadUsersDatabase } from '../../init/database';
+import { loadUsersDatabase, sessionStoreContext, setSessionStore } from '../../init/database';
 
 const cookiePath = path.join(app.getPath('userData'), 'cookie.json');
 const cookieJar = new CookieJar(new FileCookieStore(cookiePath));
@@ -321,6 +321,10 @@ export const setWorkspace: express.RequestHandler = async (req, res) => {
 	if (workspaceId === null) {
 		const result = await loadUser(workspaceId, true);
 
+		if (result.success && customer.customer) {
+			setSessionStore({ workspace: null });
+		}
+
 		return res.json(result);
 	}
 
@@ -331,12 +335,16 @@ export const setWorkspace: express.RequestHandler = async (req, res) => {
 	}
 	const result = await loadUser(targetWorkspace, true);
 
+	if (result.success && customer.customer) {
+		setSessionStore({ workspace: targetWorkspace.id });
+	}
+
 	return res.json(result);
 };
 
 export const getCurrent: express.RequestHandler = async (req, res) => {
 	if (customer.customer) {
-		return res.json(customer);
+		return res.json({ ...customer, session: sessionStoreContext.session });
 	}
 
 	const workspaces = customer.workspaces || (await loadUserWorkspaces());
@@ -345,13 +353,13 @@ export const getCurrent: express.RequestHandler = async (req, res) => {
 		return res.status(403).json({ success: false, message: workspaces.error });
 	}
 	if (workspaces.length > 1) {
-		return res.json(customer);
+		return res.json({ ...customer, session: sessionStoreContext.session });
 	}
 
 	const result = await loadUser(null, true);
 
 	if (result.success) {
-		return res.json(customer);
+		return res.json({ ...customer, session: sessionStoreContext.session });
 	}
 
 	return res.json(result);
@@ -365,6 +373,7 @@ export const logout: express.RequestHandler = async (req, res) => {
 		socket._socket.close();
 	}
 	await loadUserWorkspaces();
+	setSessionStore({ workspace: null, game: null });
 	return res.sendStatus(200);
 };
 

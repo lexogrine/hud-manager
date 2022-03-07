@@ -1,7 +1,7 @@
 import Datastore from 'nedb';
 import path from 'path';
 import fs from 'fs';
-import { app } from 'electron';
+import { app, session } from 'electron';
 import * as I from './../types/interfaces';
 import { ioPromise } from '../server/socket';
 
@@ -23,6 +23,15 @@ export const onDatabaseLoad = (listener: () => void) => {
 	listeners.push(listener);
 };
 
+type SessionStore = {
+	workspace: number | null;
+	game: I.AvailableGames | null;
+};
+
+const sessionStorePath = path.join(directory, 'sessionStore');
+
+export const sessionStoreContext: { session: SessionStore } = { session: { workspace: null, game: null } };
+
 type DatabaseStructure = {
 	players: Datastore<I.Player>;
 	teams: Datastore<I.Team>;
@@ -31,6 +40,31 @@ type DatabaseStructure = {
 	custom: Datastore<I.CustomFieldStore>;
 	tournaments: Datastore<I.Tournament>;
 	aco: Datastore<I.MapConfig>;
+};
+
+const saveSessionStore = () => {
+	fs.writeFileSync(sessionStorePath, JSON.stringify(sessionStoreContext.session), 'utf8');
+};
+
+const loadSessionStore = () => {
+	if (!fs.existsSync(sessionStorePath)) {
+		saveSessionStore();
+		return;
+	}
+	sessionStoreContext.session = JSON.parse(fs.readFileSync(sessionStorePath, 'utf-8'));
+};
+
+loadSessionStore();
+
+export const setSessionStore = (session: { workspace?: number | null; game?: I.AvailableGames | null }) => {
+	if (session.workspace !== undefined) {
+		sessionStoreContext.session.workspace = session.workspace;
+	}
+	if (session.game !== undefined) {
+		sessionStoreContext.session.game = session.game;
+	}
+
+	saveSessionStore();
 };
 
 const getEmptyDb = () => {
@@ -96,6 +130,9 @@ export const loadUsersDatabase = async (customer: I.CustomerData) => {
 		databaseContext.databases = getEmptyDb();
 		return;
 	}
+
+	setSessionStore({ workspace: customer.workspace?.id, game: customer.game });
+
 	if (customer.workspace) {
 		const workspacePath = path.join(directory, 'workspaces', customer.workspace.id.toString());
 		if (!fs.existsSync(workspacePath)) {
