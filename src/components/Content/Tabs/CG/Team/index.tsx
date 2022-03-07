@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Section from '../Section';
 import { Row, Col, FormGroup, Input, FormText } from 'reactstrap';
 import { IContextData } from '../../../../Context';
 import { useTranslation } from 'react-i18next';
 import * as I from './../../../../../api/interfaces';
-import api, { clone } from '../../../../../api/api';
+import api, { clone, layoutEvents } from '../../../../../api/api';
 import countries from '../../../countries';
 import DragFileInput from '../../../../DragFileInput';
 import { hash } from '../../../../../hash';
@@ -87,6 +87,12 @@ const TeamForm = ({ cxt }: Props) => {
 			cxt.reload();
 		}
 	};
+	
+	useEffect(() => {
+		layoutEvents.on("gameChange", () => {
+			setTeamForm(clone(emptyTeam));
+		});
+	}, []);
 
 	return (
 		<Section title="Teams" cxt={cxt} width={300} className="teams">

@@ -18,7 +18,8 @@ const getPremiumHUDData = (game, config) => {
             radar: true,
             panel: (!__1.customer.customer ||
                 __1.customer.customer.license.type === 'personal' ||
-                __1.customer.customer.license.type === 'free') && !__1.customer.workspace
+                __1.customer.customer.license.type === 'free') &&
+                !__1.customer.workspace
                 ? []
                 : [
                     {
@@ -56,7 +57,8 @@ const getPremiumHUDData = (game, config) => {
             killfeed: true,
             keybinds: (!__1.customer.customer ||
                 __1.customer.customer.license.type === 'personal' ||
-                __1.customer.customer.license.type === 'free') && !__1.customer.workspace
+                __1.customer.customer.license.type === 'free') &&
+                !__1.customer.workspace
                 ? []
                 : [
                     {
@@ -146,33 +148,34 @@ const getPremiumHUDData = (game, config) => {
         publicKey: (0, huds_1.getHUDPublicKey)('premiumhud'),
         panel: (!__1.customer.customer ||
             __1.customer.customer.license.type === 'personal' ||
-            __1.customer.customer.license.type === 'free') && !__1.customer.workspace
+            __1.customer.customer.license.type === 'free') &&
+            !__1.customer.workspace
             ? []
             : [
                 {
-                    "label": "Theme settings",
-                    "name": "theme",
-                    "inputs": [
+                    label: 'Theme settings',
+                    name: 'theme',
+                    inputs: [
                         {
-                            "type": "select",
-                            "name": "select_theme",
-                            "label": "Select alternative theme",
-                            "values": [
+                            type: 'select',
+                            name: 'select_theme',
+                            label: 'Select alternative theme',
+                            values: [
                                 {
-                                    "name": "greenViolet",
-                                    "label": "Toxic"
+                                    name: 'greenViolet',
+                                    label: 'Toxic'
                                 },
                                 {
-                                    "name": "neon",
-                                    "label": "Neon"
+                                    name: 'neon',
+                                    label: 'Neon'
                                 },
                                 {
-                                    "name": "denji",
-                                    "label": "Rio"
+                                    name: 'denji',
+                                    label: 'Rio'
                                 },
                                 {
-                                    "name": "akira",
-                                    "label": "Dimension"
+                                    name: 'akira',
+                                    label: 'Dimension'
                                 }
                             ]
                         }

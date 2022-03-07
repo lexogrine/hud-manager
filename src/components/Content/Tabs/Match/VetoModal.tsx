@@ -23,6 +23,7 @@ const VetoModal = ({ onChange, map, isOpen, toggle, veto, teams, maps }: Props) 
 
 	return (
 		<Modal isOpen={isOpen} toggle={toggle} className="veto_modal">
+			<div className="close-modal" onClick={toggle}></div>
 			<ModalHeader toggle={toggle}>Edit Veto {map + 1}</ModalHeader>
 			{'type' in veto ? (
 				<div className="veto_type">
@@ -114,6 +115,7 @@ const VetoModal = ({ onChange, map, isOpen, toggle, veto, teams, maps }: Props) 
 						{t('match.reversedSides')}
 					</Label>
 				</FormGroup>
+				<p className="change-info">Any change will be imidiately saved and synchronised</p>
 			</ModalBody>
 		</Modal>
 	);

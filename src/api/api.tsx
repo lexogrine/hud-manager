@@ -2,6 +2,9 @@ import { CustomFieldEntry, AvailableGames, CloudSyncStatus, LastLaunchedVersion 
 import config from './config';
 import * as I from './interfaces';
 import { PlayerExtension } from 'csgogsi-socket';
+import EventEmitter from 'events';
+
+export const layoutEvents = new EventEmitter();
 
 const apiUrl = config.apiAddress;
 interface DB {

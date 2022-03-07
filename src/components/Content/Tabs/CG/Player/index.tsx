@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Section from '../Section';
 import { Row, Col, FormGroup, Input, FormText } from 'reactstrap';
 import countries from '../../../countries';
@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import * as I from './../../../../../api/interfaces';
 import { hash } from '../../../../../hash';
 import isSvg from '../../../../../isSvg';
-import api, { clone } from '../../../../../api/api';
+import api, { clone, layoutEvents } from '../../../../../api/api';
 
 interface Props {
 	cxt: IContextData;
@@ -96,9 +96,11 @@ const PlayerForm = ({ cxt }: Props) => {
 		}
 	};
 
-	/*useEffect(() => {
-		updatePlayer();
-	}, [])*/
+	useEffect(() => {
+		layoutEvents.on("gameChange", () => {
+			setPlayerForm(clone(emptyPlayer));
+		});
+	}, []);
 
 	return (
 		<Section title="Players" cxt={cxt} width={300} className="players">
