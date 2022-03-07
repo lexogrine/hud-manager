@@ -95,11 +95,12 @@ const PlayerForm = ({ cxt }: Props) => {
 			cxt.reload();
 		}
 	};
-
 	useEffect(() => {
-		layoutEvents.on('gameChange', () => {
+		const clearPlayerForm = () => {
 			setPlayerForm(clone(emptyPlayer));
-		});
+		};
+		layoutEvents.on('gameChange', clearPlayerForm);
+		layoutEvents.on('workspaceChange', clearPlayerForm);
 	}, []);
 
 	return (

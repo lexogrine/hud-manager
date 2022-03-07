@@ -1,6 +1,6 @@
 import moment from 'moment';
 import { useState } from 'react';
-import api from '../../api/api';
+import api, { layoutEvents } from '../../api/api';
 import { Customer } from '../../api/interfaces';
 import { ContextData, IContextData } from '../Context';
 import LabeledInput from '../LabeledInput';
@@ -86,6 +86,7 @@ const ProfileTab = ({
 								onChange={e =>
 									setToNewWorkspace(Number(e.target.value), cxt).then(() => {
 										cxt.reload();
+										layoutEvents.emit("workspaceChange");
 									})
 								}
 							>
