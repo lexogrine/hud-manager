@@ -11,6 +11,7 @@ import * as machine from './machine';
 import * as user from './user';
 import * as bakkesmod from './bakkesmod';
 import * as f1 from './f1';
+import * as appUsage from './appUsage';
 import * as I from './../../types/interfaces';
 import { initGameConnection } from './huds/play';
 import TournamentHandler from './tournaments/routes';
@@ -243,6 +244,12 @@ export default async function (/*io: Server<DefaultEventsMap, DefaultEventsMap, 
 	app.route('/api/bakkesmod/install/mod_data').get(bakkesmod.installBakkesModData);
 
 	app.route('/api/bakkesmod/install/sos').get(bakkesmod.installSosPlugin);
+
+	app.route('/api/usage')
+		.get(appUsage.getAppUsage)
+		.put(appUsage.increaseAppUsage)
+		.post(appUsage.uploadAppUsage)
+		.delete(appUsage.resetAppUsage);
 
 	app.route('/api/f1/status').get(f1.getF1Status);
 	app.route('/api/f1/install').post(f1.installF1);

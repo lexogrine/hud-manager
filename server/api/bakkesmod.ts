@@ -23,6 +23,10 @@ const bakkesModDataDownloadUrl =
 	'https://github.com/bakkesmodorg/BakkesModInjectorCpp/releases/latest/download/bakkesmod.zip';
 const bakkesModDataDownloadFilePath = path.join(tempDirPath, 'lhm_bakkesmod_data.zip');
 
+const sosPluginInternalConfigPath = path.join(bakkesModDirPath, 'cfg/config.cfg');
+const sosPluginInternalConfigRegex = /SOS_state_flush_rate "\d+"/;
+const sosPluginInternalConfigTarget = `SOS_state_flush_rate "15" // added by LHM`;
+
 const sosPluginFiles = ['plugins/SOS.dll', 'plugins/settings/sos.set'];
 const sosPluginConfig = 'plugin load sos';
 const sosPluginDownloadAPIPath = 'https://gitlab.com/api/v4/projects/16389912/releases';
@@ -73,6 +77,12 @@ const verifyPluginList = () => {
 	return true;
 };
 
+const verifyPluginConfig = () => {
+	if (!fs.existsSync(sosPluginInternalConfigPath)) return false;
+	if (fs.readFileSync(sosPluginInternalConfigPath).indexOf(sosPluginInternalConfigTarget) === -1) return false;
+	return true;
+};
+
 export const checkStatus: express.RequestHandler = async (req, res) => {
 	const status = {
 		bakkesModExeDownloaded: false,
@@ -89,7 +99,7 @@ export const checkStatus: express.RequestHandler = async (req, res) => {
 	if (fs.existsSync(sosPluginDownloadFilePath)) status.sosPluginDownloaded = true;
 	if (fs.existsSync(bakkesModConfigPath)) status.bakkesModDataInstalled = true;
 	if (fs.existsSync(path.join(bakkesModDirPath, sosPluginFiles[0]))) status.sosPluginInstalled = true;
-	if (verifyPluginList()) status.sosConfigSet = true;
+	if (verifyPluginList() && verifyPluginConfig()) status.sosConfigSet = true;
 
 	return res.json({ success: true, status });
 };
@@ -208,6 +218,17 @@ export const installSosPlugin: express.RequestHandler = async (req, res) => {
 			);
 			if (!verifyPluginList()) {
 				fs.appendFileSync(bakkesModConfigPath, '\n' + sosPluginConfig + '\n');
+			}
+			if (!verifyPluginConfig()) {
+				const config = fs.readFileSync(bakkesModConfigPath, 'utf8').toString().split('\n');
+				const index = config.findIndex(c => sosPluginInternalConfigRegex.test(c));
+				if (index !== -1) {
+					config[index] = sosPluginInternalConfigTarget;
+				} else {
+					config.push(sosPluginInternalConfigTarget);
+				}
+
+				fs.writeFileSync(sosPluginInternalConfigPath, config.join('\n'));
 			}
 			await del(sosPluginExtractPath, { force: true, expandDirectories: true });
 			await del(sosPluginExtractPath, { force: true });

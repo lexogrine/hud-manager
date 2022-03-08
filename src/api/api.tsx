@@ -259,5 +259,11 @@ export default {
 	f1: {
 		get: () => apiV2<{ installed: boolean; configured: boolean }>('f1/status'),
 		install: () => apiV2('f1/install', 'POST')
+	},
+	appUsage: {
+		get: () => apiV2<{ data: Record<I.AppUsageAnalyticsType, number> }>('usage'),
+		increase: (type: I.AppUsageAnalyticsType, game: I.AvailableGames) => apiV2('usage', 'PUT', { type, game }),
+		reset: () => apiV2('usage', 'DELETE'),
+		upload: () => apiV2('usage', 'POST')
 	}
 };

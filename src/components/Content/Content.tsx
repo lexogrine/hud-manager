@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Col, Input } from 'reactstrap';
 import api from '../../api/api';
+import { AppUsageAnalyticsType } from '../../api/interfaces';
 import Navbar from './Navbar/Navbar';
 import Tabs from './Tabs/Tabs';
 import { useTranslation } from 'react-i18next';
@@ -71,6 +72,7 @@ const Content = ({
 			setTab(tab);
 			setData(data);
 			setOnBackClick(tabTitles[tab] || { handler: null, header: null });
+			api.appUsage.increase(tab.replace('cgpanel', 'cgmode') as AppUsageAnalyticsType, game);
 		}
 	};
 	const setOnBackClick2 = (onBackClick: null | (() => void), header: string | null = null) => {

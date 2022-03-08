@@ -39,6 +39,9 @@ const bakkesModDownloadUrl = 'https://github.com/bakkesmodorg/BakkesModInjectorC
 const bakkesModExePath = path_1.default.join(bakkesModDirPath, 'lhm_bakkesmod.exe');
 const bakkesModDataDownloadUrl = 'https://github.com/bakkesmodorg/BakkesModInjectorCpp/releases/latest/download/bakkesmod.zip';
 const bakkesModDataDownloadFilePath = path_1.default.join(tempDirPath, 'lhm_bakkesmod_data.zip');
+const sosPluginInternalConfigPath = path_1.default.join(bakkesModDirPath, 'cfg/config.cfg');
+const sosPluginInternalConfigRegex = /SOS_state_flush_rate "\d+"/;
+const sosPluginInternalConfigTarget = `SOS_state_flush_rate "15" // added by LHM`;
 const sosPluginFiles = ['plugins/SOS.dll', 'plugins/settings/sos.set'];
 const sosPluginConfig = 'plugin load sos';
 const sosPluginDownloadAPIPath = 'https://gitlab.com/api/v4/projects/16389912/releases';
@@ -87,6 +90,13 @@ const verifyPluginList = () => {
         return false;
     return true;
 };
+const verifyPluginConfig = () => {
+    if (!fs_1.default.existsSync(sosPluginInternalConfigPath))
+        return false;
+    if (fs_1.default.readFileSync(sosPluginInternalConfigPath).indexOf(sosPluginInternalConfigTarget) === -1)
+        return false;
+    return true;
+};
 const checkStatus = async (req, res) => {
     const status = {
         bakkesModExeDownloaded: false,
@@ -107,7 +117,7 @@ const checkStatus = async (req, res) => {
         status.bakkesModDataInstalled = true;
     if (fs_1.default.existsSync(path_1.default.join(bakkesModDirPath, sosPluginFiles[0])))
         status.sosPluginInstalled = true;
-    if (verifyPluginList())
+    if (verifyPluginList() && verifyPluginConfig())
         status.sosConfigSet = true;
     return res.json({ success: true, status });
 };
@@ -214,6 +224,17 @@ const installSosPlugin = async (req, res) => {
             await Promise.all(sosPluginFiles.map(f => move(path_1.default.join(sosPluginExtractPath, f), path_1.default.join(bakkesModDirPath, f), true)));
             if (!verifyPluginList()) {
                 fs_1.default.appendFileSync(bakkesModConfigPath, '\n' + sosPluginConfig + '\n');
+            }
+            if (!verifyPluginConfig()) {
+                const config = fs_1.default.readFileSync(bakkesModConfigPath, 'utf8').toString().split('\n');
+                const index = config.findIndex(c => sosPluginInternalConfigRegex.test(c));
+                if (index !== -1) {
+                    config[index] = sosPluginInternalConfigTarget;
+                }
+                else {
+                    config.push(sosPluginInternalConfigTarget);
+                }
+                fs_1.default.writeFileSync(sosPluginInternalConfigPath, config.join('\n'));
             }
             await (0, del_1.default)(sosPluginExtractPath, { force: true, expandDirectories: true });
             await (0, del_1.default)(sosPluginExtractPath, { force: true });

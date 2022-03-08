@@ -443,3 +443,17 @@ export interface LastLaunchedVersion {
 	version: string;
 	releaseDate: string;
 }
+
+export type AppUsageAnalyticsType =
+	| 'huds'
+	| 'teams'
+	| 'players'
+	| 'matches'
+	| 'tournaments'
+	| 'cgmode'
+	| 'aco'
+	| 'arg'
+	| 'ar'
+	| 'live'
+	| 'cameras'
+	| 'settings';

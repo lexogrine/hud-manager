@@ -23,8 +23,8 @@ const cookiePath = path_1.default.join(electron_1.app.getPath('userData'), 'cook
 const cookieJar = new tough_cookie_1.CookieJar(new tough_cookie_file_store_1.FileCookieStore(cookiePath));
 exports.fetch = (0, fetch_cookie_1.default)(node_fetch_1.default, cookieJar);
 exports.socket = null;
-exports.USE_LOCAL_BACKEND = false;
-const domain = exports.USE_LOCAL_BACKEND ? '192.168.50.71:5000' : 'api.lhm.gg';
+exports.USE_LOCAL_BACKEND = true; // DON'T COMMIT also why is this not an env
+const domain = exports.USE_LOCAL_BACKEND ? 'localhost:5000' : 'api.lhm.gg';
 let cameraSupportInit = false;
 const getSocket = () => {
     return exports.socket;
@@ -171,6 +171,8 @@ const api = (url, method = 'GET', body, opts) => {
     if (body) {
         options.body = JSON.stringify(body);
     }
+    // eslint-disable-next-line no-console
+    console.log('API REQUEST:', url, method, options);
     let data = null;
     return (0, exports.fetch)(exports.USE_LOCAL_BACKEND ? `http://${domain}/${url}` : `https://${domain}/${url}`, options).then(res => {
         data = res;

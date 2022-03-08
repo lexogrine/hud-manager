@@ -21,8 +21,7 @@ exports.default = (window) => {
         window.webContents.send('updateStatus', false, version);
     });
     electron_updater_1.autoUpdater.on('update-downloaded', () => electron_updater_1.autoUpdater.quitAndInstall(true, true));
-    electron_updater_1.autoUpdater.on("download-progress", event => {
-    });
+    electron_updater_1.autoUpdater.on('download-progress', event => { });
     electron_1.ipcMain.on('updateApp', () => {
         electron_updater_1.autoUpdater.downloadUpdate();
     });

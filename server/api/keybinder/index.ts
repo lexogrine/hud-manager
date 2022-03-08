@@ -1,6 +1,8 @@
+import os from 'os';
 import { GlobalKeyboardListener, IGlobalKey } from './node-global-key-listener';
 
-const listener = new GlobalKeyboardListener();
+const listener = os.platform() === 'win32' ? new GlobalKeyboardListener() : null;
+
 interface RegisteredKeybind {
 	callbacks: { owner?: string; callback: () => void }[];
 	keybind: string[];
@@ -34,7 +36,7 @@ const handleKeybind = (keybindEntry: RegisteredKeybind, pressed: string[]) => {
 	}
 };
 
-listener.addListener((e, down) => {
+listener?.addListener((e, down) => {
 	if (e.state === 'UP') {
 		keybinds.forEach(keybind => {
 			keybind.active = false;

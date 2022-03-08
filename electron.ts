@@ -23,7 +23,8 @@ async function mainProcess(server: Server, forceDev = false, gui = true) {
 
 	const closeManager = () => {
 		if (server) {
-			server.close();
+			server.emit('send-data-before-closing');
+			setTimeout(finallyCloseManager, 10000);
 		}
 		if (AFXInterop.process) {
 			AFXInterop.process.kill();
@@ -31,8 +32,21 @@ async function mainProcess(server: Server, forceDev = false, gui = true) {
 		if (RMTPServer) {
 			RMTPServer.kill();
 		}
+		// app.quit();
+	};
+
+	const finallyCloseManager = () => {
+		console.log('Closing LHM...');
+		if (server) {
+			server.close();
+		}
 		app.quit();
 	};
+
+	server.on('sent-data-now-close', () => {
+		console.log('Sent data, proceeding to close LHM...');
+		finallyCloseManager();
+	});
 
 	app.on('window-all-closed', () => {});
 

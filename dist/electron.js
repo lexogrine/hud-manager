@@ -39,7 +39,8 @@ async function mainProcess(server, forceDev = false, gui = true) {
     const RMTPServer = (0, child_process_1.fork)(require.resolve('./RMTPServer.js'));
     const closeManager = () => {
         if (server) {
-            server.close();
+            server.emit('send-data-before-closing');
+            setTimeout(finallyCloseManager, 10000);
         }
         if (exports.AFXInterop.process) {
             exports.AFXInterop.process.kill();
@@ -47,8 +48,19 @@ async function mainProcess(server, forceDev = false, gui = true) {
         if (RMTPServer) {
             RMTPServer.kill();
         }
+        // app.quit();
+    };
+    const finallyCloseManager = () => {
+        console.log('Closing LHM...');
+        if (server) {
+            server.close();
+        }
         electron_1.app.quit();
     };
+    server.on('sent-data-now-close', () => {
+        console.log('Sent data, proceeding to close LHM...');
+        finallyCloseManager();
+    });
     electron_1.app.on('window-all-closed', () => { });
     if (!gui)
         return;

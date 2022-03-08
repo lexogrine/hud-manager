@@ -36,6 +36,7 @@ const machine = __importStar(require("./machine"));
 const user = __importStar(require("./user"));
 const bakkesmod = __importStar(require("./bakkesmod"));
 const f1 = __importStar(require("./f1"));
+const appUsage = __importStar(require("./appUsage"));
 const I = __importStar(require("./../../types/interfaces"));
 const play_1 = require("./huds/play");
 const routes_1 = __importDefault(require("./tournaments/routes"));
@@ -193,6 +194,11 @@ async function default_1( /*io: Server<DefaultEventsMap, DefaultEventsMap, Defau
     __1.app.route('/api/bakkesmod/run').get(bakkesmod.runBakkesMod);
     __1.app.route('/api/bakkesmod/install/mod_data').get(bakkesmod.installBakkesModData);
     __1.app.route('/api/bakkesmod/install/sos').get(bakkesmod.installSosPlugin);
+    __1.app.route('/api/usage')
+        .get(appUsage.getAppUsage)
+        .put(appUsage.increaseAppUsage)
+        .post(appUsage.uploadAppUsage)
+        .delete(appUsage.resetAppUsage);
     __1.app.route('/api/f1/status').get(f1.getF1Status);
     __1.app.route('/api/f1/install').post(f1.installF1);
     (0, keybinder_1.registerKeybind)('Left Alt+Left Shift+F', () => io.emit('refreshHUD'));
