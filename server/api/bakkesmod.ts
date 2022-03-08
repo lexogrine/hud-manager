@@ -25,7 +25,7 @@ const bakkesModDataDownloadFilePath = path.join(tempDirPath, 'lhm_bakkesmod_data
 
 const sosPluginInternalConfigPath = path.join(bakkesModDirPath, 'cfg/config.cfg');
 const sosPluginInternalConfigRegex = /SOS_state_flush_rate "\d+"/;
-const sosPluginInternalConfigTarget = `SOS_state_flush_rate "15" // added by LHM`;
+const sosPluginInternalConfigTarget = `SOS_state_flush_rate "15"`;
 
 const sosPluginFiles = ['plugins/SOS.dll', 'plugins/settings/sos.set'];
 const sosPluginConfig = 'plugin load sos';
