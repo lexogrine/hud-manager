@@ -1,7 +1,11 @@
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
 }) : (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     o[k2] = m[k];
@@ -27,7 +31,7 @@ const DecompressZip = require('decompress-zip');
 const temporaryFilesArchive = path.join(electron_1.app.getPath('userData'), 'archives');
 exports.LHMP = {
     csgo: '1.2.1',
-    rocketleague: '1.1.1',
+    rocketleague: '1.1.2',
     dota2: null,
     f1: null
 };

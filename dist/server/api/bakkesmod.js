@@ -1,7 +1,11 @@
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
-    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+    var desc = Object.getOwnPropertyDescriptor(m, k);
+    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+      desc = { enumerable: true, get: function() { return m[k]; } };
+    }
+    Object.defineProperty(o, k2, desc);
 }) : (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     o[k2] = m[k];
@@ -41,7 +45,7 @@ const bakkesModDataDownloadUrl = 'https://github.com/bakkesmodorg/BakkesModInjec
 const bakkesModDataDownloadFilePath = path_1.default.join(tempDirPath, 'lhm_bakkesmod_data.zip');
 const sosPluginInternalConfigPath = path_1.default.join(bakkesModDirPath, 'cfg/config.cfg');
 const sosPluginInternalConfigRegex = /SOS_state_flush_rate "\d+"/;
-const sosPluginInternalConfigTarget = `SOS_state_flush_rate "15" // added by LHM`;
+const sosPluginInternalConfigTarget = `SOS_state_flush_rate "15"`;
 const sosPluginFiles = ['plugins/SOS.dll', 'plugins/settings/sos.set'];
 const sosPluginConfig = 'plugin load sos';
 const sosPluginDownloadAPIPath = 'https://gitlab.com/api/v4/projects/16389912/releases';
