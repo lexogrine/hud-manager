@@ -138,9 +138,6 @@ const Tournamentss = ({ cxt, setOnBackClick, maps }: IProps) => {
 		setForm(tournamentToForm(tournament));
 		setEditState(true);
 		setOnBackClick(close, 'Edit a tournament');
-		if (false as any) {
-			console.log(isEditing, save, changeHandler);
-		}
 	};
 
 	const close = () => {

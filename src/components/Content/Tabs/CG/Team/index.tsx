@@ -89,9 +89,11 @@ const TeamForm = ({ cxt }: Props) => {
 	};
 
 	useEffect(() => {
-		layoutEvents.on('gameChange', () => {
+		const clearTeamForm = () => {
 			setTeamForm(clone(emptyTeam));
-		});
+		};
+		layoutEvents.on('gameChange', clearTeamForm);
+		layoutEvents.on('workspaceChange', clearTeamForm);
 	}, []);
 
 	return (
