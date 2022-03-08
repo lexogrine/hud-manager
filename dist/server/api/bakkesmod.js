@@ -1,11 +1,7 @@
 "use strict";
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
+    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
 }) : (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
     o[k2] = m[k];
@@ -230,7 +226,7 @@ const installSosPlugin = async (req, res) => {
                 fs_1.default.appendFileSync(bakkesModConfigPath, '\n' + sosPluginConfig + '\n');
             }
             if (!verifyPluginConfig()) {
-                const config = fs_1.default.readFileSync(bakkesModConfigPath, 'utf8').toString().split('\n');
+                const config = fs_1.default.readFileSync(sosPluginInternalConfigPath, 'utf8').toString().split('\n');
                 const index = config.findIndex(c => sosPluginInternalConfigRegex.test(c));
                 if (index !== -1) {
                     config[index] = sosPluginInternalConfigTarget;

@@ -220,7 +220,7 @@ export const installSosPlugin: express.RequestHandler = async (req, res) => {
 				fs.appendFileSync(bakkesModConfigPath, '\n' + sosPluginConfig + '\n');
 			}
 			if (!verifyPluginConfig()) {
-				const config = fs.readFileSync(bakkesModConfigPath, 'utf8').toString().split('\n');
+				const config = fs.readFileSync(sosPluginInternalConfigPath, 'utf8').toString().split('\n');
 				const index = config.findIndex(c => sosPluginInternalConfigRegex.test(c));
 				if (index !== -1) {
 					config[index] = sosPluginInternalConfigTarget;
