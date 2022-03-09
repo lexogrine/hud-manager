@@ -27,6 +27,7 @@ exports.checkDirectories = exports.loadHUDPremium = exports.loadAllPremiumHUDs =
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
 const electron_1 = require("electron");
+const database_1 = require("./database");
 const DecompressZip = require('decompress-zip');
 const temporaryFilesArchive = path.join(electron_1.app.getPath('userData'), 'archives');
 exports.LHMP = {
@@ -197,5 +198,6 @@ function checkDirectories() {
         ];
         fs.writeFileSync(mapFile, JSON.stringify(maps));
     }
+    (0, database_1.loadSessionStore)();
 }
 exports.checkDirectories = checkDirectories;

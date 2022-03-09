@@ -24,7 +24,7 @@ const cookieJar = new tough_cookie_1.CookieJar(new tough_cookie_file_store_1.Fil
 exports.fetch = (0, fetch_cookie_1.default)(node_fetch_1.default, cookieJar);
 exports.socket = null;
 exports.USE_LOCAL_BACKEND = false;
-const domain = exports.USE_LOCAL_BACKEND ? '192.168.50.71:5000' : 'api-dev.lhm.gg';
+const domain = exports.USE_LOCAL_BACKEND ? '192.168.50.71:5000' : 'api.lhm.gg';
 let cameraSupportInit = false;
 const getSocket = () => {
     return exports.socket;
