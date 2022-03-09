@@ -64,10 +64,8 @@ export const uploadAppUsage = async (): Promise<boolean> => {
 			.flat()
 			.filter(item => item.count > 0);
 
-		console.log('pre uploadAppUsage, data is', data);
 		const result = await api('usage', 'POST', { data });
 
-		console.log('uploadAppUsage', result);
 		return result;
 	} catch (e) {
 		console.error('Error while sending usage statistics:', e);

@@ -36,7 +36,6 @@ async function mainProcess(server: Server, forceDev = false, gui = true) {
 	};
 
 	const finallyCloseManager = () => {
-		console.log('Closing LHM...');
 		if (server) {
 			server.close();
 		}
@@ -44,7 +43,6 @@ async function mainProcess(server: Server, forceDev = false, gui = true) {
 	};
 
 	server.on('sent-data-now-close', () => {
-		console.log('Sent data, proceeding to close LHM...');
 		finallyCloseManager();
 	});
 

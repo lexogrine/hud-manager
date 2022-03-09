@@ -158,6 +158,7 @@
 			"updater": {
 				"version": "Version",
 				"installing": "Installing...",
+				"downloading": "Downloading... {{percent}}%",
 				"install": "Install update",
 				"latest": "Latest"
 			},

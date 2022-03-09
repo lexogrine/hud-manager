@@ -73,13 +73,7 @@ export default async function init() {
 	const io = await ioPromise;
 
 	server.once('send-data-before-closing', () => {
-		console.log('Preparing for closing!');
-		uploadAppUsage().then((result: boolean) => {
-			if (result) {
-				console.log('Uploaded app usage!');
-			} else {
-				console.log('Failed to upload app usage!');
-			}
+		uploadAppUsage().then(() => {
 			server.emit('sent-data-now-close');
 		});
 	});

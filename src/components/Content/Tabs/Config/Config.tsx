@@ -15,6 +15,13 @@ import { canUserFromContextUseCloud } from '../../../../utils';
 
 const { isElectron } = config;
 
+interface DownloadProgress {
+	total: number,
+	delta: number,
+	transferred: number,
+	percent: number,
+	bytesPerSecond: number
+}
 interface ConfigStatus extends I.CFGGSIObject {
 	loading: boolean;
 }
@@ -109,6 +116,7 @@ interface IState {
 		available: boolean;
 		version: string;
 		installing: boolean;
+		percent: number;
 	};
 	f1Installed: boolean;
 	f1Configured: boolean;
@@ -179,6 +187,7 @@ class Config extends Component<IProps, IState> {
 			},
 			update: {
 				available: false,
+				percent: 0,
 				version: '',
 				installing: false
 			},
@@ -486,6 +495,12 @@ class Config extends Component<IProps, IState> {
 				return state;
 			});
 		});
+		window.ipcApi.receive('updateDownloadProgress', (data: DownloadProgress) => {
+			this.setState(state => {
+				state.update.percent = data.percent;
+				return state;
+			});
+		});
 
 		window.ipcApi.send('checkUpdate');
 	};
@@ -589,7 +604,7 @@ class Config extends Component<IProps, IState> {
 										}
 									>
 										{update.installing
-											? t('settings.updater.installing')
+											? update.percent < 100 ? t('settings.updater.downloading', { percent: (update.percent).toFixed(1) }) : t('settings.updater.installing')
 											: t('settings.updater.install')}
 									</div>
 								) : null}
