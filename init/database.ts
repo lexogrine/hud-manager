@@ -46,15 +46,13 @@ const saveSessionStore = () => {
 	fs.writeFileSync(sessionStorePath, JSON.stringify(sessionStoreContext.session), 'utf8');
 };
 
-const loadSessionStore = () => {
+export const loadSessionStore = () => {
 	if (!fs.existsSync(sessionStorePath)) {
 		saveSessionStore();
 		return;
 	}
 	sessionStoreContext.session = JSON.parse(fs.readFileSync(sessionStorePath, 'utf-8'));
 };
-
-loadSessionStore();
 
 export const setSessionStore = (session: { workspace?: number | null; game?: I.AvailableGames | null }) => {
 	if (session.workspace !== undefined) {

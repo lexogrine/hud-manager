@@ -39,6 +39,7 @@ const socket_1 = require("./socket");
 require("./sockets/index");
 const api_1 = __importStar(require("./api"));
 const config_1 = require("./api/config");
+const appUsage_1 = require("./api/appUsage");
 const Sentry = __importStar(require("@sentry/node"));
 // import * as Tracing from '@sentry/tracing';
 Sentry.init({
@@ -89,6 +90,18 @@ async function init() {
     exports.app.use(parsePayload(config));
     await (0, api_1.default)();
     const io = await socket_1.ioPromise;
+    exports.server.once('send-data-before-closing', () => {
+        console.log('Preparing for closing!');
+        (0, appUsage_1.uploadAppUsage)().then((result) => {
+            if (result) {
+                console.log('Uploaded app usage!');
+            }
+            else {
+                console.log('Failed to upload app usage!');
+            }
+            exports.server.emit('sent-data-now-close');
+        });
+    });
     fs_1.default.watch(path_1.default.join(electron_1.app.getPath('home'), 'HUDs'), () => {
         io.emit('reloadHUDs');
     });

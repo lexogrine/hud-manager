@@ -1,8 +1,12 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.unregisterAllKeybinds = exports.unregisterKeybind = exports.registerKeybind = void 0;
+const os_1 = __importDefault(require("os"));
 const node_global_key_listener_1 = require("./node-global-key-listener");
-const listener = new node_global_key_listener_1.GlobalKeyboardListener();
+const listener = os_1.default.platform() === 'win32' ? new node_global_key_listener_1.GlobalKeyboardListener() : null;
 const keybinds = [];
 const parseKeybindInput = (keybindInput) => {
     const keybind = typeof keybindInput === 'string' ? keybindInput.split('+') : keybindInput;
@@ -25,7 +29,7 @@ const handleKeybind = (keybindEntry, pressed) => {
         });
     }
 };
-listener.addListener((e, down) => {
+listener?.addListener((e, down) => {
     if (e.state === 'UP') {
         keybinds.forEach(keybind => {
             keybind.active = false;

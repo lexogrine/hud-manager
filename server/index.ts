@@ -11,6 +11,7 @@ import './sockets/index';
 import router, { customer } from './api';
 import { loadConfig, setConfig } from './api/config';
 import { Config } from '../types/interfaces';
+import { uploadAppUsage } from './api/appUsage';
 import * as Sentry from '@sentry/node';
 // import * as Tracing from '@sentry/tracing';
 
@@ -70,6 +71,18 @@ export default async function init() {
 	await router();
 
 	const io = await ioPromise;
+
+	server.once('send-data-before-closing', () => {
+		console.log('Preparing for closing!');
+		uploadAppUsage().then((result: boolean) => {
+			if (result) {
+				console.log('Uploaded app usage!');
+			} else {
+				console.log('Failed to upload app usage!');
+			}
+			server.emit('sent-data-now-close');
+		});
+	});
 
 	fs.watch(path.join(application.getPath('home'), 'HUDs'), () => {
 		io.emit('reloadHUDs');

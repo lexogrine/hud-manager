@@ -2,13 +2,14 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { app } from 'electron';
 import { availableGames, AvailableGames } from '../types/interfaces';
+import { loadSessionStore } from './database';
 const DecompressZip = require('decompress-zip');
 
 const temporaryFilesArchive = path.join(app.getPath('userData'), 'archives');
 
 export const LHMP: Record<AvailableGames, string | null> = {
 	csgo: '1.2.1',
-	rocketleague: '1.1.1',
+	rocketleague: '1.1.2',
 	dota2: null,
 	f1: null
 };
@@ -189,4 +190,5 @@ export function checkDirectories() {
 		];
 		fs.writeFileSync(mapFile, JSON.stringify(maps));
 	}
+	loadSessionStore();
 }

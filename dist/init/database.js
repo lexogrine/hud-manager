@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.databaseContext = exports.loadUsersDatabase = exports.setSessionStore = exports.sessionStoreContext = exports.onDatabaseLoad = exports.getBasePath = void 0;
+exports.databaseContext = exports.loadUsersDatabase = exports.setSessionStore = exports.loadSessionStore = exports.sessionStoreContext = exports.onDatabaseLoad = exports.getBasePath = void 0;
 const nedb_1 = __importDefault(require("nedb"));
 const path_1 = __importDefault(require("path"));
 const fs_1 = __importDefault(require("fs"));
@@ -36,7 +36,7 @@ const loadSessionStore = () => {
     }
     exports.sessionStoreContext.session = JSON.parse(fs_1.default.readFileSync(sessionStorePath, 'utf-8'));
 };
-loadSessionStore();
+exports.loadSessionStore = loadSessionStore;
 const setSessionStore = (session) => {
     if (session.workspace !== undefined) {
         exports.sessionStoreContext.session.workspace = session.workspace;
