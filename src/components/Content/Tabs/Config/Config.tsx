@@ -16,11 +16,11 @@ import { canUserFromContextUseCloud } from '../../../../utils';
 const { isElectron } = config;
 
 interface DownloadProgress {
-	total: number,
-	delta: number,
-	transferred: number,
-	percent: number,
-	bytesPerSecond: number
+	total: number;
+	delta: number;
+	transferred: number;
+	percent: number;
+	bytesPerSecond: number;
 }
 interface ConfigStatus extends I.CFGGSIObject {
 	loading: boolean;
@@ -604,7 +604,11 @@ class Config extends Component<IProps, IState> {
 										}
 									>
 										{update.installing
-											? update.percent < 100 ? t('settings.updater.downloading', { percent: (update.percent).toFixed(1) }) : t('settings.updater.installing')
+											? update.percent < 100
+												? t('settings.updater.downloading', {
+														percent: update.percent.toFixed(1)
+												  })
+												: t('settings.updater.installing')
 											: t('settings.updater.install')}
 									</div>
 								) : null}
