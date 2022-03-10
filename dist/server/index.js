@@ -91,14 +91,7 @@ async function init() {
     await (0, api_1.default)();
     const io = await socket_1.ioPromise;
     exports.server.once('send-data-before-closing', () => {
-        console.log('Preparing for closing!');
-        (0, appUsage_1.uploadAppUsage)().then((result) => {
-            if (result) {
-                console.log('Uploaded app usage!');
-            }
-            else {
-                console.log('Failed to upload app usage!');
-            }
+        (0, appUsage_1.uploadAppUsage)().then(() => {
             exports.server.emit('sent-data-now-close');
         });
     });

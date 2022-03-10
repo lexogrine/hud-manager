@@ -57,9 +57,7 @@ const uploadAppUsage = async () => {
         })))
             .flat()
             .filter(item => item.count > 0);
-        console.log('pre uploadAppUsage, data is', data);
         const result = await (0, user_1.api)('usage', 'POST', { data });
-        console.log('uploadAppUsage', result);
         return result;
     }
     catch (e) {

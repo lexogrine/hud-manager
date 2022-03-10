@@ -55,14 +55,12 @@ async function mainProcess(server, forceDev = false, gui = true) {
         // app.quit();
     };
     const finallyCloseManager = () => {
-        console.log('Closing LHM...');
         if (server) {
             server.close();
         }
         electron_1.app.quit();
     };
     server.on('sent-data-now-close', () => {
-        console.log('Sent data, proceeding to close LHM...');
         finallyCloseManager();
     });
     electron_1.app.on('window-all-closed', () => { });
