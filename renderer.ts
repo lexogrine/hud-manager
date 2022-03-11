@@ -1,15 +1,18 @@
 import { app, BrowserWindow, shell, ipcMain } from 'electron';
+import EventEmitter from 'events';
 import path from 'path';
 import autoUpdater from './autoUpdater';
 import { loadConfig, internalIP } from './server/api/config';
 
 const isDev = process.env.DEV === 'true';
 
+export const processEvents = new EventEmitter();
+
 export const createMainWindow = async (forceDev = false) => {
 	let win: BrowserWindow | null;
 
-	process.on('message', msg => {
-		if (msg === 'refocus' && win) {
+	processEvents.on('refocus', () => {
+		if (win) {
 			if (win.isMinimized()) win.restore();
 			win.focus();
 		}

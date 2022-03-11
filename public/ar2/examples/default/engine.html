@@ -102,9 +102,17 @@ function AfxEngineInterop(interop, args) {
 		let queue = queues[port];
 		if(!queue) queue = queues[port] = Promise.resolve();
 		
-		queues[port] = queue.finally(()=>{
-			return self.messageHandlers[jMessage.id].apply(self, jMessage.args);
-		}).finally();
+		async function execute(last,jMessage) {
+			await last;
+			try {
+				await self.messageHandlers[jMessage.id].apply(self, jMessage.args);
+			}
+			catch(e){
+				Utils.logError(e);
+			}
+		}
+
+		queues[port] = execute(queue,jMessage);
 	}
 	
 	// GameEvents:

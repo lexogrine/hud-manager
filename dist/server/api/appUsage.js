@@ -27,11 +27,9 @@ const increaseAppUsage = (req, res) => {
         !(req.body.game in appUsageStore) ||
         !req.body.type ||
         !(req.body.type in appUsageStore[req.body.game])) {
-        console.log('increaseAppUsage failed because type is not valid');
         return res.status(400).json({ success: false, error: 'Invalid usage type' });
     }
     appUsageStore[req.body.game][req.body.type]++;
-    console.log('increaseAppUsage, store is now', appUsageStore);
     return res.json({ success: true });
 };
 exports.increaseAppUsage = increaseAppUsage;

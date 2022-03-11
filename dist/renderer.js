@@ -3,16 +3,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createMainWindow = void 0;
+exports.createMainWindow = exports.processEvents = void 0;
 const electron_1 = require("electron");
+const events_1 = __importDefault(require("events"));
 const path_1 = __importDefault(require("path"));
 const autoUpdater_1 = __importDefault(require("./autoUpdater"));
 const config_1 = require("./server/api/config");
 const isDev = process.env.DEV === 'true';
+exports.processEvents = new events_1.default();
 const createMainWindow = async (forceDev = false) => {
     let win;
-    process.on('message', msg => {
-        if (msg === 'refocus' && win) {
+    exports.processEvents.on('refocus', () => {
+        if (win) {
             if (win.isMinimized())
                 win.restore();
             win.focus();

@@ -38,8 +38,7 @@ exports.AFXInterop = {
     process: null
 };
 exports.isDev = process.env.DEV === 'true';
-const wait = (ms) => new Promise(r => setTimeout(r, ms));
-async function mainProcess(server, forceDev = false, gui = true) {
+function mainProcess(server) {
     const RMTPServer = (0, child_process_1.fork)(require.resolve('./RMTPServer.js'));
     const closeManager = () => {
         if (server) {
@@ -54,6 +53,7 @@ async function mainProcess(server, forceDev = false, gui = true) {
         }
         // app.quit();
     };
+    electron_1.app.on('quit', closeManager);
     const finallyCloseManager = () => {
         if (server) {
             server.close();
@@ -63,49 +63,25 @@ async function mainProcess(server, forceDev = false, gui = true) {
     server.on('sent-data-now-close', () => {
         finallyCloseManager();
     });
-    electron_1.app.on('window-all-closed', () => { });
-    if (!gui)
-        return;
-    const args = ['./', '--renderer'];
-    if (forceDev)
-        args.push('--dev');
-    const renderer = (0, child_process_1.spawn)(process.execPath, args, {
-        stdio: forceDev ? ['pipe', 'pipe', 'pipe', 'ipc'] : ['ignore', 'ignore', 'ignore', 'ipc']
-    });
     electron_1.app.on('second-instance', () => {
-        if (renderer.send) {
-            renderer.send('refocus');
-        }
-    });
-    if (forceDev)
-        renderer.stdout?.on('data', data => console.log(data.toString()));
-    renderer.on('exit', closeManager);
-    renderer.on('close', closeManager);
-    electron_1.app.on('quit', () => {
-        renderer.kill();
+        renderer_1.processEvents.emit('refocus');
     });
 }
-async function startManager() {
+async function startManagerQuickly() {
     electron_1.app.setAppUserModelId('com.lexogrine.hudmanager');
-    if (process.argv.includes('--renderer')) {
-        //console.log('d', new Date().getTime());
-        (0, renderer_1.createMainWindow)(process.argv.includes('--dev'));
-        return;
-    }
     directories.checkDirectories();
-    //await wait(3000);
-    await directories.loadAllPremiumHUDs();
-    //console.log('b', new Date().getTime());
-    const server = await (0, server_1.default)();
-    //console.log('c', new Date().getTime());
+    const [server] = await Promise.all([(0, server_1.default)(), directories.loadAllPremiumHUDs()]);
+    //await directories.loadAllPremiumHUDs();
+    //const server = await init();
     const argv = (0, args_1.default)(process.argv);
-    mainProcess(server, argv.dev || exports.isDev, !argv.noGUI);
+    mainProcess(server);
+    if (!argv.noGUI)
+        (0, renderer_1.createMainWindow)(argv.dev || exports.isDev);
 }
 const lock = electron_1.app.requestSingleInstanceLock();
-if (!lock && !process.argv.includes('--renderer')) {
+if (!lock) {
     electron_1.app.quit();
 }
 else {
-    //console.log('a', new Date().getTime());
-    electron_1.app.on('ready', startManager);
+    electron_1.app.on('ready', startManagerQuickly);
 }

@@ -31,11 +31,9 @@ export const increaseAppUsage: express.RequestHandler = (req, res) => {
 		!req.body.type ||
 		!((req.body.type as string) in appUsageStore[req.body.game as I.AvailableGames])
 	) {
-		console.log('increaseAppUsage failed because type is not valid');
 		return res.status(400).json({ success: false, error: 'Invalid usage type' });
 	}
 	appUsageStore[req.body.game as I.AvailableGames][req.body.type as I.AppUsageAnalyticsType]++;
-	console.log('increaseAppUsage, store is now', appUsageStore);
 	return res.json({ success: true });
 };
 

@@ -53,7 +53,7 @@
 		background-color: rgba(0, 0, 0, 0);
 		width: 100vw;
 		overflow: hidden;
-		z-index:9999;
+		z-index: 9999;
 		position: absolute;
 	}
 </style>
@@ -373,12 +373,18 @@
 				let queue = queues[port];
 				if (!queue) queue = queues[port] = Promise.resolve();
 
-				queues[port] = queue.then(()=>{
-					return self.messageHandlers[jMessage.id].apply(self, jMessage.args);
-				}).catch((e)=>{
-					Utils.logError(e);
-					return self.disconnect();
-				}).finally();
+				async function execute(last, jMessage) {
+					await last;
+					try {
+						await self.messageHandlers[jMessage.id].apply(self, jMessage.args);
+					}
+					catch (e) {
+						Utils.logError(e);
+						await self.disconnect();
+					}
+				}
+
+				queues[port] = execute(queue, jMessage);
 			}
 
 			interop.onDeviceReset = function () {
@@ -416,16 +422,11 @@
 				"rect": null
 			};
 
-			let interval = setInterval(function () {
-				Utils.toPromise(self.interop, "waitForCefFrame").then(() => {
-					console.log("Waiting for first frame ...");
-					clearInterval(interval);
-					Utils.toPromise(self.interop, "sendMessage", self.args.indexInteropId, JSON.stringify({
-						"id": "drawingCreated",
-						"args": [interop.id]
-					}));
-				});
-			}, 1000);
+			self.promises = [];
+			Utils.toPromise(self.interop, "sendMessage", self.args.indexInteropId, JSON.stringify({
+				"id": "drawingCreated",
+				"args": [interop.id]
+			}));
 		}
 
 		AfxDrawingInterop.prototype.onDeviceReset = async function () {
@@ -718,16 +719,15 @@
 				"args": [this.interop.id]
 			}));
 
-			//this.interop.setFrameRate(60);
+			this.interop.setFrameRate(240);
 		}
 
 		AfxDrawingInterop.prototype.disconnect = async function () {
 
-			//this.interop.setFrameRate(1);
+			this.interop.setFrameRate(1);
 
 			this.interop.cancel();
 			this.messages = {}
-			this.lastRender = null;
 
 			if (this.connected) {
 				this.connected = false;
@@ -795,116 +795,102 @@
 
 			var self = this;
 
-			while (true) {
+			// Handle resizing:
+			if (newRender && (self.width != newRender.width || self.height != newRender.height)) {
+				console.log("Resizing to " + newRender.width + "x" + newRender.height + " ...");
 
-				let lastRender = Utils.coalesce(self.lastRender, null);
+				self.width = newRender.width;
+				self.height = newRender.height;
 
-				// paint last frame (if wanted):
-				if (lastRender && lastRender.onPaint) {
+				self.interop.setSize(newRender.width, newRender.height);
 
-					await Utils.toPromise(self.interop, "waitForCefFrame");
+				self.interop.invalidateCefClearTexture();
+				do {
+					await new Promise((resolve, reject) => { window.requestAnimationFrame(resolve) });
+				} while (self.interop.cefClearTextureShareHandle.invalid);
+			}
 
-					if (self.lastShareHandle) {
-						if (
-							self.interop.cefTextureShareHandle.lo != self.lastShareHandle.lo
-							|| self.interop.cefTextureShareHandle.hi != self.lastShareHandle.hi) {
-							console.log("Share handle changed, releasing old one on client ...");
-							await self.releaseShareHandle(self.lastShareHandle);
-						}
-					}
-					self.lastShareHandle = self.interop.cefTextureShareHandle;
+			let queued = false;
+			// begin new frame:
+			if (newRender && newRender.onBegin) {
+				try {
+					queued = await newRender.onBegin();
+				} catch (e) {
+					Utils.logError(e);
+					if (!(e && e.soft)) throw e;
+					queued = false;
 
-					try {
-						await lastRender.onPaint(self.interop.cefTextureShareHandle);
-					} catch (e) {
-						Utils.logError(e);
-						if (!(e && e.soft)) throw e;
+				}
+
+			}
+
+			queued = false;
+
+			// clear new frame (if wanted):
+			if (newRender && newRender.onClear) {
+				self.interop.setCefUseClearTexture(true);
+				if (self.lastClearShareHandle) {
+					if (
+						self.interop.cefClearTextureShareHandle.lo != self.lastClearShareHandle.lo
+						|| self.interop.cefClearTextureShareHandle.hi != self.lastClearShareHandle.hi) {
+						console.log("Clear share handle changed, releasing old one on client ...");
+						await self.releaseShareHandle(self.lastClearShareHandle);
+
+
 					}
 				}
 
-				// finish last frame:
-				if (lastRender && lastRender.onEnd) {
-					try {
-						await lastRender.onEnd();
-					} catch (e) {
-						Utils.logError(e);
-						if (!(e && e.soft)) throw e;
+				self.lastClearShareHandle = self.interop.cefClearTextureShareHandle;
+
+				try {
+					await newRender.onClear(self.interop.cefClearTextureShareHandle);
+				} catch (e) {
+					Utils.logError(e);
+					if (!(e && e.soft)) throw e;
+
+				}
+
+			}
+			else {
+				self.interop.setCefUseClearTexture(false);
+			}
+
+			// paint last frame (if wanted):
+			if (newRender && newRender.onPaint) {
+
+				await new Promise((resolve, reject) => { window.requestAnimationFrame(resolve) });
+
+				if (self.lastShareHandle) {
+					if (
+						self.interop.cefTextureShareHandle.lo != self.lastShareHandle.lo
+						|| self.interop.cefTextureShareHandle.hi != self.lastShareHandle.hi) {
+						console.log("Share handle changed, releasing old one on client ...");
+						await self.releaseShareHandle(self.lastShareHandle);
+
 					}
 				}
 
-				// Handle resizing:
-				if(newRender && (self.width != newRender.width || self.height != newRender.height)) {
-					console.log("Resizing to " + newRender.width + "x" + newRender.height + " ...");
+				self.lastShareHandle = self.interop.cefTextureShareHandle;
 
-					self.width = newRender.width;
-					self.height = newRender.height;
 
-					let lastClearShareHandle = self.interop.cefClearTextureShareHandle;
+				try {
+					await newRender.onPaint(self.interop.cefTextureShareHandle);
+				} catch (e) {
+					Utils.logError(e);
+					if (!(e && e.soft)) throw e;
 
-					self.interop.setSize(newRender.width, newRender.height);
-
-					do {
-						await Utils.toPromise(self.interop, "waitForCefFrame");
-					} while(
-						self.interop.cefClearTextureShareHandle.lo == lastClearShareHandle.lo
-						&& self.interop.cefClearTextureShareHandle.hi == lastClearShareHandle.hi
-					);
 				}
+			}
 
-				let queued = false;
 
-				// begin new frame:
-				if (newRender && newRender.onBegin) {
-					try {
-						queued = await newRender.onBegin();
-					} catch (e) {
-						Utils.logError(e);
-						if (!(e && e.soft)) throw e;
-						queued = false;
-					}
-				}
+			// finish last frame:
+			if (newRender && newRender.onEnd) {
+				try {
+					await newRender.onEnd();
+				} catch (e) {
+					Utils.logError(e);
+					if (!(e && e.soft)) throw e;
 
-				queued = false;
-
-				async function doClear() {
-					// clear new frame (if wanted):
-					if (newRender && newRender.onClear) {
-						self.interop.setCefUseClearTexture(true);
-
-						if (self.lastClearShareHandle) {
-							if (
-								self.interop.cefClearTextureShareHandle.lo != self.lastClearShareHandle.lo
-								|| self.interop.cefClearTextureShareHandle.hi != self.lastClearShareHandle.hi) {
-								console.log("Clear share handle changed, releasing old one on client ...");
-								await self.releaseShareHandle(self.lastClearShareHandle);
-							}
-						}
-						self.lastClearShareHandle = self.interop.cefClearTextureShareHandle;
-
-						try {
-							await newRender.onClear(self.interop.cefClearTextureShareHandle);
-						} catch (e) {
-							Utils.logError(e);
-							if (!(e && e.soft)) throw e;
-						}
-					}
-					else {
-						self.interop.setCefUseClearTexture(false);
-					}
-				}
-
-				await doClear();
-
-				self.lastRender = newRender;
-
-				if (newRender) {
-					if (queued) {
-						break;
-					}
-					newRender = null;
-				}
-				else {
-					break;
 				}
 			}
 		}
@@ -1080,6 +1066,7 @@
 						if (e && e.soft) {
 							if (gameSurfaceRef[0]) await Utils.toPromise(gameSurfaceRef[0], "release");
 							if (cefTextureSuraceLevel0Ref[0]) await Utils.toPromise(cefTextureSuraceLevel0Ref[0], "release");
+							return;
 						}
 
 						throw e;
@@ -1103,7 +1090,6 @@
 				Utils.logError(e);
 				if (e && e.soft) {
 					Utils.logError(e);
-					self.lastRender = null;
 					await Utils.toPromise(self.interop, "pumpFinish");
 					return;
 				}

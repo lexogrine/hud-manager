@@ -5,7 +5,7 @@ import * as directories from './init/directories';
 import { ChildProcess, spawn, fork } from 'child_process';
 import args from './init/args';
 import { app } from 'electron';
-import { createMainWindow } from './renderer';
+import { createMainWindow, processEvents } from './renderer';
 
 interface HLAEChild {
 	process: ChildProcess | null;
@@ -16,9 +16,8 @@ export const AFXInterop: HLAEChild = {
 };
 
 export const isDev = process.env.DEV === 'true';
-const wait = (ms: number) => new Promise(r => setTimeout(r, ms));
 
-async function mainProcess(server: Server, forceDev = false, gui = true) {
+function mainProcess(server: Server) {
 	const RMTPServer = fork(require.resolve('./RMTPServer.js'));
 
 	const closeManager = () => {
@@ -34,6 +33,7 @@ async function mainProcess(server: Server, forceDev = false, gui = true) {
 		}
 		// app.quit();
 	};
+	app.on('quit', closeManager);
 
 	const finallyCloseManager = () => {
 		if (server) {
@@ -46,53 +46,25 @@ async function mainProcess(server: Server, forceDev = false, gui = true) {
 		finallyCloseManager();
 	});
 
-	app.on('window-all-closed', () => {});
-
-	if (!gui) return;
-
-	const args = ['./', '--renderer'];
-	if (forceDev) args.push('--dev');
-	const renderer = spawn(process.execPath, args, {
-		stdio: forceDev ? ['pipe', 'pipe', 'pipe', 'ipc'] : ['ignore', 'ignore', 'ignore', 'ipc']
-	});
-
 	app.on('second-instance', () => {
-		if (renderer.send) {
-			renderer.send('refocus');
-		}
-	});
-
-	if (forceDev) renderer.stdout?.on('data', data => console.log(data.toString()));
-
-	renderer.on('exit', closeManager);
-	renderer.on('close', closeManager);
-
-	app.on('quit', () => {
-		renderer.kill();
+		processEvents.emit('refocus');
 	});
 }
 
-async function startManager() {
+async function startManagerQuickly() {
 	app.setAppUserModelId('com.lexogrine.hudmanager');
-	if (process.argv.includes('--renderer')) {
-		//console.log('d', new Date().getTime());
-		createMainWindow(process.argv.includes('--dev'));
-		return;
-	}
 	directories.checkDirectories();
-	//await wait(3000);
-	await directories.loadAllPremiumHUDs();
-	//console.log('b', new Date().getTime());
-	const server = await init();
-	//console.log('c', new Date().getTime());
+	const [ server ] = await Promise.all([init(), directories.loadAllPremiumHUDs()])
+	//await directories.loadAllPremiumHUDs();
+	//const server = await init();
 	const argv = args(process.argv);
-	mainProcess(server, argv.dev || isDev, !argv.noGUI);
+	mainProcess(server);
+	if(!argv.noGUI) createMainWindow(argv.dev || isDev);
 }
 
 const lock = app.requestSingleInstanceLock();
-if (!lock && !process.argv.includes('--renderer')) {
+if (!lock) {
 	app.quit();
 } else {
-	//console.log('a', new Date().getTime());
-	app.on('ready', startManager);
+	app.on('ready', startManagerQuickly);
 }
