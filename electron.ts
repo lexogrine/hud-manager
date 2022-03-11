@@ -54,12 +54,12 @@ function mainProcess(server: Server) {
 async function startManagerQuickly() {
 	app.setAppUserModelId('com.lexogrine.hudmanager');
 	directories.checkDirectories();
-	const [ server ] = await Promise.all([init(), directories.loadAllPremiumHUDs()])
+	const [server] = await Promise.all([init(), directories.loadAllPremiumHUDs()]);
 	//await directories.loadAllPremiumHUDs();
 	//const server = await init();
 	const argv = args(process.argv);
 	mainProcess(server);
-	if(!argv.noGUI) createMainWindow(argv.dev || isDev);
+	if (!argv.noGUI) createMainWindow(argv.dev || isDev);
 }
 
 const lock = app.requestSingleInstanceLock();
