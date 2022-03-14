@@ -1,5 +1,4 @@
 import * as I from './../../../../api/interfaces';
-import { countries } from './../../../../api/countries';
 import config from './../../../../api/config';
 import CustomFieldValue from '../../../CustomFields/CustomFieldValue';
 import { IContextData } from '../../../Context';
@@ -17,19 +16,15 @@ interface Props {
 }
 
 const TeamListEntry = ({ team, edit, hash, fields, cxt, isChecked, toggleTeam }: Props) => {
-	const country = !team.country ? null : countries[team.country] || null;
 	return (
 		<div className="item-list-entry">
 			<div className="picture">{team.logo ? <img src={`${team.logo}?hash=${hash}`} /> : null}</div>
 			<div className="name">{team.name}</div>
 			<div className="shortname">{team.shortName}</div>
 			<div className="country">
-				{country ? (
+				{team.country ? (
 					<img
-						src={`${config.isDev ? config.apiAddress : '/'}files/img/flags/${country.replace(
-							/ /g,
-							'-'
-						)}.png`}
+						src={`${config.isDev ? config.apiAddress : '/'}files/img/flags/ISO/${team.country}.png`}
 					/>
 				) : null}
 			</div>

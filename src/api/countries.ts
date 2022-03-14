@@ -1,4 +1,4 @@
-export const countries: any = {
+export const availableCountries = {
 	AF: 'Afghanistan',
 	AX: 'Aland Islands',
 	AL: 'Albania',
@@ -28,9 +28,7 @@ export const countries: any = {
 	BO: 'Bolivia',
 	BA: 'Bosnia and Herzegovina',
 	BW: 'Botswana',
-	BV: 'Bouvet Island',
 	BR: 'Brazil',
-	IO: 'British Indian Ocean Territory',
 	BN: 'Brunei',
 	BG: 'Bulgaria',
 	BF: 'Burkina Faso',
@@ -74,7 +72,6 @@ export const countries: any = {
 	FJ: 'Fiji',
 	FI: 'Finland',
 	FR: 'France',
-	GF: 'French Guiana',
 	PF: 'French Polynesia',
 	TF: 'French Southern Territories',
 	GA: 'Gabon',
@@ -86,7 +83,6 @@ export const countries: any = {
 	GR: 'Greece',
 	GL: 'Greenland',
 	GD: 'Grenada',
-	GP: 'Guadeloupe',
 	GU: 'Guam',
 	GT: 'Guatemala',
 	GG: 'Guernsey',
@@ -94,7 +90,6 @@ export const countries: any = {
 	GW: 'Guinea-Bissau',
 	GY: 'Guyana',
 	HT: 'Haiti',
-	HM: 'Heard Island & Mcdonald Islands',
 	VA: 'Holy See (Vatican City State)',
 	HN: 'Honduras',
 	HK: 'Hong Kong',
@@ -190,7 +185,6 @@ export const countries: any = {
 	KN: 'Saint Kitts and Nevis',
 	LC: 'Saint Lucia',
 	MF: 'Saint Martin',
-	PM: 'Saint Pierre And Miquelon',
 	VC: 'Saint Vincent and the Grenadines',
 	WS: 'Samoa',
 	SM: 'San Marino',
@@ -212,7 +206,6 @@ export const countries: any = {
 	SD: 'Sudan',
 	SR: 'Suriname',
 	SS: 'South Sudan',
-	SJ: 'Svalbard And Jan Mayen',
 	SZ: 'Swaziland',
 	SE: 'Sweden',
 	CH: 'Switzerland',
@@ -236,7 +229,6 @@ export const countries: any = {
 	AE: 'United Arab Emirates',
 	GB: 'United Kingdom',
 	US: 'United States',
-	UM: 'United States Outlying Islands',
 	UY: 'Uruguay',
 	UZ: 'Uzbekistan',
 	VU: 'Vanuatu',
@@ -247,10 +239,9 @@ export const countries: any = {
 	WF: 'Wallis And Futuna',
 	EH: 'Western Sahara',
 	YE: 'Yemen',
+    'GB-SCT': 'Scotland',
+    'GB-ENG': 'England',
+    'GB-WLS': 'Wales',
 	ZM: 'Zambia',
 	ZW: 'Zimbabwe'
-};
-
-export const getCountry = (iso: string) => {
-	return countries[iso.toUpperCase()];
 };
