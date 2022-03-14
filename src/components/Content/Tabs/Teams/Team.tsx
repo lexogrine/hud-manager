@@ -23,9 +23,7 @@ const TeamListEntry = ({ team, edit, hash, fields, cxt, isChecked, toggleTeam }:
 			<div className="shortname">{team.shortName}</div>
 			<div className="country">
 				{team.country ? (
-					<img
-						src={`${config.isDev ? config.apiAddress : '/'}files/img/flags/ISO/${team.country}.png`}
-					/>
+					<img src={`${config.isDev ? config.apiAddress : '/'}files/img/flags/ISO/${team.country}.png`} />
 				) : null}
 			</div>
 			{fields.map(field => (

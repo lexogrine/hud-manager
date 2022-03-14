@@ -1,8 +1,9 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { app } from 'electron';
-import { availableGames, AvailableGames } from '../types/interfaces';
+import { AvailableGames } from '../types/interfaces';
 import { loadSessionStore } from './database';
+//import { verifyAdvancedFXInstallation } from '../server/hlae/integration';
 const DecompressZip = require('decompress-zip');
 
 const temporaryFilesArchive = path.join(app.getPath('userData'), 'archives');
@@ -159,6 +160,9 @@ export function checkDirectories() {
 	const arData = path.join(userData, 'ARs');
 	const errors = path.join(userData, 'errors');
 
+	const hlaeDirectory = path.join(userData, 'hlae');
+	const afxDirectory = path.join(userData, 'afx');
+
 	const userDatabases = path.join(database, 'users');
 	const teamDatabases = path.join(database, 'workspaces');
 
@@ -166,6 +170,8 @@ export function checkDirectories() {
 		hudsData,
 		userData,
 		database,
+		hlaeDirectory,
+		afxDirectory,
 		arData,
 		errors,
 		temporaryFilesArchive,
@@ -191,4 +197,6 @@ export function checkDirectories() {
 		fs.writeFileSync(mapFile, JSON.stringify(maps));
 	}
 	loadSessionStore();
+
+	//verifyAdvancedFXInstallation()
 }

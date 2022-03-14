@@ -239,9 +239,9 @@ export const availableCountries = {
 	WF: 'Wallis And Futuna',
 	EH: 'Western Sahara',
 	YE: 'Yemen',
-    'GB-SCT': 'Scotland',
-    'GB-ENG': 'England',
-    'GB-WLS': 'Wales',
+	'GB-SCT': 'Scotland',
+	'GB-ENG': 'England',
+	'GB-WLS': 'Wales',
 	ZM: 'Zambia',
 	ZW: 'Zimbabwe'
 };

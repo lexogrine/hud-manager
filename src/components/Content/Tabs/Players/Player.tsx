@@ -30,9 +30,7 @@ const PlayerListEntry = ({ player, team, edit, hash, cxt, fields, isChecked, tog
 			</div>
 			<div className="country">
 				{player.country ? (
-					<img
-						src={`${config.isDev ? config.apiAddress : '/'}files/img/flags/ISO/${player.country}.png`}
-					/>
+					<img src={`${config.isDev ? config.apiAddress : '/'}files/img/flags/ISO/${player.country}.png`} />
 				) : null}
 			</div>
 			{fields.map(field => (

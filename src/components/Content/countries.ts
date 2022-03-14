@@ -6,8 +6,10 @@ export default [
 	{ value: 'EU', label: 'European Union' },
 	{ value: 'CIS', label: 'CIS' },
 	{ value: 'XK', label: 'Kosovo' }
-].filter(country => Object.keys(availableCountries).includes(country.value)).sort((a, b) => {
-	if (a.label.toUpperCase() < b.label.toUpperCase()) return -1;
-	if (a.label.toUpperCase() > b.label.toUpperCase()) return 1;
-	return 0;
-});
+]
+	.filter(country => Object.keys(availableCountries).includes(country.value))
+	.sort((a, b) => {
+		if (a.label.toUpperCase() < b.label.toUpperCase()) return -1;
+		if (a.label.toUpperCase() > b.label.toUpperCase()) return 1;
+		return 0;
+	});
