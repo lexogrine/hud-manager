@@ -79,13 +79,13 @@ const Content = ({
 	useEffect(() => {
 		const onGameChange = () => {
 			toggle('huds');
-		}
+		};
 		layoutEvents.on('gameChange', onGameChange);
 
 		return () => {
 			layoutEvents.off('gameChange', onGameChange);
-		}
-	}, [activeTab])
+		};
+	}, [activeTab]);
 
 	const setOnBackClick2 = (onBackClick: null | (() => void), header: string | null = null) => {
 		tabTitles[activeTab] = { handler: onBackClick, header };
