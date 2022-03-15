@@ -40,7 +40,6 @@ export default class Layout extends Component<{}, IState> {
 				spaceUsed: 0,
 				tournaments: [],
 				reload: () => {
-					console.log('reloading')
 					return Promise.all([
 						this.loadPlayers(),
 						this.loadTeams(),
