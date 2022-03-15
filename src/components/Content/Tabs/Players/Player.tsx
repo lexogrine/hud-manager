@@ -1,5 +1,4 @@
 import * as I from './../../../../api/interfaces';
-import { countries } from './../../../../api/countries';
 import config from './../../../../api/config';
 import CustomFieldValue from '../../../CustomFields/CustomFieldValue';
 import { IContextData } from '../../../Context';
@@ -18,7 +17,6 @@ interface Props {
 }
 
 const PlayerListEntry = ({ player, team, edit, hash, cxt, fields, isChecked, togglePlayer }: Props) => {
-	const country = !player.country ? null : countries[player.country] || null;
 	return (
 		<div className="item-list-entry">
 			<div className="picture">{player.avatar ? <img src={`${player.avatar}?hash=${hash}`} /> : null}</div>
@@ -31,13 +29,8 @@ const PlayerListEntry = ({ player, team, edit, hash, cxt, fields, isChecked, tog
 				{team?.name || '-'}
 			</div>
 			<div className="country">
-				{country ? (
-					<img
-						src={`${config.isDev ? config.apiAddress : '/'}files/img/flags/${country.replace(
-							/ /g,
-							'-'
-						)}.png`}
-					/>
+				{player.country ? (
+					<img src={`${config.isDev ? config.apiAddress : '/'}files/img/flags/ISO/${player.country}.png`} />
 				) : null}
 			</div>
 			{fields.map(field => (

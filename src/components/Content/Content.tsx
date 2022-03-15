@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Col, Input } from 'reactstrap';
-import api from '../../api/api';
+import api, { layoutEvents } from '../../api/api';
 import { AppUsageAnalyticsType } from '../../api/interfaces';
 import Navbar from './Navbar/Navbar';
 import Tabs from './Tabs/Tabs';
@@ -75,6 +75,18 @@ const Content = ({
 			api.appUsage.increase(tab.replace('cgpanel', 'cgmode') as AppUsageAnalyticsType, game);
 		}
 	};
+
+	useEffect(() => {
+		const onGameChange = () => {
+			toggle('huds');
+		};
+		layoutEvents.on('gameChange', onGameChange);
+
+		return () => {
+			layoutEvents.off('gameChange', onGameChange);
+		};
+	}, [activeTab]);
+
 	const setOnBackClick2 = (onBackClick: null | (() => void), header: string | null = null) => {
 		tabTitles[activeTab] = { handler: onBackClick, header };
 		setOnBackClick(tabTitles[activeTab]);

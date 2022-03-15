@@ -138,8 +138,8 @@ export default class Layout extends Component<{}, IState> {
 			this.setSyncOpen(response.result !== 'ALL_SYNCED');
 			if (response.result === 'ALL_SYNCED') {
 				this.state.data.reload();
-				if (init) this.loadUser();
 			}
+			if (init) this.loadUser();
 		});
 	};
 	getCustomFields = async () => {

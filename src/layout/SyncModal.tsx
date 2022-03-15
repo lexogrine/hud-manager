@@ -31,6 +31,7 @@ const SyncModal = ({ isOpen, setOpen, syncStatus, reload }: IProps) => {
 				api.config.update({ ...config, sync: false }).then(() => {
 					setLoading(false);
 					setOpen(false);
+					reload();
 				});
 			});
 		};
