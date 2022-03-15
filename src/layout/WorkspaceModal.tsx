@@ -6,7 +6,7 @@ import LabeledInput from '../components/LabeledInput';
 interface IProps {
 	workspaces: Workspace[];
 	isOpen: boolean;
-	loadUser: () => void;
+	loadUser: (init?: boolean) => void;
 }
 
 const WorkspaceModal = ({ isOpen, workspaces, loadUser }: IProps) => {
@@ -24,7 +24,7 @@ const WorkspaceModal = ({ isOpen, workspaces, loadUser }: IProps) => {
 				return;
 			}
 
-			loadUser();
+			loadUser(true);
 		});
 	};
 

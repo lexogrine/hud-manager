@@ -40,6 +40,7 @@ export default class Layout extends Component<{}, IState> {
 				spaceUsed: 0,
 				tournaments: [],
 				reload: () => {
+					console.log('reloading')
 					return Promise.all([
 						this.loadPlayers(),
 						this.loadTeams(),
@@ -138,8 +139,8 @@ export default class Layout extends Component<{}, IState> {
 			this.setSyncOpen(response.result !== 'ALL_SYNCED');
 			if (response.result === 'ALL_SYNCED') {
 				this.state.data.reload();
-				if (init) this.loadUser();
 			}
+			if (init) this.loadUser();
 		});
 	};
 	getCustomFields = async () => {

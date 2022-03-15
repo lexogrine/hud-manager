@@ -88,8 +88,10 @@ const updateAsset = async (asset, directory, version) => {
     });
 };
 const verifyInstallation = async (repo, directory, findAsset, tag) => {
-    const githubURL = tag ? `https://api.github.com/repos/${repo}/releases/tags/${tag}` : `https://api.github.com/repos/${repo}/releases/latest`;
-    const response = await (0, node_fetch_1.default)(githubURL).then(res => res.json());
+    const githubURL = tag
+        ? `https://api.github.com/repos/${repo}/releases/tags/${tag}`
+        : `https://api.github.com/repos/${repo}/releases/latest`;
+    const response = (await (0, node_fetch_1.default)(githubURL).then(res => res.json()));
     console.log(`Looking for ${repo} releases`);
     if (!response?.tag_name)
         return null;
@@ -100,8 +102,7 @@ const verifyInstallation = async (repo, directory, findAsset, tag) => {
         if (content === response.tag_name)
             return true;
     }
-    catch {
-    }
+    catch { }
     console.log(`No current ${repo} detected`);
     const asset = response.assets?.find(findAsset);
     if (!asset)
