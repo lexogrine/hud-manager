@@ -7,4 +7,4 @@ export const setXrayHandler: RequestHandler = (req, res) => {
 	HLAE.setXrayColors(ctXray, tXray);
 
 	return res.sendStatus(200);
-}
+};
