@@ -36,7 +36,7 @@ export const createMainWindow = async (forceDev = false) => {
 		titleBarStyle: 'hidden',
 		//resizable: isDev,
 		title: 'Lexogrine HUD Manager',
-		icon: path.join(__dirname, 'assets/icon.png'),
+		icon: path.join(__dirname, 'assets/favicon.ico'),
 		webPreferences: {
 			nodeIntegration: true,
 			backgroundThrottling: false,
