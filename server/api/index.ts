@@ -20,6 +20,7 @@ import PlayerHandler from './players/routes';
 import ACOHandler from './aco/routes';
 import ARHandler from './ar/routes';
 import TimelineHandler from './timeline/routes';
+import HLAEHandler from './hlae/routes';
 import ARGHandler from './arg/routes';
 import * as match from './matches';
 import TeamHandler from './teams/routes';
@@ -112,6 +113,8 @@ export default async function (/*io: Server<DefaultEventsMap, DefaultEventsMap, 
 	ARGHandler();
 
 	CloudHandler();
+
+	HLAEHandler();
 
 	app.route('/api/games/start/:game').get(async (req, res) => {
 		const cfg = await config.loadConfig();
