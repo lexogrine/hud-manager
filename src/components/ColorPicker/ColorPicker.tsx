@@ -42,7 +42,7 @@ const ColorPicker = ({ hex, setHex }: Props) => {
 			</Button>
 			{displayColorPicker ? (
 				<div className="pop-over">
-					<SketchPicker color={hex} onChange={handleChange} disableAlpha={true}/>
+					<SketchPicker color={hex} onChange={handleChange} disableAlpha={true} />
 					{/*<Tenteges onChange={handleChange} color={hex} />*/}
 				</div>
 			) : null}

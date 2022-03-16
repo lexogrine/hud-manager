@@ -349,7 +349,7 @@ class Huds extends Component<IProps, IState> {
 							</Col>
 						</Row>
 					</GameOnly>
-					<GameOnly game={["rocketleague", 'dota2']}>
+					<GameOnly game={['rocketleague', 'dota2']}>
 						<Row className="config-container">
 							<Col md="12" className="config-entry">
 								<div className="running-game-container">

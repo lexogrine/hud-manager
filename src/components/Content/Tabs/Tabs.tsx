@@ -71,7 +71,7 @@ const Tabs = ({ activeTab, data, toggle, gsiCheck, setOnBackClick, search }: IPr
 						<Tournamentss maps={maps} cxt={cxt} setOnBackClick={setOnBackClick}></Tournamentss>
 					</TabPane>
 					<TabPane tabId="xray" className={getClassForTab('XRay', cxt)}>
-						<XRay ></XRay>
+						<XRay></XRay>
 					</TabPane>
 					<TabPane tabId="arg" className={getClassForTab('ARG', cxt)}>
 						<ForPlansOnly required="personal">
