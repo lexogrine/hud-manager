@@ -64,8 +64,8 @@ const VetoModal = ({ onChange, map, isOpen, toggle, veto, teams, maps }: Props) 
 								</div>
 							))}
 						</FormGroup>
-						<FormGroup className="input-container side-pick-container">
-							<div className="input-label-container">Does the opponent pick a side?</div>
+						{ veto.type === 'pick' ? <FormGroup className="input-container side-pick-container">
+							<div className="input-label-container">{t('match.questionOpponentPick')}</div>
 							<div className="checkboxes">
 								{(['CT', 'T', 'NO'] as VetoSides[]).map(side => (
 									<div key={side} className="checkbox-container">
@@ -79,7 +79,7 @@ const VetoModal = ({ onChange, map, isOpen, toggle, veto, teams, maps }: Props) 
 									</div>
 								))}
 							</div>
-						</FormGroup>
+						</FormGroup> : null }
 					</>
 				) : null}
 				{'mapName' in veto ? (

@@ -245,7 +245,11 @@ const runDota2 = async (req, res) => {
     }
     const exePath = path_1.default.join(GamePath.steam.path, 'Steam.exe');
     try {
-        const steam = (0, child_process_1.spawn)(`"${exePath}"`, ['-applaunch 570 -gamestateintegration'], { detached: true, shell: true, stdio: 'ignore' });
+        const steam = (0, child_process_1.spawn)(`"${exePath}"`, ['-applaunch 570 -gamestateintegration'], {
+            detached: true,
+            shell: true,
+            stdio: 'ignore'
+        });
         steam.unref();
     }
     catch (e) {
