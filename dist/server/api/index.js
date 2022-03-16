@@ -184,6 +184,7 @@ async function default_1( /*io: Server<DefaultEventsMap, DefaultEventsMap, Defau
     //    .get(game.getEvents);
     __1.app.route('/api/game').get(game.getLatestData);
     __1.app.route('/api/game/run').post(game.run);
+    __1.app.route('/api/dota2/run').post(game.runDota2);
     __1.app.route('/api/cfg').get(game.checkCFGs).put(game.createCFGs);
     __1.app.route('/api/cfgs/download').get(gsi.saveFile('configs.zip', gsi.cfgsZIPBase64, true));
     __1.app.route('/huds/:dir/').get(huds.renderHUD);

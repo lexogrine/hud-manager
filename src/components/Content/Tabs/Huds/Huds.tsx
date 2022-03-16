@@ -117,11 +117,14 @@ class Huds extends Component<IProps, IState> {
 	runGame = async () => {
 		switch (this.props.cxt.game) {
 			case 'csgo':
-				api.game.run(this.state.form);
+				api.csgo.run(this.state.form);
 				break;
 			case 'rocketleague':
 				await api.bakkesmod.installSos();
 				await api.bakkesmod.run();
+				break;
+			case 'dota2':
+				api.dota2.run();
 				break;
 		}
 	};
@@ -269,7 +272,7 @@ class Huds extends Component<IProps, IState> {
 										<Switch
 											isOn={this.state.isOnLoop}
 											id="gamelopp-toggle"
-											handleToggle={api.game.toggleLoop}
+											handleToggle={api.csgo.toggleLoop}
 										/>
 									</div>
 								</ElectronOnly>
@@ -314,7 +317,7 @@ class Huds extends Component<IProps, IState> {
 											<Button
 												className="button green strong empty"
 												// disabled={!this.state.enableTest}
-												onClick={api.game.runTest}
+												onClick={api.csgo.runTest}
 											>
 												{!this.state.enableTest
 													? t('huds.config.pauseTest')
@@ -346,7 +349,7 @@ class Huds extends Component<IProps, IState> {
 							</Col>
 						</Row>
 					</GameOnly>
-					<GameOnly game="rocketleague">
+					<GameOnly game={["rocketleague", 'dota2']}>
 						<Row className="config-container">
 							<Col md="12" className="config-entry">
 								<div className="running-game-container">
@@ -354,32 +357,11 @@ class Huds extends Component<IProps, IState> {
 										<ElectronOnly>
 											<Button
 												className="round-btn run-game"
-												disabled={
-													(killfeed && !config.hlaePath) ||
-													(afx && (!config.hlaePath || !config.afxCEFHudInteropPath))
-												}
+												disabled={false}
 												onClick={this.runGame}
 											>
 												RUN GAME
 											</Button>
-										</ElectronOnly>
-									</div>
-									<div className="warning">
-										<ElectronOnly>
-											{(killfeed || afx) && !config.hlaePath ? (
-												<div>
-													Specify HLAE path in Settings in order to use custom killfeeds
-												</div>
-											) : null}
-											{afx && !config.afxCEFHudInteropPath ? (
-												<div>Specify AFX Interop path in Settings in order to use AFX mode</div>
-											) : null}
-											{afx && config.afxCEFHudInteropPath && config.hlaePath ? (
-												<div>
-													When using AFX mode, after joining the match click on the SET button
-													- no need to start the overlay.
-												</div>
-											) : null}
 										</ElectronOnly>
 									</div>
 								</div>

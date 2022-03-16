@@ -258,3 +258,19 @@ export const run: express.RequestHandler = async (req, res) => {
 	}
 	return res.sendStatus(200);
 };
+
+
+export const runDota2: express.RequestHandler = async (req, res) => {
+	const GamePath = getGamePath(570);
+	if (!GamePath || !GamePath.steam || !GamePath.steam.path || !GamePath.game || !GamePath.game.path) {
+		return res.sendStatus(404);
+	}
+	const exePath = path.join(GamePath.steam.path, 'Steam.exe');
+	try {
+		const steam = spawn(`"${exePath}"`, ['-applaunch 570 -gamestateintegration'], { detached: true, shell: true, stdio: 'ignore' });
+		steam.unref();
+	} catch (e) {
+		return res.sendStatus(500);
+	}
+	return res.sendStatus(200);
+}

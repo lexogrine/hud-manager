@@ -28,7 +28,9 @@ mirv_streams preview blast
 
 mirv_fix selectedPlayerGlow 0
 
-glow_outline_width 6`.split('\n').filter(Boolean);
+glow_outline_width 6`
+    .split('\n')
+    .filter(Boolean);
 const setXrayColors = (ctXray, tXray) => {
     (0, xray_1.generateAfxLutFile)(afxLutFile, ctXray, tXray);
     commands.forEach(command => {

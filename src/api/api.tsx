@@ -158,11 +158,14 @@ export default {
 		check: async (game: 'csgo' | 'dota2'): Promise<I.CFGGSIObject> => await apiV2(`gsi?game=${game}`),
 		create: async (game: 'csgo' | 'dota2'): Promise<I.CFGGSIObject> => await apiV2(`gsi?game=${game}`, 'PUT')
 	},
-	game: {
+	csgo: {
 		run: async (config: { radar: boolean; killfeed: boolean; afx: boolean; autoexec: boolean }) =>
 			await apiV2(`game/run`, 'POST', config),
 		runTest: () => apiV2('test', 'POST'),
 		toggleLoop: () => apiV2('test/loop', 'POST')
+	},
+	dota2: {
+		run: () => apiV2(`dota2/run`, 'POST')
 	},
 	games: {
 		getCurrent: (): Promise<{ game: AvailableGames; init: boolean }> => apiV2(`games/current`),
@@ -265,5 +268,8 @@ export default {
 		increase: (type: I.AppUsageAnalyticsType, game: I.AvailableGames) => apiV2('usage', 'PUT', { type, game }),
 		reset: () => apiV2('usage', 'DELETE'),
 		upload: () => apiV2('usage', 'POST')
+	},
+	hlae: {
+		setXray: (ctXray: number[], tXray: number[]) => apiV2('hlae/xray', 'POST', { ctXray, tXray })
 	}
 };

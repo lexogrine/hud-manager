@@ -18,7 +18,7 @@ const INDEXES = {
     RED: RESOLUTION_EIGHT,
     GREEN: RESOLUTION_EIGHT,
     BLUE: RESOLUTION_EIGHT,
-    ALPHA: RESOLUTION_FOUR,
+    ALPHA: RESOLUTION_FOUR
 };
 const getDistanceSquared = (pointA, pointB, weight = 1) => {
     const deltaR = pointA[0] - pointB[0];
@@ -32,143 +32,143 @@ const COLORS = [
     {
         address: [224, 175, 86, 0],
         value: [255, 0, 0, 0],
-        weight: 2,
+        weight: 2
     },
     {
         address: [224, 175, 86, 255],
         value: [255, 0, 0, 255],
-        weight: 2,
+        weight: 2
     },
     {
         address: [144, 155, 221, 0],
         value: [0, 0, 255, 0],
-        weight: 2,
+        weight: 2
     },
     {
         address: [144, 155, 221, 255],
         value: [0, 0, 255, 255],
-        weight: 2,
+        weight: 2
     },
     {
         address: [169, 165, 154, 0],
         value: [168, 168, 168, 0],
-        weight: 1,
+        weight: 1
     },
     {
         address: [169, 165, 154, 255],
         value: [168, 168, 168, 255],
-        weight: 1,
+        weight: 1
     },
     {
         address: [230, 128, 0, 0],
         value: [255, 0, 0, 0],
-        weight: 2,
+        weight: 2
     },
     {
         address: [230, 128, 0, 255],
         value: [255, 0, 0, 255],
-        weight: 2,
+        weight: 2
     },
     {
         address: [0, 120, 240, 0],
         value: [0, 0, 255, 0],
-        weight: 2,
+        weight: 2
     },
     {
         address: [0, 120, 240, 255],
         value: [0, 0, 255, 255],
-        weight: 2,
+        weight: 2
     },
     {
         address: [115, 124, 120, 0],
         value: [120, 120, 120, 0],
-        weight: 1,
+        weight: 1
     },
     {
         address: [115, 124, 120, 255],
         value: [120, 120, 120, 255],
-        weight: 1,
+        weight: 1
     },
     {
         address: [0, 0, 0, 0],
         value: [0, 0, 0, 0],
-        weight: 1,
+        weight: 1
     },
     {
         address: [0, 0, 0, 255],
         value: [0, 0, 0, 255],
-        weight: 1,
+        weight: 1
     },
     {
         address: [0, 0, 255, 0],
         value: [0, 0, 255, 0],
-        weight: 1,
+        weight: 1
     },
     {
         address: [0, 0, 255, 255],
         value: [0, 0, 255, 255],
-        weight: 1,
+        weight: 1
     },
     {
         address: [0, 255, 0, 0],
         value: [0, 255, 0, 0],
-        weight: 1,
+        weight: 1
     },
     {
         address: [0, 255, 0, 255],
         value: [0, 255, 0, 255],
-        weight: 1,
+        weight: 1
     },
     {
         address: [0, 255, 255, 0],
         value: [0, 255, 255, 0],
-        weight: 1,
+        weight: 1
     },
     {
         address: [0, 255, 255, 255],
         value: [0, 255, 255, 255],
-        weight: 1,
+        weight: 1
     },
     {
         address: [255, 0, 0, 0],
         value: [255, 0, 0, 0],
-        weight: 1,
+        weight: 1
     },
     {
         address: [255, 0, 0, 255],
         value: [255, 0, 0, 255],
-        weight: 1,
+        weight: 1
     },
     {
         address: [255, 0, 255, 0],
         value: [255, 0, 255, 0],
-        weight: 1,
+        weight: 1
     },
     {
         address: [255, 0, 255, 255],
         value: [255, 0, 255, 255],
-        weight: 1,
+        weight: 1
     },
     {
         address: [255, 255, 0, 0],
         value: [255, 255, 0, 0],
-        weight: 1,
+        weight: 1
     },
     {
         address: [255, 255, 0, 255],
         value: [255, 255, 0, 255],
-        weight: 1,
+        weight: 1
     },
     {
         address: [255, 255, 255, 0],
         value: [255, 255, 255, 0],
-        weight: 1,
+        weight: 1
     },
     {
         address: [255, 255, 255, 255],
         value: [255, 255, 255, 255],
-        weight: 1,
-    },
+        weight: 1
+    }
 ];
 const iterate = (r, g, b, a) => {
     const currentColorAddress = [r * 255, g * 255, b * 255, a * 255];

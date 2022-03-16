@@ -139,6 +139,12 @@ const Navbar = ({ activeTab, toggle, files, setCollapse, isCollapsed, version }:
 									<div>{t('navbar.live')}</div>
 								</NavLink>
 							</NavItem>
+							{/*<NavItem className={`hover-pointer`} onClick={toggleHandler('xray')}>
+								<NavLink active={activeTab === 'xray'}>
+									<Tabs.Live />
+									<div>XRAY</div>
+								</NavLink>
+							</NavItem>*/}
 						</GameOnly>
 						<GameOnly game={['csgo', 'dota2', 'rocketleague']}>
 							<NavItem

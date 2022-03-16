@@ -1460,7 +1460,11 @@ img.smallLogo {
 	font-weight: 600;
 }
 .btn.purple-btn {
-	background-color: #6b1cff2b !important;
+	background-color: #6b1cff2b;
+	&:not(.editable){
+		background-color: #6b1cff2b !important;
+	}
+
 }
 .btn.purple-btn.edit-veto.current {
 	background-color: #6b1cff !important;
@@ -1478,6 +1482,7 @@ img.smallLogo {
 	background-color: #7ad9f5 !important;
 	color: #24272d;
 }
+
 input {
 	&:not([type="checkbox"]) {
 		font-size: 12px !important;
@@ -1488,6 +1493,22 @@ input {
 			.customCheckbox {
 				background-color: grey;
 				opacity: 0.5;
+			}
+		}
+	}
+}
+.pop-over {
+	input {
+		&:not([type="checkbox"]) {
+			font-size: 11px !important;
+			height: unset !important;
+		}
+		&:checked {
+			~ {
+				.customCheckbox {
+					background-color: grey;
+					opacity: 0.5;
+				}
 			}
 		}
 	}

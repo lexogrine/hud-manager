@@ -212,6 +212,8 @@ export default async function (/*io: Server<DefaultEventsMap, DefaultEventsMap, 
 
 	app.route('/api/game/run').post(game.run);
 
+	app.route('/api/dota2/run').post(game.runDota2);
+
 	app.route('/api/cfg').get(game.checkCFGs).put(game.createCFGs);
 
 	app.route('/api/cfgs/download').get(gsi.saveFile('configs.zip', gsi.cfgsZIPBase64, true));

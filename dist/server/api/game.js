@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.run = exports.getSteamPath = exports.getLatestData = exports.createCFGs = exports.checkCFGs = void 0;
+exports.runDota2 = exports.run = exports.getSteamPath = exports.getLatestData = exports.createCFGs = exports.checkCFGs = void 0;
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const steam_game_path_1 = require("steam-game-path");
@@ -238,3 +238,19 @@ const run = async (req, res) => {
     return res.sendStatus(200);
 };
 exports.run = run;
+const runDota2 = async (req, res) => {
+    const GamePath = (0, steam_game_path_1.getGamePath)(570);
+    if (!GamePath || !GamePath.steam || !GamePath.steam.path || !GamePath.game || !GamePath.game.path) {
+        return res.sendStatus(404);
+    }
+    const exePath = path_1.default.join(GamePath.steam.path, 'Steam.exe');
+    try {
+        const steam = (0, child_process_1.spawn)(`"${exePath}"`, ['-applaunch 570 -gamestateintegration'], { detached: true, shell: true, stdio: 'ignore' });
+        steam.unref();
+    }
+    catch (e) {
+        return res.sendStatus(500);
+    }
+    return res.sendStatus(200);
+};
+exports.runDota2 = runDota2;
