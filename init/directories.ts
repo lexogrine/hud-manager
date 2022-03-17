@@ -198,5 +198,5 @@ export function checkDirectories() {
 	}
 	loadSessionStore();
 
-	if(useIntegrated) verifyAdvancedFXInstallation()
+	if (useIntegrated) verifyAdvancedFXInstallation();
 }

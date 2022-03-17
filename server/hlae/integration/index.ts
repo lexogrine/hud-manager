@@ -20,11 +20,9 @@ const findAFXAsset = (asset: components['schemas']['release-asset']) => {
 };
 
 const verifyHLAEInstallation = () =>
-	verifyInstallation('advancedfx/advancedfx', path.join(userData, 'hlae'), findHLAEAsset).then(
-		result => {
-			console.log('HLAE INSTALLATION STAUTS', result);
-		}
-	);
+	verifyInstallation('advancedfx/advancedfx', path.join(userData, 'hlae'), findHLAEAsset).then(result => {
+		console.log('HLAE INSTALLATION STAUTS', result);
+	});
 
 const verifyAFXInstallation = async () => {
 	/*const releases = (await fetch('https://api.github.com/repos/advancedfx/afx-cefhud-interop/releases').then(res =>

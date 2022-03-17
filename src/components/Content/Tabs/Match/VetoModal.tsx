@@ -64,22 +64,24 @@ const VetoModal = ({ onChange, map, isOpen, toggle, veto, teams, maps }: Props) 
 								</div>
 							))}
 						</FormGroup>
-						{ veto.type === 'pick' ? <FormGroup className="input-container side-pick-container">
-							<div className="input-label-container">{t('match.questionOpponentPick')}</div>
-							<div className="checkboxes">
-								{(['CT', 'T', 'NO'] as VetoSides[]).map(side => (
-									<div key={side} className="checkbox-container">
-										<div
-											className={`checkbox-el ${side === veto.side ? 'active' : ''}`}
-											onClick={() => onChange('side', map, side)}
-										>
-											{side === veto.side ? `✓` : null}
+						{veto.type === 'pick' ? (
+							<FormGroup className="input-container side-pick-container">
+								<div className="input-label-container">{t('match.questionOpponentPick')}</div>
+								<div className="checkboxes">
+									{(['CT', 'T', 'NO'] as VetoSides[]).map(side => (
+										<div key={side} className="checkbox-container">
+											<div
+												className={`checkbox-el ${side === veto.side ? 'active' : ''}`}
+												onClick={() => onChange('side', map, side)}
+											>
+												{side === veto.side ? `✓` : null}
+											</div>
+											<div className="checkbox-label">{side}</div>
 										</div>
-										<div className="checkbox-label">{side}</div>
-									</div>
-								))}
-							</div>
-						</FormGroup> : null }
+									))}
+								</div>
+							</FormGroup>
+						) : null}
 					</>
 				) : null}
 				{'mapName' in veto ? (

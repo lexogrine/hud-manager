@@ -212,10 +212,7 @@ export const run: express.RequestHandler = async (req, res) => {
 	const isHLAE = cfgData.killfeed || cfgData.afx;
 	const exePath = isHLAE ? HLAEPath : path.join(GamePath.steam.path, 'Steam.exe');
 
-	if (
-		(isHLAE && (!HLAEPath || !fs.existsSync(HLAEPath))) ||
-		(cfgData.afx && (!AFXPath || !fs.existsSync(AFXPath)))
-	) {
+	if ((isHLAE && (!HLAEPath || !fs.existsSync(HLAEPath))) || (cfgData.afx && (!AFXPath || !fs.existsSync(AFXPath)))) {
 		return res.sendStatus(404);
 	}
 	// http://localhost:${config.port}/ar2/examples/default/index.html
