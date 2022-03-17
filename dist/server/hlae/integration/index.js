@@ -3,18 +3,22 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.verifyAdvancedFXInstallation = void 0;
+exports.verifyAdvancedFXInstallation = exports.afxExecutable = exports.hlaeExecutable = exports.useIntegrated = void 0;
 const electron_1 = require("electron");
 const path_1 = __importDefault(require("path"));
 // import fetch from 'node-fetch';
 const github_1 = require("./github");
+const userData = electron_1.app.getPath('userData');
+exports.useIntegrated = false;
+exports.hlaeExecutable = path_1.default.join(userData, 'hlae', 'HLAE.exe');
+exports.afxExecutable = path_1.default.join(userData, 'afx', 'Release', 'afx-cefhud-interop.exe');
 const findHLAEAsset = (asset) => {
     return asset.content_type === 'application/x-zip-compressed';
 };
 const findAFXAsset = (asset) => {
     return asset.name === 'Release.7z';
 };
-const verifyHLAEInstallation = () => (0, github_1.verifyInstallation)('advancedfx/advancedfx', path_1.default.join(electron_1.app.getPath('userData'), 'hlae'), findHLAEAsset).then(result => {
+const verifyHLAEInstallation = () => (0, github_1.verifyInstallation)('advancedfx/advancedfx', path_1.default.join(userData, 'hlae'), findHLAEAsset).then(result => {
     console.log('HLAE INSTALLATION STAUTS', result);
 });
 const verifyAFXInstallation = async () => {
@@ -26,7 +30,7 @@ const verifyAFXInstallation = async () => {
         console.log('No AFX executables found');
         return;
     }*/
-    return (0, github_1.verifyInstallation)('advancedfx/afx-cefhud-interop', path_1.default.join(electron_1.app.getPath('userData'), 'afx'), findAFXAsset, 'v7.0.0.17-4dcfd4d').then(result => {
+    return (0, github_1.verifyInstallation)('advancedfx/afx-cefhud-interop', path_1.default.join(userData, 'afx'), findAFXAsset, 'v7.0.0.17-4dcfd4d').then(result => {
         console.log('AFX INSTALLATION STATUS', result);
     });
 };

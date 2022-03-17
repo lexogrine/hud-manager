@@ -11,6 +11,7 @@ const config_1 = require("./config");
 const socket_1 = require("../socket");
 const child_process_1 = require("child_process");
 const electron_1 = require("../../electron");
+const integration_1 = require("../hlae/integration");
 function createCFG(customRadar, customKillfeed, afx, port, aco, autoexec = true) {
     let cfg = `cl_draw_only_deathnotices 1`;
     let file = 'hud';
@@ -186,14 +187,17 @@ const run = async (req, res) => {
     if (!GamePath || !GamePath.steam || !GamePath.steam.path || !GamePath.game || !GamePath.game.path) {
         return res.sendStatus(404);
     }
-    const HLAEPath = config.hlaePath;
+    const HLAEPath = integration_1.useIntegrated ? integration_1.hlaeExecutable : config.hlaePath;
+    const AFXPath = integration_1.useIntegrated ? integration_1.afxExecutable : config.afxCEFHudInteropPath;
     const GameExePath = path_1.default.join(GamePath.game.path, 'csgo.exe');
     const isHLAE = cfgData.killfeed || cfgData.afx;
     const exePath = isHLAE ? HLAEPath : path_1.default.join(GamePath.steam.path, 'Steam.exe');
     if ((isHLAE && (!HLAEPath || !fs_1.default.existsSync(HLAEPath))) ||
-        (cfgData.afx && (!config.afxCEFHudInteropPath || !fs_1.default.existsSync(config.afxCEFHudInteropPath)))) {
+        (cfgData.afx && (!AFXPath || !fs_1.default.existsSync(AFXPath)))) {
         return res.sendStatus(404);
     }
+    console.log(HLAEPath);
+    console.log(AFXPath);
     // http://localhost:${config.port}/ar2/examples/default/index.html
     const args = [];
     const afxURL = `http://localhost:${config.port}/ar2/examples/default/index.html`;
@@ -222,7 +226,7 @@ const run = async (req, res) => {
         const steam = (0, child_process_1.spawn)(`"${exePath}"`, args, { detached: true, shell: true, stdio: 'ignore' });
         steam.unref();
         if (cfgData.afx && !electron_1.AFXInterop.process) {
-            const process = (0, child_process_1.spawn)(`${config.afxCEFHudInteropPath}`, [
+            const process = (0, child_process_1.spawn)(`${AFXPath}`, [
                 `--url=${afxURL}`,
                 '--enable-experimental-web-platform-features',
                 '--disable-logging',

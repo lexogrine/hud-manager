@@ -4,6 +4,13 @@ import path from 'path';
 // import fetch from 'node-fetch';
 import { verifyInstallation } from './github';
 
+const userData = app.getPath('userData');
+
+export const useIntegrated = false;
+
+export const hlaeExecutable = path.join(userData, 'hlae', 'HLAE.exe');
+export const afxExecutable = path.join(userData, 'afx', 'Release', 'afx-cefhud-interop.exe');
+
 const findHLAEAsset = (asset: components['schemas']['release-asset']) => {
 	return asset.content_type === 'application/x-zip-compressed';
 };
@@ -13,7 +20,7 @@ const findAFXAsset = (asset: components['schemas']['release-asset']) => {
 };
 
 const verifyHLAEInstallation = () =>
-	verifyInstallation('advancedfx/advancedfx', path.join(app.getPath('userData'), 'hlae'), findHLAEAsset).then(
+	verifyInstallation('advancedfx/advancedfx', path.join(userData, 'hlae'), findHLAEAsset).then(
 		result => {
 			console.log('HLAE INSTALLATION STAUTS', result);
 		}
@@ -30,7 +37,7 @@ const verifyAFXInstallation = async () => {
 	}*/
 	return verifyInstallation(
 		'advancedfx/afx-cefhud-interop',
-		path.join(app.getPath('userData'), 'afx'),
+		path.join(userData, 'afx'),
 		findAFXAsset,
 		'v7.0.0.17-4dcfd4d'
 	).then(result => {

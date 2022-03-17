@@ -7,6 +7,7 @@ import { GSI } from '../socket';
 import { spawn } from 'child_process';
 import { CFG } from '../../types/interfaces';
 import { AFXInterop } from '../../electron';
+import { afxExecutable, hlaeExecutable, useIntegrated } from '../hlae/integration';
 
 function createCFG(
 	customRadar: boolean,
@@ -203,7 +204,9 @@ export const run: express.RequestHandler = async (req, res) => {
 		return res.sendStatus(404);
 	}
 
-	const HLAEPath = config.hlaePath;
+	const HLAEPath = useIntegrated ? hlaeExecutable : config.hlaePath;
+	const AFXPath = useIntegrated ? afxExecutable : config.afxCEFHudInteropPath;
+
 	const GameExePath = path.join(GamePath.game.path, 'csgo.exe');
 
 	const isHLAE = cfgData.killfeed || cfgData.afx;
@@ -211,7 +214,7 @@ export const run: express.RequestHandler = async (req, res) => {
 
 	if (
 		(isHLAE && (!HLAEPath || !fs.existsSync(HLAEPath))) ||
-		(cfgData.afx && (!config.afxCEFHudInteropPath || !fs.existsSync(config.afxCEFHudInteropPath)))
+		(cfgData.afx && (!AFXPath || !fs.existsSync(AFXPath)))
 	) {
 		return res.sendStatus(404);
 	}
@@ -241,7 +244,7 @@ export const run: express.RequestHandler = async (req, res) => {
 		steam.unref();
 		if (cfgData.afx && !AFXInterop.process) {
 			const process = spawn(
-				`${config.afxCEFHudInteropPath}`,
+				`${AFXPath}`,
 				[
 					`--url=${afxURL}`,
 					'--enable-experimental-web-platform-features',
