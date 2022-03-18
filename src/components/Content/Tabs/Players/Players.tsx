@@ -224,6 +224,10 @@ const PlayersTab = ({ cxt, data, search }: IProps) => {
 		setEditState(true);
 	};
 
+	const exportPlayers = () => {
+		api.players.export();
+	}
+
 	const extraChangeHandler = (field: string, type: Exclude<I.PanelInputType, 'select' | 'action' | 'checkbox'>) => {
 		const fileHandler = (files: FileList) => {
 			if (!files) return;
@@ -402,6 +406,9 @@ const PlayersTab = ({ cxt, data, search }: IProps) => {
 				))}
 			</div>
 			<div className="action-container">
+				<div className="button green empty big wide" onClick={exportPlayers}>
+					Export players
+				</div>
 				<div className="button green empty big wide" onClick={() => setImportState(true)}>
 					Import players
 				</div>

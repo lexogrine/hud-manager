@@ -96,6 +96,7 @@ export default {
 			fetch(`${apiUrl}api/players/avatar/${id}`);
 		},
 		import: (data: string) => apiV2('players/import', 'POST', { data }),
+		export: () => apiV2('players/export', 'POST'),
 		fields: {
 			get: () => apiV2<CustomFieldEntry[]>('players/fields'),
 			update: (fields: CustomFieldEntry[]) => apiV2<CustomFieldEntry[]>('players/fields', 'PATCH', fields)
