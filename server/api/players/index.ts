@@ -81,7 +81,6 @@ export const exportPlayers = async (file: string) => {
 		$or.push({ game: { $exists: false } });
 	}
 
-
 	const players = await getPlayersList({ $or });
 
 	const teams = await getTeamsList({ $or });
@@ -96,7 +95,7 @@ export const exportPlayers = async (file: string) => {
 
 	sheet.properties.defaultColWidth = 20;
 	sheet.getColumn(7).width = 18;
-	
+
 	for (const player of players) {
 		const team = usedTeams.find(team => team._id === player.team);
 		const row = sheet.addRow([
@@ -114,7 +113,7 @@ export const exportPlayers = async (file: string) => {
 
 			const avatarId = workbook.addImage({
 				buffer,
-				extension: 'png',
+				extension: 'png'
 			});
 
 			sheet.addImage(avatarId, {
@@ -125,4 +124,4 @@ export const exportPlayers = async (file: string) => {
 	}
 
 	workbook.xlsx.writeFile(file);
-}
+};

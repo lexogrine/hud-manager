@@ -226,7 +226,7 @@ const PlayersTab = ({ cxt, data, search }: IProps) => {
 
 	const exportPlayers = () => {
 		api.players.export();
-	}
+	};
 
 	const extraChangeHandler = (field: string, type: Exclude<I.PanelInputType, 'select' | 'action' | 'checkbox'>) => {
 		const fileHandler = (files: FileList) => {

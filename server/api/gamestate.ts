@@ -161,7 +161,7 @@ export const saveFile =
 	async (_req, res) => {
 		res.sendStatus(200);
 		const result = await dialog.showSaveDialog({ defaultPath: name });
-		if(result.filePath && writeFile){
+		if (result.filePath && writeFile) {
 			writeFile(result.filePath);
 			return;
 		}
