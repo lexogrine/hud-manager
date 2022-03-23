@@ -192,12 +192,9 @@ const run = async (req, res) => {
     const GameExePath = path_1.default.join(GamePath.game.path, 'csgo.exe');
     const isHLAE = cfgData.killfeed || cfgData.afx;
     const exePath = isHLAE ? HLAEPath : path_1.default.join(GamePath.steam.path, 'Steam.exe');
-    if ((isHLAE && (!HLAEPath || !fs_1.default.existsSync(HLAEPath))) ||
-        (cfgData.afx && (!AFXPath || !fs_1.default.existsSync(AFXPath)))) {
+    if ((isHLAE && (!HLAEPath || !fs_1.default.existsSync(HLAEPath))) || (cfgData.afx && (!AFXPath || !fs_1.default.existsSync(AFXPath)))) {
         return res.sendStatus(404);
     }
-    console.log(HLAEPath);
-    console.log(AFXPath);
     // http://localhost:${config.port}/ar2/examples/default/index.html
     const args = [];
     const afxURL = `http://localhost:${config.port}/ar2/examples/default/index.html`;

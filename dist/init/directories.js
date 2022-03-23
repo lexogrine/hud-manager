@@ -29,7 +29,6 @@ const path = __importStar(require("path"));
 const electron_1 = require("electron");
 const database_1 = require("./database");
 const integration_1 = require("../server/hlae/integration");
-//import { verifyAdvancedFXInstallation } from '../server/hlae/integration';
 const DecompressZip = require('decompress-zip');
 const temporaryFilesArchive = path.join(electron_1.app.getPath('userData'), 'archives');
 exports.LHMP = {
