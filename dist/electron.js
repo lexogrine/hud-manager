@@ -58,11 +58,9 @@ function mainProcess(server) {
         if (server) {
             server.close();
         }
-        console.log("A");
         electron_1.app.quit();
     };
     server.on('sent-data-now-close', () => {
-        console.log("?");
         finallyCloseManager();
     });
     electron_1.app.on('second-instance', () => {
