@@ -77,9 +77,8 @@ const createMainWindow = async (server, forceDev = false) => {
         e.preventDefault();
         electron_1.shell.openExternal(url);
     });
-    console.log('g', new Date().getTime());
     win.loadURL(`${isDev ? `http://localhost:3000/?port=${config.port}` : startUrl}`);
-    win.once('close', (event) => {
+    win.once('close', event => {
         event.preventDefault();
         win?.hide();
         win = null;

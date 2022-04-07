@@ -84,7 +84,6 @@ export const createMainWindow = async (server: Server, forceDev = false) => {
 		shell.openExternal(url);
 	});
 
-	console.log('g', new Date().getTime());
 	win.loadURL(`${isDev ? `http://localhost:3000/?port=${config.port}` : startUrl}`);
 	win.once('close', event => {
 		event.preventDefault();

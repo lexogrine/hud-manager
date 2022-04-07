@@ -172,22 +172,53 @@ export const getHUDCustomAsset: express.RequestHandler = async (req, res) => {
 	const data = hudData?.[section]?.[asset];
 
 	const panel = isDev ? HUDState?.devHUD?.panel || [] : ((await getHUDPanelSetting(hudDir)) as I.PanelTemplate[]);
+
+	const sectionEntry = panel.find(sectionData => sectionData.name === section);
+
 	if (!data) {
 		return res.sendStatus(404);
 	}
-	if (isJSON(data)) {
+	/*if (isJSON(data) && ) {
+		console.log('b')
 		return res.json(data);
-	}
+	}*/
 	if (!panel || !Array.isArray(panel)) {
 		return res.send(data);
 	}
 
-	const sectionEntry = panel.find(sectionData => sectionData.name === section);
 	if (!sectionEntry) {
 		return res.send(data);
 	}
 	const inputEntry = sectionEntry.inputs.find(inputData => inputData.name === asset);
-	if (!inputEntry || inputEntry.type !== 'image') {
+	if (!inputEntry) {
+		return res.send(data);
+	}
+
+	if(inputEntry.type === 'images'){
+		const images = JSON.parse(data) as string[];
+		if(!req.query.index){
+			const globalConfig = await loadConfig();
+			const base = globalConfig ? `http://${internalIP}:${globalConfig.port}` : '';
+			return res.json(images.map((image, i) => `${base}/api/huds/${hudDir}/${section}/${asset}?index=${i}&isDev=${isDev ? 'true':'false'}`))
+		}
+		let imageIndex = 0;
+
+		if(Number.isInteger(Number(req.query.index))){
+			imageIndex = Number(req.query.index);
+		}
+
+		if(!images[imageIndex]) return res.sendStatus(404);
+
+		const imgBuffer = Buffer.from(images[imageIndex], 'base64');
+		res.writeHead(200, {
+			'Content-Type': isSvg(imgBuffer) ? 'image/svg+xml' : 'image/png',
+			'Content-Length': imgBuffer.length
+		});
+		return res.end(imgBuffer);
+
+	}
+
+	if(inputEntry.type !== 'image') {
 		return res.send(data);
 	}
 
