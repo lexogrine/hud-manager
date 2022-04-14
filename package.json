@@ -18,7 +18,7 @@
     "cross-env": "^6.0.3",
     "cross-unzip": "^0.2.1",
     "csgogsi-generator": "^1.0.1",
-    "csgogsi-socket": "^2.5.5",
+    "csgogsi-socket": "^2.5.7",
     "decompress-zip": "^0.2.2",
     "del": "^6.0.0",
     "dnd-core": "^14.0.1",

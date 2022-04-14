@@ -87,7 +87,7 @@ const updateAsset = async (asset, directory, version) => {
         });
     });
 };
-const verifyInstallation = async (repo, directory, findAsset, tag) => {
+const verifyInstallation = async (repo, directory, findAsset, win, tag) => {
     const githubURL = tag
         ? `https://api.github.com/repos/${repo}/releases/tags/${tag}`
         : `https://api.github.com/repos/${repo}/releases/latest`;

@@ -9,6 +9,7 @@ const events_1 = __importDefault(require("events"));
 const path_1 = __importDefault(require("path"));
 const autoUpdater_1 = __importDefault(require("./autoUpdater"));
 const config_1 = require("./server/api/config");
+const integration_1 = require("./server/hlae/integration");
 const isDev = process.env.DEV === 'true';
 exports.processEvents = new events_1.default();
 const createMainWindow = async (server, forceDev = false) => {
@@ -41,7 +42,7 @@ const createMainWindow = async (server, forceDev = false) => {
         webPreferences: {
             nodeIntegration: true,
             backgroundThrottling: false,
-            devTools: isDev || forceDev,
+            //devTools: isDev || forceDev,
             preload: path_1.default.join(__dirname, 'preload.js')
         },
         minWidth: 740,
@@ -60,6 +61,8 @@ const createMainWindow = async (server, forceDev = false) => {
         }
     });
     (0, autoUpdater_1.default)(win);
+    if (integration_1.useIntegrated)
+        (0, integration_1.verifyAdvancedFXInstallation)(win);
     electron_1.ipcMain.on('close', () => {
         win?.close();
     });

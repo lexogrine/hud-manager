@@ -18,10 +18,10 @@ const findHLAEAsset = (asset) => {
 const findAFXAsset = (asset) => {
     return asset.name === 'Release.7z';
 };
-const verifyHLAEInstallation = () => (0, github_1.verifyInstallation)('advancedfx/advancedfx', path_1.default.join(userData, 'hlae'), findHLAEAsset).then(result => {
+const verifyHLAEInstallation = (win) => (0, github_1.verifyInstallation)('advancedfx/advancedfx', path_1.default.join(userData, 'hlae'), findHLAEAsset, win).then(result => {
     console.log('HLAE INSTALLATION STAUTS', result);
 });
-const verifyAFXInstallation = async () => {
+const verifyAFXInstallation = async (win) => {
     /*const releases = (await fetch('https://api.github.com/repos/advancedfx/afx-cefhud-interop/releases').then(res =>
         res.json()
     )) as components['schemas']['release'][];
@@ -30,12 +30,12 @@ const verifyAFXInstallation = async () => {
         console.log('No AFX executables found');
         return;
     }*/
-    return (0, github_1.verifyInstallation)('advancedfx/afx-cefhud-interop', path_1.default.join(userData, 'afx'), findAFXAsset, 'v7.0.0.17-4dcfd4d').then(result => {
+    return (0, github_1.verifyInstallation)('advancedfx/afx-cefhud-interop', path_1.default.join(userData, 'afx'), findAFXAsset, win, 'v7.0.0.17-4dcfd4d').then(result => {
         console.log('AFX INSTALLATION STATUS', result);
     });
 };
-const verifyAdvancedFXInstallation = async () => {
-    await verifyHLAEInstallation();
-    await verifyAFXInstallation();
+const verifyAdvancedFXInstallation = async (win) => {
+    await verifyHLAEInstallation(win);
+    await verifyAFXInstallation(win);
 };
 exports.verifyAdvancedFXInstallation = verifyAdvancedFXInstallation;

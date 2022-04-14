@@ -51,28 +51,44 @@ class HUD {
             show: false,
             title: hud.name,
             resizable: false,
-            alwaysOnTop: !hud.allowAppsOnTop,
-            frame: false,
-            transparent: true,
-            focusable: true,
+            //alwaysOnTop: !hud.allowAppsOnTop,
+            //frame: false,
+            //transparent: true,
+            //focusable: true,
             webPreferences: {
-                backgroundThrottling: false
+                backgroundThrottling: false,
+                preload: path.join(__dirname, 'preload.js'),
             }
         });
         if (!hud.allowAppsOnTop) {
             hudWindow.on('show', () => {
-                hudWindow.setAlwaysOnTop(true);
+                //hudWindow.setAlwaysOnTop(true);
             });
-            hudWindow.setIgnoreMouseEvents(true);
+            //hudWindow.setIgnoreMouseEvents(true);
         }
+        const onData = (data) => {
+            console.log('?');
+            hudWindow.webContents.send("raw", data);
+        };
+        socket_1.GSI.prependListener("raw", onData);
         const tray = new electron_1.Tray(path.join(__dirname, 'favicon.ico'));
+        const sendTestS = () => {
+            console.log(new Date().getTime());
+            io.emit('speedtest');
+        };
+        const sendTestI = () => {
+            console.log(new Date().getTime());
+            hudWindow.webContents.send("speedtest");
+        };
         tray.setToolTip('Lexogrine HUD Manager');
         tray.on('right-click', () => {
             const contextMenu = electron_1.Menu.buildFromTemplate([
                 { label: hud.name, enabled: false },
                 { type: 'separator' },
                 { label: 'Show', type: 'checkbox', click: () => this.toggleVisibility(), checked: this.show },
-                { label: 'Close HUD', click: () => this.close() }
+                { label: 'Close HUD', click: () => this.close() },
+                { label: 'SpeedtestS', click: () => sendTestS() },
+                { label: 'SpeedtestI', click: () => sendTestI() }
             ]);
             tray.popUpContextMenu(contextMenu);
         });
@@ -83,6 +99,7 @@ class HUD {
         this.showWindow(hud, io);
         hudWindow.loadURL(hud.url);
         hudWindow.on('close', () => {
+            socket_1.GSI.off("raw", onData);
             if (this.hud && this.hud.keybinds) {
                 for (const keybind of this.hud.keybinds) {
                     //globalShortcut.unregister(keybind.bind);

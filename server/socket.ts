@@ -16,6 +16,7 @@ import { getPlayersList } from './api/players';
 import { parseCSGOKills, argSocket, ARGKillEntry, sendKillsToARG } from './api/arg';
 import { dota2TimelineHandler } from './api/timeline/dota2';
 import { Encoder, Decoder } from './sockets/parser';
+import { GSI } from './gsi';
 
 interface RuntimeConfig {
 	last: CSGORaw | null;
@@ -43,7 +44,7 @@ export const runtimeConfig: RuntimeConfig = {
 
 export const HUDState = new HUDStateManager();
 
-export const GSI = new CSGOGSI();
+export { GSI };
 
 export const Dota2GSI = new DOTA2GSI();
 
