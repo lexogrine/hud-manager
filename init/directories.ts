@@ -3,7 +3,6 @@ import * as path from 'path';
 import { app } from 'electron';
 import { AvailableGames } from '../types/interfaces';
 import { loadSessionStore } from './database';
-import { useIntegrated, verifyAdvancedFXInstallation } from '../server/hlae/integration';
 const DecompressZip = require('decompress-zip');
 
 const temporaryFilesArchive = path.join(app.getPath('userData'), 'archives');
@@ -197,6 +196,4 @@ export function checkDirectories() {
 		fs.writeFileSync(mapFile, JSON.stringify(maps));
 	}
 	loadSessionStore();
-
-	if (useIntegrated) verifyAdvancedFXInstallation();
 }

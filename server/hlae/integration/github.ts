@@ -2,7 +2,7 @@ import fs, { createWriteStream } from 'fs';
 import path from 'path';
 import { pipeline } from 'stream';
 import { promisify } from 'util';
-import { app } from 'electron';
+import { app, BrowserWindow } from 'electron';
 import fetch from 'node-fetch';
 import { components } from '@octokit/openapi-types';
 //let { zip, unzip } = require('cross-unzip')
@@ -75,6 +75,7 @@ export const verifyInstallation = async (
 	repo: string,
 	directory: string,
 	findAsset: (asset: components['schemas']['release-asset']) => boolean,
+	win: BrowserWindow,
 	tag?: string
 ) => {
 	const githubURL = tag

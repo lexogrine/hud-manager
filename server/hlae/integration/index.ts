@@ -1,5 +1,5 @@
 import { components } from '@octokit/openapi-types';
-import { app } from 'electron';
+import { app, BrowserWindow } from 'electron';
 import path from 'path';
 // import fetch from 'node-fetch';
 import { verifyInstallation } from './github';
@@ -19,12 +19,12 @@ const findAFXAsset = (asset: components['schemas']['release-asset']) => {
 	return asset.name === 'Release.7z';
 };
 
-const verifyHLAEInstallation = () =>
-	verifyInstallation('advancedfx/advancedfx', path.join(userData, 'hlae'), findHLAEAsset).then(result => {
+const verifyHLAEInstallation = (win: BrowserWindow) =>
+	verifyInstallation('advancedfx/advancedfx', path.join(userData, 'hlae'), findHLAEAsset, win).then(result => {
 		console.log('HLAE INSTALLATION STAUTS', result);
 	});
 
-const verifyAFXInstallation = async () => {
+const verifyAFXInstallation = async (win: BrowserWindow) => {
 	/*const releases = (await fetch('https://api.github.com/repos/advancedfx/afx-cefhud-interop/releases').then(res =>
 		res.json()
 	)) as components['schemas']['release'][];
@@ -37,13 +37,14 @@ const verifyAFXInstallation = async () => {
 		'advancedfx/afx-cefhud-interop',
 		path.join(userData, 'afx'),
 		findAFXAsset,
+		win,
 		'v7.0.0.17-4dcfd4d'
 	).then(result => {
 		console.log('AFX INSTALLATION STATUS', result);
 	});
 };
 
-export const verifyAdvancedFXInstallation = async () => {
-	await verifyHLAEInstallation();
-	await verifyAFXInstallation();
+export const verifyAdvancedFXInstallation = async (win: BrowserWindow) => {
+	await verifyHLAEInstallation(win);
+	await verifyAFXInstallation(win);
 };
