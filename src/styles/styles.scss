@@ -308,6 +308,10 @@ body {
 	flex-direction: column;
 	align-items: center;
 	justify-content: center;
+	.window-bar {
+		position: absolute;
+		top: 0;
+	}
 	.container {
 		width: 400px;
 		max-width: 90vw;
