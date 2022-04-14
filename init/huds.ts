@@ -30,10 +30,10 @@ class HUD {
 			show: false,
 			title: hud.name,
 			resizable: false,
-			//alwaysOnTop: !hud.allowAppsOnTop,
-			//frame: false,
-			//transparent: true,
-			//focusable: true,
+			alwaysOnTop: !hud.allowAppsOnTop,
+			frame: false,
+			transparent: true,
+			focusable: true,
 			webPreferences: {
 				backgroundThrottling: false,
 				preload: path.join(__dirname, 'preload.js')
@@ -41,9 +41,9 @@ class HUD {
 		});
 		if (!hud.allowAppsOnTop) {
 			hudWindow.on('show', () => {
-				//hudWindow.setAlwaysOnTop(true);
+				hudWindow.setAlwaysOnTop(true);
 			});
-			//hudWindow.setIgnoreMouseEvents(true);
+			hudWindow.setIgnoreMouseEvents(true);
 		}
 
 		const onData = (data: CSGORaw) => {
