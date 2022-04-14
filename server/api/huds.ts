@@ -194,20 +194,25 @@ export const getHUDCustomAsset: express.RequestHandler = async (req, res) => {
 		return res.send(data);
 	}
 
-	if(inputEntry.type === 'images'){
+	if (inputEntry.type === 'images') {
 		const images = JSON.parse(data) as string[];
-		if(!req.query.index){
+		if (!req.query.index) {
 			const globalConfig = await loadConfig();
 			const base = globalConfig ? `http://${internalIP}:${globalConfig.port}` : '';
-			return res.json(images.map((image, i) => `${base}/api/huds/${hudDir}/${section}/${asset}?index=${i}&isDev=${isDev ? 'true':'false'}`))
+			return res.json(
+				images.map(
+					(image, i) =>
+						`${base}/api/huds/${hudDir}/${section}/${asset}?index=${i}&isDev=${isDev ? 'true' : 'false'}`
+				)
+			);
 		}
 		let imageIndex = 0;
 
-		if(Number.isInteger(Number(req.query.index))){
+		if (Number.isInteger(Number(req.query.index))) {
 			imageIndex = Number(req.query.index);
 		}
 
-		if(!images[imageIndex]) return res.sendStatus(404);
+		if (!images[imageIndex]) return res.sendStatus(404);
 
 		const imgBuffer = Buffer.from(images[imageIndex], 'base64');
 		res.writeHead(200, {
@@ -215,10 +220,9 @@ export const getHUDCustomAsset: express.RequestHandler = async (req, res) => {
 			'Content-Length': imgBuffer.length
 		});
 		return res.end(imgBuffer);
-
 	}
 
-	if(inputEntry.type !== 'image') {
+	if (inputEntry.type !== 'image') {
 		return res.send(data);
 	}
 
