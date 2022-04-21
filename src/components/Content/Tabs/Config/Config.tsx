@@ -77,7 +77,7 @@ const getCaptionForAssets = (asset: IAdvancedFX) => {
 		return 'None';
 	}
 	return `${version}`;
-}
+};
 
 export const GameOnly = ({ game, children }: { game: I.AvailableGames | I.AvailableGames[]; children: any }) => (
 	<ContextData.Consumer>
@@ -117,8 +117,8 @@ const SpaceLeftContainer = ({ maxSpace }: { maxSpace: number }) => (
 );
 
 interface IAdvancedFX {
-	state: string,
-	version: string
+	state: string;
+	version: string;
 }
 
 interface IState {
@@ -144,9 +144,9 @@ interface IState {
 	f1Configured: boolean;
 	ip: string;
 	data: any;
-	usePreinstalled: boolean,
-	hlae: IAdvancedFX,
-	afx: IAdvancedFX,
+	usePreinstalled: boolean;
+	hlae: IAdvancedFX;
+	afx: IAdvancedFX;
 }
 
 class Config extends Component<IProps, IState> {
@@ -249,7 +249,7 @@ class Config extends Component<IProps, IState> {
 	import = (data: any, callback: any) => async () => {
 		try {
 			await api.files.sync(data);
-		} catch { }
+		} catch {}
 		this.setState({ data: {}, conflict: { teams: 0, players: 0 }, importModalOpen: false }, callback);
 	};
 	importCheck = (callback: any) => (files: FileList) => {
@@ -280,7 +280,7 @@ class Config extends Component<IProps, IState> {
 					importModalOpen: true,
 					data: db
 				});
-			} catch { }
+			} catch {}
 		};
 	};
 	download = (target: 'gsi' | 'cfgs' | 'db') => {
@@ -305,8 +305,8 @@ class Config extends Component<IProps, IState> {
 	};
 	installF1 = async () => {
 		try {
-			await api.f1.install().catch(() => { });
-		} catch { }
+			await api.f1.install().catch(() => {});
+		} catch {}
 		this.getF1();
 	};
 	createGSI = async () => {
@@ -543,7 +543,7 @@ class Config extends Component<IProps, IState> {
 		ipcApi.receive('advancedfx/afx-cefhud-interop-update', (state: string, version: string) => {
 			this.setState({ afx: { state, version } });
 		});
-	}
+	};
 	checkUpdate = () => {
 		if (!isElectron || !window.ipcApi) return;
 		window.ipcApi.receive('updateStatus', (data: boolean, version: string) => {
@@ -593,10 +593,10 @@ class Config extends Component<IProps, IState> {
 		});
 	};
 	preInstalledToggle = async () => {
-		if(!window.ipcApi) return;
+		if (!window.ipcApi) return;
 
 		window.ipcApi.send('setUsePreinstalled', !this.state.usePreinstalled);
-	}
+	};
 	cgToggleHandler = (event: any) => {
 		const val = !!event.target.checked;
 		this.setState(state => {
@@ -669,8 +669,8 @@ class Config extends Component<IProps, IState> {
 										{update.installing
 											? update.percent < 100
 												? t('settings.updater.downloading', {
-													percent: update.percent.toFixed(1)
-												})
+														percent: update.percent.toFixed(1)
+												  })
 												: t('settings.updater.installing')
 											: t('settings.updater.install')}
 									</div>
@@ -720,13 +720,16 @@ class Config extends Component<IProps, IState> {
 						</Col>
 					</Row>
 					<Row className="config-container pre-installed">
-
 						<Col md="12" className="config-entry ">
 							<div className="config-description">
-								Use pre-installed:{' '}
-								HLAE: {getCaptionForAssets(this.state.hlae)} | AFX: {getCaptionForAssets(this.state.afx)}
+								Use pre-installed: HLAE: {getCaptionForAssets(this.state.hlae)} | AFX:{' '}
+								{getCaptionForAssets(this.state.afx)}
 							</div>
-							<Switch isOn={this.state.usePreinstalled} id="pre-installed-toggle" handleToggle={this.preInstalledToggle} />
+							<Switch
+								isOn={this.state.usePreinstalled}
+								id="pre-installed-toggle"
+								handleToggle={this.preInstalledToggle}
+							/>
 						</Col>
 					</Row>
 					<Row className="config-container bottom-margin">
@@ -795,12 +798,13 @@ class Config extends Component<IProps, IState> {
 									{f1Configured
 										? 'Loaded succesfully'
 										: f1Installed
-											? 'Not loaded'
-											: 'F1 not installed'}
+										? 'Not loaded'
+										: 'F1 not installed'}
 								</div>
 								<div
-									className={`button empty strong wide green ${!f1Installed || f1Configured ? 'disabled' : ''
-										}`}
+									className={`button empty strong wide green ${
+										!f1Installed || f1Configured ? 'disabled' : ''
+									}`}
 									onClick={this.installF1}
 								>
 									Add integration
@@ -813,8 +817,9 @@ class Config extends Component<IProps, IState> {
 									GameState Integration: {gsi?.message || 'Loaded succesfully'}
 								</div>
 								<div
-									className={`button empty strong wide green ${gsi?.loading || gsi?.success || !gsi?.accessible ? 'disabled' : ''
-										}`}
+									className={`button empty strong wide green ${
+										gsi?.loading || gsi?.success || !gsi?.accessible ? 'disabled' : ''
+									}`}
 									onClick={this.createGSI}
 								>
 									Add GSI file
@@ -826,8 +831,9 @@ class Config extends Component<IProps, IState> {
 										Configs: {cfg?.message || 'Loaded succesfully'}
 									</div>
 									<div
-										className={`button empty strong wide green ${cfg?.loading || cfg?.success || !cfg?.accessible ? 'disabled' : ''
-											}`}
+										className={`button empty strong wide green ${
+											cfg?.loading || cfg?.success || !cfg?.accessible ? 'disabled' : ''
+										}`}
 										onClick={this.createCFG}
 									>
 										Add config files
@@ -844,8 +850,9 @@ class Config extends Component<IProps, IState> {
 								</div>
 								<div className="download-container">
 									<div
-										className={`button empty strong wide green ${this.state.bakkesModAutoconfBusy ? 'disabled' : ''
-											}`}
+										className={`button empty strong wide green ${
+											this.state.bakkesModAutoconfBusy ? 'disabled' : ''
+										}`}
 										onClick={
 											!this.state.bakkesModAutoconfBusy
 												? () => this.loadBakkesModStatus()
@@ -855,10 +862,11 @@ class Config extends Component<IProps, IState> {
 										Refresh
 									</div>
 									<div
-										className={`button empty strong wide green ${this.state.bakkesModAutoconfBusy || this.state.bakkesModStatus.sosConfigSet
+										className={`button empty strong wide green ${
+											this.state.bakkesModAutoconfBusy || this.state.bakkesModStatus.sosConfigSet
 												? 'disabled'
 												: ''
-											}`}
+										}`}
 										onClick={
 											!(
 												this.state.bakkesModAutoconfBusy ||

@@ -30,16 +30,16 @@ const ChangeColors = ({ isOpen, toggle }: Props) => {
 			<ModalHeader toggle={toggle}>XRAY COLORS</ModalHeader>
 			<ModalBody>
 				<Row>
-					<Col md="6" className='xray-picker'>
+					<Col md="6" className="xray-picker">
 						<div>Counter-Terrorists</div>
 						<ColorPicker hex={ctHex} setHex={setCTHex} elegant />
 					</Col>
-					<Col md="6" className='xray-picker'>
+					<Col md="6" className="xray-picker">
 						<div>Terrorists</div>
 						<ColorPicker hex={tHex} setHex={setTHex} elegant />
 					</Col>
 				</Row>
-            </ModalBody>
+			</ModalBody>
 			<ModalFooter className="no-padding">
 				<div className="button green empty big wide" onClick={toggle}>
 					{t('common.cancel')}

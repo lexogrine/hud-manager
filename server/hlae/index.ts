@@ -7,7 +7,6 @@ import { GSI } from '../socket';
 import { RawKill } from 'csgogsi-socket';
 import EventEmitter from 'events';
 
-
 export const hlaeEmitter = new EventEmitter();
 
 const knownGameEvents: string[] = [];
@@ -60,7 +59,6 @@ export class MIRVPGL {
 			const socket = this.socket;
 
 			hlaeEmitter.emit('hlaeStatus', !!this.socket);
-
 
 			if (!socket) return;
 
@@ -146,7 +144,7 @@ export class MIRVPGL {
 							GSI.digestMIRV(gameEvent as RawKill);
 						}
 					}
-				} catch (err) { }
+				} catch (err) {}
 			});
 		});
 	};

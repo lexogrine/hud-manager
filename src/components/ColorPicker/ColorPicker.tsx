@@ -12,7 +12,7 @@ type ColorResponse = {
 interface Props {
 	hex: string;
 	setHex: (hex: string) => void;
-	elegant?: boolean
+	elegant?: boolean;
 }
 
 const ColorPicker = ({ hex, setHex, elegant }: Props) => {
@@ -31,21 +31,21 @@ const ColorPicker = ({ hex, setHex, elegant }: Props) => {
 	};
 
 	if (elegant) {
-		return <div>
-			<div className="elegant-color-picker-container" onClick={handleClick}>
-				<div className="color-preview" style={{ backgroundColor: hex }} />
-				<div className="color-hex">
-					{hex}
+		return (
+			<div>
+				<div className="elegant-color-picker-container" onClick={handleClick}>
+					<div className="color-preview" style={{ backgroundColor: hex }} />
+					<div className="color-hex">{hex}</div>
 				</div>
+				{displayColorPicker ? (
+					<div className="pop-over">
+						<SketchPicker color={hex} onChange={handleChange} disableAlpha={true} />
+						{/*<Tenteges onChange={handleChange} color={hex} />*/}
+					</div>
+				) : null}
+				{displayColorPicker ? <div className="cover" onClick={handleClose} /> : null}
 			</div>
-			{displayColorPicker ? (
-				<div className="pop-over">
-					<SketchPicker color={hex} onChange={handleChange} disableAlpha={true} />
-					{/*<Tenteges onChange={handleChange} color={hex} />*/}
-				</div>
-			) : null}
-			{displayColorPicker ? <div className="cover" onClick={handleClose} /> : null}
-		</div>
+		);
 	}
 
 	return (

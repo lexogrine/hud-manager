@@ -14,31 +14,33 @@ const wait = (ms: number) => new Promise(r => setTimeout(r, ms));
 
 export let useIntegrated = false;
 
-fs.promises.readFile(useIntegratedSettingsPath, 'utf-8').then(content => {
-	useIntegrated = content === 'true';
-}).catch(() => {});
+fs.promises
+	.readFile(useIntegratedSettingsPath, 'utf-8')
+	.then(content => {
+		useIntegrated = content === 'true';
+	})
+	.catch(() => {});
 
 export const hlaeExecutable = path.join(userData, 'hlae', 'HLAE.exe');
 export const afxExecutable = path.join(userData, 'afx', 'Release', 'afx-cefhud-interop.exe');
 
 let useIntegratedUpdater: Promise<void> | null = null;
 
-
 const updateUseIntegrated = (newUseIntegrated: boolean, win: BrowserWindow) => {
 	const getIntegratedUpdate = async () => {
 		await wait(100);
-		return fs.promises.writeFile(useIntegratedSettingsPath, newUseIntegrated ? 'true':'false').then(() => {
+		return fs.promises.writeFile(useIntegratedSettingsPath, newUseIntegrated ? 'true' : 'false').then(() => {
 			useIntegrated = newUseIntegrated;
 			win.webContents.send('usePreinstalled', newUseIntegrated);
 			useIntegratedUpdater = null;
 		});
-	}
-	if(!useIntegratedUpdater){
+	};
+	if (!useIntegratedUpdater) {
 		useIntegratedUpdater = getIntegratedUpdate();
 		return;
 	}
 	useIntegratedUpdater = useIntegratedUpdater.then(getIntegratedUpdate);
-}
+};
 
 const findHLAEAsset = (asset: components['schemas']['release-asset']) => {
 	return asset.content_type === 'application/x-zip-compressed';
@@ -74,7 +76,7 @@ const verifyAFXInstallation = async (win: BrowserWindow) => {
 };
 
 export const verifyAdvancedFXInstallation = async (win: BrowserWindow) => {
-	hlaeEmitter.on("hlaeStatus", (status: boolean) => {
+	hlaeEmitter.on('hlaeStatus', (status: boolean) => {
 		win.webContents.send('hlaeStatus', status);
 	});
 	ipcMain.on('getHlaeStatus', ev => {

@@ -48,14 +48,14 @@ const clearCurrentInstallation = (path: string) => {
 export const getAssetVersion = (assetPath: string) => {
 	let version = 'None';
 	const versionFilePath = path.join(assetPath, 'version');
-	
+
 	try {
 		const content = fs.readFileSync(versionFilePath, 'utf-8');
 		version = content;
 	} catch {}
 
 	return version;
-}
+};
 
 const updateAsset = async (asset: components['schemas']['release-asset'], directory: string, version: string) => {
 	const archivePath = path.join(archivesDirectory, asset.name);
@@ -96,15 +96,14 @@ export const verifyInstallation = async (
 
 	let currentVersion = 'None';
 	const versionFilePath = path.join(directory, 'version');
-	
+
 	try {
 		const content = fs.readFileSync(versionFilePath, 'utf-8');
 		currentVersion = content;
 	} catch {}
 	try {
-		console.log('Starting to look for an update',repo);
+		console.log('Starting to look for an update', repo);
 		win.webContents.send(`${repo}-update`, 'LOOKING_FOR_UPDATE', currentVersion);
-
 
 		const response = (await fetch(githubURL).then(res => res.json())) as components['schemas']['release'];
 		console.log(`Looking for ${repo} releases`);
@@ -113,7 +112,7 @@ export const verifyInstallation = async (
 			return false;
 		}
 		console.log(`Found ${repo}`, response.tag_name);
-	
+
 		if (currentVersion === response.tag_name) {
 			win.webContents.send(`${repo}-update`, 'NO_UPDATE', currentVersion);
 			return true;
@@ -121,20 +120,20 @@ export const verifyInstallation = async (
 
 		console.log(`No current ${repo} detected`);
 		const asset = response.assets?.find(findAsset);
-	
+
 		if (!asset) {
 			win.webContents.send(`${repo}-update`, 'NO_UPDATE', currentVersion);
 			return true;
 		}
 		console.log(`Found asset for ${repo}, downloading`);
 		win.webContents.send(`${repo}-update`, 'DOWNLOADING_UPDATE', currentVersion);
-	
+
 		const result = await updateAsset(asset, directory, response.tag_name);
 
 		const updateStatusEvent = result ? 'UPDATE_SUCCESS' : 'UPDATE_FAIL';
 
 		win.webContents.send(`${repo}-update`, updateStatusEvent, result ? response.tag_name : currentVersion);
-	
+
 		return result;
 	} catch {
 		win.webContents.send(`${repo}-update`, 'NO_UPDATE', currentVersion);
