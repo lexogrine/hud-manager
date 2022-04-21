@@ -28,7 +28,9 @@ const __1 = require("..");
 const socket_1 = require("../../socket");
 const HLAE = __importStar(require("./index"));
 const setXrayHandler = (req, res) => {
-    if ((__1.customer?.customer?.license.type !== "enterprise" && __1.customer?.customer?.license.type !== 'professional') && !__1.customer?.workspace)
+    if (__1.customer?.customer?.license.type !== 'enterprise' &&
+        __1.customer?.customer?.license.type !== 'professional' &&
+        !__1.customer?.workspace)
         return res.sendStatus(403);
     const tXray = [...req.body.tXray];
     const ctXray = [...req.body.ctXray];

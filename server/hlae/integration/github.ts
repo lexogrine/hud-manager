@@ -6,7 +6,7 @@ import { app, BrowserWindow } from 'electron';
 import fetch from 'node-fetch';
 import { components } from '@octokit/openapi-types';
 //let { zip, unzip } = require('cross-unzip')
-const { unzip } = require('cross-unzip');
+import { unzip } from './unzip';
 
 const archivesDirectory = path.join(app.getPath('userData'), 'archives');
 

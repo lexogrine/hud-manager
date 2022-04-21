@@ -34,7 +34,7 @@ const util_1 = require("util");
 const electron_1 = require("electron");
 const node_fetch_1 = __importDefault(require("node-fetch"));
 //let { zip, unzip } = require('cross-unzip')
-const { unzip } = require('cross-unzip');
+const unzip_1 = require("./unzip");
 const archivesDirectory = path_1.default.join(electron_1.app.getPath('userData'), 'archives');
 const streamPipeline = (0, util_1.promisify)(stream_1.pipeline);
 const remove = (pathToRemove, leaveRoot = false) => {
@@ -87,7 +87,7 @@ const updateAsset = async (asset, directory, version) => {
         return false;
     clearCurrentInstallation(directory);
     return new Promise(res => {
-        unzip(archivePath, directory, (err) => {
+        (0, unzip_1.unzip)(archivePath, directory, (err) => {
             console.log(err);
             remove(archivesDirectory, true);
             if (!err) {

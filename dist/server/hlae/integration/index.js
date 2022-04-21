@@ -15,9 +15,12 @@ const userData = electron_1.app.getPath('userData');
 const useIntegratedSettingsPath = path_1.default.join(userData, 'integrated.lhm');
 const wait = (ms) => new Promise(r => setTimeout(r, ms));
 exports.useIntegrated = false;
-fs_1.default.promises.readFile(useIntegratedSettingsPath, 'utf-8').then(content => {
+fs_1.default.promises
+    .readFile(useIntegratedSettingsPath, 'utf-8')
+    .then(content => {
     exports.useIntegrated = content === 'true';
-}).catch(() => { });
+})
+    .catch(() => { });
 exports.hlaeExecutable = path_1.default.join(userData, 'hlae', 'HLAE.exe');
 exports.afxExecutable = path_1.default.join(userData, 'afx', 'Release', 'afx-cefhud-interop.exe');
 let useIntegratedUpdater = null;
@@ -59,7 +62,7 @@ const verifyAFXInstallation = async (win) => {
     });
 };
 const verifyAdvancedFXInstallation = async (win) => {
-    __1.hlaeEmitter.on("hlaeStatus", (status) => {
+    __1.hlaeEmitter.on('hlaeStatus', (status) => {
         win.webContents.send('hlaeStatus', status);
     });
     electron_1.ipcMain.on('getHlaeStatus', ev => {
