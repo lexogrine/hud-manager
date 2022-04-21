@@ -14,6 +14,8 @@ import { withTranslation } from 'react-i18next';
 import { GameOnly } from '../Config/Config';
 import { Component } from 'react';
 import { canUserFromContextUseCloud } from '../../../../utils';
+import ChangeColors from './ChangeColors';
+import Tip from '../../../Tooltip';
 const isElectron = config.isElectron;
 
 function createCFG(
@@ -79,7 +81,12 @@ interface IState {
 	enableTest: boolean;
 	isOnLoop: boolean;
 	blocked: string[];
+	openXray: boolean,
+	integratedHLAEReady: boolean,
+	integratedAFXReady: boolean,
 	isHUDOpened: boolean;
+	usePreinstalled: boolean,
+	isHlaeAvailable: boolean
 }
 
 class Huds extends Component<IProps, IState> {
@@ -110,7 +117,12 @@ class Huds extends Component<IProps, IState> {
 			enableTest: true,
 			isOnLoop: false,
 			blocked: [],
-			isHUDOpened: false
+			isHUDOpened: false,
+			integratedHLAEReady: false,
+			integratedAFXReady: false,
+			usePreinstalled: false,
+			openXray: false,
+			isHlaeAvailable: false
 		};
 	}
 
@@ -128,6 +140,10 @@ class Huds extends Component<IProps, IState> {
 				break;
 		}
 	};
+
+	toggleXrayModal = () => {
+		this.setState({ openXray: !this.state.openXray });
+	}
 
 	handleZIPs = (files: FileList) => {
 		const file = files[0];
@@ -167,7 +183,32 @@ class Huds extends Component<IProps, IState> {
 			this.setState({ loadingHUDs: loadingHUDs.filter(hudUUID => hudUUID !== uuid) });
 		}
 	};
+	verifyIntegration = () => {
+		if (!isElectron || !window.ipcApi) return;
+		const { ipcApi } = window;
+		ipcApi.receive('hlaeStatus', (status: boolean) => {
+			this.setState({ isHlaeAvailable: status });
+		});
+		ipcApi.receive('advancedFxVersion', (app: string, ver: string) => {
+			if (app === 'hlae') {
+				this.setState({ integratedHLAEReady: ver !== 'None' });
+			} else {
+				this.setState({ integratedAFXReady: ver !== 'None' });
+			}
+		});
+		ipcApi.receive('usePreinstalled', (usePreinstalled: boolean) => {
+			this.setState({ usePreinstalled });
+		});
+		ipcApi.receive('advancedfx/advancedfx-update', (state: string) => {
+			this.setState({ integratedHLAEReady: state === 'NO_UPDATE' || state === 'UPDATE_SUCCESS' });
+		});
+		ipcApi.receive('advancedfx/afx-cefhud-interop-update', (state: string) => {
+			this.setState({ integratedAFXReady: state === 'NO_UPDATE' || state === 'UPDATE_SUCCESS' });
+		});
+		ipcApi.send('getHlaeStatus');
+	}
 	async componentDidMount() {
+		this.verifyIntegration();
 		socket.on('reloadHUDs', this.loadHUDs);
 		socket.on('active_hlae', (hud: string | null) => {
 			this.setState({ currentHUD: hud });
@@ -213,7 +254,7 @@ class Huds extends Component<IProps, IState> {
 
 	render() {
 		const { killfeed, radar, afx } = this.state.form;
-		const { active, config, isHUDOpened, huds } = this.state;
+		const { active, config, isHUDOpened, huds, usePreinstalled, integratedAFXReady, integratedHLAEReady, isHlaeAvailable } = this.state;
 		const t = this.props.t;
 		const available = canUserFromContextUseCloud(this.props.cxt);
 		if (active) {
@@ -232,10 +273,24 @@ class Huds extends Component<IProps, IState> {
 
 		const gameHUDs = huds.filter(hud => hud.game !== 'all' && !hud.isDev);
 		const independentOrDevHUDs = huds.filter(hud => hud.game === 'all' || hud.isDev);
+		const { customer, workspace } = this.props.cxt;
+		const isXrayAvailable = !(customer?.license.type !== "enterprise" && customer?.license.type !== 'professional') || workspace;
+
+		let message = '';
+
+		if (!isHlaeAvailable) {
+			message = 'You must have CS:GO running with HLAE';
+		}
+
+		if (!isXrayAvailable) {
+			message += message ? ' and ' : 'You must have ';
+			message += 'professional or enterprise plan';
+		}
 
 		return (
 			<>
 				<div className={`tab-content-container no-padding ${!isElectron ? 'full-scroll' : ''}`}>
+					<ChangeColors isOpen={this.state.openXray} toggle={this.toggleXrayModal} />
 					<GameOnly game="csgo">
 						<Row className="config-container">
 							<Col md="12" className="config-entry wrap">
@@ -294,6 +349,28 @@ class Huds extends Component<IProps, IState> {
 										disabled={this.state.blocked.includes('autoexec')}
 									/>
 								</div>
+								<ElectronOnly>
+									<div className="config-area">
+										<div className="config-description">XRAY</div>
+										{
+											isHlaeAvailable && isXrayAvailable ? (
+												<div className='xray-set-button' onClick={this.toggleXrayModal}>SET</div>
+											) : (
+
+												<Tip
+													id={`hlae_inactive`}
+													className="hlae_inactive"
+													label={
+														<div className='xray-set-button'>SET</div>
+													}
+												>
+													{message}
+												</Tip>
+											)
+										}
+
+									</div>
+								</ElectronOnly>
 							</Col>
 							<Col md="12" className="config-entry">
 								<div className="running-game-container">
@@ -307,8 +384,10 @@ class Huds extends Component<IProps, IState> {
 											<Button
 												className="button green strong"
 												disabled={
-													(killfeed && !config.hlaePath) ||
-													(afx && (!config.hlaePath || !config.afxCEFHudInteropPath))
+													(killfeed && !config.hlaePath && !usePreinstalled) ||
+													(usePreinstalled && !integratedHLAEReady && killfeed) ||
+													(usePreinstalled && (!integratedAFXReady || !integratedHLAEReady) && afx) ||
+													(afx && (!config.hlaePath || !config.afxCEFHudInteropPath) && !usePreinstalled)
 												}
 												onClick={this.runGame}
 											>
@@ -328,7 +407,7 @@ class Huds extends Component<IProps, IState> {
 
 									<div className="warning">
 										<ElectronOnly>
-											{(killfeed || afx) && !config.hlaePath ? (
+											{(killfeed || afx) && ((!config.hlaePath && !usePreinstalled) || (usePreinstalled && !integratedHLAEReady)) ? (
 												<div>{t('huds.warning.specifyHLAEPath')}</div>
 											) : null}
 											{killfeed ? (
@@ -337,10 +416,10 @@ class Huds extends Component<IProps, IState> {
 													from execute line
 												</div>
 											) : null}
-											{afx && !config.afxCEFHudInteropPath ? (
+											{afx && ((!config.afxCEFHudInteropPath && !usePreinstalled) || (usePreinstalled && !integratedAFXReady)) ? (
 												<div>{t('huds.warning.specifyAFXInteropPath')}</div>
 											) : null}
-											{afx && config.afxCEFHudInteropPath && config.hlaePath ? (
+											{afx && ((config.afxCEFHudInteropPath && config.hlaePath && !usePreinstalled) || (usePreinstalled && integratedAFXReady && integratedHLAEReady)) ? (
 												<div>{t('huds.warning.specifyAFXModeInfo')}</div>
 											) : null}
 										</ElectronOnly>

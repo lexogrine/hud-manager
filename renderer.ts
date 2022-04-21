@@ -4,7 +4,7 @@ import path from 'path';
 import { Server } from 'http';
 import autoUpdater from './autoUpdater';
 import { loadConfig } from './server/api/config';
-import { useIntegrated, verifyAdvancedFXInstallation } from './server/hlae/integration';
+import { verifyAdvancedFXInstallation } from './server/hlae/integration';
 
 const isDev = process.env.DEV === 'true';
 
@@ -64,7 +64,7 @@ export const createMainWindow = async (server: Server, forceDev = false) => {
 
 	autoUpdater(win);
 
-	if (useIntegrated) verifyAdvancedFXInstallation(win);
+	/*if (useIntegrated)*/ verifyAdvancedFXInstallation(win);
 
 	ipcMain.on('close', () => {
 		win?.close();

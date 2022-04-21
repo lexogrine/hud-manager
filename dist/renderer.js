@@ -42,7 +42,7 @@ const createMainWindow = async (server, forceDev = false) => {
         webPreferences: {
             nodeIntegration: true,
             backgroundThrottling: false,
-            //devTools: isDev || forceDev,
+            devTools: isDev || forceDev,
             preload: path_1.default.join(__dirname, 'preload.js')
         },
         minWidth: 740,
@@ -61,8 +61,7 @@ const createMainWindow = async (server, forceDev = false) => {
         }
     });
     (0, autoUpdater_1.default)(win);
-    if (integration_1.useIntegrated)
-        (0, integration_1.verifyAdvancedFXInstallation)(win);
+    /*if (useIntegrated)*/ (0, integration_1.verifyAdvancedFXInstallation)(win);
     electron_1.ipcMain.on('close', () => {
         win?.close();
     });

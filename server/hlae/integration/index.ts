@@ -1,15 +1,44 @@
 import { components } from '@octokit/openapi-types';
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import path from 'path';
+import fs from 'fs';
 // import fetch from 'node-fetch';
-import { verifyInstallation } from './github';
+import { getAssetVersion, verifyInstallation } from './github';
+import { hlaeEmitter } from '..';
+import { mirvPgl } from '../../socket';
 
 const userData = app.getPath('userData');
+const useIntegratedSettingsPath = path.join(userData, 'integrated.lhm');
 
-export const useIntegrated = false;
+const wait = (ms: number) => new Promise(r => setTimeout(r, ms));
+
+export let useIntegrated = false;
+
+fs.promises.readFile(useIntegratedSettingsPath, 'utf-8').then(content => {
+	useIntegrated = content === 'true';
+}).catch(() => {});
 
 export const hlaeExecutable = path.join(userData, 'hlae', 'HLAE.exe');
 export const afxExecutable = path.join(userData, 'afx', 'Release', 'afx-cefhud-interop.exe');
+
+let useIntegratedUpdater: Promise<void> | null = null;
+
+
+const updateUseIntegrated = (newUseIntegrated: boolean, win: BrowserWindow) => {
+	const getIntegratedUpdate = async () => {
+		await wait(100);
+		return fs.promises.writeFile(useIntegratedSettingsPath, newUseIntegrated ? 'true':'false').then(() => {
+			useIntegrated = newUseIntegrated;
+			win.webContents.send('usePreinstalled', newUseIntegrated);
+			useIntegratedUpdater = null;
+		});
+	}
+	if(!useIntegratedUpdater){
+		useIntegratedUpdater = getIntegratedUpdate();
+		return;
+	}
+	useIntegratedUpdater = useIntegratedUpdater.then(getIntegratedUpdate);
+}
 
 const findHLAEAsset = (asset: components['schemas']['release-asset']) => {
 	return asset.content_type === 'application/x-zip-compressed';
@@ -45,6 +74,26 @@ const verifyAFXInstallation = async (win: BrowserWindow) => {
 };
 
 export const verifyAdvancedFXInstallation = async (win: BrowserWindow) => {
+	hlaeEmitter.on("hlaeStatus", (status: boolean) => {
+		win.webContents.send('hlaeStatus', status);
+	});
+	ipcMain.on('getHlaeStatus', ev => {
+		ev.reply('hlaeStatus', !!mirvPgl.socket);
+	});
+	ipcMain.on('getPreinstalled', ev => {
+		ev.reply('usePreinstalled', useIntegrated);
+	});
+
+	ipcMain.on('setUsePreinstalled', (_ev, newUseIntegrated: boolean) => {
+		updateUseIntegrated(newUseIntegrated, win);
+	});
+
+	ipcMain.on('getAfxVersion', ev => {
+		ev.reply('advancedFxVersion', 'afx', getAssetVersion(path.join(userData, 'afx')));
+	});
+	ipcMain.on('getHlaeVersion', ev => {
+		ev.reply('advancedFxVersion', 'hlae', getAssetVersion(path.join(userData, 'hlae')));
+	});
 	await verifyHLAEInstallation(win);
 	await verifyAFXInstallation(win);
 };

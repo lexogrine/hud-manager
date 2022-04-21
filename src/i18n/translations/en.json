@@ -244,7 +244,7 @@
 			"warning": {
 				"specifyHLAEPath": "Specify HLAE path in Settings in order to use custom killfeeds",
 				"specifyAFXInteropPath": "Specify AFX Interop path in Settings in order to use AFX mode",
-				"specifyAFXModeInfo": "When using AFX mode, after joining the match click on the SET button - no need to start the overlay."
+				"specifyAFXModeInfo": "When using AFX mode, after joining the match click on the toggle - no need to start the overlay."
 			}
 		},
 		"app": {

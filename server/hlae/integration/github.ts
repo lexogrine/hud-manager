@@ -45,6 +45,18 @@ const clearCurrentInstallation = (path: string) => {
 	remove(path, true);
 };
 
+export const getAssetVersion = (assetPath: string) => {
+	let version = 'None';
+	const versionFilePath = path.join(assetPath, 'version');
+	
+	try {
+		const content = fs.readFileSync(versionFilePath, 'utf-8');
+		version = content;
+	} catch {}
+
+	return version;
+}
+
 const updateAsset = async (asset: components['schemas']['release-asset'], directory: string, version: string) => {
 	const archivePath = path.join(archivesDirectory, asset.name);
 
@@ -81,23 +93,51 @@ export const verifyInstallation = async (
 	const githubURL = tag
 		? `https://api.github.com/repos/${repo}/releases/tags/${tag}`
 		: `https://api.github.com/repos/${repo}/releases/latest`;
-	const response = (await fetch(githubURL).then(res => res.json())) as components['schemas']['release'];
-	console.log(`Looking for ${repo} releases`);
-	if (!response?.tag_name) return null;
-	console.log(`Found ${repo}`, response.tag_name);
-	const versionFilePath = path.join(directory, 'version');
 
+	let currentVersion = 'None';
+	const versionFilePath = path.join(directory, 'version');
+	
 	try {
 		const content = fs.readFileSync(versionFilePath, 'utf-8');
-		if (content === response.tag_name) return true;
+		currentVersion = content;
 	} catch {}
-	console.log(`No current ${repo} detected`);
-	const asset = response.assets?.find(findAsset);
+	try {
+		console.log('Starting to look for an update',repo);
+		win.webContents.send(`${repo}-update`, 'LOOKING_FOR_UPDATE', currentVersion);
 
-	if (!asset) return true;
-	console.log(`Found asset for ${repo}, downloading`);
 
-	const result = await updateAsset(asset, directory, response.tag_name);
+		const response = (await fetch(githubURL).then(res => res.json())) as components['schemas']['release'];
+		console.log(`Looking for ${repo} releases`);
+		if (!response?.tag_name) {
+			win.webContents.send(`${repo}-update`, 'NO_UPDATE', currentVersion);
+			return false;
+		}
+		console.log(`Found ${repo}`, response.tag_name);
+	
+		if (currentVersion === response.tag_name) {
+			win.webContents.send(`${repo}-update`, 'NO_UPDATE', currentVersion);
+			return true;
+		}
 
-	return result;
+		console.log(`No current ${repo} detected`);
+		const asset = response.assets?.find(findAsset);
+	
+		if (!asset) {
+			win.webContents.send(`${repo}-update`, 'NO_UPDATE', currentVersion);
+			return true;
+		}
+		console.log(`Found asset for ${repo}, downloading`);
+		win.webContents.send(`${repo}-update`, 'DOWNLOADING_UPDATE', currentVersion);
+	
+		const result = await updateAsset(asset, directory, response.tag_name);
+
+		const updateStatusEvent = result ? 'UPDATE_SUCCESS' : 'UPDATE_FAIL';
+
+		win.webContents.send(`${repo}-update`, updateStatusEvent, result ? response.tag_name : currentVersion);
+	
+		return result;
+	} catch {
+		win.webContents.send(`${repo}-update`, 'NO_UPDATE', currentVersion);
+		return false;
+	}
 };

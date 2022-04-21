@@ -1291,8 +1291,26 @@ img.smallLogo {
 		padding-left: 20px;
 	}
 }
+.xray-set-button {
+	cursor: pointer;
+	padding: 6px 20px;
+	background-color: #464051;
+	font-weight: 600;
+	font-size: 10px;
+	letter-spacing: 0.1rem;
+}
 .config-container {
 	margin: 0;
+
+	
+	&.pre-installed {
+		padding-left: 37px;
+		padding-right: 45px;
+		.config-entry {
+			padding: 12px 20px;
+			border: 1px solid rgba(255,255,255,0.1);
+		}
+	}
 }
 .config-entry {
 	padding: 0;
@@ -1442,7 +1460,7 @@ img.smallLogo {
 	}
 }
 .base-config {
-	height: 141px;
+	min-height: 141px;
 	.form-group {
 		margin-bottom: 0;
 	}
@@ -1970,6 +1988,19 @@ form {
 .section-save {
 	margin-top: 15px;
 }
+.xray-picker {
+	align-items: center;
+	display: flex;
+	flex-direction: column;
+	font-family: 'Rajdhani';
+	font-weight: 600;
+	letter-spacing: 0.1rem;
+	text-transform: uppercase;
+	.elegant-color-picker-container {
+		font-weight: 400;
+		margin-top:15px;
+	}
+}
 .veto_modal {
 	max-width: 100%;
 	width: 585px;
@@ -2051,6 +2082,10 @@ form {
 		padding: 31px;
 		max-height: 70vh;
 		overflow: auto;
+	}
+
+	&.xray .modal-body {
+		overflow: visible;
 	}
 	.form-group {
 		margin-bottom: 26px;
@@ -2708,6 +2743,33 @@ form {
 	}
 	.match-type-entry.active {
 		background-color: #6B1CFF;
+	}
+}
+.elegant-color-picker-container {
+	padding: 10px 15px;
+	background: #0C0B0B;
+	cursor: pointer;
+	border: 1px solid rgba(255, 255, 255, 0.1);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	
+
+	.color-preview {
+		width: 24px;
+		margin-right: 10px;
+		height: 24px;
+	}
+
+	~.pop-over {
+		position: absolute;
+		z-index: 25;
+		top: -200%;
+		transform: translateX(75%);
+		~.cover {
+			position: fixed;
+			inset: 0px;
+		}
 	}
 }
 .color-picker-container {
