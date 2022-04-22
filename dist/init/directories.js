@@ -32,7 +32,7 @@ const DecompressZip = require('decompress-zip');
 const temporaryFilesArchive = path.join(electron_1.app.getPath('userData'), 'archives');
 exports.LHMP = {
     csgo: '1.3.0',
-    rocketleague: '1.2.0',
+    rocketleague: '1.2.1',
     dota2: null,
     f1: null
 };

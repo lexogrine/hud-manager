@@ -9,7 +9,7 @@ const temporaryFilesArchive = path.join(app.getPath('userData'), 'archives');
 
 export const LHMP: Record<AvailableGames, string | null> = {
 	csgo: '1.3.0',
-	rocketleague: '1.2.0',
+	rocketleague: '1.2.1',
 	dota2: null,
 	f1: null
 };

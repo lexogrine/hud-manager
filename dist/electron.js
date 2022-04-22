@@ -38,19 +38,6 @@ exports.AFXInterop = {
     process: null
 };
 exports.isDev = process.env.DEV === 'true';
-/*
-let filepath = path.join(__dirname, "node_modules", "win-7zip", "7zip-lite", "7z.exe");
-
-const test = async () => {
-    try {
-        console.log(filepath)
-        console.log(fs.existsSync(filepath))
-    } catch (e){
-        console.log('ERROR', e)
-    }
-}
-
-test();*/
 function mainProcess(server) {
     const RMTPServer = (0, child_process_1.fork)(require.resolve('./RMTPServer.js'));
     const closeManager = () => {

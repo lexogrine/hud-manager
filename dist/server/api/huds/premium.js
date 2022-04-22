@@ -153,31 +153,36 @@ const getPremiumHUDData = (game, config) => {
             ? []
             : [
                 {
-                    label: 'Theme settings',
-                    name: 'theme',
-                    inputs: [
+                    "label": "Theme settings",
+                    "name": "theme",
+                    "inputs": [
                         {
-                            type: 'select',
-                            name: 'select_theme',
-                            label: 'Select alternative theme',
-                            values: [
+                            "type": "select",
+                            "name": "select_theme",
+                            "label": "Select alternative theme",
+                            "values": [
                                 {
-                                    name: 'greenViolet',
-                                    label: 'Toxic'
+                                    "name": "greenViolet",
+                                    "label": "Toxic"
                                 },
                                 {
-                                    name: 'neon',
-                                    label: 'Neon'
+                                    "name": "neon",
+                                    "label": "Neon"
                                 },
                                 {
-                                    name: 'denji',
-                                    label: 'Rio'
+                                    "name": "denji",
+                                    "label": "Rio"
                                 },
                                 {
-                                    name: 'akira',
-                                    label: 'Dimension'
+                                    "name": "akira",
+                                    "label": "Future"
                                 }
                             ]
+                        },
+                        {
+                            "type": "checkbox",
+                            "name": "hide_minimap",
+                            "label": "Hide 3D minimap"
                         }
                     ]
                 }
