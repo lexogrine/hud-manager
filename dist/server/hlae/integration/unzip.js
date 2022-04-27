@@ -1,9 +1,7 @@
-// @ts-nocheck
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.onceify = exports.run = exports.unzip = void 0;
-const spawn = require('child_process').execFile;
-const slice = Array.prototype.slice;
+const child_process_1 = require("child_process");
 const isWin = process.platform === 'win32';
 // todo: progress feedback
 function unzip(pack, dest, callback) {
@@ -22,16 +20,9 @@ exports.unzip = unzip;
 // Note that the 'exit' event may or may not fire after an error has occurred.
 // If you are listening to both the 'exit' and 'error' events,
 // it is important to guard against accidentally invoking handler functions multiple times.
-function run(bin, args, opts, callback) {
-    if (!callback) {
-        callback = opts;
-        opts = null;
-    }
-    opts = Object.assign({}, opts, {
-        stdio: 'ignore'
-    });
+function run(bin, args, callback) {
     callback = onceify(callback);
-    const prc = spawn(bin, args, opts);
+    const prc = (0, child_process_1.execFile)(bin, args);
     prc.on('error', function (err) {
         callback(err);
     });
@@ -43,13 +34,14 @@ exports.run = run;
 // http://stackoverflow.com/questions/30234908/javascript-v8-optimisation-and-leaking-arguments
 // javascript V8 optimisation and “leaking arguments”
 // making callback to be invoked only once
-function onceify(fn) {
+function onceify(callback) {
     let called = false;
-    return function () {
+    const containerFunction = err => {
         if (called)
             return;
         called = true;
-        fn.apply(this, slice.call(arguments)); // slice arguments
+        callback(err);
     };
+    return containerFunction;
 }
 exports.onceify = onceify;

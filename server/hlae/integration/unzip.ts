@@ -1,12 +1,11 @@
 'use strict';
-const spawn = require('child_process').execFile;
-const slice = Array.prototype.slice;
+import { execFile } from 'child_process';
 const isWin = process.platform === 'win32';
 
 type CallbackType = (err: Error | null) => void;
 // todo: progress feedback
 
-export function unzip(pack, dest, callback: CallbackType) {
+export function unzip(pack: string, dest: string, callback: CallbackType) {
 	if (isWin) {
 		const _7z = require('win-7zip')['7z'];
 		// 确实奇葩
@@ -22,11 +21,10 @@ export function unzip(pack, dest, callback: CallbackType) {
 // If you are listening to both the 'exit' and 'error' events,
 // it is important to guard against accidentally invoking handler functions multiple times.
 export function run(bin: string, args: string[], callback: CallbackType) {
-	const opts = { stdio: 'ignore' };
-	
+
 	callback = onceify(callback);
 
-	const prc = spawn(bin, args, opts);
+	const prc = execFile(bin, args);
 	prc.on('error', function (err) {
 		callback(err);
 	});
@@ -41,9 +39,9 @@ export function run(bin: string, args: string[], callback: CallbackType) {
 export function onceify(callback: CallbackType) {
 	let called = false;
 	const containerFunction: CallbackType = err => {
-		if(called) return;
+		if (called) return;
 		called = true;
 		callback(err);
-	}
+	};
 	return containerFunction;
 }
