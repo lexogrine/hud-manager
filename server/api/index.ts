@@ -224,13 +224,18 @@ export default async function (/*io: Server<DefaultEventsMap, DefaultEventsMap, 
 
 	app.route('/development/').get(huds.renderOverlay(true));
 
-	app.use(
-		'/proxy', (req, res, next) => {
-			if(!req.query.LHM_TARGET) return res.sendStatus(422);
-			const lhmTarget = req.query.LHM_TARGET as string;
-			delete req.query.LHM_TARGET;
-			return createProxyMiddleware({ target: lhmTarget, secure: false, changeOrigin: true, logLevel: 'silent',pathRewrite: { '^/proxy': '/'} })(req, res, next);
-		});
+	app.use('/proxy', (req, res, next) => {
+		if (!req.query.LHM_TARGET) return res.sendStatus(422);
+		const lhmTarget = req.query.LHM_TARGET as string;
+		delete req.query.LHM_TARGET;
+		return createProxyMiddleware({
+			target: lhmTarget,
+			secure: false,
+			changeOrigin: true,
+			logLevel: 'silent',
+			pathRewrite: { '^/proxy': '/' }
+		})(req, res, next);
+	});
 
 	app.use(
 		'/dev',

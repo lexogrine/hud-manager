@@ -21,7 +21,6 @@ export function unzip(pack: string, dest: string, callback: CallbackType) {
 // If you are listening to both the 'exit' and 'error' events,
 // it is important to guard against accidentally invoking handler functions multiple times.
 export function run(bin: string, args: string[], callback: CallbackType) {
-
 	callback = onceify(callback);
 
 	const prc = execFile(bin, args);
