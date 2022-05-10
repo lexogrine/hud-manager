@@ -381,7 +381,7 @@ Local data is stored in a NeDB.js database locally at `%HOME%\hud_manager`. It i
 
 For looking up the Steam's and CS:GO's directory the `steam-game-path` package is used.
 
-Lexogrine HUD Manager was written with Windows & Linux environment in mind. It probably works on Mac after compilation, however this isn't supported at the moment.
+Lexogrine HUD Manager was written for Windows. 
 
 
 ## REST API
