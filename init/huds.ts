@@ -79,22 +79,7 @@ class HUD {
 			GSI.off('raw', onData);
 			if (this.hud && this.hud.keybinds) {
 				for (const keybind of this.hud.keybinds) {
-					//globalShortcut.unregister(keybind.bind);
-					const keybinds: string[] = [];
-					if (Array.isArray(keybind.action)) {
-						keybinds.push(
-							...keybind.action.map(ar =>
-								typeof ar.action === 'string' ? ar.action : ar.action.action || ''
-							)
-						);
-					} else {
-						keybinds.push(
-							typeof keybind.action === 'string' ? keybind.action : keybind.action.action || ''
-						);
-					}
-					for (const keybindShort of keybinds) {
-						unregisterKeybind(keybindShort, hud.dir);
-					}
+					unregisterKeybind(keybind.bind, hud.dir);
 				}
 			}
 			unregisterKeybind('Left Alt+F');
