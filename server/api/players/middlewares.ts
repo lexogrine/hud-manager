@@ -4,7 +4,7 @@ import { Player, AvailableGames, availableGames } from '../../../types/interface
 import { loadConfig, internalIP } from './../config';
 import fetch from 'node-fetch';
 import isSvg from './../../../src/isSvg';
-import { getPlayersList, getPlayerById, getPlayerBySteamId, addPlayers } from './index';
+import { getPlayersList, getPlayerById, getPlayerBySteamId, addPlayers, exportPlayers } from './index';
 import * as F from './../fields';
 import { validateCloudAbility, customer } from '..';
 import { addResource, updateResource, deleteResource, checkCloudStatus, updateLastDateLocallyOnly } from '../cloud';

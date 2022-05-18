@@ -1,6 +1,8 @@
 import { databaseContext } from './../../../init/database';
 import { Player, AvailableGames } from '../../../types/interfaces';
 import Excel from 'exceljs';
+import { customer } from '..';
+import { getTeamsList } from '../teams';
 
 export async function getPlayerById(id: string, avatar = false): Promise<Player | null> {
 	return new Promise(res => {
@@ -71,3 +73,55 @@ export const replaceLocalPlayers = (newPlayers: Player[], game: AvailableGames, 
 			});
 		});
 	});
+
+export const exportPlayers = async (file: string) => {
+	const game = customer.game;
+	const $or: any[] = [{ game }];
+	if (game === 'csgo') {
+		$or.push({ game: { $exists: false } });
+	}
+
+	const players = await getPlayersList({ $or });
+
+	const teams = await getTeamsList({ $or });
+
+	const usedTeams = teams.filter(team => players.find(player => player.team === team._id));
+
+	const workbook = new Excel.Workbook();
+
+	const sheet = workbook.addWorksheet('Players');
+
+	sheet.addRow(['Username', 'SteamID', 'First Name', 'Last Name', 'Country Code', 'Team Name', 'Avatar']);
+
+	sheet.properties.defaultColWidth = 20;
+	sheet.getColumn(7).width = 18;
+
+	for (const player of players) {
+		const team = usedTeams.find(team => team._id === player.team);
+		const row = sheet.addRow([
+			player.username,
+			player.steamid,
+			player.firstName,
+			player.lastName,
+			player.country,
+			team?.name
+		]);
+
+		if (player.avatar) {
+			row.height = 100;
+			const buffer = Buffer.from(player.avatar, 'base64');
+
+			const avatarId = workbook.addImage({
+				buffer,
+				extension: 'png'
+			});
+
+			sheet.addImage(avatarId, {
+				tl: { row: row.number - 1, col: 6 },
+				ext: { width: 100, height: 100 }
+			});
+		}
+	}
+
+	workbook.xlsx.writeFile(file);
+};

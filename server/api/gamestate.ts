@@ -149,16 +149,23 @@ export const createGSIFile: express.RequestHandler = async (req, res) => {
 	}
 };
 
+type SaveableFile = string | Buffer;
+
 export const saveFile =
 	(
 		name: string,
-		content: string | Promise<string> | (() => Promise<string>),
-		base64 = false
+		content: SaveableFile | Promise<SaveableFile> | (() => Promise<SaveableFile>),
+		base64 = false,
+		writeFile?: (path: string) => void
 	): express.RequestHandler =>
 	async (_req, res) => {
 		res.sendStatus(200);
 		const result = await dialog.showSaveDialog({ defaultPath: name });
-		let text = '';
+		if (result.filePath && writeFile) {
+			writeFile(result.filePath);
+			return;
+		}
+		let text: string | Buffer = '';
 
 		if (typeof content === 'string') {
 			text = content;
@@ -167,8 +174,11 @@ export const saveFile =
 		} else {
 			text = await content;
 		}
+
+		const isString = typeof text === 'string';
+
 		if (result.filePath) {
-			fs.writeFileSync(result.filePath, text, { encoding: base64 ? 'base64' : 'utf-8' });
+			fs.writeFileSync(result.filePath, text, isString ? { encoding: base64 ? 'base64' : 'utf-8' } : null);
 		}
 	};
 

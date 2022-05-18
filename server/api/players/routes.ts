@@ -1,11 +1,15 @@
 import { app } from '../..';
 import * as P from './middlewares';
 import { verifyGame } from '../user';
+import { saveFile } from '../gamestate';
+import { exportPlayers } from '.';
 
 const initRoute = () => {
 	app.route('/api/players').get(verifyGame, P.getPlayers).post(verifyGame, P.addPlayer);
 
 	app.route('/api/players/import').post(verifyGame, P.addPlayersWithExcel);
+
+	app.route('/api/players/export').post(verifyGame, saveFile('player.xlsx', '', false, exportPlayers));
 
 	app.route('/api/players/fields').get(P.getFields).patch(P.updateFields);
 
