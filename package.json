@@ -1,6 +1,6 @@
 {
   "name": "hud-manager",
-  "version": "3.6.10",
+  "version": "3.7.1",
   "homepage": "./",
   "description": "Lexogrine HUD Manager",
   "author": "Lexogrine",
@@ -18,7 +18,7 @@
     "cross-env": "^6.0.3",
     "cross-unzip": "^0.2.1",
     "csgogsi-generator": "^1.0.1",
-    "csgogsi-socket": "^2.5.5",
+    "csgogsi-socket": "^2.5.7",
     "decompress-zip": "^0.2.2",
     "del": "^6.0.0",
     "dnd-core": "^14.0.1",
@@ -35,7 +35,7 @@
     "internal-ip": "^6.2.0",
     "ip": "^1.1.5",
     "jsonwebtoken": "^8.5.1",
-    "moment": "^2.29.1",
+    "moment": "^2.29.2",
     "nedb": "^1.8.0",
     "node-abi": "^3.2.0",
     "node-fetch": "^2.6.7",
@@ -90,6 +90,8 @@
     "nsis": {
       "license": "license.txt"
     },
+    "extraResources":"node_modules/win-7zip/7zip-lite",
+    "asarUnpack":"node_modules/win-7zip/7zip-lite/7z.exe",
     "files": [
       "dist/**/*",
       "package.json",
@@ -169,7 +171,7 @@
     "@typescript-eslint/eslint-plugin": "^3.8.0",
     "@typescript-eslint/parser": "^3.8.0",
     "concurrently": "^6.3.0",
-    "electron": "^15.1.1",
+    "electron": "^15.3.5",
     "electron-builder": "^22.14.4",
     "electron-rebuild": "^3.2.3",
     "eslint": "^7.32.0",

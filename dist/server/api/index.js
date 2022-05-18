@@ -190,6 +190,19 @@ async function default_1( /*io: Server<DefaultEventsMap, DefaultEventsMap, Defau
     __1.app.route('/huds/:dir/').get(huds.renderHUD);
     __1.app.route('/hud/:dir/').get(huds.renderOverlay());
     __1.app.route('/development/').get(huds.renderOverlay(true));
+    __1.app.use('/proxy', (req, res, next) => {
+        if (!req.query.LHM_TARGET)
+            return res.sendStatus(422);
+        const lhmTarget = req.query.LHM_TARGET;
+        delete req.query.LHM_TARGET;
+        return (0, http_proxy_middleware_1.createProxyMiddleware)({
+            target: lhmTarget,
+            secure: false,
+            changeOrigin: true,
+            logLevel: 'silent',
+            pathRewrite: { '^/proxy': '/' }
+        })(req, res, next);
+    });
     __1.app.use('/dev', huds.verifyOverlay, (0, http_proxy_middleware_1.createProxyMiddleware)({ target: 'http://localhost:3500', ws: true, logLevel: 'silent' }));
     __1.app.route('/api/machine').get(machine.getMachineIdRoute);
     __1.app.use('/huds/:dir/', huds.renderAssets);

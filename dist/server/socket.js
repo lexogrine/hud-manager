@@ -5,7 +5,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.mirvPgl = exports.ioPromise = exports.Dota2GSI = exports.GSI = exports.HUDState = exports.runtimeConfig = void 0;
 const socket_io_1 = require("socket.io");
-const csgogsi_socket_1 = require("csgogsi-socket");
 const dotagsi_1 = require("dotagsi");
 const node_fetch_1 = __importDefault(require("node-fetch"));
 const matches_1 = require("./api/matches");
@@ -21,6 +20,8 @@ const players_1 = require("./api/players");
 const arg_1 = require("./api/arg");
 const dota2_1 = require("./api/timeline/dota2");
 const parser_1 = require("./sockets/parser");
+const gsi_1 = require("./gsi");
+Object.defineProperty(exports, "GSI", { enumerable: true, get: function () { return gsi_1.GSI; } });
 let lastUpdate = new Date().getTime();
 let lastSideCheck = new Date().getTime();
 exports.runtimeConfig = {
@@ -33,7 +34,6 @@ exports.runtimeConfig = {
     }
 };
 exports.HUDState = new hudstatemanager_1.HUDStateManager();
-exports.GSI = new csgogsi_socket_1.CSGOGSI();
 exports.Dota2GSI = new dotagsi_1.DOTA2GSI();
 exports.ioPromise = (0, config_1.loadConfig)().then(cfg => {
     const corsOrigins = [`http://${config_1.internalIP}:${cfg.port}`, `http://localhost:${cfg.port}`];
@@ -56,7 +56,7 @@ exports.ioPromise = (0, config_1.loadConfig)().then(cfg => {
 exports.mirvPgl = new hlae_1.MIRVPGL(exports.ioPromise);
 exports.ioPromise.then(io => {
     const onRoundEnd = async (score) => {
-        const lastGSIEntry = exports.GSI.current;
+        const lastGSIEntry = gsi_1.GSI.current;
         if (lastGSIEntry)
             await (0, matches_1.updateRound)(lastGSIEntry);
         if (score.loser && score.loser.logo) {
@@ -121,14 +121,14 @@ exports.ioPromise.then(io => {
         }
         io.emit('match', true);
     };
-    exports.GSI.on('roundEnd', onRoundEnd);
-    exports.GSI.on('data', csgo => {
-        if (!exports.GSI.last)
+    gsi_1.GSI.on('roundEnd', onRoundEnd);
+    gsi_1.GSI.on('data', csgo => {
+        if (!gsi_1.GSI.last)
             return;
-        (0, arg_1.parseCSGOKills)(exports.GSI.last, csgo);
+        (0, arg_1.parseCSGOKills)(gsi_1.GSI.last, csgo);
     });
-    exports.GSI.on('kill', event => {
-        if (!arg_1.argSocket.useHLAE || !exports.GSI.current)
+    gsi_1.GSI.on('kill', event => {
+        if (!arg_1.argSocket.useHLAE || !gsi_1.GSI.current)
             return;
         if (!event.killer)
             return;
@@ -140,7 +140,7 @@ exports.ioPromise.then(io => {
             teamkill: event.killer.team.side === event.victim.team.side,
             headshot: event.headshot,
             timestamp: new Date().getTime() + arg_1.argSocket.delay * 1000,
-            round: exports.GSI.current.map.round
+            round: gsi_1.GSI.current.map.round
         };
         (0, arg_1.sendKillsToARG)([entry]);
     });
@@ -188,7 +188,7 @@ exports.ioPromise.then(io => {
             return false;
         return player.team.id !== otherTeam.id && extension.team === otherTeam.id;
     };
-    exports.GSI.on('data', async (data) => {
+    gsi_1.GSI.on('data', async (data) => {
         const now = new Date().getTime();
         if (now - lastSideCheck <= 5000) {
             return;
@@ -220,7 +220,7 @@ exports.ioPromise.then(io => {
             (0, matches_1.reverseSide)();
         }
     });
-    exports.GSI.on('data', data => {
+    gsi_1.GSI.on('data', data => {
         const now = new Date().getTime();
         if (now - lastUpdate > 300000 && api_1.customer.customer) {
             lastUpdate = new Date().getTime();

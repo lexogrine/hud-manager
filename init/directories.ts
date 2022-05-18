@@ -3,14 +3,13 @@ import * as path from 'path';
 import { app } from 'electron';
 import { AvailableGames } from '../types/interfaces';
 import { loadSessionStore } from './database';
-import { useIntegrated, verifyAdvancedFXInstallation } from '../server/hlae/integration';
 const DecompressZip = require('decompress-zip');
 
 const temporaryFilesArchive = path.join(app.getPath('userData'), 'archives');
 
 export const LHMP: Record<AvailableGames, string | null> = {
 	csgo: '1.3.0',
-	rocketleague: '1.1.2',
+	rocketleague: '1.2.1',
 	dota2: null,
 	f1: null
 };
@@ -197,6 +196,4 @@ export function checkDirectories() {
 		fs.writeFileSync(mapFile, JSON.stringify(maps));
 	}
 	loadSessionStore();
-
-	if (useIntegrated) verifyAdvancedFXInstallation();
 }

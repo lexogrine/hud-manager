@@ -27,6 +27,7 @@ const __1 = require("../..");
 const HLAE = __importStar(require("./middlewares"));
 const user_1 = require("../user");
 const initRoute = () => {
+    __1.app.route('/api/hlae').get(user_1.verifyGame, HLAE.getHLAEStatus);
     __1.app.route('/api/hlae/xray').post(user_1.verifyGame, HLAE.setXrayHandler);
 };
 exports.default = initRoute;

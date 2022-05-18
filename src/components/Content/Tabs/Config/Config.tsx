@@ -62,6 +62,23 @@ const formatBytes = (bytes: number, decimals = 2) => {
 
 let latestGame: I.AvailableGames = 'csgo';
 
+const getCaptionForAssets = (asset: IAdvancedFX) => {
+	const { state, version } = asset;
+	if (state === 'LOOKING_FOR_UPDATE') {
+		return 'Checking for updates';
+	}
+	if (state === 'DOWNLOADING_UPDATE') {
+		return 'Downloading update';
+	}
+	if (state === 'UPDATE_FAIL') {
+		return 'Update failed';
+	}
+	if (version === 'None') {
+		return 'None';
+	}
+	return `${version}`;
+};
+
 export const GameOnly = ({ game, children }: { game: I.AvailableGames | I.AvailableGames[]; children: any }) => (
 	<ContextData.Consumer>
 		{cxt => {
@@ -99,6 +116,11 @@ const SpaceLeftContainer = ({ maxSpace }: { maxSpace: number }) => (
 	<ContextData.Consumer>{cxt => <SpaceLeft max={maxSpace} used={cxt.spaceUsed} />}</ContextData.Consumer>
 );
 
+interface IAdvancedFX {
+	state: string;
+	version: string;
+}
+
 interface IState {
 	config: I.Config;
 	csgo: GameInfo;
@@ -122,14 +144,26 @@ interface IState {
 	f1Configured: boolean;
 	ip: string;
 	data: any;
+	usePreinstalled: boolean;
+	hlae: IAdvancedFX;
+	afx: IAdvancedFX;
 }
 
 class Config extends Component<IProps, IState> {
 	constructor(props: IProps) {
 		super(props);
 		this.state = {
+			usePreinstalled: false,
 			f1Configured: false,
 			f1Installed: false,
+			hlae: {
+				state: 'NO_UPDATE',
+				version: 'None'
+			},
+			afx: {
+				state: 'NO_UPDATE',
+				version: 'None'
+			},
 			config: {
 				steamApiKey: '',
 				port: 1349,
@@ -482,10 +516,34 @@ class Config extends Component<IProps, IState> {
 		this.checkGSI();
 		this.checkUpdate();
 		this.loadBakkesModStatus();
+		this.checkThirdPartyUpdates();
 		socket.on('config', () => {
 			this.getConfig();
 		});
 	}
+	checkThirdPartyUpdates = () => {
+		if (!isElectron || !window.ipcApi) return;
+		const { ipcApi } = window;
+		ipcApi.receive('advancedFxVersion', (app: string, ver: string) => {
+			if (app === 'hlae') {
+				this.setState({ hlae: { ...this.state.hlae, version: ver } });
+			} else {
+				this.setState({ afx: { ...this.state.afx, version: ver } });
+			}
+		});
+		ipcApi.receive('usePreinstalled', (usePreinstalled: boolean) => {
+			this.setState({ usePreinstalled });
+		});
+		ipcApi.send('getPreinstalled');
+		ipcApi.send('getAfxVersion');
+		ipcApi.send('getHlaeVersion');
+		ipcApi.receive('advancedfx/advancedfx-update', (state: string, version: string) => {
+			this.setState({ hlae: { state, version } });
+		});
+		ipcApi.receive('advancedfx/afx-cefhud-interop-update', (state: string, version: string) => {
+			this.setState({ afx: { state, version } });
+		});
+	};
 	checkUpdate = () => {
 		if (!isElectron || !window.ipcApi) return;
 		window.ipcApi.receive('updateStatus', (data: boolean, version: string) => {
@@ -533,6 +591,11 @@ class Config extends Component<IProps, IState> {
 
 			return state;
 		});
+	};
+	preInstalledToggle = async () => {
+		if (!window.ipcApi) return;
+
+		window.ipcApi.send('setUsePreinstalled', !this.state.usePreinstalled);
 	};
 	cgToggleHandler = (event: any) => {
 		const val = !!event.target.checked;
@@ -654,6 +717,19 @@ class Config extends Component<IProps, IState> {
 									placeholder={t('settings.input.GSIToken')}
 								/>
 							</FormGroup>
+						</Col>
+					</Row>
+					<Row className="config-container pre-installed">
+						<Col md="12" className="config-entry ">
+							<div className="config-description">
+								Use pre-installed: HLAE: {getCaptionForAssets(this.state.hlae)} | AFX:{' '}
+								{getCaptionForAssets(this.state.afx)}
+							</div>
+							<Switch
+								isOn={this.state.usePreinstalled}
+								id="pre-installed-toggle"
+								handleToggle={this.preInstalledToggle}
+							/>
 						</Col>
 					</Row>
 					<Row className="config-container bottom-margin">

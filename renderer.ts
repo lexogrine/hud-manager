@@ -1,14 +1,16 @@
 import { app, BrowserWindow, shell, ipcMain } from 'electron';
 import EventEmitter from 'events';
 import path from 'path';
+import { Server } from 'http';
 import autoUpdater from './autoUpdater';
-import { loadConfig, internalIP } from './server/api/config';
+import { loadConfig } from './server/api/config';
+import { verifyAdvancedFXInstallation } from './server/hlae/integration';
 
 const isDev = process.env.DEV === 'true';
 
 export const processEvents = new EventEmitter();
 
-export const createMainWindow = async (forceDev = false) => {
+export const createMainWindow = async (server: Server, forceDev = false) => {
 	let win: BrowserWindow | null;
 
 	processEvents.on('refocus', () => {
@@ -18,16 +20,16 @@ export const createMainWindow = async (forceDev = false) => {
 		}
 	});
 
-	if (app) {
-		app.on('window-all-closed', app.quit);
+	/*if (app) {
+		//app.on('window-all-closed', app.quit);
 
-		app.on('before-quit', async () => {
+		app.on('before-quit', () => {
 			if (!win) return;
 
 			win.removeAllListeners('close');
 			win.close();
 		});
-	}
+	}*/
 
 	win = new BrowserWindow({
 		height: 874,
@@ -62,6 +64,8 @@ export const createMainWindow = async (forceDev = false) => {
 
 	autoUpdater(win);
 
+	/*if (useIntegrated)*/ verifyAdvancedFXInstallation(win);
+
 	ipcMain.on('close', () => {
 		win?.close();
 	});
@@ -83,10 +87,12 @@ export const createMainWindow = async (forceDev = false) => {
 		shell.openExternal(url);
 	});
 
-	console.log('g', new Date().getTime());
 	win.loadURL(`${isDev ? `http://localhost:3000/?port=${config.port}` : startUrl}`);
-	win.on('close', () => {
+	win.once('close', event => {
+		event.preventDefault();
+		win?.hide();
 		win = null;
-		app.quit();
+		server.emit('close-services');
+		//app.quit();
 	});
 };

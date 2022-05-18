@@ -184,21 +184,45 @@ const getHUDCustomAsset = async (req, res) => {
     const hudData = socket_1.HUDState.get(hudDir, true);
     const data = hudData?.[section]?.[asset];
     const panel = isDev ? socket_1.HUDState?.devHUD?.panel || [] : (await (0, exports.getHUDPanelSetting)(hudDir));
+    const sectionEntry = panel.find(sectionData => sectionData.name === section);
     if (!data) {
         return res.sendStatus(404);
     }
-    if (isJSON(data)) {
+    /*if (isJSON(data) && ) {
+        console.log('b')
         return res.json(data);
-    }
+    }*/
     if (!panel || !Array.isArray(panel)) {
         return res.send(data);
     }
-    const sectionEntry = panel.find(sectionData => sectionData.name === section);
     if (!sectionEntry) {
         return res.send(data);
     }
     const inputEntry = sectionEntry.inputs.find(inputData => inputData.name === asset);
-    if (!inputEntry || inputEntry.type !== 'image') {
+    if (!inputEntry) {
+        return res.send(data);
+    }
+    if (inputEntry.type === 'images') {
+        const images = JSON.parse(data);
+        if (!req.query.index) {
+            const globalConfig = await (0, config_1.loadConfig)();
+            const base = globalConfig ? `http://${config_1.internalIP}:${globalConfig.port}` : '';
+            return res.json(images.map((image, i) => `${base}/api/huds/${hudDir}/${section}/${asset}?index=${i}&isDev=${isDev ? 'true' : 'false'}`));
+        }
+        let imageIndex = 0;
+        if (Number.isInteger(Number(req.query.index))) {
+            imageIndex = Number(req.query.index);
+        }
+        if (!images[imageIndex])
+            return res.sendStatus(404);
+        const imgBuffer = Buffer.from(images[imageIndex], 'base64');
+        res.writeHead(200, {
+            'Content-Type': (0, isSvg_1.default)(imgBuffer) ? 'image/svg+xml' : 'image/png',
+            'Content-Length': imgBuffer.length
+        });
+        return res.end(imgBuffer);
+    }
+    if (inputEntry.type !== 'image') {
         return res.send(data);
     }
     const imgBuffer = Buffer.from(data, 'base64');

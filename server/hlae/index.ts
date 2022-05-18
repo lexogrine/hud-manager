@@ -5,13 +5,16 @@ import GameEventUnserializer from './GameEventUnserializer';
 import { DefaultEventsMap } from 'socket.io/dist/typed-events';
 import { GSI } from '../socket';
 import { RawKill } from 'csgogsi-socket';
+import EventEmitter from 'events';
+
+export const hlaeEmitter = new EventEmitter();
 
 const knownGameEvents: string[] = [];
 export class MIRVPGL {
 	socket: WebSocket | null;
 	constructor(ioPromise: Promise<Server<DefaultEventsMap, DefaultEventsMap>>) {
 		this.socket = null;
-
+		hlaeEmitter.emit('hlaeStatus', !!this.socket);
 		this.init(ioPromise);
 	}
 
@@ -43,12 +46,19 @@ export class MIRVPGL {
 				return;
 			}
 
+			newSocket.on('close', () => {
+				this.socket = null;
+				hlaeEmitter.emit('hlaeStatus', !!this.socket);
+			});
+
 			if (this.socket) {
 				this.socket.close();
 			}
 			this.socket = newSocket;
 
 			const socket = this.socket;
+
+			hlaeEmitter.emit('hlaeStatus', !!this.socket);
 
 			if (!socket) return;
 

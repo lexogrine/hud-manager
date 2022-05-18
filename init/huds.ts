@@ -6,6 +6,7 @@ import socketio from 'socket.io';
 import * as I from './../types/interfaces';
 import { GSI, ioPromise, mirvPgl } from '../server/socket';
 import { registerKeybind, unregisterKeybind } from '../server/api/keybinder';
+import { CSGO, CSGORaw } from 'csgogsi-socket';
 
 class HUD {
 	current: BrowserWindow | null;
@@ -34,7 +35,8 @@ class HUD {
 			transparent: true,
 			focusable: true,
 			webPreferences: {
-				backgroundThrottling: false
+				backgroundThrottling: false,
+				preload: path.join(__dirname, 'preload.js')
 			}
 		});
 		if (!hud.allowAppsOnTop) {
@@ -43,6 +45,12 @@ class HUD {
 			});
 			hudWindow.setIgnoreMouseEvents(true);
 		}
+
+		const onData = (data: CSGORaw) => {
+			hudWindow.webContents.send('raw', data);
+		};
+
+		GSI.prependListener('raw', onData);
 
 		const tray = new Tray(path.join(__dirname, 'favicon.ico'));
 
@@ -68,24 +76,10 @@ class HUD {
 		hudWindow.loadURL(hud.url);
 
 		hudWindow.on('close', () => {
+			GSI.off('raw', onData);
 			if (this.hud && this.hud.keybinds) {
 				for (const keybind of this.hud.keybinds) {
-					//globalShortcut.unregister(keybind.bind);
-					const keybinds: string[] = [];
-					if (Array.isArray(keybind.action)) {
-						keybinds.push(
-							...keybind.action.map(ar =>
-								typeof ar.action === 'string' ? ar.action : ar.action.action || ''
-							)
-						);
-					} else {
-						keybinds.push(
-							typeof keybind.action === 'string' ? keybind.action : keybind.action.action || ''
-						);
-					}
-					for (const keybindShort of keybinds) {
-						unregisterKeybind(keybindShort, hud.dir);
-					}
+					unregisterKeybind(keybind.bind, hud.dir);
 				}
 			}
 			unregisterKeybind('Left Alt+F');

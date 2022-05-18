@@ -9,9 +9,10 @@ const events_1 = __importDefault(require("events"));
 const path_1 = __importDefault(require("path"));
 const autoUpdater_1 = __importDefault(require("./autoUpdater"));
 const config_1 = require("./server/api/config");
+const integration_1 = require("./server/hlae/integration");
 const isDev = process.env.DEV === 'true';
 exports.processEvents = new events_1.default();
-const createMainWindow = async (forceDev = false) => {
+const createMainWindow = async (server, forceDev = false) => {
     let win;
     exports.processEvents.on('refocus', () => {
         if (win) {
@@ -20,15 +21,16 @@ const createMainWindow = async (forceDev = false) => {
             win.focus();
         }
     });
-    if (electron_1.app) {
-        electron_1.app.on('window-all-closed', electron_1.app.quit);
-        electron_1.app.on('before-quit', async () => {
-            if (!win)
-                return;
+    /*if (app) {
+        //app.on('window-all-closed', app.quit);
+
+        app.on('before-quit', () => {
+            if (!win) return;
+
             win.removeAllListeners('close');
             win.close();
         });
-    }
+    }*/
     win = new electron_1.BrowserWindow({
         height: 874,
         show: false,
@@ -59,6 +61,7 @@ const createMainWindow = async (forceDev = false) => {
         }
     });
     (0, autoUpdater_1.default)(win);
+    /*if (useIntegrated)*/ (0, integration_1.verifyAdvancedFXInstallation)(win);
     electron_1.ipcMain.on('close', () => {
         win?.close();
     });
@@ -76,11 +79,13 @@ const createMainWindow = async (forceDev = false) => {
         e.preventDefault();
         electron_1.shell.openExternal(url);
     });
-    console.log('g', new Date().getTime());
     win.loadURL(`${isDev ? `http://localhost:3000/?port=${config.port}` : startUrl}`);
-    win.on('close', () => {
+    win.once('close', event => {
+        event.preventDefault();
+        win?.hide();
         win = null;
-        electron_1.app.quit();
+        server.emit('close-services');
+        //app.quit();
     });
 };
 exports.createMainWindow = createMainWindow;

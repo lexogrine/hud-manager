@@ -3,15 +3,18 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.MIRVPGL = void 0;
+exports.MIRVPGL = exports.hlaeEmitter = void 0;
 const BufferReader_1 = __importDefault(require("./BufferReader"));
 const GameEventUnserializer_1 = __importDefault(require("./GameEventUnserializer"));
 const socket_1 = require("../socket");
+const events_1 = __importDefault(require("events"));
+exports.hlaeEmitter = new events_1.default();
 const knownGameEvents = [];
 class MIRVPGL {
     socket;
     constructor(ioPromise) {
         this.socket = null;
+        exports.hlaeEmitter.emit('hlaeStatus', !!this.socket);
         this.init(ioPromise);
     }
     execute = (config) => {
@@ -37,11 +40,16 @@ class MIRVPGL {
             if (!isCSGO) {
                 return;
             }
+            newSocket.on('close', () => {
+                this.socket = null;
+                exports.hlaeEmitter.emit('hlaeStatus', !!this.socket);
+            });
             if (this.socket) {
                 this.socket.close();
             }
             this.socket = newSocket;
             const socket = this.socket;
+            exports.hlaeEmitter.emit('hlaeStatus', !!this.socket);
             if (!socket)
                 return;
             const gameEventUnserializer = new GameEventUnserializer_1.default(enrichments);

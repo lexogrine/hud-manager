@@ -177,9 +177,14 @@ export const getPremiumHUDData = (game: AvailableGames, config: Config) => {
 										},
 										{
 											name: 'akira',
-											label: 'Dimension'
+											label: 'Future'
 										}
 									]
+								},
+								{
+									type: 'checkbox',
+									name: 'hide_minimap',
+									label: 'Hide 3D minimap'
 								}
 							]
 						}

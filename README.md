@@ -35,7 +35,6 @@ If you are in the business of broadcasting professional CS:GO matches, the Lexog
     * [Radar files](#radar-files)
   * [thumb.png](#thumbpng)
 * [Technicalities](#technicalities)
-  * [Build](#build)
 * [REST API](#rest-api)
 * [Credits](#credits)
 
@@ -382,18 +381,8 @@ Local data is stored in a NeDB.js database locally at `%HOME%\hud_manager`. It i
 
 For looking up the Steam's and CS:GO's directory the `steam-game-path` package is used.
 
-Lexogrine HUD Manager was written with Windows & Linux environment in mind. It probably works on Mac after compilation, however this isn't supported at the moment.
+Lexogrine HUD Manager was written for Windows. 
 
-### Build
-
-In case you want to compile the Lexogrine HUD Manager by yourself, you should clone the repo, run `npm install` and after that `npm run compile`. You might stumble into errors, that usally are fixed by the following commands:
-
-```
-npm rebuild
-npm install registry-js
-./node_modules/.bin/electron-rebuild
-```
-If the build has been successful, an `app` directory should appear with the installer and the unpacked version of the Lexogrine HUD Manager.
 
 ## REST API
 |Endpoint| Method | Returns|

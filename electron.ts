@@ -33,7 +33,7 @@ function mainProcess(server: Server) {
 		}
 		// app.quit();
 	};
-	app.on('quit', closeManager);
+	server.once('close-services', closeManager);
 
 	const finallyCloseManager = () => {
 		if (server) {
@@ -59,7 +59,7 @@ async function startManagerQuickly() {
 	//const server = await init();
 	const argv = args(process.argv);
 	mainProcess(server);
-	if (!argv.noGUI) createMainWindow(argv.dev || isDev);
+	if (!argv.noGUI) createMainWindow(server, argv.dev || isDev);
 }
 
 const lock = app.requestSingleInstanceLock();

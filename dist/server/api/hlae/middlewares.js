@@ -23,12 +23,22 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.setXrayHandler = void 0;
+exports.getHLAEStatus = exports.setXrayHandler = void 0;
+const __1 = require("..");
+const socket_1 = require("../../socket");
 const HLAE = __importStar(require("./index"));
 const setXrayHandler = (req, res) => {
+    if (__1.customer?.customer?.license.type !== 'enterprise' &&
+        __1.customer?.customer?.license.type !== 'professional' &&
+        !__1.customer?.workspace)
+        return res.sendStatus(403);
     const tXray = [...req.body.tXray];
     const ctXray = [...req.body.ctXray];
     HLAE.setXrayColors(ctXray, tXray);
     return res.sendStatus(200);
 };
 exports.setXrayHandler = setXrayHandler;
+const getHLAEStatus = (req, res) => {
+    return res.json({ connected: !!socket_1.mirvPgl.socket });
+};
+exports.getHLAEStatus = getHLAEStatus;

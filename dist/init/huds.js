@@ -56,7 +56,8 @@ class HUD {
             transparent: true,
             focusable: true,
             webPreferences: {
-                backgroundThrottling: false
+                backgroundThrottling: false,
+                preload: path.join(__dirname, 'preload.js')
             }
         });
         if (!hud.allowAppsOnTop) {
@@ -65,6 +66,10 @@ class HUD {
             });
             hudWindow.setIgnoreMouseEvents(true);
         }
+        const onData = (data) => {
+            hudWindow.webContents.send('raw', data);
+        };
+        socket_1.GSI.prependListener('raw', onData);
         const tray = new electron_1.Tray(path.join(__dirname, 'favicon.ico'));
         tray.setToolTip('Lexogrine HUD Manager');
         tray.on('right-click', () => {
@@ -83,19 +88,10 @@ class HUD {
         this.showWindow(hud, io);
         hudWindow.loadURL(hud.url);
         hudWindow.on('close', () => {
+            socket_1.GSI.off('raw', onData);
             if (this.hud && this.hud.keybinds) {
                 for (const keybind of this.hud.keybinds) {
-                    //globalShortcut.unregister(keybind.bind);
-                    const keybinds = [];
-                    if (Array.isArray(keybind.action)) {
-                        keybinds.push(...keybind.action.map(ar => typeof ar.action === 'string' ? ar.action : ar.action.action || ''));
-                    }
-                    else {
-                        keybinds.push(typeof keybind.action === 'string' ? keybind.action : keybind.action.action || '');
-                    }
-                    for (const keybindShort of keybinds) {
-                        (0, keybinder_1.unregisterKeybind)(keybindShort, hud.dir);
-                    }
+                    (0, keybinder_1.unregisterKeybind)(keybind.bind, hud.dir);
                 }
             }
             (0, keybinder_1.unregisterKeybind)('Left Alt+F');

@@ -17,7 +17,6 @@ import Cameras from './Cameras';
 import ForPlansOnly from '../../ForPlansOnly';
 import { useEffect, useState } from 'react';
 import api from '../../../api/api';
-import XRay from './XRay';
 
 interface IProps {
 	activeTab: string;
@@ -69,9 +68,6 @@ const Tabs = ({ activeTab, data, toggle, gsiCheck, setOnBackClick, search }: IPr
 					</TabPane>
 					<TabPane tabId="tournaments" className={getClassForTab('Tournaments', cxt)}>
 						<Tournamentss maps={maps} cxt={cxt} setOnBackClick={setOnBackClick}></Tournamentss>
-					</TabPane>
-					<TabPane tabId="xray" className={getClassForTab('XRay', cxt)}>
-						<XRay></XRay>
 					</TabPane>
 					<TabPane tabId="arg" className={getClassForTab('ARG', cxt)}>
 						<ForPlansOnly required="personal">

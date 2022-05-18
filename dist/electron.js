@@ -53,7 +53,7 @@ function mainProcess(server) {
         }
         // app.quit();
     };
-    electron_1.app.on('quit', closeManager);
+    server.once('close-services', closeManager);
     const finallyCloseManager = () => {
         if (server) {
             server.close();
@@ -76,7 +76,7 @@ async function startManagerQuickly() {
     const argv = (0, args_1.default)(process.argv);
     mainProcess(server);
     if (!argv.noGUI)
-        (0, renderer_1.createMainWindow)(argv.dev || exports.isDev);
+        (0, renderer_1.createMainWindow)(server, argv.dev || exports.isDev);
 }
 const lock = electron_1.app.requestSingleInstanceLock();
 if (!lock) {

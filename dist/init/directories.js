@@ -28,12 +28,11 @@ const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
 const electron_1 = require("electron");
 const database_1 = require("./database");
-const integration_1 = require("../server/hlae/integration");
 const DecompressZip = require('decompress-zip');
 const temporaryFilesArchive = path.join(electron_1.app.getPath('userData'), 'archives');
 exports.LHMP = {
     csgo: '1.3.0',
-    rocketleague: '1.1.2',
+    rocketleague: '1.2.1',
     dota2: null,
     f1: null
 };
@@ -204,7 +203,5 @@ function checkDirectories() {
         fs.writeFileSync(mapFile, JSON.stringify(maps));
     }
     (0, database_1.loadSessionStore)();
-    if (integration_1.useIntegrated)
-        (0, integration_1.verifyAdvancedFXInstallation)();
 }
 exports.checkDirectories = checkDirectories;

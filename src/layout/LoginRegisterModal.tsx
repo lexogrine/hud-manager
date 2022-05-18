@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import LabeledInput from '../components/LabeledInput';
+import WindowBar from '../WindowBar';
 import api from './../api/api';
 interface IProps {
 	isOpen: boolean;
@@ -47,6 +48,7 @@ const LoginRegisterModal = ({ isOpen, loading, setLoading, loadUser, error }: IP
 
 	return (
 		<div className="login-view">
+			<WindowBar />
 			<div className="logo">LHM</div>
 			<div className="container">
 				{error ? <p className="login-error">{error}</p> : null}
