@@ -167,6 +167,7 @@ const addPlayersWithExcel = async (req, res) => {
             $or.push({ game: { $exists: false } });
         }
         const teams = await (0, teams_1.getTeamsList)({ $or });
+        const images = worksheet.getImages();
         worksheet.eachRow(row => {
             const username = row.getCell('A').value?.toString?.() || '';
             const steamid = row.getCell('B').value?.toString?.() || '';
@@ -177,6 +178,14 @@ const addPlayersWithExcel = async (req, res) => {
             const lastName = row.getCell('D').value?.toString?.() || '';
             const country = row.getCell('E').value?.toString?.() || '';
             const teamName = row.getCell('F').value?.toString?.() || '';
+            let avatar = '';
+            const imageMetaData = images.find(img => img.range.tl.nativeRow === row.number - 1 && img.range.tl.nativeCol === 6);
+            if (imageMetaData) {
+                const image = workbook.model.media.find((media) => media.index === imageMetaData.imageId);
+                if (image) {
+                    avatar = (Buffer.from(image.buffer).toString('base64'));
+                }
+            }
             const team = teams.find(team => team.name === teamName && (team.game === game || (game === 'csgo' && !team.game)));
             const teamId = team?._id || '';
             players.push({
@@ -188,7 +197,7 @@ const addPlayersWithExcel = async (req, res) => {
                 team: teamId,
                 extra: {},
                 game,
-                avatar: ''
+                avatar
             });
         });
         const result = await (0, index_1.addPlayers)(players);

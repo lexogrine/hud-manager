@@ -108,6 +108,7 @@ const addTeamsWithExcel = async (req, res) => {
         if (!worksheet)
             return res.sendStatus(422);
         const teams = [];
+        const images = worksheet.getImages();
         worksheet.eachRow(row => {
             const name = row.getCell('A').value?.toString?.();
             if (!name || name === 'Team name') {
@@ -115,11 +116,19 @@ const addTeamsWithExcel = async (req, res) => {
             }
             const shortName = row.getCell('B').value?.toString?.();
             const country = row.getCell('C').value?.toString?.();
+            let logo = '';
+            const imageMetaData = images.find(img => img.range.tl.nativeRow === row.number - 1 && img.range.tl.nativeCol === 3);
+            if (imageMetaData) {
+                const image = workbook.model.media.find((media) => media.index === imageMetaData.imageId);
+                if (image) {
+                    logo = (Buffer.from(image.buffer).toString('base64'));
+                }
+            }
             teams.push({
                 name,
                 shortName,
                 country,
-                logo: '',
+                logo,
                 game,
                 extra: {}
             });

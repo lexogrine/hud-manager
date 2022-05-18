@@ -31,7 +31,7 @@ const _1 = require(".");
 const initRoute = () => {
     __1.app.route('/api/players').get(user_1.verifyGame, P.getPlayers).post(user_1.verifyGame, P.addPlayer);
     __1.app.route('/api/players/import').post(user_1.verifyGame, P.addPlayersWithExcel);
-    __1.app.route('/api/players/export').post(user_1.verifyGame, (0, gamestate_1.saveFile)('player.xlsx', '', false, _1.exportPlayers));
+    __1.app.route('/api/players/export').post(user_1.verifyGame, (0, gamestate_1.saveFile)('players.xlsx', '', false, _1.exportPlayers));
     __1.app.route('/api/players/fields').get(P.getFields).patch(P.updateFields);
     __1.app.route('/api/players/:id').get(P.getPlayers).patch(P.updatePlayer).delete(P.deletePlayer);
     __1.app.route('/api/players/avatar/:id').get(P.getAvatarFile);
