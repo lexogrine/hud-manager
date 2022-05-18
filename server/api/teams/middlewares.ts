@@ -108,13 +108,15 @@ export const addTeamsWithExcel: express.RequestHandler = async (req, res) => {
 			const country = row.getCell('C').value?.toString?.();
 
 			let logo = '';
-			
-			const imageMetaData = images.find(img => img.range.tl.nativeRow === row.number - 1 && img.range.tl.nativeCol === 3);
 
-			if(imageMetaData){
+			const imageMetaData = images.find(
+				img => img.range.tl.nativeRow === row.number - 1 && img.range.tl.nativeCol === 3
+			);
+
+			if (imageMetaData) {
 				const image = workbook.model.media.find((media: any) => media.index === imageMetaData.imageId);
-				if(image){
-					logo = (Buffer.from(image.buffer).toString('base64'));
+				if (image) {
+					logo = Buffer.from(image.buffer).toString('base64');
 				}
 			}
 

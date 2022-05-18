@@ -170,16 +170,17 @@ export const addPlayersWithExcel: express.RequestHandler = async (req, res) => {
 			const country = row.getCell('E').value?.toString?.() || '';
 			const teamName = row.getCell('F').value?.toString?.() || '';
 			let avatar = '';
-			
-			const imageMetaData = images.find(img => img.range.tl.nativeRow === row.number - 1 && img.range.tl.nativeCol === 6);
 
-			if(imageMetaData){
+			const imageMetaData = images.find(
+				img => img.range.tl.nativeRow === row.number - 1 && img.range.tl.nativeCol === 6
+			);
+
+			if (imageMetaData) {
 				const image = workbook.model.media.find((media: any) => media.index === imageMetaData.imageId);
-				if(image){
-					avatar = (Buffer.from(image.buffer).toString('base64'));
+				if (image) {
+					avatar = Buffer.from(image.buffer).toString('base64');
 				}
 			}
-
 
 			const team = teams.find(
 				team => team.name === teamName && (team.game === game || (game === 'csgo' && !team.game))

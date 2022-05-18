@@ -60,7 +60,6 @@ export const replaceLocalTeams = (newTeams: Team[], game: AvailableGames, existi
 		});
 	});
 
-
 export const exportTeams = async (file: string) => {
 	const game = customer.game;
 	const $or: any[] = [{ game }];
@@ -80,11 +79,7 @@ export const exportTeams = async (file: string) => {
 	sheet.getColumn(7).width = 18;
 
 	for (const team of teams) {
-		const row = sheet.addRow([
-			team.name,
-			team.shortName,
-			team.country
-		]);
+		const row = sheet.addRow([team.name, team.shortName, team.country]);
 
 		if (team.logo) {
 			row.height = 100;
@@ -104,4 +99,3 @@ export const exportTeams = async (file: string) => {
 
 	workbook.xlsx.writeFile(file);
 };
-
