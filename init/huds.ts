@@ -8,10 +8,9 @@ import { GSI, ioPromise, mirvPgl } from '../server/socket';
 import { registerKeybind, unregisterKeybind } from '../server/api/keybinder';
 import { CSGO, CSGORaw } from 'csgogsi-socket';
 
-
 export const hudContext: { huds: HUD[] } = {
 	huds: []
-}
+};
 
 class HUD {
 	current: BrowserWindow | null;
@@ -183,11 +182,10 @@ class HUD {
 	}
 }
 
-
 export const openHUD = async (dirName: string, bounds?: Electron.Rectangle) => {
 	const hud = new HUD();
 
-	if(hudContext.huds.find(target => target.hud?.dir === dirName)) return null;
+	if (hudContext.huds.find(target => target.hud?.dir === dirName)) return null;
 
 	const result = await hud.open(dirName, bounds);
 
@@ -196,6 +194,4 @@ export const openHUD = async (dirName: string, bounds?: Electron.Rectangle) => {
 	hudContext.huds.push(hud);
 
 	return true;
-}
-
-
+};

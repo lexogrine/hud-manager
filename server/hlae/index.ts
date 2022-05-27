@@ -13,34 +13,34 @@ const knownGameEvents: string[] = [];
 
 type EnrichmentDetails = {
 	[eventName: string]: {
-		[key: string]: string | string[]
-	}
-}
+		[key: string]: string | string[];
+	};
+};
 
 const parseEnrichmentList = (enrichmentList: EnrichmentDetails): EnrichmentObject => {
 	const enrichments: EnrichmentObject = {};
 
-	for(const [eventName, keys] of Object.entries(enrichmentList)){
+	for (const [eventName, keys] of Object.entries(enrichmentList)) {
 		enrichments[eventName] = Object.keys(keys);
 	}
 
 	return enrichments;
-}
+};
 
 const enrichmentList: EnrichmentDetails = {
 	player_death: {
 		userid: 'useridWithSteamId',
 		attacker: 'useridWithSteamId',
-		assister: 'useridWithSteamId',
+		assister: 'useridWithSteamId'
 	},
 	player_hurt: {
 		userid: 'useridWithSteamId',
-		attacker: 'useridWithSteamId',
+		attacker: 'useridWithSteamId'
 	},
 	weaponhud_selection: {
-		userid: 'useridWithSteamId',
+		userid: 'useridWithSteamId'
 	}
-}
+};
 export class MIRVPGL {
 	socket: WebSocket | null;
 	constructor(ioPromise: Promise<Server<DefaultEventsMap, DefaultEventsMap>>) {
@@ -120,10 +120,11 @@ export class MIRVPGL {
 
 							for (const [eventName, enrichments] of Object.entries(enrichmentList)) {
 								for (const [keyName, enrichmentNames] of Object.entries(enrichments)) {
-									const enrichmentProperties = Array.isArray(enrichmentNames) ? enrichmentNames : [enrichmentNames];
+									const enrichmentProperties = Array.isArray(enrichmentNames)
+										? enrichmentNames
+										: [enrichmentNames];
 
 									for (const enrichment of enrichmentProperties) {
-
 										socket.send(
 											new Uint8Array(
 												Buffer.from(
@@ -154,7 +155,7 @@ export class MIRVPGL {
 							GSI.digestMIRV(gameEvent as RawKill);
 						}
 					}
-				} catch (err) { }
+				} catch (err) {}
 			});
 		});
 	};

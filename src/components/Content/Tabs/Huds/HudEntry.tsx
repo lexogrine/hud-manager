@@ -213,7 +213,9 @@ const HudEntry = ({
 													onClick={() => {
 														isHUDActive ? undefined : startHUD(hud.dir);
 													}}
-													onContextMenu={() => window.ipcApi?.send("show-context-hud-display", hud.dir)}
+													onContextMenu={() =>
+														window.ipcApi?.send('show-context-hud-display', hud.dir)
+													}
 													className={`action ${isHUDActive ? 'disabled' : ''}`}
 													alt="Start HUD"
 												/>

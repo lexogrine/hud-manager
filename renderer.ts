@@ -7,7 +7,6 @@ import { loadConfig } from './server/api/config';
 import { verifyAdvancedFXInstallation } from './server/hlae/integration';
 import { openHUD } from './init/huds';
 
-
 const isDev = process.env.DEV === 'true';
 
 export const processEvents = new EventEmitter();
@@ -55,12 +54,16 @@ export const createMainWindow = async (server: Server, forceDev = false) => {
 	ipcMain.on('show-context-hud-display', (event, hudDir: string) => {
 		const displays = screen.getAllDisplays();
 
-		const template: Electron.MenuItemConstructorOptions[] = displays.map(display => (
-			{ label: `Open on: ${display.bounds.x}x${display.bounds.y}`, click: () => openHUD(hudDir, display.bounds) }
-		) as Electron.MenuItemConstructorOptions)
-		const menu = Menu.buildFromTemplate(template)
+		const template: Electron.MenuItemConstructorOptions[] = displays.map(
+			display =>
+				({
+					label: `Open on: ${display.bounds.x}x${display.bounds.y}`,
+					click: () => openHUD(hudDir, display.bounds)
+				} as Electron.MenuItemConstructorOptions)
+		);
+		const menu = Menu.buildFromTemplate(template);
 		menu.popup({ window: win as BrowserWindow });
-	})
+	});
 
 	ipcMain.on('min', () => {
 		win?.minimize();

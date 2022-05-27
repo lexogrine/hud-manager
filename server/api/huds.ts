@@ -565,7 +565,8 @@ export const sendHUD: express.RequestHandler = async (req, res) => {
 
 export const deleteHUD: express.RequestHandler = async (req, res) => {
 	const io = await ioPromise;
-	if (!req.query.hudDir || typeof req.query.hudDir !== 'string' || !!hudContext.huds.length) return res.sendStatus(422);
+	if (!req.query.hudDir || typeof req.query.hudDir !== 'string' || !!hudContext.huds.length)
+		return res.sendStatus(422);
 	const hudPath = getHUDDirectory(req.query.hudDir);
 	if (!fs.existsSync(hudPath)) {
 		return res.sendStatus(200);
