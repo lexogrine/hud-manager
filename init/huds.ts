@@ -1,4 +1,4 @@
-import { BrowserWindow, Tray, Menu /*globalShortcut*/ } from 'electron';
+import { BrowserWindow, Tray, Menu, screen, ipcMain, MenuItem, MenuItemConstructorOptions, Display } from 'electron';
 import { getHUDData } from './../server/api/huds';
 import * as path from 'path';
 //import ip from 'ip';
@@ -7,6 +7,11 @@ import * as I from './../types/interfaces';
 import { GSI, ioPromise, mirvPgl } from '../server/socket';
 import { registerKeybind, unregisterKeybind } from '../server/api/keybinder';
 import { CSGO, CSGORaw } from 'csgogsi-socket';
+
+
+export const hudContext: { huds: HUD[] } = {
+	huds: []
+}
 
 class HUD {
 	current: BrowserWindow | null;
@@ -20,7 +25,7 @@ class HUD {
 		this.hud = null;
 	}
 
-	async open(dirName: string) {
+	async open(dirName: string, bounds?: Electron.Rectangle) {
 		const io = await ioPromise;
 		if (this.current !== null || this.hud !== null) return null;
 		const hud = await getHUDData(dirName, dirName === 'premiumhud');
@@ -34,6 +39,8 @@ class HUD {
 			frame: false,
 			transparent: true,
 			focusable: true,
+			x: bounds?.x,
+			y: bounds?.y,
 			webPreferences: {
 				backgroundThrottling: false,
 				preload: path.join(__dirname, 'preload.js')
@@ -87,7 +94,9 @@ class HUD {
 
 			this.hud = null;
 			this.current = null;
-			io.emit('hud_opened', false);
+
+			hudContext.huds = hudContext.huds.filter(existing => existing !== this);
+			io.emit('hud_opened', !!hudContext.huds.length);
 			if (this.tray !== null) {
 				this.tray.destroy();
 			}
@@ -162,7 +171,6 @@ class HUD {
 	}
 
 	async close() {
-		const io = await ioPromise;
 		if (this.tray !== null) {
 			this.tray.destroy();
 		}
@@ -170,12 +178,24 @@ class HUD {
 
 		this.current.close();
 		this.current = null;
-		io.emit('hud_opened', false);
 
 		return true;
 	}
 }
 
-const HUDWindow = new HUD();
 
-export default HUDWindow;
+export const openHUD = async (dirName: string, bounds?: Electron.Rectangle) => {
+	const hud = new HUD();
+
+	if(hudContext.huds.find(target => target.hud?.dir === dirName)) return null;
+
+	const result = await hud.open(dirName, bounds);
+
+	if (!result) return false;
+
+	hudContext.huds.push(hud);
+
+	return true;
+}
+
+

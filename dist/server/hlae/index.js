@@ -10,6 +10,27 @@ const socket_1 = require("../socket");
 const events_1 = __importDefault(require("events"));
 exports.hlaeEmitter = new events_1.default();
 const knownGameEvents = [];
+const parseEnrichmentList = (enrichmentList) => {
+    const enrichments = {};
+    for (const [eventName, keys] of Object.entries(enrichmentList)) {
+        enrichments[eventName] = Object.keys(keys);
+    }
+    return enrichments;
+};
+const enrichmentList = {
+    player_death: {
+        userid: 'useridWithSteamId',
+        attacker: 'useridWithSteamId',
+        assister: 'useridWithSteamId',
+    },
+    player_hurt: {
+        userid: 'useridWithSteamId',
+        attacker: 'useridWithSteamId',
+    },
+    weaponhud_selection: {
+        userid: 'useridWithSteamId',
+    }
+};
 class MIRVPGL {
     socket;
     constructor(ioPromise) {
@@ -24,10 +45,12 @@ class MIRVPGL {
     };
     init = async (ioPromise) => {
         const io = await ioPromise;
-        const enrichments = {
+        //const test = enrichmentList
+        /*const enrichments = {
             player_death: ['userid', 'attacker', 'assister'],
             player_hurt: ['userid', 'attacker']
-        };
+        };*/
+        const enrichments = parseEnrichmentList(enrichmentList);
         io.on('connection', incoming => {
             const newSocket = incoming?.client?.conn?.transport?.socket;
             const headers = incoming.request.headers;
@@ -70,14 +93,18 @@ class MIRVPGL {
                                 throw 'Error: version mismatch';
                             socket.send(new Uint8Array(Buffer.from('transBegin\0', 'utf8')), { binary: true });
                             socket.send(new Uint8Array(Buffer.from('exec\0mirv_pgl events enrich clientTime 1\0', 'utf8')), { binary: true });
-                            socket.send(new Uint8Array(Buffer.from('exec\0mirv_pgl events enrich eventProperty "useridWithSteamId" "player_death" "userid"\0', 'utf8')), { binary: true });
-                            socket.send(new Uint8Array(Buffer.from('exec\0mirv_pgl events enrich eventProperty "useridWithSteamId" "player_death" "attacker"\0', 'utf8')), { binary: true });
-                            socket.send(new Uint8Array(Buffer.from('exec\0mirv_pgl events enrich eventProperty "useridWithSteamId" "player_death" "assister"\0', 'utf8')), { binary: true });
-                            socket.send(new Uint8Array(Buffer.from('exec\0mirv_pgl events enrich eventProperty "useridWithSteamId" "player_hurt" "userid"\0', 'utf8')), { binary: true });
-                            socket.send(new Uint8Array(Buffer.from('exec\0mirv_pgl events enrich eventProperty "useridWithSteamId" "player_hurt" "attacker"\0', 'utf8')), { binary: true });
+                            for (const [eventName, enrichments] of Object.entries(enrichmentList)) {
+                                for (const [keyName, enrichmentNames] of Object.entries(enrichments)) {
+                                    const enrichmentProperties = Array.isArray(enrichmentNames) ? enrichmentNames : [enrichmentNames];
+                                    for (const enrichment of enrichmentProperties) {
+                                        socket.send(new Uint8Array(Buffer.from(`exec\0mirv_pgl events enrich eventProperty "${enrichment}" "${eventName}" "${keyName}"\0`, 'utf8')), { binary: true });
+                                    }
+                                }
+                            }
                             socket.send(new Uint8Array(Buffer.from('exec\0mirv_pgl events enabled 1\0', 'utf8')), {
                                 binary: true
                             });
+                            //socket.send(new Uint8Array(Buffer.from('exec\0mirv_pgl events useCache 1\0', 'utf8')), { binary: true });
                             socket.send(new Uint8Array(Buffer.from('transEnd\0', 'utf8')), { binary: true });
                             return;
                         }

@@ -183,7 +183,7 @@ const addPlayersWithExcel = async (req, res) => {
             if (imageMetaData) {
                 const image = workbook.model.media.find((media) => media.index === imageMetaData.imageId);
                 if (image) {
-                    avatar = (Buffer.from(image.buffer).toString('base64'));
+                    avatar = Buffer.from(image.buffer).toString('base64');
                 }
             }
             const team = teams.find(team => team.name === teamName && (team.game === game || (game === 'csgo' && !team.game)));

@@ -23,11 +23,19 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.openHUD = exports.hudContext = void 0;
 const electron_1 = require("electron");
 const huds_1 = require("./../server/api/huds");
 const path = __importStar(require("path"));
 const socket_1 = require("../server/socket");
 const keybinder_1 = require("../server/api/keybinder");
+exports.hudContext = {
+    huds: []
+};
+const changeWindowToScreen = (window, screen) => {
+    window.setBounds(screen.bounds);
+    window.moveTop();
+};
 class HUD {
     current;
     tray;
@@ -39,7 +47,7 @@ class HUD {
         this.show = true;
         this.hud = null;
     }
-    async open(dirName) {
+    async open(dirName, bounds) {
         const io = await socket_1.ioPromise;
         if (this.current !== null || this.hud !== null)
             return null;
@@ -55,6 +63,8 @@ class HUD {
             frame: false,
             transparent: true,
             focusable: true,
+            x: bounds?.x,
+            y: bounds?.y,
             webPreferences: {
                 backgroundThrottling: false,
                 preload: path.join(__dirname, 'preload.js')
@@ -73,10 +83,13 @@ class HUD {
         const tray = new electron_1.Tray(path.join(__dirname, 'favicon.ico'));
         tray.setToolTip('Lexogrine HUD Manager');
         tray.on('right-click', () => {
+            const displays = electron_1.screen.getAllDisplays();
+            const bounds = hudWindow.getBounds();
             const contextMenu = electron_1.Menu.buildFromTemplate([
                 { label: hud.name, enabled: false },
                 { type: 'separator' },
                 { label: 'Show', type: 'checkbox', click: () => this.toggleVisibility(), checked: this.show },
+                ...displays.map(display => ({ label: `Display: ${display.bounds.x}x${display.bounds.y}`, type: 'checkbox', click: () => changeWindowToScreen(hudWindow, display), checked: bounds.x === display.bounds.x && bounds.y === display.bounds.y })),
                 { label: 'Close HUD', click: () => this.close() }
             ]);
             tray.popUpContextMenu(contextMenu);
@@ -98,7 +111,8 @@ class HUD {
             // globalShortcut.unregister('Alt+F');
             this.hud = null;
             this.current = null;
-            io.emit('hud_opened', false);
+            exports.hudContext.huds = exports.hudContext.huds.filter(existing => existing !== this);
+            io.emit('hud_opened', !!exports.hudContext.huds.length);
             if (this.tray !== null) {
                 this.tray.destroy();
             }
@@ -165,7 +179,6 @@ class HUD {
         }
     }
     async close() {
-        const io = await socket_1.ioPromise;
         if (this.tray !== null) {
             this.tray.destroy();
         }
@@ -173,9 +186,15 @@ class HUD {
             return null;
         this.current.close();
         this.current = null;
-        io.emit('hud_opened', false);
         return true;
     }
 }
-const HUDWindow = new HUD();
-exports.default = HUDWindow;
+const openHUD = async (dirName, bounds) => {
+    const hud = new HUD();
+    const result = await hud.open(dirName, bounds);
+    if (!result)
+        return false;
+    exports.hudContext.huds.push(hud);
+    return true;
+};
+exports.openHUD = openHUD;

@@ -78,11 +78,7 @@ const exportTeams = async (file) => {
     sheet.properties.defaultColWidth = 20;
     sheet.getColumn(7).width = 18;
     for (const team of teams) {
-        const row = sheet.addRow([
-            team.name,
-            team.shortName,
-            team.country
-        ]);
+        const row = sheet.addRow([team.name, team.shortName, team.country]);
         if (team.logo) {
             row.height = 100;
             const buffer = Buffer.from(team.logo, 'base64');

@@ -5,8 +5,8 @@ import { GSI, HUDState, ioPromise, mirvPgl, runtimeConfig } from '../socket';
 import { playTesting } from './../api/huds/play';
 import { availableGames } from '../../types/interfaces';
 import { unregisterAllKeybinds, registerKeybind } from '../api/keybinder';
-import { getHUDData, getHUDKeyBinds } from '../api/huds';
-import HUDWindow from '../../init/huds';
+import { getHUDData } from '../api/huds';
+import { hudContext } from '../../init/huds';
 import { getARModuleData } from '../api/ar';
 
 let activeModuleDirs: string[] = [];
@@ -145,7 +145,7 @@ ioPromise.then(io => {
 		});
 
 		socket.on('is_hud_opened', () => {
-			socket.emit('hud_opened', !!HUDWindow.current);
+			socket.emit('hud_opened', !!hudContext.huds.length);
 		});
 
 		socket.on('toggle_module', async (moduleDir: string) => {

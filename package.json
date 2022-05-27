@@ -1,6 +1,6 @@
 {
   "name": "hud-manager",
-  "version": "3.7.1",
+  "version": "3.8.0",
   "homepage": "./",
   "description": "Lexogrine HUD Manager",
   "author": "Lexogrine",
@@ -90,8 +90,8 @@
     "nsis": {
       "license": "license.txt"
     },
-    "extraResources":"node_modules/win-7zip/7zip-lite",
-    "asarUnpack":"node_modules/win-7zip/7zip-lite/7z.exe",
+    "extraResources": "node_modules/win-7zip/7zip-lite",
+    "asarUnpack": "node_modules/win-7zip/7zip-lite/7z.exe",
     "files": [
       "dist/**/*",
       "package.json",

@@ -121,7 +121,7 @@ const addTeamsWithExcel = async (req, res) => {
             if (imageMetaData) {
                 const image = workbook.model.media.find((media) => media.index === imageMetaData.imageId);
                 if (image) {
-                    logo = (Buffer.from(image.buffer).toString('base64'));
+                    logo = Buffer.from(image.buffer).toString('base64');
                 }
             }
             teams.push({

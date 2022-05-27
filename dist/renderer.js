@@ -10,6 +10,7 @@ const path_1 = __importDefault(require("path"));
 const autoUpdater_1 = __importDefault(require("./autoUpdater"));
 const config_1 = require("./server/api/config");
 const integration_1 = require("./server/hlae/integration");
+const huds_1 = require("./init/huds");
 const isDev = process.env.DEV === 'true';
 exports.processEvents = new events_1.default();
 const createMainWindow = async (server, forceDev = false) => {
@@ -48,6 +49,12 @@ const createMainWindow = async (server, forceDev = false) => {
         minWidth: 740,
         minHeight: 440,
         width: 1200
+    });
+    electron_1.ipcMain.on('show-context-hud-display', (event, hudDir) => {
+        const displays = electron_1.screen.getAllDisplays();
+        const template = displays.map(display => ({ label: `Open on: ${display.bounds.x}x${display.bounds.y}`, click: () => (0, huds_1.openHUD)(hudDir, display.bounds) }));
+        const menu = electron_1.Menu.buildFromTemplate(template);
+        menu.popup({ window: win });
     });
     electron_1.ipcMain.on('min', () => {
         win?.minimize();
