@@ -32,10 +32,6 @@ const keybinder_1 = require("../server/api/keybinder");
 exports.hudContext = {
     huds: []
 };
-const changeWindowToScreen = (window, screen) => {
-    window.setBounds(screen.bounds);
-    window.moveTop();
-};
 class HUD {
     current;
     tray;
@@ -80,16 +76,18 @@ class HUD {
             hudWindow.webContents.send('raw', data);
         };
         socket_1.GSI.prependListener('raw', onData);
+        hudWindow.on("ready-to-show", () => {
+            setTimeout(() => {
+                hudWindow.webContents.send('raw', socket_1.runtimeConfig.last, socket_1.GSI.damage);
+            }, 200);
+        });
         const tray = new electron_1.Tray(path.join(__dirname, 'favicon.ico'));
         tray.setToolTip('Lexogrine HUD Manager');
         tray.on('right-click', () => {
-            const displays = electron_1.screen.getAllDisplays();
-            const bounds = hudWindow.getBounds();
             const contextMenu = electron_1.Menu.buildFromTemplate([
                 { label: hud.name, enabled: false },
                 { type: 'separator' },
                 { label: 'Show', type: 'checkbox', click: () => this.toggleVisibility(), checked: this.show },
-                ...displays.map(display => ({ label: `Display: ${display.bounds.x}x${display.bounds.y}`, type: 'checkbox', click: () => changeWindowToScreen(hudWindow, display), checked: bounds.x === display.bounds.x && bounds.y === display.bounds.y })),
                 { label: 'Close HUD', click: () => this.close() }
             ]);
             tray.popUpContextMenu(contextMenu);
@@ -191,6 +189,8 @@ class HUD {
 }
 const openHUD = async (dirName, bounds) => {
     const hud = new HUD();
+    if (exports.hudContext.huds.find(target => target.hud?.dir === dirName))
+        return null;
     const result = await hud.open(dirName, bounds);
     if (!result)
         return false;

@@ -21,14 +21,14 @@ const enrichmentList = {
     player_death: {
         userid: 'useridWithSteamId',
         attacker: 'useridWithSteamId',
-        assister: 'useridWithSteamId',
+        assister: 'useridWithSteamId'
     },
     player_hurt: {
         userid: 'useridWithSteamId',
-        attacker: 'useridWithSteamId',
+        attacker: 'useridWithSteamId'
     },
     weaponhud_selection: {
-        userid: 'useridWithSteamId',
+        userid: 'useridWithSteamId'
     }
 };
 class MIRVPGL {
@@ -95,7 +95,9 @@ class MIRVPGL {
                             socket.send(new Uint8Array(Buffer.from('exec\0mirv_pgl events enrich clientTime 1\0', 'utf8')), { binary: true });
                             for (const [eventName, enrichments] of Object.entries(enrichmentList)) {
                                 for (const [keyName, enrichmentNames] of Object.entries(enrichments)) {
-                                    const enrichmentProperties = Array.isArray(enrichmentNames) ? enrichmentNames : [enrichmentNames];
+                                    const enrichmentProperties = Array.isArray(enrichmentNames)
+                                        ? enrichmentNames
+                                        : [enrichmentNames];
                                     for (const enrichment of enrichmentProperties) {
                                         socket.send(new Uint8Array(Buffer.from(`exec\0mirv_pgl events enrich eventProperty "${enrichment}" "${eventName}" "${keyName}"\0`, 'utf8')), { binary: true });
                                     }

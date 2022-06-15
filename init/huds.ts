@@ -4,7 +4,7 @@ import * as path from 'path';
 //import ip from 'ip';
 import socketio from 'socket.io';
 import * as I from './../types/interfaces';
-import { GSI, ioPromise, mirvPgl } from '../server/socket';
+import { GSI, ioPromise, mirvPgl, runtimeConfig } from '../server/socket';
 import { registerKeybind, unregisterKeybind } from '../server/api/keybinder';
 import { CSGO, CSGORaw } from 'csgogsi-socket';
 
@@ -55,8 +55,15 @@ class HUD {
 		const onData = (data: CSGORaw) => {
 			hudWindow.webContents.send('raw', data);
 		};
+		
 
 		GSI.prependListener('raw', onData);
+
+		hudWindow.on("ready-to-show", () => {
+			setTimeout(() => {
+				hudWindow.webContents.send('raw', runtimeConfig.last, GSI.damage);
+			}, 200);
+		});
 
 		const tray = new Tray(path.join(__dirname, 'favicon.ico'));
 

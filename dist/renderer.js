@@ -52,7 +52,10 @@ const createMainWindow = async (server, forceDev = false) => {
     });
     electron_1.ipcMain.on('show-context-hud-display', (event, hudDir) => {
         const displays = electron_1.screen.getAllDisplays();
-        const template = displays.map(display => ({ label: `Open on: ${display.bounds.x}x${display.bounds.y}`, click: () => (0, huds_1.openHUD)(hudDir, display.bounds) }));
+        const template = displays.map(display => ({
+            label: `Open on: ${display.bounds.x}x${display.bounds.y}`,
+            click: () => (0, huds_1.openHUD)(hudDir, display.bounds)
+        }));
         const menu = electron_1.Menu.buildFromTemplate(template);
         menu.popup({ window: win });
     });

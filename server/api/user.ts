@@ -94,7 +94,7 @@ const connectSocket = (forceReconnect = false) => {
 		console.log('DB UPDATE INCOMING');
 		if (!customer.game) return;
 		const io = await ioPromise;
-		const result = await checkCloudStatus(customer.game);
+		const result = await checkCloudStatus(customer.game, () => { io.emit('match') });
 		if (result !== 'ALL_SYNCED') {
 			// TODO: Handle that
 			return;
@@ -274,6 +274,7 @@ const loadUser = async (workspace: I.Workspace | null, loggedIn = false) => {
 
 const loadUserWorkspaces = async () => {
 	const response = await userHandlers.getWorkspaces();
+	console.log(response);
 	if (!response || 'error' in response) {
 		if (!response) {
 			return { error: 'Not logged in' };

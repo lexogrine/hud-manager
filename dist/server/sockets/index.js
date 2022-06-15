@@ -41,7 +41,10 @@ socket_1.ioPromise.then(io => {
                 socket.leave(roomName);
             });
         });
-        socket.on('register', async (name, isDev, game = 'csgo') => {
+        socket.on('register', async (name, isDev, game = 'csgo', mode) => {
+            if (mode === 'IPC') {
+                socket.join("IPC");
+            }
             if (!isDev || socket_1.HUDState.devHUD) {
                 socket.on('hud_inner_action', (action) => {
                     io.to(isDev && socket_1.HUDState.devHUD ? socket_1.HUDState.devHUD.dir : name).emit(`hud_action`, action);

@@ -307,7 +307,7 @@ const uploadLocalToCloud = async (game, replaceCurrentCloud = false) => {
     }
 };
 exports.uploadLocalToCloud = uploadLocalToCloud;
-const checkCloudStatus = async (game) => {
+const checkCloudStatus = async (game, onAnyChange = () => { }) => {
     console.log('CHECKING CLOUD...');
     if (!(0, utils_1.canUserUseCloudStorage)(__1.customer)) {
         return 'ALL_SYNCED';
@@ -344,6 +344,7 @@ const checkCloudStatus = async (game) => {
             console.log('NO LOCAL RESOURCES, DOWNLOADING...');
             await Promise.all(I.availableResources.map(resource => downloadCloudData(game, resource)));
             updateLastDateLocally(game, result, true);
+            onAnyChange();
             return 'ALL_SYNCED';
         }
         const mappedResources = {
@@ -380,6 +381,7 @@ const checkCloudStatus = async (game) => {
         // Local data older, download non-synced resources
         await Promise.all(nonSyncedResources.map(resource => downloadCloudData(game, resource, lastUpdateStatusLocal[game][resource])));
         updateLastDateLocally(game, result.filter(resource => nonSyncedResources.includes(resource.resource)));
+        onAnyChange();
         return 'ALL_SYNCED';
     }
     catch (e) {
