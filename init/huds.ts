@@ -55,11 +55,10 @@ class HUD {
 		const onData = (data: CSGORaw) => {
 			hudWindow.webContents.send('raw', data);
 		};
-		
 
 		GSI.prependListener('raw', onData);
 
-		hudWindow.on("ready-to-show", () => {
+		hudWindow.on('ready-to-show', () => {
 			setTimeout(() => {
 				hudWindow.webContents.send('raw', runtimeConfig.last, GSI.damage);
 			}, 200);

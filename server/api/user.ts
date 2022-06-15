@@ -94,7 +94,9 @@ const connectSocket = (forceReconnect = false) => {
 		console.log('DB UPDATE INCOMING');
 		if (!customer.game) return;
 		const io = await ioPromise;
-		const result = await checkCloudStatus(customer.game, () => { io.emit('match') });
+		const result = await checkCloudStatus(customer.game, () => {
+			io.emit('match');
+		});
 		if (result !== 'ALL_SYNCED') {
 			// TODO: Handle that
 			return;
