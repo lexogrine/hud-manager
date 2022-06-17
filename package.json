@@ -171,7 +171,7 @@
     "@typescript-eslint/eslint-plugin": "^3.8.0",
     "@typescript-eslint/parser": "^3.8.0",
     "concurrently": "^6.3.0",
-    "electron": "^15.3.5",
+    "electron": "^15.5.5",
     "electron-builder": "^22.14.4",
     "electron-rebuild": "^3.2.3",
     "eslint": "^7.32.0",
