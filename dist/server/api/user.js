@@ -295,6 +295,7 @@ const getCurrent = async (req, res) => {
     }
     const result = await loadUser(null, true);
     if (result.success) {
+        (0, database_1.setSessionStore)({ workspace: null });
         return res.json({ ...api_1.customer, session: database_1.sessionStoreContext.session });
     }
     return res.json(result);

@@ -361,6 +361,7 @@ export const getCurrent: express.RequestHandler = async (req, res) => {
 	const result = await loadUser(null, true);
 
 	if (result.success) {
+		setSessionStore({ workspace: null });
 		return res.json({ ...customer, session: sessionStoreContext.session });
 	}
 
