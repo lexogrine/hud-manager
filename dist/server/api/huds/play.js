@@ -98,7 +98,7 @@ const initGameConnection = async () => {
             exports.playTesting.intervalId = null;
             io.emit('enableTest', true, exports.playTesting.isOnLoop);
         }
-        io.to('game').except("IPC").emit('update', req.body);
+        io.to('game').except('IPC').emit('update', req.body);
         socket_1.GSI.digest(req.body);
         res.sendStatus(200);
     });

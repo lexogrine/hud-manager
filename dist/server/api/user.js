@@ -82,7 +82,9 @@ const connectSocket = (forceReconnect = false) => {
         if (!api_1.customer.game)
             return;
         const io = await socket_1.ioPromise;
-        const result = await (0, cloud_1.checkCloudStatus)(api_1.customer.game, () => { io.emit('match'); });
+        const result = await (0, cloud_1.checkCloudStatus)(api_1.customer.game, () => {
+            io.emit('match');
+        });
         if (result !== 'ALL_SYNCED') {
             // TODO: Handle that
             return;
@@ -227,7 +229,6 @@ const loadUser = async (workspace, loggedIn = false) => {
 };
 const loadUserWorkspaces = async () => {
     const response = await userHandlers.getWorkspaces();
-    console.log(response);
     if (!response || 'error' in response) {
         if (!response) {
             return { error: 'Not logged in' };

@@ -43,7 +43,7 @@ socket_1.ioPromise.then(io => {
         });
         socket.on('register', async (name, isDev, game = 'csgo', mode) => {
             if (mode === 'IPC') {
-                socket.join("IPC");
+                socket.join('IPC');
             }
             if (!isDev || socket_1.HUDState.devHUD) {
                 socket.on('hud_inner_action', (action) => {

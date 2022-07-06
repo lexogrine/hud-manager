@@ -31,7 +31,7 @@ const database_1 = require("./database");
 const DecompressZip = require('decompress-zip');
 const temporaryFilesArchive = path.join(electron_1.app.getPath('userData'), 'archives');
 exports.LHMP = {
-    csgo: '1.3.0',
+    csgo: '1.3.1',
     rocketleague: '1.2.1',
     dota2: null,
     f1: null

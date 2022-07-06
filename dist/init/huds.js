@@ -76,7 +76,7 @@ class HUD {
             hudWindow.webContents.send('raw', data);
         };
         socket_1.GSI.prependListener('raw', onData);
-        hudWindow.on("ready-to-show", () => {
+        hudWindow.on('ready-to-show', () => {
             setTimeout(() => {
                 hudWindow.webContents.send('raw', socket_1.runtimeConfig.last, socket_1.GSI.damage);
             }, 200);

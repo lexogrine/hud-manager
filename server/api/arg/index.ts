@@ -3,6 +3,8 @@ import { SimpleWebSocket } from 'simple-websockets';
 import { CSGO } from 'csgogsi-socket';
 import { Item } from '../../../types/interfaces';
 
+const wait = (ms: number) => new Promise(r => setTimeout(r, ms));
+
 export const argSocket: {
 	socket: SimpleWebSocket | null;
 	id: string | null;
@@ -80,6 +82,12 @@ export const connectToARG = (code: string) => {
 
 	socket.on('connection', () => {
 		sendConfigToARG(true);
+	});
+
+	socket.on('ntpPing', async (t1: number) => {
+		const t2 = Date.now();
+		await wait(1000);
+		socket.send('ntpPong', t1, t2, Date.now());
 	});
 
 	socket.on('registered', sendARGStatus);
