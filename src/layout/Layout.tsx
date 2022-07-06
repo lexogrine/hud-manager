@@ -165,7 +165,7 @@ export default class Layout extends Component<{}, IState> {
 			const { session, ...user } = appLoadedUser;
 			this.setUser(user);
 			let forceInit = false;
-			if(user.customer && user.workspaces?.length === 1){
+			if (user.customer && user.workspaces?.length === 1) {
 				forceInit = true;
 			}
 			return this.setState({ loading: false }, async () => {
