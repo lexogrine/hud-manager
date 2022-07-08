@@ -94,7 +94,9 @@ const connectSocket = (forceReconnect = false) => {
 		console.log('DB UPDATE INCOMING');
 		if (!customer.game) return;
 		const io = await ioPromise;
-		const result = await checkCloudStatus(customer.game);
+		const result = await checkCloudStatus(customer.game, () => {
+			io.emit('match');
+		});
 		if (result !== 'ALL_SYNCED') {
 			// TODO: Handle that
 			return;
@@ -359,6 +361,7 @@ export const getCurrent: express.RequestHandler = async (req, res) => {
 	const result = await loadUser(null, true);
 
 	if (result.success) {
+		setSessionStore({ workspace: null });
 		return res.json({ ...customer, session: sessionStoreContext.session });
 	}
 

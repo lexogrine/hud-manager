@@ -20,11 +20,13 @@ If you are in the business of broadcasting professional CS:GO matches, the Lexog
   * [ACO](#aco)
   * [ARG](#arg)
   * [Timeline](#timeline)
+* [Import and Export](#import-and-export)
 * [Cloud Storage](#cloud-storage)
 * [Supported games](#supported-games)
 * [Signing HUDs](#signing-huds)
 * [Settings](#settings)
 * [Embedded Mode](#embedded-hud)
+* [Proxy](#proxy)
 * [HUD API](#hud-api)
   * [Structure](#structure)
     * [hud.json](#hudjson)
@@ -50,10 +52,10 @@ If you are in the business of broadcasting professional CS:GO matches, the Lexog
 - Player cam feed support (experimental)
 - Keybinding API
   
-## Installation
+# Installation
  Simply download the [Lexogrine HUD Manager's](https://github.com/lexogrine/hud-manager/releases/latest) installation file from its Github page and run it
 
-## Example HUD 
+# Example HUD 
 
 To get our example HUD, go to [CSGO React HUD github page](https://github.com/lexogrine/csgo-react-hud), download it and add it in the Lexogrine HUD Manager!
 
@@ -97,8 +99,9 @@ For convenience at the top of the screen you can push a command to run it in CS:
 
 There is available an experimental mode to render HUD, which uses afx_interop. Using this method the HUD will be rendered directly in the CS:GO process, not as an overlay application. It will enable using custom HUDs in the fullscreen mode as well, not only fullscreen windowed.
 
->Note #1 - to use the killfeed you need to run CS:GO through HLAE. If you check the "Use custom killfeed" option you will have to specify the path to HLAE.exe in the Settings section.
+>Note #0 - By default, running with HLAE and / or AFX will use pre-installed versions of those programs from LHM directory.
 
+>Note #1 - to use the killfeed you need to run CS:GO through HLAE. If you check the "Use custom killfeed" option you will have to specify the path to HLAE.exe in the Settings section.
 
 >Note #2 - to use AFX mode, beside specifying the path to the newest version of HLAE you are also required to set the path to the afx-cefhud-interop.exe file, which you will find in the [Release.7z and Release-Base.7z archive](https://drive.google.com/drive/folders/1CQFGMYhmz4x9DxunmwhWMp37ow6YOBON). You need to copy the .exe file from Release.7z to files from Release-Base.7z.
 
@@ -176,17 +179,19 @@ It is recommended to create a lot of small areas with multiple configs each. It 
 
 ## ARG
 
-Auto Replay Generator (Beta) is feature that integrates with vMix's Instant Replay feature. It automates observing, clipping, and then playing clipped fragments on stream. Complementary app can be found [HERE](https://github.com/lexogrine/auto-replay-generator). Additionaly you can modify priorities of the ARG.
+Auto Replay Generator is feature that integrates with vMix's Instant Replay feature. It automates observing, clipping, and then playing clipped fragments on stream. Complementary app can be found [HERE](https://github.com/lexogrine/auto-replay-generator). Additionaly you can modify priorities of the ARG.
 
 Example setup:
  - PC#1 - CS:GO on main GOTV, delay: X seconds
  - PC#2 - CS:GO with HLAE on replay GOTV, delay: X + 7 seconds, has vMix with Instant Replay feature
 
-LHM on PC#1 sends information about kills to Lexogrine Auto Replay Generator on PC#2. PC#2 is delayed, therefore it knows about kills, before they happen on it. Lexogrine Auto Replay Generator then uses HLAE to switch to kills it deems interesting and using vMix API clips them. When round ends, LARG will play clips to vMix output, and after a while, it will remove them.
+LHM on PC#1 sends information about kills to Lexogrine Auto Replay Generator on PC#2. PC#2 is delayed, therefore it knows about kills, before they happen on it. Lexogrine Auto Replay Generator then uses HLAE to switch to kills it deems interesting and using vMix API clips them. When round ends, LARG will play clips to vMix output, and after a while, it will remove them. 7 second value is recommended for best results.
 
 ARG requires vMix 24.0.0.62 or newer.
 
-It is up to user to configure vMix output on PC#2 and to make sure both PCs time is synchronized.
+It is up to user to configure vMix output on PC#2.
+
+If you are using LHM version older than 3.8.0 or ARG older than 1.4.0 you need to make sure both PCs time is synchronized.
 
 >Note - Delay between PCs is configurable on LHM's part
 
@@ -199,13 +204,20 @@ It is up to user to configure vMix output on PC#2 and to make sure both PCs time
 
 For Dota 2 we offer timeline feature - it's API endpoint which shows progression of the player stats during the game in small packets, allowing to see how player performed during the whole game. It calculates differences of most of the players statistics every 5 minutes.
 
-## Cloud Storage
+# Import and Export
+
+You can easily import and export data from Excel spreadsheets to Players' and Teams' database. To export, you just have to go Players or Teams tab and click "Export ...". To import data, you have to use either already exported sheet, or templates we prepared:
+
+ - [Teams](https://lhm.gg/download/teams-template)
+ - [Players](https://lhm.gg/download/players-template)
+
+# Cloud Storage
 
 Currently we offer cloud storage for Professional plans. It will help you keep all of your devices synced with each other, removing the need for copying files between the PCs.
 
-## Supported Games
+# Supported Games
 
-Currently we support CS:GO, Dota 2 & Rocket League, but that list will only expand.
+Currently we support CS:GO, Rocket League, Dota 2 & F1 but that list will only expand.
 
 Additonally it's possible to create non-game HUD, which will be available from any game.
 
@@ -214,24 +226,35 @@ Example of the HUDs:
  - [CSGO](https://github.com/lexogrine/csgo-react-hud)
  - [Dota 2](https://github.com/lexogrine/dota2-react-hud)
  - [Rocket League](https://github.com/lexogrine/rl-react-hud)
+ - [F1 2021](https://github.com/lexogrine/f1-react-hud)
  - [All](https://github.com/lexogrine/all-react-hud)
 
 
-## Signing HUDs
+# Signing HUDs
 
 Signing HUDs is first step towards helping developers feel safe about their creations. We allow for signing HUDs (`npm run sign` in CS:GO React HUD repo), which will make them much more resistant to change - Lexogrine HUD Manager will not run HUD that has incorrect signature, preventing unwanted changes to the code.
 
-## Embedded HUD
+# Embedded HUD
 
-At this point there is an option to embedd any HUD in CS:GO using HLAE and afx_interop. It gives the advantage of being able to use CS:GO in fullscreen mode while using the custom HUDs. It must be noted however, that this mode may affect the framerate.
+At this point there is an option to embedd any HUD in CS:GO using HLAE and afx_interop. It gives the advantage of being able to use CS:GO in fullscreen mode while using the custom HUDs. It must be noted however, that this mode may affect the framerate. By default LHM will use pre-installed HLAE & AFX. If you are okay with that, skip next paragraph.
 
-If you want to use this mode, you need to get latest HLAE, and latest afx-cefhud-interop. Download the newest Release.7z from https://github.com/advancedfx/afx-cefhud-interop/releases and unpack it. and set path to the afx-cefhud-interop.exe in the Lexogrine HUD Manager's settings. At this point the setup is completed - you just need to switch to the embedded mode in HUDs tab, toggle which HUD you intend to use and click RUN GAME (if you already have installed the config files of course).
+If you want to use this mode, you need to get latest HLAE, and latest afx-cefhud-interop. Download the newest Release.7z from https://github.com/advancedfx/afx-cefhud-interop/releases and unpack it. and set path to the afx-cefhud-interop.exe in the Lexogrine HUD Manager's settings.
+
+At this point the setup is completed - you just need to switch to the embedded mode in HUDs tab, toggle which HUD you intend to use and click RUN GAME (if you already have installed the config files of course).
 
 
-## HUD API
-### Structure
+# Proxy
+LHM allows for proxying requests through `/proxy` in case of a CORS issues. It requires `LHM_TARGET` query, which will specify base domain. Example:
+
+```javascript
+fetch(`${apiUrl}proxy/dir1/dir2?format=JSON&query=VALUE&LHM_TARGET=https://api.someservice.org`)
+```
+This will forward your request to `https://api.someservice.org/dir1/dir2?format=JSON&query=VALUE`, and should bypass CORS issues.
+
+# HUD API
+## Structure
 A HUD **must have** a valid `hud.json` to be considered legitimate. For optional functionalities, there are `panel.json` and `keybinds.json` files.
-#### hud.json
+### hud.json
   Lexogrine HUD Manager's upload field accepts HUD .zip files that contain a proper `hud.json` file. It should look like this:
   ```javascript
   {
@@ -250,7 +273,7 @@ A HUD **must have** a valid `hud.json` to be considered legitimate. For optional
 }
   ```
   The Lexogrine HUD Manager will not accept any .zip files that do not have a correct `hud.json` file in their root.
-#### panel.json
+### panel.json
 `panel.json` controls the custom data inputs you want to have in the HUD, for example - tournament logo, tournament name etc., so any data that you want to set up on match to match basis. The example file looks like this:
   ```json
   [{
@@ -340,7 +363,7 @@ Additionally, there is an action input that sends predetermined data and renders
 }
 ```
 Each value in the action input is a seperate button. To see how to listen for data from the HUD's side, please see "`panel.json API`" part of the [CSGO React HUD](https://github.com/lexogrine/csgo-react-hud#paneljson-api) documentation.
-#### keybinds.json
+### keybinds.json
 This file is basically another way to communicate with the HUD. Let's look at the example file:
 ```json
 [
@@ -363,15 +386,15 @@ This file is basically another way to communicate with the HUD. Let's look at th
 ]
 ```
 Again, ot is just an array of actions. Each bind only has `bind` and `action` properties. Bind is the keybind you want to use, and action is the identifier of an action. What differentiates it from the `panel.json` action input, is that here we don't have additional data packed with the action name.
-#### Radar
+### Radar
 
 Lexogrine HUD has its own radar, which is much more customizable than embedded Boltobserv, therefore using Boltobserv is discouraged, as it is no longer supported as of 2.0.
 
-#### thumb.png	
+### thumb.png	
 You should include this file for a nice display in the HUDs tab in the Lexogrine HUD Manager, as it will be displayed next to its name. Recommended size: 64px x 64px.
-## Technicalities
+# Technicalities
 
-Lexogrine HUD Manager uses, among others, Express.js for its REST API and GSI endpoints, `csgogsi`, `csgogsi-socket` for data parsing, joining the additional info about teams and players and listening for events such as end of round.
+Lexogrine HUD Manager uses, among others, Express.js for its REST API and GSI endpoints, `csgogsi`, `csgogsi-socket`, `dotagsi` for data parsing, joining the additional info about teams and players and listening for events such as end of round.
 
 Lexogrine HUD Manager exposes the port specified in settings as entry point for WebSockets, and sends `update` event that comes with CSGOParsed object, which definition you can find here: https://www.npmjs.com/package/csgogsi
 

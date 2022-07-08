@@ -82,7 +82,9 @@ const connectSocket = (forceReconnect = false) => {
         if (!api_1.customer.game)
             return;
         const io = await socket_1.ioPromise;
-        const result = await (0, cloud_1.checkCloudStatus)(api_1.customer.game);
+        const result = await (0, cloud_1.checkCloudStatus)(api_1.customer.game, () => {
+            io.emit('match');
+        });
         if (result !== 'ALL_SYNCED') {
             // TODO: Handle that
             return;
@@ -293,6 +295,7 @@ const getCurrent = async (req, res) => {
     }
     const result = await loadUser(null, true);
     if (result.success) {
+        (0, database_1.setSessionStore)({ workspace: null });
         return res.json({ ...api_1.customer, session: database_1.sessionStoreContext.session });
     }
     return res.json(result);

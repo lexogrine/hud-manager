@@ -23,11 +23,15 @@ var __importStar = (this && this.__importStar) || function (mod) {
     return result;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.openHUD = exports.hudContext = void 0;
 const electron_1 = require("electron");
 const huds_1 = require("./../server/api/huds");
 const path = __importStar(require("path"));
 const socket_1 = require("../server/socket");
 const keybinder_1 = require("../server/api/keybinder");
+exports.hudContext = {
+    huds: []
+};
 class HUD {
     current;
     tray;
@@ -39,7 +43,7 @@ class HUD {
         this.show = true;
         this.hud = null;
     }
-    async open(dirName) {
+    async open(dirName, bounds) {
         const io = await socket_1.ioPromise;
         if (this.current !== null || this.hud !== null)
             return null;
@@ -55,6 +59,8 @@ class HUD {
             frame: false,
             transparent: true,
             focusable: true,
+            x: bounds?.x,
+            y: bounds?.y,
             webPreferences: {
                 backgroundThrottling: false,
                 preload: path.join(__dirname, 'preload.js')
@@ -70,6 +76,11 @@ class HUD {
             hudWindow.webContents.send('raw', data);
         };
         socket_1.GSI.prependListener('raw', onData);
+        hudWindow.on('ready-to-show', () => {
+            setTimeout(() => {
+                hudWindow.webContents.send('raw', socket_1.runtimeConfig.last, socket_1.GSI.damage);
+            }, 200);
+        });
         const tray = new electron_1.Tray(path.join(__dirname, 'favicon.ico'));
         tray.setToolTip('Lexogrine HUD Manager');
         tray.on('right-click', () => {
@@ -98,7 +109,8 @@ class HUD {
             // globalShortcut.unregister('Alt+F');
             this.hud = null;
             this.current = null;
-            io.emit('hud_opened', false);
+            exports.hudContext.huds = exports.hudContext.huds.filter(existing => existing !== this);
+            io.emit('hud_opened', !!exports.hudContext.huds.length);
             if (this.tray !== null) {
                 this.tray.destroy();
             }
@@ -165,7 +177,6 @@ class HUD {
         }
     }
     async close() {
-        const io = await socket_1.ioPromise;
         if (this.tray !== null) {
             this.tray.destroy();
         }
@@ -173,9 +184,17 @@ class HUD {
             return null;
         this.current.close();
         this.current = null;
-        io.emit('hud_opened', false);
         return true;
     }
 }
-const HUDWindow = new HUD();
-exports.default = HUDWindow;
+const openHUD = async (dirName, bounds) => {
+    const hud = new HUD();
+    if (exports.hudContext.huds.find(target => target.hud?.dir === dirName))
+        return null;
+    const result = await hud.open(dirName, bounds);
+    if (!result)
+        return false;
+    exports.hudContext.huds.push(hud);
+    return true;
+};
+exports.openHUD = openHUD;

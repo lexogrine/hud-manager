@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.sendConfigToARG = exports.sendKillsToARG = exports.parseCSGOKills = exports.connectToARG = exports.sendARGStatus = exports.getIP = exports.argSocket = void 0;
 const socket_1 = require("../../socket");
 const simple_websockets_1 = require("simple-websockets");
+const wait = (ms) => new Promise(r => setTimeout(r, ms));
 exports.argSocket = {
     delay: 5,
     socket: null,
@@ -64,6 +65,11 @@ const connectToARG = (code) => {
     const socket = new simple_websockets_1.SimpleWebSocket(socketAddress);
     socket.on('connection', () => {
         (0, exports.sendConfigToARG)(true);
+    });
+    socket.on('ntpPing', async (t1) => {
+        const t2 = Date.now();
+        await wait(1000);
+        socket.send('ntpPong', t1, t2, Date.now());
     });
     socket.on('registered', exports.sendARGStatus);
     exports.argSocket.socket = socket;

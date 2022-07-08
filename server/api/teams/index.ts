@@ -1,5 +1,7 @@
 import { databaseContext } from './../../../init/database';
 import { Team, AvailableGames } from '../../../types/interfaces';
+import Excel from 'exceljs';
+import { customer } from '..';
 
 export async function getTeamById(id: string, logo = false): Promise<Team | null> {
 	return new Promise(res => {
@@ -57,3 +59,43 @@ export const replaceLocalTeams = (newTeams: Team[], game: AvailableGames, existi
 			});
 		});
 	});
+
+export const exportTeams = async (file: string) => {
+	const game = customer.game;
+	const $or: any[] = [{ game }];
+	if (game === 'csgo') {
+		$or.push({ game: { $exists: false } });
+	}
+
+	const teams = await getTeamsList({ $or });
+
+	const workbook = new Excel.Workbook();
+
+	const sheet = workbook.addWorksheet('Players');
+
+	sheet.addRow(['Team name', 'Short name', 'Country Code', 'Logo']);
+
+	sheet.properties.defaultColWidth = 20;
+	sheet.getColumn(7).width = 18;
+
+	for (const team of teams) {
+		const row = sheet.addRow([team.name, team.shortName, team.country]);
+
+		if (team.logo) {
+			row.height = 100;
+			const buffer = Buffer.from(team.logo, 'base64');
+
+			const logoId = workbook.addImage({
+				buffer,
+				extension: 'png'
+			});
+
+			sheet.addImage(logoId, {
+				tl: { row: row.number - 1, col: 3 },
+				ext: { width: 100, height: 100 }
+			});
+		}
+	}
+
+	workbook.xlsx.writeFile(file);
+};

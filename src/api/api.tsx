@@ -107,6 +107,7 @@ export default {
 		get: async () => apiV2<I.Team[]>('teams'),
 		add: async (team: any) => await apiV2('teams', 'POST', team),
 		update: async (id: string, team: any) => await apiV2(`teams/${id}`, 'PATCH', team),
+		export: () => apiV2('teams/export', 'POST'),
 		delete: async (id: string | string[]) =>
 			await apiV2(`teams/${typeof id === 'string' ? id : id.join(';')}`, 'DELETE'),
 		import: (data: string) => apiV2('teams/import', 'POST', { data }),

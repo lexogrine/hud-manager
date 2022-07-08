@@ -9,7 +9,7 @@ const initRoute = () => {
 
 	app.route('/api/players/import').post(verifyGame, P.addPlayersWithExcel);
 
-	app.route('/api/players/export').post(verifyGame, saveFile('player.xlsx', '', false, exportPlayers));
+	app.route('/api/players/export').post(verifyGame, saveFile('players.xlsx', '', false, exportPlayers));
 
 	app.route('/api/players/fields').get(P.getFields).patch(P.updateFields);
 

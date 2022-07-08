@@ -110,7 +110,7 @@ const exportPlayers = async (file) => {
             const buffer = Buffer.from(player.avatar, 'base64');
             const avatarId = workbook.addImage({
                 buffer,
-                extension: 'png',
+                extension: 'png'
             });
             sheet.addImage(avatarId, {
                 tl: { row: row.number - 1, col: 6 },

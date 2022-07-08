@@ -177,8 +177,6 @@ export default async function (/*io: Server<DefaultEventsMap, DefaultEventsMap, 
 
 	app.route('/api/huds/add').post(huds.sendHUD);
 
-	app.route('/api/huds/close').post(huds.closeHUD);
-
 	app.route('/api/huds/:hudDir/start').post(huds.showHUD);
 
 	app.route('/api/huds/download/:uuid').get(huds.downloadHUD);

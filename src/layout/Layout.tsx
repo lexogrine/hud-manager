@@ -164,14 +164,17 @@ export default class Layout extends Component<{}, IState> {
 			}
 			const { session, ...user } = appLoadedUser;
 			this.setUser(user);
-
+			let forceInit = false;
+			if (user.customer && user.workspaces?.length === 1) {
+				forceInit = true;
+			}
 			return this.setState({ loading: false }, async () => {
-				if (!init) return;
+				if (!init && !forceInit) return;
 				if (session.game !== null) {
 					const workspaceResult = await api.user.setWorkspace(session.workspace);
 					if (!workspaceResult.success) return;
 
-					this.setGame(session.game, true);
+					this.setGame(session.game, !forceInit);
 				}
 			});
 		} catch {

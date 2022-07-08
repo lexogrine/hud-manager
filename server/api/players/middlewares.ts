@@ -4,7 +4,7 @@ import { Player, AvailableGames, availableGames } from '../../../types/interface
 import { loadConfig, internalIP } from './../config';
 import fetch from 'node-fetch';
 import isSvg from './../../../src/isSvg';
-import { getPlayersList, getPlayerById, getPlayerBySteamId, addPlayers, exportPlayers } from './index';
+import { getPlayersList, getPlayerById, getPlayerBySteamId, addPlayers } from './index';
 import * as F from './../fields';
 import { validateCloudAbility, customer } from '..';
 import { addResource, updateResource, deleteResource, checkCloudStatus, updateLastDateLocallyOnly } from '../cloud';
@@ -155,6 +155,7 @@ export const addPlayersWithExcel: express.RequestHandler = async (req, res) => {
 		}
 
 		const teams = await getTeamsList({ $or });
+		const images = worksheet.getImages();
 
 		worksheet.eachRow(row => {
 			const username = row.getCell('A').value?.toString?.() || '';
@@ -168,6 +169,18 @@ export const addPlayersWithExcel: express.RequestHandler = async (req, res) => {
 			const lastName = row.getCell('D').value?.toString?.() || '';
 			const country = row.getCell('E').value?.toString?.() || '';
 			const teamName = row.getCell('F').value?.toString?.() || '';
+			let avatar = '';
+
+			const imageMetaData = images.find(
+				img => img.range.tl.nativeRow === row.number - 1 && img.range.tl.nativeCol === 6
+			);
+
+			if (imageMetaData) {
+				const image = workbook.model.media.find((media: any) => media.index === imageMetaData.imageId);
+				if (image) {
+					avatar = Buffer.from(image.buffer).toString('base64');
+				}
+			}
 
 			const team = teams.find(
 				team => team.name === teamName && (team.game === game || (game === 'csgo' && !team.game))
@@ -184,7 +197,7 @@ export const addPlayersWithExcel: express.RequestHandler = async (req, res) => {
 				team: teamId,
 				extra: {},
 				game,
-				avatar: ''
+				avatar
 			} as Player);
 		});
 

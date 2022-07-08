@@ -26,14 +26,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.singHUDByDir = exports.signHUD = exports.uploadHUD = exports.deleteHUDFromCloud = exports.downloadHUD = exports.removeArchives = exports.sendActionByHTTP = exports.deleteHUD = exports.sendHUD = exports.closeHUD = exports.showHUD = exports.legacyCSS = exports.legacyJS = exports.renderLegacy = exports.renderAssets = exports.getThumbPath = exports.renderThumbnail = exports.renderOverlay = exports.render = exports.verifyOverlay = exports.renderHUD = exports.openHUDsDirectory = exports.getHUDPanelSetting = exports.getHUDKeyBinds = exports.getHUDData = exports.getHUDPublicKey = exports.getHUDARSettings = exports.getHUDCustomAsset = exports.getHUDs = exports.getHUDDirectory = exports.listHUDs = exports.remove = exports.getRandomString = void 0;
+exports.singHUDByDir = exports.signHUD = exports.uploadHUD = exports.deleteHUDFromCloud = exports.downloadHUD = exports.removeArchives = exports.sendActionByHTTP = exports.deleteHUD = exports.sendHUD = exports.showHUD = exports.legacyCSS = exports.legacyJS = exports.renderLegacy = exports.renderAssets = exports.getThumbPath = exports.renderThumbnail = exports.renderOverlay = exports.render = exports.verifyOverlay = exports.renderHUD = exports.openHUDsDirectory = exports.getHUDPanelSetting = exports.getHUDKeyBinds = exports.getHUDData = exports.getHUDPublicKey = exports.getHUDARSettings = exports.getHUDCustomAsset = exports.getHUDs = exports.getHUDDirectory = exports.listHUDs = exports.remove = exports.getRandomString = void 0;
 const fs = __importStar(require("fs"));
 const path = __importStar(require("path"));
 const electron_1 = require("electron");
 const express_1 = __importDefault(require("express"));
 const config_1 = require("./config");
 const socket_1 = require("./../socket");
-const huds_1 = __importDefault(require("./../../init/huds"));
+const huds_1 = require("./../../init/huds");
 const overlay_1 = __importDefault(require("./overlay"));
 const v4_1 = __importDefault(require("uuid/v4"));
 const user_1 = require("./user");
@@ -530,21 +530,13 @@ const legacyCSS = (req, res) => {
 };
 exports.legacyCSS = legacyCSS;
 const showHUD = async (req, res) => {
-    const response = await huds_1.default.open(req.params.hudDir);
+    const response = await (0, huds_1.openHUD)(req.params.hudDir);
     if (response) {
         return res.sendStatus(200);
     }
     return res.sendStatus(404);
 };
 exports.showHUD = showHUD;
-const closeHUD = async (req, res) => {
-    const response = await huds_1.default.close();
-    if (response) {
-        return res.sendStatus(200);
-    }
-    return res.sendStatus(404);
-};
-exports.closeHUD = closeHUD;
 const sendHUD = async (req, res) => {
     if (!req.body.hud || !req.body.name)
         return res.sendStatus(422);
@@ -562,7 +554,7 @@ const sendHUD = async (req, res) => {
 exports.sendHUD = sendHUD;
 const deleteHUD = async (req, res) => {
     const io = await socket_1.ioPromise;
-    if (!req.query.hudDir || typeof req.query.hudDir !== 'string' || huds_1.default.current)
+    if (!req.query.hudDir || typeof req.query.hudDir !== 'string' || !!huds_1.hudContext.huds.length)
         return res.sendStatus(422);
     const hudPath = (0, exports.getHUDDirectory)(req.query.hudDir);
     if (!fs.existsSync(hudPath)) {

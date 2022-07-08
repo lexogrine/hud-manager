@@ -255,6 +255,9 @@ const TeamsTab = ({ cxt, search }: IProps) => {
 			/>
 		);
 	}
+	const exportTeams = () => {
+		api.teams.export();
+	};
 
 	return (
 		<>
@@ -339,6 +342,9 @@ const TeamsTab = ({ cxt, search }: IProps) => {
 				))}
 			</div>
 			<div className="action-container">
+				<div className="button green empty big wide" onClick={exportTeams}>
+					Export teams
+				</div>
 				<div className="button green empty big wide" onClick={() => setImportState(true)}>
 					Import teams
 				</div>

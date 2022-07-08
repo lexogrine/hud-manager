@@ -1,11 +1,11 @@
 import * as fs from 'fs';
 import * as path from 'path';
-import { app, shell, Notification } from 'electron';
-import express, { request, RequestHandler } from 'express';
+import { app, shell, Notification, screen } from 'electron';
+import express, { RequestHandler } from 'express';
 import * as I from './../../types/interfaces';
 import { loadConfig, publicIP, internalIP } from './config';
 import { HUDState, ioPromise } from './../socket';
-import HUDWindow from './../../init/huds';
+import { hudContext, openHUD } from './../../init/huds';
 import overlay from './overlay';
 import uuidv4 from 'uuid/v4';
 import { api } from './user';
@@ -542,15 +542,7 @@ export const legacyCSS: express.RequestHandler = (req, res) => {
 };
 
 export const showHUD: express.RequestHandler = async (req, res) => {
-	const response = await HUDWindow.open(req.params.hudDir);
-	if (response) {
-		return res.sendStatus(200);
-	}
-	return res.sendStatus(404);
-};
-
-export const closeHUD: express.RequestHandler = async (req, res) => {
-	const response = await HUDWindow.close();
+	const response = await openHUD(req.params.hudDir);
 	if (response) {
 		return res.sendStatus(200);
 	}
@@ -573,7 +565,8 @@ export const sendHUD: express.RequestHandler = async (req, res) => {
 
 export const deleteHUD: express.RequestHandler = async (req, res) => {
 	const io = await ioPromise;
-	if (!req.query.hudDir || typeof req.query.hudDir !== 'string' || HUDWindow.current) return res.sendStatus(422);
+	if (!req.query.hudDir || typeof req.query.hudDir !== 'string' || !!hudContext.huds.length)
+		return res.sendStatus(422);
 	const hudPath = getHUDDirectory(req.query.hudDir);
 	if (!fs.existsSync(hudPath)) {
 		return res.sendStatus(200);
