@@ -1,0 +1,4 @@
+owner: lexogrine
+repo: hud-manager
+provider: github
+updaterCacheDirName: hud-manager-updater
