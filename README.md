@@ -270,6 +270,7 @@ A HUD **must have** a valid `hud.json` to be considered legitimate. For optional
 	"legacy": false, //Specify whether it was created for the old system - it should work, but keep in mind that this functionality is deprecated
 	"radar": true, //Does the HUD include radar support
 	"killfeed": true, //Does the HUD include killfeed support
+	"variants": ["veto-variant"] // Adds variant to the HUD. It will be accessible through different URL, and will be identifiable through code, while being the same HUD, so you can change the behaviour of the HUD based on the variant identification
 }
   ```
   The Lexogrine HUD Manager will not accept any .zip files that do not have a correct `hud.json` file in their root.
