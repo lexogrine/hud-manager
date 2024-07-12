@@ -433,6 +433,8 @@ Lexogrine HUD Manager was written for Windows.
 |`/api/teams`|POST| Adding Team. Body must by Team object without _id|
 |`/api/teams/:id`|PATCH| Updating Team |
 |`/api/timeline/:game`|GET| Get Timeline for given game. Dota 2 only |
+|`/api/scout`|GET| Gets current state of Scout modules |
+|`/api/scout`|POST| Toggles Scout modules. Requires body with keys "vision", "cinematic", "predict". Values are boolean for forcing ON / OFF state or `null` for toggling |
 
 
 
