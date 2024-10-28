@@ -1,7 +1,7 @@
 ![Lexogrine HUD Manager](assets/githubLogo.png?raw=true)
 # Lexogrine HUD Manager
 
-If you are in the business of broadcasting professional CS:GO matches, the Lexogrine HUD Manager is the tool just for you. It allows for a more effective management of data during tournaments; you can set up matches, vetos, team photographs, and then use it in any compatible HUD you have.
+If you are in the business of broadcasting professional Counter-Strike, League of Legends, Valorant, Dota 2 or Rocket League matches, the Lexogrine HUD Manager is the tool just for you. It allows for a more effective management of data during tournaments; you can set up matches, vetos, team photographs, and then use it in any compatible HUD you have.
 
 # Content
 
