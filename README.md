@@ -57,12 +57,12 @@ LHM is both a fully automated platform and programming environment, so you can b
 
 You can find them here:
 
-- CS2 default React HUD
-- Dota 2 default React HUD
-- League of Legends default React HUD
-- Valorant default React HUD
-- Rocket League default React HUD
-- Apex Legends default React HUD
+- [CS2 default React HUD](https://github.com/lexogrine/cs2-react-hud/)
+- [Dota 2 default React HUD](https://github.com/lexogrine/dota2-react-hud)
+- [League of Legends default React HUD](https://github.com/lexogrine/league_of_legends_react_hud)
+- [Valorant default React HUD](https://github.com/lexogrine/valorant-react-hud)
+- [Rocket League default React HUD](https://github.com/lexogrine/rl-react-hud)
+- [Apex Legends default React HUD](https://github.com/lexogrine/apex-hud)
 
 Additionally, you can use a local network address for the Browser Source-type screen to grab the HUD view on another PC, access each of the HUD's action panels prepared by the authors, and directly run a transparent window with the HUD.
 
@@ -106,12 +106,12 @@ If you encounter any problems or have questions, send us a message on [LHM.gg](h
 
 LHM comes with advanced features that can automate most of your production:
 
-- Scout AI \- AI observer, cinematics, and match predictions
-- LHM Replays \- automatic replays for CS2 and Dota 2
-- LHM Cameras \- players’ cameras
-- LHM Signals \- automatic game event capture and Companion automation
-- LHM Addons \- plugins to extend LHM functionalities based on in-game events and LHM environment
-- LHM Map Veto \- automated LAN and online map veto with dedicated overlays for CS2 and Valorant
+- [Scout AI \- AI observer, cinematics, and match predictions](https://lhm.gg/features/scout-ai)
+- [LHM Replays \- automatic replays for CS2 and Dota 2](https://lhm.gg/features/replays)
+- [LHM Cameras \- players’ cameras](https://lhm.gg/features/hud-cameras)
+- [LHM Signals \- automatic game event capture and Companion automation](https://lhm.gg/features/signals)
+- [LHM Addons \- plugins to extend LHM functionalities based on in-game events and LHM environment](https://lhm.gg/features/addons)
+- [LHM Map Veto \- automated LAN and online map veto with dedicated overlays for CS2 and Valorant](https://lhm.gg/veto)
 
 ##### **Teams**
 
