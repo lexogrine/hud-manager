@@ -1,46 +1,39 @@
-![Lexogrine HUD Manager](assets/githubLogo.png?raw=true)
-# Lexogrine HUD Manager
+# [**LHM.gg**](http://LHM.gg) **\- Lexogrine HUD Manager**
 
-If you are in the business of broadcasting professional Counter-Strike, League of Legends, Valorant, Dota 2 or Rocket League matches, the Lexogrine HUD Manager is the tool just for you. It allows for a more effective management of data during tournaments; you can set up matches, vetos, team photographs, and then use it in any compatible HUD you have.
+LHM.gg is a powerful esports cloud platform: all-in-one broadcasting, observing, spectating, production, events, HUDs, overlays, analytics, and esports tournament Manager for CS2, Dota 2, League of Legends, Valorant, Rocket League, and Apex Legends.
 
-# Content
+It automates production, offers advanced features like cloud synchronization, players' cameras, AI observers, and manages spectator overlays and HUDs.
 
-* [Features](#features)
-* [Installation](#installation)
-* [Example HUD](#example-hud)
-* [Usage](#usage)
-  * [Teams](#teams)
-  * [Players](#players)
-  * [Matches](#matches)
-  * [HUDs](#huds)
-  * [Testing](#testing)
-  * [Player cam feed](#player-cam-feed)
-  * [Custom database fields](#custom-database-fields)
-  * [AR](#ar)
-  * [ACO](#aco)
-  * [ARG](#arg)
-  * [Timeline](#timeline)
-* [Import and Export](#import-and-export)
-* [Cloud Storage](#cloud-storage)
-* [Supported games](#supported-games)
-* [Signing HUDs](#signing-huds)
-* [Settings](#settings)
-* [Embedded Mode](#embedded-hud)
-* [Proxy](#proxy)
-* [HUD API](#hud-api)
-  * [Structure](#structure)
-    * [hud.json](#hudjson)
-    * [panel.json](#paneljson)
-    * [keybinds.json](#keybindsjson)
-  * [Radar](#radar)
-    * [radar.css](#radarcss)
-    * [Radar files](#radar-files)
-  * [thumb.png](#thumbpng)
-* [Technicalities](#technicalities)
-* [REST API](#rest-api)
-* [Credits](#credits)
+LHM is created by Lexogrine, a leading AI software company, offering top-tier [AI](https://www.lexogrine.com/services/ai-data-science), [web](https://www.lexogrine.com/services/web-software-development), and [mobile development](https://www.lexogrine.com/services/mobile-development) services.
 
-## Features
+#### **Content**
+
+- [Features](#features)
+- [Installation](#installation)
+- [HUDs and Overlays](#huds-and-overlays)
+  - [Ultra HUDs](#ultra-huds)
+  - [Premium HUDs](#premium-huds)
+  - [Open-source React HUDs](#open-source-react-huds)
+- [Usage](#usage)
+  - [Teams](#teams)
+  - [Players](#players)
+  - [Matches](#matches)
+  - [Testing](#testing)
+  - [Custom database fields](#custom-database-fields)
+  - [LHM Cameras](#lhm-cameras)
+  - [LHM Signals](#lhm-signals)
+- [Easy Data Import](#easy-data-import)
+- [LHM Cloud \- Cloud Storage](#lhm-cloud---cloud-storage-for-your-huds-overlays-and-data)
+- [Supported games](#supported-games)
+- [Signing HUDs](#signing-huds)
+- [Settings](#settings)
+- [Custom HUD structure](#custom-hud-structure)
+- [Technicalities](#technicalities)
+- [REST API](#rest-api)
+- [About Lexogrine](#about-lexogrine)
+
+#### **Features**
+
 - Player database
 - Team database
 - Match data collection
@@ -51,394 +44,233 @@ If you are in the business of broadcasting professional Counter-Strike, League o
 - Custom HUD support
 - Player cam feed support (experimental)
 - Keybinding API
-  
-# Installation
- Simply download the [Lexogrine HUD Manager's](https://github.com/lexogrine/hud-manager/releases/latest) installation file from its Github page and run it
 
-# Example HUD 
+#### **Installation**
 
-To get our example HUD, go to [CSGO React HUD github page](https://github.com/lexogrine/csgo-react-hud), download it and add it in the Lexogrine HUD Manager!
+Download the latest version of LHM from the GitHub repository or directly from the [LHM.gg](http://LHM.gg) website. Once installed, LHM will automatically connect itself to most of the supported games. Some games require a few additional steps, you can read more about them in our Guide.
 
+#### **HUDs and Overlays**
 
-![Preview of HUDs panel in action](preview.png)
+All LHM HUDs are automatically stored in LHM Cloud, so once you upload the HUD, you no longer need to worry about manually sending it from one event to the next. Each subscription plan comes with its own storage limit, so the more HUDs and overlays you have, the bigger the storage you will need. Simply drag'n'drop area for HUD .zip files, so installation of new ones is a matter of seconds.
 
-## Usage
+LHM is both a fully automated platform and programming environment, so you can both use Lexogrine-created HUDs and overlays, ready to be used with just a few simple clicks, or develop your own HUDs and overlays from scratch, thanks to the availability of open source default React HUDs for every supported game.
 
-By default, Lexogrine HUD Manager runs on port 1349. During startup, if it detects that this port is being used by other process, it will use a randomly chosen port instead. After startup, you may want to check if the config files are loaded into CS:GO in the Settings tab (more info below).
+You can find them here:
 
-When setting up the Lexogrine HUD Manager for an upcoming match, it is recommended to follow the points in following order: Teams -> Players -> Matches -> HUDs.
+- CS2 default React HUD
+- Dota 2 default React HUD
+- League of Legends default React HUD
+- Valorant default React HUD
+- Rocket League default React HUD
+- Apex Legends default React HUD
 
->Note - if you notice during live game that the teams are on the wrong side, just press Alt+R.
+Additionally, you can use a local network address for the Browser Source-type screen to grab the HUD view on another PC, access each of the HUD's action panels prepared by the authors, and directly run a transparent window with the HUD.
 
-### Teams
+##### **Ultra HUDs**
 
-This section is for additional data display in HUDs and the Lexogrine HUD Manager itself. It's an interface connected with a database that allows you to quickly edit any information about the team (name, logo, country flag).
+Ultra HUD is the most advanced and automated HUD that you can use for the esport tournament. It supports Counter-Strike 2, Dota 2, and League of Legends, and offers several layouts and color schemes to choose from, dedicated overlays for draft and map veto, pre match and post match summaries and information overlays, dedicated comparisons and analytics and advanced HUD editor that allows you to change colors and elements of the HUD and save each config as separate preset in LHM Cloud.
 
-### Players
+Ultra HUD is as flexible and advanced as you need it to be and allows you to create a top-tier CS2, Dota 2, and LoL esport event with just a few simple steps.
 
-This tab allows you to specify a player's displayed name, their country, real name and a picture as well. During matches players are identified by their SteamID64 (CS:GO) or in-game name (Rocket League).
+It offers dedicated map veto overlays for Counter-Strike 2 and dedicated draft overlays for League of Legends and Dota 2\.
 
-### Matches
+You can find more information here:
 
-In this section you can specify upcoming matchups you will spectate and choose which one is currently played. You have the option to set up teams taking part, their map scores and veto process.
+- [CS2 Ultra HUD](https://lhm.gg/features/ultra-hud/cs2)
+- [Dota 2 Ultra HUD](https://lhm.gg/features/ultra-hud/dota2)
+- [League of Legends Ultra HUD](https://lhm.gg/features/ultra-hud/league-of-legends)
 
-Additionaly, while the match is live the current score is being saved in the background and once a map finishes, it's match score for the winning team increases. This way you don't have to worry, if match score is up-to-date. You can see the current map score in the veto view, and reset it if needed. Current map score is updated each time it detects end of the round from the CS:GO, unless the map has been marked as finished - in that case the score won't be updated, but still can be resetted, which will set the map back to a non-finished state.
+##### **Premium HUDs**
 
->Note - a match has to be set as active and a used map has to be set up in veto in order for the Lexogrine HUD Manager to gather data.
+For those looking for a simpler solution, Premium HUD is a perfect choice. It comes with several color schemes, advanced data analysis, and comparisons, available based on your subscription plan. Each major supported game comes with its own Premium HUD, so all you need to do is purchase the subscription, and you are ready to stream and observe esport matches.
 
-### HUDS
+Premium HUDs are available for:
 
-This part is for choosing which HUD you want to use - there's a drag'n'drop area for HUD .zip files, so installation of new ones is a matter of seconds. Additionally you can use a local network address for Browser Source-type screen to grab the HUD view on another PC, access each of the HUD's action panels prepared by the authors, and directly run a transparent window with the HUD.
+- [CS2 Premium HUD](https://lhm.gg/features/premium-hud/cs2)
+- [Dota 2 Premium HUD](https://lhm.gg/features/premium-hud/dota-2)
+- [League of Legends Premium HUD](https://lhm.gg/features/premium-hud/league-of-legends)
+- [Valorant Premium HUD](https://lhm.gg/features/premium-hud/valorant)
+- [Rocket League Premium HUD](https://lhm.gg/features/premium-hud/rocket-league)
 
-![Start-up](assets/examples/upload.gif?raw=true)
+##### **Open source React HUDs**
 
-For convenience at the top of the screen you can push a command to run it in CS:GO (to hide the HUD, the radar, and/or the killfeed each HUD should indicate whether it supports the custom radar and killfeed or not). However, if you don't feel like running the commands on your own, the option to run CS:GO with all configs executed automatically will be enabled, when the Lexogrine HUD Manager detects CS:GO on your PC.
+LHM is a perfect developer environment that allows you to create your very own HUDs and overlays, fully aligned with your needs and preferences. All you need to do is use our default React HUD for each supported game and modify it using leading developer tools and technologies.
 
+#### **Usage**
 
-![Start-up](assets/examples/toggles.gif?raw=true)
+The best way to start your journey with LHM is by following the [Installation & First Use guide](https://guide.lhm.gg/docs/lhm-basics/installation-and-first-use/), and we’ve also prepared a [video walkthrough over all basic LHM features](https://www.youtube.com/watch?v=5-PuyoaeZ68) \- both of them will help you get started quickly and without friction.
 
-There is available an experimental mode to render HUD, which uses afx_interop. Using this method the HUD will be rendered directly in the CS:GO process, not as an overlay application. It will enable using custom HUDs in the fullscreen mode as well, not only fullscreen windowed.
+If you’re interested in Valorant and/or League of Legends integrations that LHM provides, we deeply recommend you check out their own dedicated video tutorials \- you’ll find both on [our YouTube channel](https://www.youtube.com/@Lexogrine).
 
->Note #0 - By default, running with HLAE and / or AFX will use pre-installed versions of those programs from LHM directory.
+If you encounter any problems or have questions, send us a message on [LHM.gg](http://LHM.gg) or join [our Discord server](https://discord.com/invite/CHrg33UMs3) and post in one of the troubleshooting channels \- our passionate community is well-versed in LHM usage and surely either us or one of our users will help you with any issues you’re facing.
 
->Note #1 - to use the killfeed you need to run CS:GO through HLAE. If you check the "Use custom killfeed" option you will have to specify the path to HLAE.exe in the Settings section.
+LHM comes with advanced features that can automate most of your production:
 
->Note #2 - to use AFX mode, beside specifying the path to the newest version of HLAE you are also required to set the path to the afx-cefhud-interop.exe file, which you will find in the [Release.7z and Release-Base.7z archive](https://drive.google.com/drive/folders/1CQFGMYhmz4x9DxunmwhWMp37ow6YOBON). You need to copy the .exe file from Release.7z to files from Release-Base.7z.
+- Scout AI \- AI observer, cinematics, and match predictions
+- LHM Replays \- automatic replays for CS2 and Dota 2
+- LHM Cameras \- players’ cameras
+- LHM Signals \- automatic game event capture and Companion automation
+- LHM Addons \- plugins to extend LHM functionalities based on in-game events and LHM environment
+- LHM Map Veto \- automated LAN and online map veto with dedicated overlays for CS2 and Valorant
 
->Note #3 - it's impossible to set a custom loader/settings for HLAE, if you launch HLAE CS:GO through the Lexogrine HUD Manager, so in that case you still need to do it manually with HLAE. If you run CS:GO manually through HLAE and still want to use AFX mode, you need to add `-afxInteropLight` to launch options and once in the game execute `exec hud_interop` in the console.
+##### **Teams**
 
+Team management includes the team name, short description, country, and the team logo. You can also search for a specific team with a search bar, and by clicking on any field, you can filter your teams.
 
-### Testing
-CS:GO only for now
+You can also add your own custom fields for your needs. To do so, click on this icon and add your own filter. This feature is mainly dedicated to programming usage.
 
-To not have too many applications opened at once to develop the HUD, or just to see how the HUD is looking, you can click `RUN TEST DATA` button in HUDs tab. It will start playing ~40s of data from memory to all connected HUDs, simulating basically one round of live match (killfeed won't work in this mode though).
+##### **Players**
 
-![Testing](assets/examples/testData.png?raw=true)
+Player management allows you to define first name, last name, nickname, country, team, and pictures. Depending on the game's technicalities, some information may vary:
 
->Note #1 - if during testing LHM will pick data stream from real match, it will automatically stop
+- CS2 \- SteamID \- First name, last name, nickname, and avatar of a player displayed on a HUD and Cameras feature
+- Dota 2 \- Steam ID \- First name, last name, nickname, and avatar of a player displayed on a HUD "Cameras" feature
+- League of Legends \- In-game nickname \- Custom nickname and avatar displayed on HUD "Cameras" feature
+- Rocket League \- In-game nickname \- Custom nickname and avatar displayed on HUD "Cameras" feature
+- Apex Legends \- In-game nickname \- First name, last name, nickname, and avatar of a player displayed on a HUD "Cameras" feature
 
-### Live
+##### **Matches**
 
-Here you will find the list of players currently on the server. If you couldn't get their SteamIDs before the match, or the information you have in the database is incorrect, just click on a player you want to edit, and you will be redirected to the Players tab with the selected player already loaded in.
+Matches come with score management, BO configuration, date, and vetos. You can specify upcoming matchups you will spectate and choose which one is currently being played. You have the option to set up teams taking part, their map scores, and the veto or draft \- depending on the game \- process.
 
-### Settings
+Additionally, while the match is live the current score is being saved in the background and once a map finishes, its match score for the winning team increases. This way you don't have to worry, if the match score is up-to-date. You can see the current map score in the veto view, and reset it if needed. Current map score is updated each time it detects end of the round from the CS:GO, unless the map has been marked as finished \- in that case the score won't be updated, but still can be resetted, which will set the map back to a non-finished state.
 
-Correct configuration is required to use the Lexogine HUD Manager - at least you need a free port. To use avatars loaded from Steam you also need to get your own Steam API key. You can additionally specify the GSI token to filter out payloads in case you are using more than one Gamestate Integration system.
+Note \- a match has to be set as active and a used map has to be set up in veto in order for the Lexogrine HUD Manager to gather data.
 
-Below the Steam API key, port and GSI token you can specify the path to HLAE.exe - it is required if you want to automate the CS:GO launch with killfeed enabled or AFX Mode.
+##### **Testing**
 
-Under the HLAE.exe settings there is an option to set a path to afx-cefhud-interop.exe file, which is required in order to use experimental mode - built-in HUD, instead of overlay. You can find out more in the "Built-in HUD - AFX experimental mode" section.
+LHM allows for easy preview and testing of HUDs even if you don’t have the respective game running. Just click on the “Run Test Data” button (and optionally on “Enable test loop”), and LHM will start feeding prerecorded data from a real game match to all running HUDs.
 
-Moreover, you don't need to bother your head with copying the config files. You can see the status of both GSI and config files live and if they are missing, invalid, or otherwise broken you can just click one button and it's done - they are installed (provided that the Lexogrine HUD Manager has detected your CS:GO location). It's important to mention that when you change GSI port, you will need to restart the Lexogrine HUD Manager, so it will start listening on the new one.
+This allows for quick and easy preview of any HUD and is a great tool for custom HUD development, as you don’t have to have the game running in the background at all times.
 
-![Config](assets/examples/configs.gif?raw=true)
+##### **Custom database fields**
 
-In a situation when config installation doesn't succeed or the Lexogrine HUD Manager is unable to locate CS:GO, you can download the GSI config and an archive with all of the required cfg files using two buttons at the bottom of this section.
+LHM allows you to expand the default database structure for greater flexibility. You can add custom fields \- such as text, match, player, team, color, or image \- to both players and teams. These values are stored in an extra object, so for example, a custom color field named theme for a team would be accessible in the HUD as team.extra.color. If you use these custom fields regularly, you can also display them as additional columns alongside standard properties for easier access.
 
+##### **LHM Cameras**
 
-## Player cam feed (Beta)
+The LHM Cameras module is built into LHM, allowing you to display player webcams using LHM itself in all HUDs supporting this module \- no external tool is needed.
 
-Lexogrine HUD Manager now allows for hosting rooms to connect player cameras directly to the HUD. To use it, add at most 10 players in the Cameras tab, hit save, and send url at the top of the screen to players. They will be able to select themselves, their prefferable video device and connect to the hud.
+All Premium and Ultra HUDs made by Lexogrine include support for LHM Cameras, and you’re free to add this functionality to your custom HUDs too.
 
-It's worth noting, that it's early implementation, and as of now it is recommended to share a network with players - whether it's local, or hamachi-like virtual. It will help with reducing initiating time, as connecting through the Internet might take a ~15s.
+More information about LHM Cameras can be found on its [dedicated LHM Guide page](https://guide.lhm.gg/docs/lhm-basics/cameras/).
 
->Note - This feature is in beta and requires very stable connection. If player has connected, but you don't see him, refresh HUD and wait ~20s. If you still don't see video from his camera, try joining a mutual virtual private network.
-### Legacy
+##### **LHM Signals**
 
-Lexogrine HUD Manager exposes RTMP server on port 8000 (rmtp://localhost/live, stream key HUD_MANAGER). The Manager expects 750x300 stream, which is divided in 10 150x150 squares, each corresponding to the player face camera. The stream is later accessible on /rmtp.html (in example HUD iframe is used to put feed in the avatar place). Full tutorial on how to setup cam feed is accessible here:
+LHM Signals lets you automatically detect key events from top esports titles and trigger actions in the Companion tool with just a few clicks. You can create custom Presets for various events and production setups, defining triggers like round wins, round ends, or hero bans, with branching options for faster confirmations. Everything is saved securely in the LHM Cloud, so your workflows are accessible from anywhere.
 
-[![Lexogrine HUD Manager - Player cam feed](https://img.youtube.com/vi/uOapWMPVtwQ/0.jpg)](https://www.youtube.com/watch?v=uOapWMPVtwQ)
+#### **Easy Data Import**
 
->Note - this feature is in experimental phase. In good condition there is ~1.5-2s delay, for better results it's recommended to use software dedicated to this, ex. vMix.
+LHM provides extended support for data import, including different formats. You can use our API with POST and PATCH, import data from XLS and CSV files, and more\!
 
-## Custom database fields
+And if our import methods don’t support your case, just contact us directly at [LHM.gg](http://LHM.gg) \- we’ll provide the necessary path for data migration.
 
-In case usual database structure is not enough, from 1.10 it is possible to expand structure. LHM provides option to add text, match, player, team, color and image field to players and teams database. Values of the specific fields are attached on `extra` object, so if we wanted to add `theme` property with `color` type on the team, in-HUD the value would accessible by `team.extra.color`. If you rely on those custom fields on a day-to-day basis, you can show them next to the other properties as an additional column.
+#### **LHM Cloud \- Cloud Storage for your HUDs, overlays, and data**
 
-![Custom fields in Teams tab](assets/examples/customField.png?raw=true)
+LHM Cloud allows you to store your spectator and observer HUDs, matches, tournaments, and more in the cloud with seamless synchronization between your devices, so you no longer need to worry about manual file transferring.
 
-## AR
+Read more about [LHM Cloud](https://www.lhm.gg/features/cloud-storage) and how it can automate your esport production and HUD management.
 
-AR (Augmented Reality) is an option to add models / screens / objects in 3D space to the game. This is currently very experimental, and requires you to follow steps from [Embedded Mode](#embedded-hud).
+#### **Supported games**
 
-To see which HUDs have AR elements, click on AR button or go to AR tab to filter them out. Important - for HUDs to load correctly you need to toggle them once in game, not before.
+LHM supports CS2, Dota 2, League of Legends, Valorant, Rocket League, PUBG Mobile, and Apex Legends.
 
-For HUD to be considered AR-compatible it needs to have `ar` property in `hud.json` set to `true` and have the same `public/ar` directory structure as in csgo-react-hud repository.
+Each supported game comes with its own specific adjustments and support to make sure every observer, esport production company, and event organization can use and offer the most for each.
 
-`ar.js` module file must expose `startARModule(scene, camera, renderer, GSI)` and `cleanUpARModule(scene, GSI)` functions, where all arguments beside GSI are THREEJS objects. `startARModule` primary goal is to create listeners for data and handle updating scene and objects on it. `cleanUpARModule` should remove all objects added to scene.
+Read more about each integration:
 
+- [CS2 game support and features for HUD management and esport production](https://www.lhm.gg/features/multiple-game-support/cs2)
+- [Dota 2 game support and features for HUD management and esport production](https://www.lhm.gg/features/multiple-game-support/dota2)
+- [League of Legends game support and features for HUD management and esport production](https://www.lhm.gg/features/multiple-game-support/league-of-legends)
+- [Valorant game support and features for HUD management and esport production](https://www.lhm.gg/features/multiple-game-support/valorant)
+- [Rocket League game support and features for HUD management and esport production](https://www.lhm.gg/features/multiple-game-support/rocket-league)
+- [PUBG Mobile game support and features for HUD management and esport production](https://www.lhm.gg/features/multiple-game-support/apex-legends)
+- [Apex Legends game support and features for HUD management and esport production](https://www.lhm.gg/features/multiple-game-support/pubg-mobile)
 
+#### **Signing HUDs**
 
-## ACO 
+Custom HUD developers working with LHM are given the option to protect their creations with the use of HUD signing. Signed HUDs are secured with a generated signature that prevents unauthorized modifications of your HUD. Any HUDs using default Lexogrine HUDs as a base \- be it [CS2 React HUD](https://github.com/lexogrine/cs2-react-hud/), [Valorant React HUD](https://github.com/lexogrine/valorant-react-hud), [Dota 2 React HUD](https://github.com/lexogrine/dota2-react-hud) or [League of Legends React HUD](https://github.com/lexogrine/league_of_legends_react_hud) \- can be automatically signed by running \`npm run sign\`.
 
-Auto Cinematic Observer is CS:GO feature that allows for automatization of camera flybies. It requires developer to create their own campaths though. For it to work user must define "areas", which specifies place on map, that algorithm will look for players in. To those areas user must add configs. Configs are commands to execute by CS:GO to start a campath.
+LHM verifies HUD signatures during their upload to LHM Cloud, and will not run HUDs that it detects have been tampered with.
 
-Every 5s ACO gets all areas defined by user, then sorts them by amount of alive players that are in that area. After that it tries to choose config that will provide the best and most unique viewier experience.
+#### **Settings**
 
-It is recommended to create a lot of small areas with multiple configs each. It will require more work, but will allow for more detailed observing.
+LHM automates as much of the game configuration process as possible, but depending on the game, there may be some manual steps that you have to follow before your game is ready to be used with LHM.
 
-## ARG
+If this is your first time using LHM, we recommend you to watch the [LHM.gg \- Initial Configuration & Basic Features video](https://www.youtube.com/watch?v=5-PuyoaeZ68), which will lead you through the whole process.
 
-Auto Replay Generator is feature that integrates with vMix's Instant Replay feature. It automates observing, clipping, and then playing clipped fragments on stream. Complementary app can be found [HERE](https://github.com/lexogrine/auto-replay-generator). Additionaly you can modify priorities of the ARG.
+The configuration process for all games is detailed in our dedicated guides, and for the more tricky integrations, such as for Valorant and League of Legends observing, we’ve prepared easy-to-follow videos describing all necessary steps, which you can watch on [our YouTube channel](https://www.youtube.com/@Lexogrine).
 
-Example setup:
- - PC#1 - CS:GO on main GOTV, delay: X seconds
- - PC#2 - CS:GO with HLAE on replay GOTV, delay: X + 7 seconds, has vMix with Instant Replay feature
+Read more in our game configuration guides:
 
-LHM on PC#1 sends information about kills to Lexogrine Auto Replay Generator on PC#2. PC#2 is delayed, therefore it knows about kills, before they happen on it. Lexogrine Auto Replay Generator then uses HLAE to switch to kills it deems interesting and using vMix API clips them. When round ends, LARG will play clips to vMix output, and after a while, it will remove them. 7 second value is recommended for best results.
+- [Counter-Strike 2 configuration](https://guide.lhm.gg/docs/lhm-basics/games-configurations/counter-strike/)
+- [Dota 2 configuration](https://guide.lhm.gg/docs/lhm-basics/games-configurations/dota-2/)
+- [League of Legends configuration](https://guide.lhm.gg/docs/lhm-basics/games-configurations/league-of-legends/)
+- [Valorant configuration](https://guide.lhm.gg/docs/lhm-basics/games-configurations/valorant/)
+- [PUBG Mobile configuration](https://guide.lhm.gg/docs/lhm-basics/games-configurations/pubgmobile/)
+- [Rocket League configuration](https://guide.lhm.gg/docs/lhm-basics/games-configurations/rocket-league/)
+- [Apex Legends configuration](https://guide.lhm.gg/docs/lhm-basics/games-configurations/apex-legends/)
 
-ARG requires vMix 24.0.0.62 or newer.
+Watch one of our video tutorials:
 
-It is up to user to configure vMix output on PC#2.
+- [LHM.gg \- Valorant Integration Overview & Setup](https://www.youtube.com/watch?v=h8AcB_Pfc2k)
+- [LHM.gg \- League of Legends Integration Overview & Setup](https://www.youtube.com/watch?v=OWVcHv7tsbQ)
 
-If you are using LHM version older than 3.8.0 or ARG older than 1.4.0 you need to make sure both PCs time is synchronized.
+#### **Custom HUD structure**
 
->Note - Delay between PCs is configurable on LHM's part
+When uploading or developing a HUD, it must have a \`hud.json\` in its root (or in \`/public\`, or \`/static\` directory in case of development). This file contains metadata describing basic properties of the HUD so that it can be properly recognized by LHM. All custom HUDs made for use with LHM must contain this file.
 
->Note #2 - To connect LHM to PC#2, you just need to enter PC 2's code to LHM and click connect.
+LHM also supports \`panel.json\` files for managing custom inputs \- buttons, text inputs, player selectors, image pickers etc., and \`keybinds.json\` files for creating custom keybindings for various actions, such as displaying a scoreboard panel with a key combination.
 
->Note #3 - CS:GO on PC#2 must be opened with HLAE, and then user have to execute command that is shown by Lexogrine Auto Replay Generator
+Last but not least, the \`thumb.png\` file contains the image that will be displayed in the HUD list, allowing you to easily find the HUD you’re looking for.
 
+All information about HUD file structure can be found [in our dedicated documentation](https://guide.lhm.gg/docs/spec/rest-api/huds/).
 
-## Timeline
+#### **Technicalities**
 
-For Dota 2 we offer timeline feature - it's API endpoint which shows progression of the player stats during the game in small packets, allowing to see how player performed during the whole game. It calculates differences of most of the players statistics every 5 minutes.
+LHM is written with the latest versions of Microsoft Windows in mind \- currently, Windows 10 and Windows 11 are supported. We can’t guarantee compatibility with older versions and different operating systems.
 
-# Import and Export
+In order to communicate with supported games, LHM makes use of various methods depending on the game, so for more information regarding the details, we recommend you to check out their respective subpages [in our game configuration guide](https://guide.lhm.gg/docs/category/game-configuration/).
 
-You can easily import and export data from Excel spreadsheets to Players' and Teams' database. To export, you just have to go Players or Teams tab and click "Export ...". To import data, you have to use either already exported sheet, or templates we prepared:
+When running LHM from behind a firewall, you may have to take into account various different ports that are required for it to work properly. More information about network ports used by LHM can be found [in the Network Ports section of LHM Docs](https://guide.lhm.gg/docs/spec/rest-api/network-ports/).
 
- - [Teams](https://lhm.gg/download/teams-template)
- - [Players](https://lhm.gg/download/players-template)
+LHM makes use of various open-source components at its core. The list of software used and their respective licenses can be found at [THIRD PARTY NOTICES](https://github.com/lexogrine/hud-manager/blob/main/THIRD%20PARTY%20NOTICES).
 
-# Cloud Storage
+#### **REST API**
 
-Currently we offer cloud storage for Professional plans. It will help you keep all of your devices synced with each other, removing the need for copying files between the PCs.
+LHM provides a simple REST API allowing for control of its basic functions without a graphical user interface.
 
-# Supported Games
+| Endpoint                               | Method | Returns                                                                                                                                               |
+| -------------------------------------- | ------ | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `/api/teams`                           | GET    | Array of teams                                                                                                                                        |
+| `/api/players`                         | GET    | Array of players                                                                                                                                      |
+| `/api/players/:id`                     | GET    | Find player by ID                                                                                                                                     |
+| `/api/players/avatar/:id`              | GET    | Find avatar of player by ID                                                                                                                           |
+| `/api/players/avatar/steamid/:steamid` | GET    | Find avatar of player with SteamID                                                                                                                    |
+| `/api/teams/:id`                       | GET    | Find team by ID                                                                                                                                       |
+| `/api/teams/logo/:id`                  | GET    | Find team logo by ID                                                                                                                                  |
+| `/api/config`                          | GET    | Get manager config                                                                                                                                    |
+| `/api/match`                           | GET    | Array of matches. Add `?full` to get also last entry of GSI data for each match                                                                       |
+| `/api/match/current`                   | GET    | Current match                                                                                                                                         |
+| `/api/match/:id`                       | GET    | Find match by ID                                                                                                                                      |
+| `/api/huds/action/:hudDir/:action`     | POST   | Send action to the HUD. Simulates actions from HUD settings panel if body exists on the request, or keybind action if body is empty                   |
+| `/api/huds`                            | GET    | Array of available HUDs                                                                                                                               |
+| `/api/maps`                            | GET    | Map pool array                                                                                                                                        |
+| `/api/gsi`                             | GET    | Check if GSI file is loaded                                                                                                                           |
+| `/api/cfg`                             | GET    | Check if config files are loaded                                                                                                                      |
+| `/api/game`                            | GET    | Get latest data from CS:GO                                                                                                                            |
+| `/api/players`                         | POST   | Adding Player. Body must by player object without \_id                                                                                                |
+| `/api/players/:id`                     | PATCH  | Updating Player                                                                                                                                       |
+| `/api/teams`                           | POST   | Adding Team. Body must by Team object without \_id                                                                                                    |
+| `/api/teams/:id`                       | PATCH  | Updating Team                                                                                                                                         |
+| `/api/timeline/:game`                  | GET    | Get Timeline for given game. Dota 2 only                                                                                                              |
+| `/api/scout`                           | GET    | Gets current state of Scout modules                                                                                                                   |
+| `/api/scout`                           | POST   | Toggles Scout modules. Requires body with keys "vision", "cinematic", "predict". Values are boolean for forcing ON / OFF state or `null` for toggling |
 
-Currently we support CS:GO, Rocket League, Dota 2 & F1 but that list will only expand.
+#### **About Lexogrine**
 
-Additonally it's possible to create non-game HUD, which will be available from any game.
+[Lexogrine](https://lexogrine.com) is an AI software development company, offering top-tier AI, web, and mobile design and development services for international companies. Alongside that, Lexogrine offers a set of web and mobile applications \- including [LHM.gg](http://LHM.gg) \- that revolutionize the way experts and specialists from different industries work together on a daily basis.
 
-Example of the HUDs:
+[Lexogrine](https://lexogrine.com) specializes in AI development, alongside web, mobile, and cloud development with technologies like TypeScript, Python, LLM, React, React Native, Node.js, Prisma, Medusa, Pytorch, AWS, and Google Cloud Platform.
 
- - [CSGO](https://github.com/lexogrine/csgo-react-hud)
- - [Dota 2](https://github.com/lexogrine/dota2-react-hud)
- - [Rocket League](https://github.com/lexogrine/rl-react-hud)
- - [F1 2021](https://github.com/lexogrine/f1-react-hud)
- - [All](https://github.com/lexogrine/all-react-hud)
-
-
-# Signing HUDs
-
-Signing HUDs is first step towards helping developers feel safe about their creations. We allow for signing HUDs (`npm run sign` in CS:GO React HUD repo), which will make them much more resistant to change - Lexogrine HUD Manager will not run HUD that has incorrect signature, preventing unwanted changes to the code.
-
-# Embedded HUD
-
-At this point there is an option to embedd any HUD in CS:GO using HLAE and afx_interop. It gives the advantage of being able to use CS:GO in fullscreen mode while using the custom HUDs. It must be noted however, that this mode may affect the framerate. By default LHM will use pre-installed HLAE & AFX. If you are okay with that, skip next paragraph.
-
-If you want to use this mode, you need to get latest HLAE, and latest afx-cefhud-interop. Download the newest Release.7z from https://github.com/advancedfx/afx-cefhud-interop/releases and unpack it. and set path to the afx-cefhud-interop.exe in the Lexogrine HUD Manager's settings.
-
-At this point the setup is completed - you just need to switch to the embedded mode in HUDs tab, toggle which HUD you intend to use and click RUN GAME (if you already have installed the config files of course).
-
-
-# Proxy
-LHM allows for proxying requests through `/proxy` in case of a CORS issues. It requires `LHM_TARGET` query, which will specify base domain. Example:
-
-```javascript
-fetch(`${apiUrl}proxy/dir1/dir2?format=JSON&query=VALUE&LHM_TARGET=https://api.someservice.org`)
-```
-This will forward your request to `https://api.someservice.org/dir1/dir2?format=JSON&query=VALUE`, and should bypass CORS issues.
-
-# HUD API
-## Structure
-A HUD **must have** a valid `hud.json` to be considered legitimate. For optional functionalities, there are `panel.json` and `keybinds.json` files.
-### hud.json
-  Lexogrine HUD Manager's upload field accepts HUD .zip files that contain a proper `hud.json` file. It should look like this:
-  ```javascript
-  {
-	"name":"Example HUD", //Name of the HUD
-	"version":"1.0.0", //Version
-	"game": "csgo", // csgo is default. Allowed values: csgo, dota2, rl, all
-	"requiredFields": {
-		"teams": {
-			"theme":"color"
-		}
-	},  // You can specify custom fields and their type, that are required to exist in DB for HUD to work properly
-	"author":"osztenkurden", //Author(s)
-	"legacy": false, //Specify whether it was created for the old system - it should work, but keep in mind that this functionality is deprecated
-	"radar": true, //Does the HUD include radar support
-	"killfeed": true, //Does the HUD include killfeed support
-	"variants": ["veto-variant"] // Adds variant to the HUD. It will be accessible through different URL, and will be identifiable through code, while being the same HUD, so you can change the behaviour of the HUD based on the variant identification
-}
-  ```
-  The Lexogrine HUD Manager will not accept any .zip files that do not have a correct `hud.json` file in their root.
-### panel.json
-`panel.json` controls the custom data inputs you want to have in the HUD, for example - tournament logo, tournament name etc., so any data that you want to set up on match to match basis. The example file looks like this:
-  ```json
-  [{
-	"label": "Trivia",
-	"name":"trivia",
-	"inputs": [
-		{
-			"type": "text",
-			"name": "title",
-			"label": "Trivia title"
-		},
-		{
-			"type": "text",
-			"name": "content",
-			"label": "Trivia content"
-		},
-		{
-			"type": "action",
-			"name": "triviaState",
-			"values": [
-				{
-				"name": "show",
-				"label": "Show trivia"
-				},
-				{
-				"name": "hide",
-				"label": "Hide trivia"
-				}
-			]
-		}
-	]
-},
-{
-	"label": "Display settings",
-	"name":"display_settings",
-	"inputs": [
-		{
-			"type": "text",
-			"name": "left_title",
-			"label": "Left box's title"
-		},
-		{
-			"type": "text",
-			"name": "right_title",
-			"label": "Right box's title"
-		},
-		{
-			"type":"image",
-			"name":"left_image",
-			"label":"Left box's image logo"
-		},
-		{
-			"type":"image",
-			"name":"right_image",
-			"label":"Right box's image logo"
-		}
-	]
-}]
-  ```
-  And gives the result of:
-  ![result](https://i.imgur.com/qmhSrXt.png)
-  This file is basically an array of section objects. Each section object looks like this:
-  ```javascript
-{
-	"label":"Displayed name of sections",
-	"name":"id_name",
-	"inputs": [] //Array of Inputs
-}
-```
-And each input object looks like this:
-  ```javascript
-{
-	"type":"text" | "image",
-	"name":"id_name",
-	"label": "Displayed name of the input"
-}
-```
-Additionally, there is an action input that sends predetermined data and renders it as buttons - useful for toggling on-screen effects.
-  ```javascript
-{
-	"type":"action",
-	"name":"id_name",
-	"values": [{
-		"name":"id_name" //It is used as value for id_name action",
-		"label":"Displayed name" //Label of the button
-    }]
-}
-```
-Each value in the action input is a seperate button. To see how to listen for data from the HUD's side, please see "`panel.json API`" part of the [CSGO React HUD](https://github.com/lexogrine/csgo-react-hud#paneljson-api) documentation.
-### keybinds.json
-This file is basically another way to communicate with the HUD. Let's look at the example file:
-```json
-[
-	{
-		"bind":"Ctrl+B",
-		"action":"toggleRadar"
-	},
-	{
-		"bind":"Alt+B",
-		"action":"radarBigger"
-	},
-	{
-		"bind":"Alt+S",
-		"action":"radarSmaller"
-	},
-	{
-		"bind":"Alt+T",
-		"action":"toggleTrivia"
-	}
-]
-```
-Again, ot is just an array of actions. Each bind only has `bind` and `action` properties. Bind is the keybind you want to use, and action is the identifier of an action. What differentiates it from the `panel.json` action input, is that here we don't have additional data packed with the action name.
-### Radar
-
-Lexogrine HUD has its own radar, which is much more customizable than embedded Boltobserv, therefore using Boltobserv is discouraged, as it is no longer supported as of 2.0.
-
-### thumb.png	
-You should include this file for a nice display in the HUDs tab in the Lexogrine HUD Manager, as it will be displayed next to its name. Recommended size: 64px x 64px.
-# Technicalities
-
-Lexogrine HUD Manager uses, among others, Express.js for its REST API and GSI endpoints, `csgogsi`, `csgogsi-socket`, `dotagsi` for data parsing, joining the additional info about teams and players and listening for events such as end of round.
-
-Lexogrine HUD Manager exposes the port specified in settings as entry point for WebSockets, and sends `update` event that comes with CSGOParsed object, which definition you can find here: https://www.npmjs.com/package/csgogsi
-
-In the background, Lexogrine HUD Manager also regularly checks if the port 3500 is taken, and if yes - it tries to see if a HUD in dev mode is running on /dev address. If it does, it will show it in the HUDs tab and allow to use it locally as any other HUD.
-
-Local data is stored in a NeDB.js database locally at `%HOME%\hud_manager`. It includes config, teams, players and match data.
-
-For looking up the Steam's and CS:GO's directory the `steam-game-path` package is used.
-
-Lexogrine HUD Manager was written for Windows. 
-
-
-## REST API
-|Endpoint| Method | Returns|
-|--|--|--|
-| `/api/teams` | GET | Array of teams
-|`/api/players`| GET | Array of players
-|`/api/players/:id`|GET|Find player by ID|
-|`/api/players/avatar/:id`|GET|Find avatar of player by ID|
-|`/api/players/avatar/steamid/:steamid`|GET|Find avatar of player with SteamID|
-|`/api/teams/:id`|GET|Find team by ID|
-|`/api/teams/logo/:id`|GET|Find team logo by ID|
-|`/api/config`|GET|Get manager config|
-|`/api/match`|GET|Array of matches. Add `?full` to get also last entry of GSI data for each match|
-|`/api/match/current`|GET|Current match|
-|`/api/match/:id`|GET|Find match by ID|
-|`/api/huds/action/:hudDir/:action`|POST|Send action to the HUD. Simulates actions from HUD settings panel if body exists on the request, or keybind action if body is empty|
-|`/api/huds`|GET|Array of available HUDs|
-|`/api/maps`|GET|Map pool array|
-|`/api/gsi`|GET|Check if GSI file is loaded|
-|`/api/cfg`|GET|Check if config files are loaded|
-|`/api/game`|GET|Get latest data from CS:GO|
-|`/api/players`|POST| Adding Player. Body must by player object without _id|
-|`/api/players/:id`|PATCH| Updating Player |
-|`/api/teams`|POST| Adding Team. Body must by Team object without _id|
-|`/api/teams/:id`|PATCH| Updating Team |
-|`/api/timeline/:game`|GET| Get Timeline for given game. Dota 2 only |
-|`/api/scout`|GET| Gets current state of Scout modules |
-|`/api/scout`|POST| Toggles Scout modules. Requires body with keys "vision", "cinematic", "predict". Values are boolean for forcing ON / OFF state or `null` for toggling |
-
-
-
-# Special credits
-Big shout out to Loxar, for providing his set of a brand new weapon icons!
-
-Also huge thanks to Wiethoofd, Komodo and TeDY for testing and massive amount of feedback and to boltgolt, for creating open-sourced custom radar <3
+With over 5 years of experience, Lexogrine delivered hundreds of projects, supporting companies and enterprises from all over the world.
