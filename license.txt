@@ -1,5 +1,5 @@
 End User License Agreement
-Lexogrine HUD Manager v 2.0
+LHM.gg - Lexogrine HUD Manager
 
 Lexogrine HUD Manager ("Application" / "Software") are licensed, not sold to the End User ("Licensee" / “You”).The End User should first accept this End User License Agreement ("EULA" / "License") to use the Application. 
 PLEASE READ THIS EULA CAREFULLY BEFORE USING THE SOFTWARE. BY USING THE APPLICATION, YOU ARE AGREEING TO BE BOUND BY THE TERMS OF THIS EULA. IF YOU DO NOT AGREE TO THE TERMS OF THIS EULA, DO NOT INSTALL AND/OR USE THE SOFTWARE.

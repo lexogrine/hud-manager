@@ -6,7 +6,7 @@ It automates production, offers advanced features like cloud synchronization, pl
 
 LHM is created by Lexogrine, a leading AI software company, offering top-tier [AI](https://www.lexogrine.com/services/ai-data-science), [web](https://www.lexogrine.com/services/web-software-development), and [mobile development](https://www.lexogrine.com/services/mobile-development) services.
 
-#### **Content**
+## **Content**
 
 - [Features](#features)
 - [Installation](#installation)
@@ -32,7 +32,7 @@ LHM is created by Lexogrine, a leading AI software company, offering top-tier [A
 - [REST API](#rest-api)
 - [About Lexogrine](#about-lexogrine)
 
-#### **Features**
+### **Features**
 
 - Player database
 - Team database
@@ -45,11 +45,11 @@ LHM is created by Lexogrine, a leading AI software company, offering top-tier [A
 - Player cam feed support (experimental)
 - Keybinding API
 
-#### **Installation**
+### **Installation**
 
 Download the latest version of LHM from the GitHub repository or directly from the [LHM.gg](http://LHM.gg) website. Once installed, LHM will automatically connect itself to most of the supported games. Some games require a few additional steps, you can read more about them in our Guide.
 
-#### **HUDs and Overlays**
+### **HUDs and Overlays**
 
 All LHM HUDs are automatically stored in LHM Cloud, so once you upload the HUD, you no longer need to worry about manually sending it from one event to the next. Each subscription plan comes with its own storage limit, so the more HUDs and overlays you have, the bigger the storage you will need. Simply drag'n'drop area for HUD .zip files, so installation of new ones is a matter of seconds.
 
@@ -66,7 +66,7 @@ You can find them here:
 
 Additionally, you can use a local network address for the Browser Source-type screen to grab the HUD view on another PC, access each of the HUD's action panels prepared by the authors, and directly run a transparent window with the HUD.
 
-##### **Ultra HUDs**
+#### **Ultra HUDs**
 
 Ultra HUD is the most advanced and automated HUD that you can use for the esport tournament. It supports Counter-Strike 2, Dota 2, and League of Legends, and offers several layouts and color schemes to choose from, dedicated overlays for draft and map veto, pre match and post match summaries and information overlays, dedicated comparisons and analytics and advanced HUD editor that allows you to change colors and elements of the HUD and save each config as separate preset in LHM Cloud.
 
@@ -80,7 +80,7 @@ You can find more information here:
 - [Dota 2 Ultra HUD](https://lhm.gg/features/ultra-hud/dota2)
 - [League of Legends Ultra HUD](https://lhm.gg/features/ultra-hud/league-of-legends)
 
-##### **Premium HUDs**
+#### **Premium HUDs**
 
 For those looking for a simpler solution, Premium HUD is a perfect choice. It comes with several color schemes, advanced data analysis, and comparisons, available based on your subscription plan. Each major supported game comes with its own Premium HUD, so all you need to do is purchase the subscription, and you are ready to stream and observe esport matches.
 
@@ -92,11 +92,11 @@ Premium HUDs are available for:
 - [Valorant Premium HUD](https://lhm.gg/features/premium-hud/valorant)
 - [Rocket League Premium HUD](https://lhm.gg/features/premium-hud/rocket-league)
 
-##### **Open source React HUDs**
+#### **Open source React HUDs**
 
 LHM is a perfect developer environment that allows you to create your very own HUDs and overlays, fully aligned with your needs and preferences. All you need to do is use our default React HUD for each supported game and modify it using leading developer tools and technologies.
 
-#### **Usage**
+### **Usage**
 
 The best way to start your journey with LHM is by following the [Installation & First Use guide](https://guide.lhm.gg/docs/lhm-basics/installation-and-first-use/), and we’ve also prepared a [video walkthrough over all basic LHM features](https://www.youtube.com/watch?v=5-PuyoaeZ68) \- both of them will help you get started quickly and without friction.
 
@@ -113,13 +113,13 @@ LHM comes with advanced features that can automate most of your production:
 - [LHM Addons \- plugins to extend LHM functionalities based on in-game events and LHM environment](https://lhm.gg/features/addons)
 - [LHM Map Veto \- automated LAN and online map veto with dedicated overlays for CS2 and Valorant](https://lhm.gg/veto)
 
-##### **Teams**
+#### **Teams**
 
 Team management includes the team name, short description, country, and the team logo. You can also search for a specific team with a search bar, and by clicking on any field, you can filter your teams.
 
 You can also add your own custom fields for your needs. To do so, click on this icon and add your own filter. This feature is mainly dedicated to programming usage.
 
-##### **Players**
+#### **Players**
 
 Player management allows you to define first name, last name, nickname, country, team, and pictures. Depending on the game's technicalities, some information may vary:
 
@@ -129,7 +129,7 @@ Player management allows you to define first name, last name, nickname, country,
 - Rocket League \- In-game nickname \- Custom nickname and avatar displayed on HUD "Cameras" feature
 - Apex Legends \- In-game nickname \- First name, last name, nickname, and avatar of a player displayed on a HUD "Cameras" feature
 
-##### **Matches**
+#### **Matches**
 
 Matches come with score management, BO configuration, date, and vetos. You can specify upcoming matchups you will spectate and choose which one is currently being played. You have the option to set up teams taking part, their map scores, and the veto or draft \- depending on the game \- process.
 
@@ -137,17 +137,17 @@ Additionally, while the match is live the current score is being saved in the ba
 
 Note \- a match has to be set as active and a used map has to be set up in veto in order for the Lexogrine HUD Manager to gather data.
 
-##### **Testing**
+#### **Testing**
 
 LHM allows for easy preview and testing of HUDs even if you don’t have the respective game running. Just click on the “Run Test Data” button (and optionally on “Enable test loop”), and LHM will start feeding prerecorded data from a real game match to all running HUDs.
 
 This allows for quick and easy preview of any HUD and is a great tool for custom HUD development, as you don’t have to have the game running in the background at all times.
 
-##### **Custom database fields**
+#### **Custom database fields**
 
 LHM allows you to expand the default database structure for greater flexibility. You can add custom fields \- such as text, match, player, team, color, or image \- to both players and teams. These values are stored in an extra object, so for example, a custom color field named theme for a team would be accessible in the HUD as team.extra.color. If you use these custom fields regularly, you can also display them as additional columns alongside standard properties for easier access.
 
-##### **LHM Cameras**
+#### **LHM Cameras**
 
 The LHM Cameras module is built into LHM, allowing you to display player webcams using LHM itself in all HUDs supporting this module \- no external tool is needed.
 
@@ -155,23 +155,23 @@ All Premium and Ultra HUDs made by Lexogrine include support for LHM Cameras, an
 
 More information about LHM Cameras can be found on its [dedicated LHM Guide page](https://guide.lhm.gg/docs/lhm-basics/cameras/).
 
-##### **LHM Signals**
+#### **LHM Signals**
 
 LHM Signals lets you automatically detect key events from top esports titles and trigger actions in the Companion tool with just a few clicks. You can create custom Presets for various events and production setups, defining triggers like round wins, round ends, or hero bans, with branching options for faster confirmations. Everything is saved securely in the LHM Cloud, so your workflows are accessible from anywhere.
 
-#### **Easy Data Import**
+### **Easy Data Import**
 
 LHM provides extended support for data import, including different formats. You can use our API with POST and PATCH, import data from XLS and CSV files, and more\!
 
 And if our import methods don’t support your case, just contact us directly at [LHM.gg](http://LHM.gg) \- we’ll provide the necessary path for data migration.
 
-#### **LHM Cloud \- Cloud Storage for your HUDs, overlays, and data**
+### **LHM Cloud \- Cloud Storage for your HUDs, overlays, and data**
 
 LHM Cloud allows you to store your spectator and observer HUDs, matches, tournaments, and more in the cloud with seamless synchronization between your devices, so you no longer need to worry about manual file transferring.
 
 Read more about [LHM Cloud](https://www.lhm.gg/features/cloud-storage) and how it can automate your esport production and HUD management.
 
-#### **Supported games**
+### **Supported games**
 
 LHM supports CS2, Dota 2, League of Legends, Valorant, Rocket League, PUBG Mobile, and Apex Legends.
 
@@ -187,13 +187,13 @@ Read more about each integration:
 - [PUBG Mobile game support and features for HUD management and esport production](https://www.lhm.gg/features/multiple-game-support/apex-legends)
 - [Apex Legends game support and features for HUD management and esport production](https://www.lhm.gg/features/multiple-game-support/pubg-mobile)
 
-#### **Signing HUDs**
+### **Signing HUDs**
 
 Custom HUD developers working with LHM are given the option to protect their creations with the use of HUD signing. Signed HUDs are secured with a generated signature that prevents unauthorized modifications of your HUD. Any HUDs using default Lexogrine HUDs as a base \- be it [CS2 React HUD](https://github.com/lexogrine/cs2-react-hud/), [Valorant React HUD](https://github.com/lexogrine/valorant-react-hud), [Dota 2 React HUD](https://github.com/lexogrine/dota2-react-hud) or [League of Legends React HUD](https://github.com/lexogrine/league_of_legends_react_hud) \- can be automatically signed by running \`npm run sign\`.
 
 LHM verifies HUD signatures during their upload to LHM Cloud, and will not run HUDs that it detects have been tampered with.
 
-#### **Settings**
+### **Settings**
 
 LHM automates as much of the game configuration process as possible, but depending on the game, there may be some manual steps that you have to follow before your game is ready to be used with LHM.
 
@@ -216,7 +216,7 @@ Watch one of our video tutorials:
 - [LHM.gg \- Valorant Integration Overview & Setup](https://www.youtube.com/watch?v=h8AcB_Pfc2k)
 - [LHM.gg \- League of Legends Integration Overview & Setup](https://www.youtube.com/watch?v=OWVcHv7tsbQ)
 
-#### **Custom HUD structure**
+### **Custom HUD structure**
 
 When uploading or developing a HUD, it must have a \`hud.json\` in its root (or in \`/public\`, or \`/static\` directory in case of development). This file contains metadata describing basic properties of the HUD so that it can be properly recognized by LHM. All custom HUDs made for use with LHM must contain this file.
 
@@ -226,7 +226,7 @@ Last but not least, the \`thumb.png\` file contains the image that will be displ
 
 All information about HUD file structure can be found [in our dedicated documentation](https://guide.lhm.gg/docs/spec/rest-api/huds/).
 
-#### **Technicalities**
+### **Technicalities**
 
 LHM is written with the latest versions of Microsoft Windows in mind \- currently, Windows 10 and Windows 11 are supported. We can’t guarantee compatibility with older versions and different operating systems.
 
@@ -236,7 +236,7 @@ When running LHM from behind a firewall, you may have to take into account vario
 
 LHM makes use of various open-source components at its core. The list of software used and their respective licenses can be found at [THIRD PARTY NOTICES](https://github.com/lexogrine/hud-manager/blob/main/THIRD%20PARTY%20NOTICES).
 
-#### **REST API**
+### **REST API**
 
 LHM provides a simple REST API allowing for control of its basic functions without a graphical user interface.
 
@@ -267,7 +267,7 @@ LHM provides a simple REST API allowing for control of its basic functions witho
 | `/api/scout`                           | GET    | Gets current state of Scout modules                                                                                                                   |
 | `/api/scout`                           | POST   | Toggles Scout modules. Requires body with keys "vision", "cinematic", "predict". Values are boolean for forcing ON / OFF state or `null` for toggling |
 
-#### **About Lexogrine**
+### **About Lexogrine**
 
 [Lexogrine](https://lexogrine.com) is an AI software development company, offering top-tier AI, web, and mobile design and development services for international companies. Alongside that, Lexogrine offers a set of web and mobile applications \- including [LHM.gg](http://LHM.gg) \- that revolutionize the way experts and specialists from different industries work together on a daily basis.
 
